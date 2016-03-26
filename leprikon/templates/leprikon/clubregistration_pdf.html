@@ -1,0 +1,46 @@
+{% load i18n %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>{% trans 'Club registration' %}</title>
+        <style type="text/css">
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            .page {
+                page-break-after: always;
+                font-size: 12pt;
+                line-height: 180%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <h1 align="center">{% trans 'Club registration' %}</h1>
+            <p align="center">{{ object.age_group }}</p>
+            <p>
+                Název kroužku: <b>{{ object.club.name }}</b><br/>
+                Jméno a příjmení: <b>{{ object.participant.full_name }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rodné číslo <b>{{ object.participant.birth_num }}</b><br/>
+                Bydliště: <b>{{ object.participant.address }}</b><br/>
+                Státní občanství: <b>{{ object.citizenship }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zdravotní pojišťovna: <b>{{ object.insurance }}</b><br/>
+                E-mail účastníka: <b>{{ object.participant.email }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telefon účastníka: <b>{{ object.participant.phone }}</b><br/>
+                {% for parent in object.participant.parents.all %}
+                Jméno a příjmení zákonného zástupce: <b>{{ parent.full_name }}</b><br/>
+                E-mail zák. zástupce: <b>{{ parent.email }}</b><br/>
+                Telefon zák. zástupce: <b>{{ parent.phone }}</b><br/>
+                {% endfor %}
+                Údaje o zdravotní způsobilosti účastníka (případná omezení):<br/>
+                <b>{{ object.health }}</b>
+                {% for qa in object.get_questions_and_answers %}
+                <br/>{{ qa.question }}: <b>{{ qa.answer }}</b>
+                {% endfor %}
+            </p>
+
+            <p>V  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            datum &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+            <p>Podpis zákonného zástupce účastníka:</p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'leprikon/base.html' %}
+
+{% block content %}
+
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+
+{% for error in form.non_field_errors %}
+    <p>{{ error }}</p>
+{% endfor %}
+
+{% include 'leprikon/form.html' %}
+
+{% endblock %}

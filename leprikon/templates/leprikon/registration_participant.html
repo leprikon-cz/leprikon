@@ -1,0 +1,55 @@
+{% load i18n leprikon_tags %}
+<div class="box box-registration">
+    <div class="box-header">
+        <strong>{{ reg.participant }}</strong>
+    </div>
+
+    <div class="box-content">
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Age group' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.age_group }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Address' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.participant.address }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Contact' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.participant.contact }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'School' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.school_and_class }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Insurance' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.insurance }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Health' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.health | linebreaks }}
+            </div>
+        </div>
+        {% for parent in reg.participant.all_parents %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Parent' %}:</label>
+            <div class="col-sm-8">
+                {{ parent.full_name }}, {{ parent.address }}<br />
+                {{ parent.contact }}
+            </div>
+        </div>
+        {% endfor %}
+        {% include 'leprikon/registration_payments_presences.html' %}
+    </div>
+</div>

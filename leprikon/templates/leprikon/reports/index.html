@@ -1,0 +1,91 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags sekizai_tags staticfiles %}
+
+{% block content %}
+
+<h1>{% block title %}{% trans 'Reports' %}{% endblock %}</h1>
+
+{% static_placeholder 'reports' %}
+
+{% for report in reports %}
+
+<h2 class="clickable" data-toggle="collapse" id="report-title-{{ forloop.counter }}" data-target="#report-form-{{ forloop.counter }}">
+    {{ report.title }}
+</h2>
+
+<div class="collapse out" id="report-form-{{ forloop.counter }}">
+    {{ report.instructions | safe }}
+
+    <form action="{{ report.url }}" method="post" class="form-horizontal">{% csrf_token %}
+        {% for ro in report.form.readonly_fields %}
+        <div class="form-group">
+            <label class="control-label col-md-3">{{ ro.label }}:</label>
+            <div class="col-md-9">
+                <div class="form-control">{{ ro.value }}</div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for item in report.form %}
+            {% include 'leprikon/form_item.html' %}
+        {% endfor %}
+
+        <!-- SUBMIT -->
+        <div class="form-group">
+            <div class="col-md-9 col-md-offset-3">
+                <button class="btn btn-primary" type="submit">{% trans 'Show' %}</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endfor %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(function () {
+    $('#id_date').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+$(function () {
+    $('#id_date_start').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+$(function () {
+    $('#id_date_end').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% load i18n leprikon_tags thumbnail %}
+
+<div class="box box-event">
+    <div class="box-header">
+        <strong>{{ object.name }}</strong>
+        {% for group in object.all_groups %}
+        <small class="tag" style="color: {{ group.font_color }}; border-color: {{ group.font_color }}; background-color: {{ group.color }}">
+            {{ group.name }}
+        </small>
+        {% endfor %}
+        <small>{{ object.price | currency }}</small>
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:event_update' object.id %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            {% trans 'edit' %}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="box-content">
+        {% if object.photo %}
+        <a href="{% thumbnail object.photo 1500x1500 %}">
+            <img class="right" src="{% thumbnail object.photo 200x200 %}" />
+        </a>
+        {% endif %}
+        <p>
+            {% trans 'Start' %}: {{ object.start_date }}{% if objec.start_time %}, {{ objec.start_time }}{% endif %}
+            {% if object.start_date != object.end_date or objec.end_time %}
+                <br>
+                {% trans 'End' %}:
+                {% if object.start_date != object.end_date %}
+                    {{ object.end_date }}{% if objec.end_time %}, {{ objec.end_time }}{% endif %}
+                {% else %}
+                    {{ objec.end_time }}
+                {% endif %}
+            {% endif %}
+        {{ object.description | safe }}
+        {% if object.all_leaders %}
+        <p>
+            {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
+            {{ object.get_leaders_list }}
+        </p>
+        {% endif %}
+
+        {% if object.event_type.all_attachments or object.all_attachments %}
+        <p>
+            {% trans 'Attachments' %}:
+            {% for attachment in object.event_type.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
+            {% for attachment in object.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if object.page %}
+        <p>
+            {% trans 'More information' %}:
+            <a href="{{ object.page.get_absolute_url }}">
+                {{ object.page.get_title }}
+            </a>
+        </p>
+        {% endif %}
+
+        <p>{% registration_links object %}</p>
+
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
+        <div class="btn-group">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_participants' object.id %}">
+                {% trans 'participants' %}
+                ({{ object.registrations.count }})
+            </a>
+        </div>
+        {% endif %}
+        <div class="clear"></div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+
+from datetime import date
+
+from ..models import ClubRegistration, EventRegistration
+
+from .generic import TemplateView
+
+
+class SummaryView(TemplateView):
+    summary = True
+    template_name = 'leprikon/summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SummaryView, self).get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['payment_status'] = sum(
+            reg.payment_statuses.partial
+            for reg in ClubRegistration.objects.filter(
+                club__school_year   = self.request.school_year,
+                participant__user   = self.request.user,
+            )
+        ) + sum(
+            reg.payment_status
+            for reg in EventRegistration.objects.filter(
+                event__school_year  = self.request.school_year,
+                participant__user   = self.request.user,
+            )
+        )
+        if self.request.leader:
+            context['clubs'] = self.request.leader.clubs.filter(school_year=self.request.school_year)
+            context['events'] = self.request.leader.events.filter(school_year=self.request.school_year)
+            context['timesheets'] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
+        return context
+
+

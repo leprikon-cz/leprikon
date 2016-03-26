@@ -1,0 +1,56 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n leprikon_tags sekizai_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{{ timesheet.period.name }}{% endblock %}</h1>
+
+{% if not object.submitted %}
+<div class="right">
+    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheetentry_create' object.id %}">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        {% trans 'new entry' %}
+    </a>
+    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
+        <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+        {% trans 'submit' %}
+    </a>
+</div>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{% trans 'date' %}</th>
+            <th>{% trans 'start' %}</th>
+            <th>{% trans 'duration' %}</th>
+            <th>{% trans 'type' %}</th>
+            <th>{% trans 'description' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entry in timesheet.all_entries %}
+        <tr>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.start }}</td>
+            <td>{{ entry.duration }}</td>
+            <td>{{ entry.group.name }}</td>
+            <td>{{ entry.description | safe }}</td>
+            <td>
+                <a class="btn btn-primary btn-xs" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    {% trans 'edit' %}
+                </a>
+                {% if not timesheet.submitted %}
+                <a class="btn btn-warning btn-xs" href="{{ entry.get_delete_url }}?{% param_back %}={% current_url %}">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    {% trans 'delete' %}
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

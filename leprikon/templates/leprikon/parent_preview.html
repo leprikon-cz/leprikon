@@ -1,0 +1,32 @@
+{% load i18n leprikon_tags %}
+<div class="box box-parent">
+
+    <div class="box-header">
+        <strong>{{ object.full_name }}</strong>
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:parent_update' object.id %}" title="upravit">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            upravit
+        </a>
+    </div>
+
+    <div class="box-content">
+        {% if not object.phone or not object.email or not object.first_name or not object.last_name %}
+        <div class="alert alert-warning" role="alert">
+            {% trans 'Parent has not filled all contact information.' %}
+            <a class="btn btn-warning btn-xs" href="{% url_with_back 'leprikon:parent_update' object.id %}" title="upravit">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                upravit
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <label class="col-sm-4">Kontakt:</label>
+            <div class="col-sm-8">
+                {{ object.address }}<br/>
+                email: {{ object.email }} telefon: {{ object.phone }}
+            </div>
+        </div>
+    </div>
+
+</div>

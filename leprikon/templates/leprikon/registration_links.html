@@ -1,0 +1,32 @@
+{% load i18n %}
+
+{% if reg_active %}
+
+    {% if request.user.is_authenticated %}
+        {% for link in links %}
+        {% if link.registration %}
+        <a class="btn-group" href="{% url 'leprikon:registrations' %}#{{ link.registration.slug }}">
+            <span class="btn btn-default btn-xs">{{ link.participant.full_name }}</span>
+            <span class="btn btn-primary btn-xs">{% trans 'already registered' %}</span>
+        </a>
+        {% else %}
+        <a class="btn-group" href="{{ link.url }}">
+            <span class="btn btn-default btn-xs">{{ link.participant.full_name }}</span>
+            <span class="btn btn-primary btn-xs">{% trans 'register' %}</span>
+        </a>
+        {% endif %}
+        {% endfor %}
+        <a href="{{ participant_create_url }}" class="btn btn-primary btn-xs">
+            <span class="glyphicon glyphicon-plus"></span> {% trans 'add participant' %}
+        </a>
+    {% else %}
+        <a href="{{ public_registration_url }}" class="btn btn-primary btn-xs">
+            {% trans 'register' %}
+        </a>
+    {% endif %}
+
+{% else %}
+
+    {% trans 'Registering is currently not allowed.' %}
+
+{% endif %}

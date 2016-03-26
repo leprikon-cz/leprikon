@@ -1,0 +1,6 @@
+include LICENSE
+include README.md
+recursive-exclude * *.py[co]
+recursive-include leprikon/locale *
+recursive-include leprikon/static *
+recursive-include leprikon/templates *

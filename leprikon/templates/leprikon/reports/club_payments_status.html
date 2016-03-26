@@ -1,0 +1,140 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if reports %}
+<h1>{% blocktrans with date=date %}Club payment status by date {{ date }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Club' %}</th>
+        <th>{% trans 'Number of registrations' %}</th>
+        <th>{% trans 'Price' %}</th>
+        <th>{% trans 'Discount' %}</th>
+        <th>{% trans 'Received payments' %}</th>
+        <th>{% trans 'Partial receivables' %}</th>
+        <th>{% trans 'Partial balance' %}</th>
+        <th>{% trans 'Total receivables' %}</th>
+        <th>{% trans 'Total balance' %}</th>
+    </tr>
+    {% for report in reports %}
+    {% if report.registrations %}
+    <tr id="report-{{ report.club.id }}" class="clickable" data-toggle="collapse" data-target=".{{ report.club.id }}-collapsed">
+    {% else %}
+    <tr id="report-{{ report.club.id }}">
+    {% endif %}
+        <th>{{ report.club.name }}</th>
+        <td class="right">{{ report.registrations | length }}</td>
+        <td class="right">{{ report.club.price | currency }}</td>
+        <td class="right">{{ report.total.discount | currency }}</td>
+        <td class="right">{{ report.total.paid | currency }}</td>
+        <td class="right">{{ report.partial.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ report.partial.color }}" title="{{ report.partial.title }}">
+                {{ report.partial.balance | currency }}
+            </strong>
+        </td>
+        <td class="right">{{ report.total.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ report.total.color }}" title="{{ report.total.title }}">
+                {{ report.total.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% for rs in report.registration_statuses %}
+    <tr class="collapse out {{ report.club.id }}-collapsed">
+        <th class="right" colspan="3">
+            <a href="{% url 'admin:leprikon_clubregistration_change' rs.registration.id %}">
+                {{ rs.registration.participant }}
+            </a>
+        </th>
+        <td class="right">
+            {% if rs.registration.explanation %}
+            <span data-toggle="tooltip" data-html="true" title="{{ rs.registration.explanation | linebreaks }}">
+                {{ rs.registration.discount | currency }}
+            </span>
+            {% else %}
+            {{ rs.registration.discount | currency }}
+            {% endif %}
+        </td>
+        <td class="right">{{ rs.statuses.total.paid | currency }}</td>
+        <td class="right">{{ rs.statuses.partial.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ rs.statuses.partial.color }}" title="{{ rs.statuses.partial.title }}">
+                {{ rs.statuses.partial.balance | currency }}
+            </strong>
+        </td>
+        <td class="right">{{ rs.statuses.total.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ rs.statuses.total.color }}" title="{{ rs.statuses.total.title }}">
+                {{ rs.statuses.total.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    <tr>
+        <th>{% trans 'All clubs' %}</th>
+        <td></td>
+        <td class="right">{{ sum.registrations }}</td>
+        <td class="right">{{ sum.discount | currency }}</td>
+        <td class="right">{{ sum.partial.price | currency }}</td>
+        <td class="right">{{ sum.total.price | currency }}</td>
+        <td class="right">{{ sum.total.paid | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ sum.partial.color }}" title="{{ sum.partial.title }}">
+                {{ sum.partial.balance | currency }}
+            </strong>
+        </td>
+        <td class="right">
+            <strong style="color: {{ sum.total.color }}" title="{{ sum.total.title }}">
+                {{ sum.total.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(function () {
+    $('#id_date').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

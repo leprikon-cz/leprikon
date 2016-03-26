@@ -1,0 +1,9 @@
+Přihláška přijata
+Dobrý den,
+
+děkujeme za vyplnění přihlášky a potvrzujeme její přijetí.
+
+Pro svou potřebu si vypněnou přihlášku můžete stáhnout zde:
+http://{{ site.domain }}{{ object.get_absolute_url }}
+
+{{ site.name }}

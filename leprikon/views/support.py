@@ -1,0 +1,29 @@
+from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+
+from django.core.mail import mail_managers
+from django.utils.translation import ugettext_lazy as _
+
+from ..forms.support import SupportForm
+
+from .generic import FormView
+
+
+class SupportView(FormView):
+    form_class = SupportForm
+    title = _('Support')
+
+    def get_message(self, form):
+        return _('Your question has been sent to our support team. Thank You.')
+
+    def form_valid(self, form):
+        question = form.cleaned_data['question']
+        if question.strip():
+            mail_managers(
+                _('Question from web'),
+                _('User {user} asks:\n{question}').format(
+                    user     = self.request.user.get_username(),
+                    question = question,
+                ),
+            )
+        return super(SupportView, self).form_valid(form)
+

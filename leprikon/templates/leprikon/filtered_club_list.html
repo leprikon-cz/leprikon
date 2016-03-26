@@ -1,0 +1,88 @@
+{% load i18n sekizai_tags staticfiles %}
+
+<form class="form-horizontal" method="get" id="list_filter_form">
+
+    <div class="form-group">
+        {% for item in form %}
+        <label class="control-label col-sm-6 col-md-2" for="{{ item.id_for_label }}">
+            {{ item.label }}
+        </label>
+        <div class="col-sm-6 col-md-4{% if item.errors %} alert alert-danger{% endif %}">
+            {{ item }}
+        </div>
+        {% endfor %}
+        <div class="col-xs-12 right">
+            <button class="btn btn-primary" type="submit">{% trans 'filter' %}</button>
+            <a class="btn btn-default" href="{{ request.path }}">{% trans 'clear filter' %}</a>
+        </div>
+    </div>
+</form>
+
+{% for object in clubs %}
+{% include 'leprikon/club_preview.html' %}
+{% empty %}
+<p>{{ message_empty }}</p>
+{% endfor %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#id_group').multiselect({
+        nonSelectedText: '',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#id_leader').multiselect({
+        nonSelectedText: '',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#id_place').multiselect({
+        nonSelectedText: '',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#id_age_group').multiselect({
+        nonSelectedText: '',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#id_day_of_week').multiselect({
+        nonSelectedText: '',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+});
+</script>
+{% endaddtoblock %}
+

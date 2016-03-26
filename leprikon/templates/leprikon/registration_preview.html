@@ -1,0 +1,48 @@
+{% load i18n leprikon_tags %}
+<div class="box box-registration" name="{{ reg.slug }}">
+    <div class="box-header">
+        <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.subject.name }}{% if reg.canceled %}</s>{% endif %}</strong>
+        <a class="btn btn-default btn-sm" href="{{ reg.get_absolute_url }}">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+            {% trans 'download' %}
+        </a>
+        {% if not reg.canceled and not reg.cancel_request %}
+        <a class="btn btn-default btn-sm"
+            href="{% if reg.club %}{% url_with_back 'leprikon:club_registration_cancel' reg.id %}{% else %}{% url_with_back 'leprikon:event_registration_cancel' reg.id %}{% endif %}"
+            title="{% trans 'cancel registration' %}">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            {% trans 'cancel' %}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="box-content">
+        <div class="row">
+            <label class="col-sm-4">{% if reg.club  %}{% trans 'Club' %}{% else %}{% trans 'Event' %}{% endif %}:</label>
+            <div class="col-sm-8">
+                <a href="{{ reg.subject.get_absolute_url }}">{{ reg.subject.name }}</a>
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Participant' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.participant }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Date and time of registration' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.created }}
+            </div>
+        </div>
+        {% if reg.canceled or reg.cancel_request %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Date of cancellation' %}:</label>
+            <div class="col-sm-8">
+                {% if reg.canceled %}{{ reg.canceled }}{% else %}{% trans 'cancellation requested' %}{% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% include 'leprikon/registration_payments_presences.html' %}
+    </div>
+</div>

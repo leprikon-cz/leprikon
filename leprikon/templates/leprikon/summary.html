@@ -1,0 +1,41 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% trans 'Summary' %}{% endblock %}</h2>
+
+{% static_placeholder "summary" %}
+
+{% if payment_status.price > 0 %}
+<h2>{% blocktrans with school_year=request.school_year %}Payment status for school year {{ school_year }}{% endblocktrans %}</h2>
+<p>
+    <a href="{% url 'leprikon:registrations' %}"><strong style="color: {{ payment_status.color }}">{{ payment_status.title }}</strong></a>
+    ({% trans 'total price of all registrations' %}: {{ payment_status.price | currency }},
+    {% trans 'discounts' %}: {{ payment_status.discount | currency }},
+    {% trans 'paid' %}: {{ payment_status.paid | currency }})
+</p>
+{% endif %}
+
+{% if timesheets.count %}
+<h2>{% trans 'Timesheets to be submitted' %}</h2>
+{% for object in timesheets %}
+{% include 'leprikon/timesheet_preview.html' %}
+{% endfor %}
+{% endif %}
+
+{% if clubs.count %}
+<h2>{% trans 'My clubs' %}</h2>
+{% for object in clubs %}
+{% include 'leprikon/club_preview.html' %}
+{% endfor %}
+{% endif %}
+
+{% if events.count %}
+<h2>{% trans 'My events' %}</h2>
+{% for object in events %}
+{% include 'leprikon/event_preview.html' %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

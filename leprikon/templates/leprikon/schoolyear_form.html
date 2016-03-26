@@ -1,0 +1,28 @@
+{% load leprikon_tags sekizai_tags staticfiles %}
+<form action="{% url 'leprikon:school_year' %}" method="post" class="form-horizontal" id="id_school_year_form">
+    {% csrf_token %}
+    <input type="hidden" name="{% param_back %}" value="{% current_url %}"/>
+    {{ school_year_form.school_year }}
+</form>
+
+{% addtoblock 'css' %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#id_school_year').multiselect({
+        numberDisplayed: 1,
+        onChange: function(element, checked) {
+            $('#id_school_year_form').submit();
+        },
+    });
+});
+</script>
+{% endaddtoblock %}
+

@@ -1,0 +1,10 @@
+{% extends 'default.html' %}
+
+{% block title %}Přihláška odeslána{% endblock %}
+
+{% block content %}
+
+<p>Vaše přihláška byla úspěšně odeslána. Můžete, ale nemusíte, si ji pro svou potřebu <a href="{{ object.get_absolute_url }}">stáhnout</a>.</p>
+<p>Pokud chcete, můžete <a href="{% url 'leprikon:event_registration_form' id=object.event.id %}">vyplnit další</a>.
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% blocktrans with school_year=request.school_year %}Registrations in school year {{ school_year }}{% endblocktrans %}{% endblock %}</h1>
+
+{% static_placeholder "registrations" %}
+
+{% if club_registrations.count or event_registrations.count %}
+{% for reg in club_registrations %}{% include 'leprikon/registration_preview.html' %}{% endfor %}
+{% for reg in event_registrations %}{% include 'leprikon/registration_preview.html' %}{% endfor %}
+{% else %}
+<p>{% blocktrans with school_year=request.school_year %}You have no registrations in school year {{ school_year }}.{% endblocktrans %}</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% load i18n leprikon_tags %}
+        {% if reg.discount %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Discount' %}:</label>
+            <div class="col-sm-8">
+                <strong class="clickable" data-toggle="collapse" id="discount-{{ reg.id }}" data-target="#explanation-{{ reg.id }}">
+                    {{ reg.discount | currency }}
+                </strong>
+                <div class="collapse out" id="explanation-{{ reg.id }}">
+                    {{ reg.explanation | linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Payments' %}:</label>
+            <div class="col-sm-8">
+                {% if reg.payment_status %}
+                <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
+                    {{ reg.payment_status.paid | currency }}
+                </strong>
+                {% else %}
+                <strong class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#period-payments-{{ reg.id }}"
+                    style="color: {{ reg.payment_statuses.partial.color }}" title="{{ reg.payment_statuses.total.title }}">
+                    {{ reg.payment_statuses.total.paid | currency }}
+                </strong>
+                <div class="collapse out" id="period-payments-{{ reg.id }}">
+                    {% for ps in reg.get_period_payment_statuses %}
+                    {{ ps.period.name }}:
+                    <strong style="color: {{ ps.status.color }}" title="{{ ps.status.title }}">
+                        {{ ps.status.paid | currency }}
+                    </strong><br />
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if reg.club %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Presence' %}:</label>
+            <div class="col-sm-8">
+                {% for entry in reg.club.all_journal_entries %}
+                <strong title="{{ entry.date }}">
+                {% if reg.participant in entry.all_participants %}&#x2713;{% else %}&#x2717;{% endif %}
+                </strong>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}

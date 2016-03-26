@@ -1,0 +1,74 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if payments %}
+<h1>{% blocktrans with date=date %}Club payments from {{ date_start }} to {{ date_end }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Registration' %}</th>
+        <th>{% trans 'Amount' %}</th>
+    </tr>
+    {% for payment in payments %}
+    <tr id="report-{{ payment.id }}">
+        <th>{{ payment.date }}</th>
+        <th>{{ payment.registration }}</th>
+        <th class="right">{{ payment.amount | currency }}</th>
+    </tr>
+    {% endfor %}
+    <tr id="report-sum">
+        <th></th>
+        <th></th>
+        <th class="right">{{ sum | currency }}</th>
+    </tr>
+</table>
+{% endif %}
+
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(function () {
+    $('#id_date_start').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+$(function () {
+    $('#id_date_end').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

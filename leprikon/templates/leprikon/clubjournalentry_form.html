@@ -1,0 +1,70 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n sekizai_tags staticfiles %}
+
+{% block content %}
+{{ block.super }}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('#id_date').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+
+    $('#id_start').datetimepicker({
+        locale: 'cs',
+        format: 'LT',
+    });
+
+    $('#id_end').datetimepicker({
+        locale: 'cs',
+        format: 'LT',
+    });
+
+    $('#id_participants').multiselect({
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_leaders').multiselect({
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_alternates').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

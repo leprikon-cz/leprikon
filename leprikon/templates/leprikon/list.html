@@ -1,0 +1,49 @@
+{% extends 'leprikon/base.html' %}
+{% load cms_tags i18n %}
+
+{% block content %}
+
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+
+{% if placeholder %}
+{% static_placeholder placeholder %}
+{% endif %}
+
+{% if form %}
+<form class="form-horizontal" method="get" id="list_filter_form">
+
+    <div class="form-group">
+        {% for item in form %}
+        <label class="control-label col-sm-6 col-md-2" for="{{ item.id_for_label }}">
+            {{ item.label }}
+        </label>
+        <div class="col-sm-6 col-md-4{% if item.errors %} alert alert-danger{% endif %}">
+            {{ item }}
+        </div>
+        {% endfor %}
+        <div class="col-xs-12 right">
+            <button class="btn btn-primary" type="submit">{% trans 'filter' %}</button>
+            <a class="btn btn-default" href="{{ request.path }}">{% trans 'clear filter' %}</a>
+        </div>
+    </div>
+</form>
+{% endif %}
+
+{% if add_url %}
+<a class="btn btn-sm btn-primary right" href="{{ add_url }}" title="{{ add_title }}">
+    <span class="glyphicon glyphicon-plus"></span>
+    {{ add_label }}
+</a>
+{% endif %}
+
+{% include 'leprikon/pagination.html' %}
+
+{% for object in object_list %}
+{% include preview_template %}
+{% empty %}
+<p>{{ message_empty }}</p>
+{% endfor %}
+
+{% include 'leprikon/pagination.html' %}
+
+{% endblock %}

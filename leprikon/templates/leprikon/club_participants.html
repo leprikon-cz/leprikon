@@ -1,0 +1,14 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% blocktrans with name=club.name %}Participants of club {{ name }}{% endblocktrans %}{% endblock %}</h1>
+
+{% for reg in club.all_registrations %}
+{% include 'leprikon/registration_participant.html' %}
+{% empty %}
+<p>{% trans 'There are no registrations for this club.' %}</p>
+{% endfor %}
+
+{% endblock %}

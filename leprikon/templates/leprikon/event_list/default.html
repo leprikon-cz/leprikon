@@ -1,0 +1,93 @@
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
+
+{% for event in events %}
+
+<div class="leprikon_event">
+
+    <h3 class="event_name event_name_{{ event.id }}">
+        {% if event.page %}
+        <a href="{{ event.page.get_absolute_url }}" alt="{{ event.page.get_title }}">{{ event.name }}</a>
+        {% else %}
+        {{ event.name }}
+        {% endif %}
+        <br/>
+        {% for group in event.all_groups %}
+        <small style="color: {{ group.color }}">{{ group.name }}</small>
+        {% endfor %}
+    </h3>
+
+    <div class="event_description">
+        {% if event.photo %}
+        <a href="{% thumbnail event.photo 1500x1500 %}">
+            <img class="right" src="{% thumbnail event.photo 200x200 %}" />
+        </a>
+        {% endif %}
+        <p>
+            {% trans 'Start' %}: {{ event.start_date }}{% if objec.start_time %}, {{ objec.start_time }}{% endif %}
+            {% if event.start_date != event.end_date or objec.end_time %}
+                <br>
+                {% trans 'End' %}:
+                {% if event.start_date != event.end_date %}
+                    {{ event.end_date }}{% if objec.end_time %}, {{ objec.end_time }}{% endif %}
+                {% else %}
+                    {{ objec.end_time }}
+                {% endif %}
+            {% endif %}
+            <br />
+            {% trans 'Price' %}: {{ event.price | currency }}
+        </p>
+
+        {{ event.description | safe }}
+
+        {% if event.all_leaders %}
+        <p>
+            {% blocktrans count counter=event.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
+            {{ event.get_leaders_list }}
+        </p>
+        {% endif %}
+
+        {% if object.event_type.all_attachments or object.all_attachments %}
+        <p>
+            {% trans 'Attachments' %}:
+            {% for attachment in object.event_type.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
+            {% for attachment in object.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if event.page %}
+        <p>
+            {% trans 'More information' %}:
+            <a href="{{ event.page.get_absolute_url }}">
+                {{ event.page.get_title }}
+            </a>
+        </p>
+        {% endif %}
+
+        <p>{% registration_links event %}</p>
+    </div>
+
+</div>
+
+{% if request.toolbar.use_draft %}
+{% addtoblock 'js' %}
+<script>
+(function($) {
+$(document).ready(function () {
+    new CMS.Plugin('event_name_{{ event.id }}', {
+        'plugin_name': '{{ event.name }}',
+        'urls': {
+            'edit_plugin': '{{ event.get_edit_url }}',
+        },
+    });
+});
+})(CMS.$);
+</script>
+{% endaddtoblock %}
+{% endif %}
+
+{% endfor %}
+

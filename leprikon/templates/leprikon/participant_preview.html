@@ -1,0 +1,67 @@
+{% load i18n leprikon_tags staticfiles %}
+<div class="box box-participant">
+    <div class="box-header">
+        <strong>{{ object.full_name }}</strong>
+        <small>({{ object.birth_num }})</small>
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:participant_update' object.id %}" title="upravit">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            {% trans 'edit' %}
+        </a>
+    </div>
+
+    <div class="box-content">
+        {% if not object.phone or not object.email %}
+        <div class="alert alert-warning" role="alert">
+            {% trans 'Participant has not filled all contact information.' %}
+            <a class="btn btn-warning btn-xs" href="{% url_with_back 'leprikon:participant_update' object.id %}" title="upravit">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                {% trans 'edit' %}
+            </a>
+        </div>
+        {% endif %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Age group' %}:</label>
+            <div class="col-sm-8">
+                {{ object.age_group }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Address' %}:</label>
+            <div class="col-sm-8">
+                {{ object.address }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Contact' %}:</label>
+            <div class="col-sm-8">
+                {{ object.contact }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'School' %}:</label>
+            <div class="col-sm-8">
+                {{ object.school_and_class }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Insurance' %}:</label>
+            <div class="col-sm-8">
+                {{ object.insurance }}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Health' %}:</label>
+            <div class="col-sm-8">
+                {{ object.health | linebreaks }}
+            </div>
+        </div>
+        {% if object.all_parents %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Parents' %}:</label>
+            <div class="col-sm-8">
+                {{ object.all_parents | comma_separated }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>

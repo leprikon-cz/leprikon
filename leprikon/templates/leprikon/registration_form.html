@@ -1,0 +1,61 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+
+{% if placeholder %}
+{% static_placeholder placeholder %}
+{% endif %}
+
+{{ instructions | safe }}
+
+{% for error in form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endfor %}
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+    {% for ro in form.readonly_fields %}
+    <div class="form-group">
+        <label class="control-label col-md-3">{{ ro.label }}:</label>
+        <div class="col-md-9">
+            <div class="form-control">{{ ro.value }}</div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <h3>{% trans 'Participant' %}</h3>
+
+    {% for item in form.participant_form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+
+    {% for item in form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+
+    <h3>{% trans 'Parent' %}</h3>
+
+    {% for item in form.parent_form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+
+    <h3>{% trans 'User' %}</h3>
+
+    {% for item in form.user_form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+
+    <!-- SUBMIT -->
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
+            <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+            {% if back_url %}
+            <a class="btn btn-default" href="{{ back_url }}">{{ back_label }}</a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+{% endblock %}

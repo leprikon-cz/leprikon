@@ -1,0 +1,17 @@
+{% extends 'leprikon/list.html' %}
+{% load i18n leprikon_tags %}
+
+{% block content %}
+{{ block.super }}
+
+<h2>{% trans 'Parents' %}</h2>
+
+<a class="btn btn-sm btn-primary right" href="{% url_with_back 'leprikon:parent_create' %}">
+    <span class="glyphicon glyphicon-plus"></span>
+    {% trans 'add parent' %}
+</a>
+
+{% for object in request.user.leprikon_parents.all %}
+{% include 'leprikon/parent_preview.html' %}
+{% endfor %}
+{% endblock %}

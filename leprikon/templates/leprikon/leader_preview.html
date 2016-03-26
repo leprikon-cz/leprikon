@@ -1,0 +1,36 @@
+{% load i18n leprikon_tags sekizai_tags %}
+
+<div class="box box-leader">
+    <div class="box-header">
+        <strong>{{ object.full_name }}</strong>
+    </div>
+
+    <div class="box-content">
+        {{ object.description | safe }}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Clubs' %}:</label>
+            <div class="col-sm-8">
+                {% for club in object.clubs|filter_current_school_year:request.school_year %}
+                {{ club.name }}<br />
+                {% endfor %}
+            </div>
+        </div>
+        {% if object.all_public_contacts %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Contact' %}:</label>
+            <div class="col-sm-8">
+                {% for contact in object.all_public_contacts %}
+                <div class="contact contact-{{ contact.contact_type }}">
+                    {{ contact.contact }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% if object.page %}
+        <div class="row">
+            <a href="{{ object.page.get_absolute_url }}" alt="{{ object.page.get_title }}">více informací</a>
+        </div>
+        {% endif %}
+    </div>
+</div>

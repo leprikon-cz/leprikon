@@ -1,0 +1,181 @@
+
+html {
+    min-height: 100%;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+#header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid;
+}
+
+#body {
+    padding-top: 15px;
+    padding-bottom: 30px;
+    font-size: 16px;
+}
+
+.box {
+    padding: 0px;
+    margin-top: 15px;
+    margin-bottom: 35px;
+}
+
+.box-header {
+    clear: both;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 2px solid;
+    padding: 3px 10px;
+    font-size: 18px;
+}
+
+.box-header .tag {
+    display: inline-block;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 1px 5px;
+}
+
+.box-header:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.box-header small {
+    margin-left: 15px;
+}
+
+.box-header a.btn {
+    float: right;
+    margin-left: 5px;
+}
+
+.box-content {
+    padding: 10px;
+    border-left: 2px solid;
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+    margin-bottom: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.box-content label {
+    text-align: right;
+}
+
+.box-content .row {
+    margin-bottom: 5px;
+}
+
+.clear {
+    clear: both;
+}
+
+h1 {
+    font-size: 28px;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+h2 {
+    font-size: 22px;
+}
+
+/*form li {
+    list-style-type: none;
+}*/
+
+form .panel,
+form .alert {
+    margin-bottom: 0;
+}
+
+.alert {
+    padding: 10px;
+    font-size: 20px;
+}
+
+.alert .close {
+    top: 0;
+    right: 0;
+}
+
+.right {
+    text-align: right;
+}
+
+img.right,
+.btn.right {
+    text-align: left;
+    float: right;
+    margin-bottom: 5px;
+}
+
+.form-group label {
+    font-weight: normal;
+}
+
+.form-group.required label {
+    font-weight: bold;
+}
+
+input.form-control[type="checkbox"] {
+    width: auto;
+}
+
+/* do not show radio inputs in multiselect */
+.radio input {
+    display: none;
+}
+
+.list-group .list-group {
+    margin-bottom: 0;
+    margin-left: 30px;
+}
+
+.list-group .list-group .list-group-item {
+    padding: 5px 15px;
+}
+
+.list-group .list-group .list-group-item:last-child {
+    border-bottom: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.line-through {
+    text-decoration: line-through;
+}
+
+.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+  content: '';
+  display: inline-block;
+  height: 80%;
+  vertical-align: middle;
+  margin-right: -4px; /* Adjusts for spacing */
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+

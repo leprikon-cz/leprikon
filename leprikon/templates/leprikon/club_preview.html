@@ -1,0 +1,72 @@
+{% load i18n leprikon_tags thumbnail %}
+
+<div class="box box-club">
+    <div class="box-header">
+        <strong>{{ object.name }}</strong>
+        {% for group in object.all_groups %}
+        <small class="tag" style="color: {{ group.font_color }}; border-color: {{ group.font_color }}; background-color: {{ group.color }}">
+            {{ group.name }}
+        </small>
+        {% endfor %}
+        <small>{{ object.price | currency }} / {{ object.unit }}</small>
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:club_update' object.id %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            {% trans 'edit' %}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="box-content">
+        {% if object.photo %}
+        <a href="{% thumbnail object.photo 1500x1500 %}">
+            <img class="right" src="{% thumbnail object.photo 200x200 %}" />
+        </a>
+        {% endif %}
+        <p>{{ object.all_times | comma_separated }}</p>
+        {{ object.description | safe }}
+        {% if object.all_leaders %}
+        <p>
+            {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
+            {{ object.get_leaders_list }}
+        </p>
+        {% endif %}
+
+        {% if object.all_attachments %}
+        <p>
+            {% trans 'Attachments' %}:
+            {% for attachment in object.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if object.page %}
+        <p>
+            {% trans 'More information' %}:
+            <a href="{{ object.page.get_absolute_url }}">
+                {{ object.page.get_title }}
+            </a>
+        </p>
+        {% endif %}
+
+        <p>{% registration_links object %}</p>
+
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
+        <div class="btn-group">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_participants' object.id %}">
+                {% trans 'participants' %}
+                ({{ object.registrations.count }})
+            </a>
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_journal' object.id %}">
+                {% trans 'journal' %}
+            </a>
+            <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:clubjournalentry_create' object.id %}">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                {% trans 'add journal entry' %}
+            </a>
+        </div>
+        {% endif %}
+        <div class="clear"></div>
+    </div>
+</div>

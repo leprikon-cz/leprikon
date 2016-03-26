@@ -1,0 +1,143 @@
+
+#header {
+    background: #277616;
+    border-color: #57340a;
+}
+
+#header a {
+    color: #008;
+}
+
+#body, html {
+    background: #eefff8;
+    color: 030;
+}
+
+a {
+    color: #008;
+}
+
+.box-header {
+    color: #f8e713;
+    border-color: #277616;
+    background-color: #277616;
+    text-shadow:  1px  1px 1px #57340a,
+                  1px -1px 1px #57340a,
+                 -1px  1px 1px #57340a,
+                 -1px -1px 1px #57340a;
+}
+
+.box-header,
+.box-header a,
+.box-header a:hover,
+.box-header a:active,
+.box-header a:visited {
+    color: #f8e713;
+    text-shadow:  1px  1px 1px #57340a,
+                  1px -1px 1px #57340a,
+                 -1px  1px 1px #57340a,
+                 -1px -1px 1px #57340a;
+}
+
+.box-header a.btn-primary {
+    color: #fff;
+    text-shadow: none;
+}
+
+.box-header .tag {
+    text-shadow: none;
+}
+
+.box-content {
+    border-color: #277616;
+    background-color: #fff;
+}
+
+a.list-group-item {
+    color: #030;
+    border-color: #277616;
+}
+
+a.list-group-item:hover, a.list-group-item:focus {
+    background-color: #eeffe8;
+}
+
+a.list-group-item.active, a.list-group-item.active:hover, a.list-group-item.active:focus {
+    color: #f8e713;
+    border-color: #277616;
+    background-color: #277616;
+    font-weight: bold;
+    text-shadow:  1px  1px 1px #57340a,
+                  1px -1px 1px #57340a,
+                 -1px  1px 1px #57340a,
+                 -1px -1px 1px #57340a;
+}
+
+h1 {
+    color: #f8e713;
+    border-color: #277616;
+    background-color: #277616;
+    margin-top: 10px;
+    font-weight: bold;
+    text-shadow:  1px  1px 1px #57340a,
+                  1px -1px 1px #57340a,
+                 -1px  1px 1px #57340a,
+                 -1px -1px 1px #57340a;
+}
+
+.box-header .btn-primary,
+.box-header .btn-primary:hover,
+.box-header .btn-primary:focus,
+.box-header .btn-primary:active {
+    border-color: #fff;
+}
+
+.btn-primary {
+    border-color: #277616;
+    background-color: #277616;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    border-color: #277616;
+    background-color: #378626;
+}
+
+.btn-default {
+    border-color: #277616;
+    background-color: #fff;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active {
+    border-color: #277616;
+    background-color: #efe;
+}
+
+.form-control,
+input.form-control[type="checkbox"] {
+    border-color: #277616;
+}
+
+.alert-info {
+    color: #00a;
+    border-color: #66f;
+    background-color: #ddf;
+}
+
+.alert-info .close {
+    color: #00a;
+}
+
+.alert-warning {
+    color: #930;
+    border-color: #a60;
+    background-color: #ffd;
+}
+
+.alert-warning .close {
+    color: #930;
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+    background-color: #277616;
+}
+

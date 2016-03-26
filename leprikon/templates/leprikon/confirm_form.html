@@ -1,0 +1,30 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+
+{% if placeholder %}
+{% static_placeholder placeholder %}
+{% endif %}
+
+{{ instructions | safe }}
+
+<p><strong>{{ question }}</strong></p>
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+    <input type="hidden" name="answer" value="yes"/>
+
+    <!-- SUBMIT -->
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
+            <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+            {% if back_url %}
+            <a class="btn btn-default" href="{{ back_url }}">{{ back_label }}</a>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+{% endblock %}

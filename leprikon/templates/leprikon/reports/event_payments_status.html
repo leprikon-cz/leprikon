@@ -1,0 +1,126 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if reports %}
+<h1>{% blocktrans with date=date %}Event payment status by date {{ date }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Event' %}</th>
+        <th>{% trans 'Number of registrations' %}</th>
+        <th>{% trans 'Price' %}</th>
+        <th>{% trans 'Discount' %}</th>
+        <th>{% trans 'Received payments' %}</th>
+        <th>{% trans 'Total receivables' %}</th>
+        <th>{% trans 'Total balance' %}</th>
+    </tr>
+    {% for report in reports %}
+    {% if report.registrations %}
+    <tr id="report-{{ report.event.id }}" class="clickable" data-toggle="collapse" data-target=".{{ report.event.id }}-collapsed">
+    {% else %}
+    <tr id="report-{{ report.event.id }}">
+    {% endif %}
+        <th>{{ report.event.name }}</th>
+        <td class="right">{{ report.registrations | length }}</td>
+        <td class="right">{{ report.event.price | currency }}</td>
+        <td class="right">{{ report.status.discount | currency }}</td>
+        <td class="right">{{ report.status.paid | currency }}</td>
+        <td class="right">{{ report.status.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ report.status.color }}" title="{{ report.status.title }}">
+                {{ report.status.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% for rs in report.registration_statuses %}
+    <tr class="collapse out {{ report.event.id }}-collapsed">
+        <th class="right" colspan="3">
+            <a href="{% url 'admin:leprikon_eventregistration_change' rs.registration.id %}">
+                {{ rs.registration.participant }}
+            </a>
+        </th>
+        <td class="right">
+            {% if rs.registration.explanation %}
+            <span data-toggle="tooltip" data-html="true" title="{{ rs.registration.explanation | linebreaks }}">
+                {{ rs.registration.discount | currency }}
+            </span>
+            {% else %}
+            {{ rs.registration.discount | currency }}
+            {% endif %}
+        </td>
+        <td class="right">{{ rs.status.paid | currency }}</td>
+        <td class="right">{{ rs.status.price | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ rs.status.color }}" title="{{ rs.status.title }}">
+                {{ rs.status.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    <tr>
+        <th>{% trans 'All events' %}</th>
+        <td></td>
+        <td class="right">{{ sum.registrations }}</td>
+        <td class="right">{{ sum.discount | currency }}</td>
+        <td class="right">{{ sum.partial.price | currency }}</td>
+        <td class="right">{{ sum.total.price | currency }}</td>
+        <td class="right">{{ sum.total.paid | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ sum.partial.color }}" title="{{ sum.partial.title }}">
+                {{ sum.partial.balance | currency }}
+            </strong>
+        </td>
+        <td class="right">
+            <strong style="color: {{ sum.total.color }}" title="{{ sum.total.title }}">
+                {{ sum.total.balance | currency }}
+            </strong>
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(function () {
+    $('#id_date').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% load i18n cms_tags menu_tags leprikon_tags sekizai_tags staticfiles ganalytics %}
+<!DOCTYPE html>
+<html lang="cs-CZ">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>
+        {% block title %}{% endblock %} {% include 'leprikon/title.txt' %}
+    </title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'bootstrap/css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/css/layout.css' %}?0"/>
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/css/colors.css' %}"/>
+    {% render_block "css" %}
+    <link rel="shortcut icon" href="{% static 'leprikon/images/favicon.ico' %}" />
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</head>
+
+<body>
+{% cms_toolbar %}
+    <div id="header">
+        <div class="container">
+            <div class="col-sm-9">
+                {% include 'leprikon/brand.html' %}
+            </div>
+            <div class="col-sm-3 hidden-print">
+                {% school_year_form %}
+                {% if request.user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="user_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {{ request.user.get_full_name }}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="user_menu">
+                        <li><a href="{% url_with_back 'leprikon:user_update' %}">{% trans 'Edit' %}</a></li>
+                        <li><a href="{% url_with_back 'leprikon:user_password' %}">{% trans 'Change password' %}</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div id="body">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-9">
+                    {% if messages %}
+                    <div class="hidden-print modal fade" id="messages" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    {% for message in messages %}
+                                    <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %}" role="alert">
+                                        <span class="glyphicon glyphicon-{% if message.level_tag == 'error' %}exclamation{% else %}{{ message.level_tag }}{% endif %}-sign" aria-hidden="true"></span>
+                                        {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" data-dismiss="modal">{% trans 'OK' %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        $('#messages').modal({
+                            backdrop: 'static',
+                        });
+                    </script>
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                </div>
+                <div class="col-sm-3 hidden-print">
+                    <nav class="list-group">
+                        {% show_menu_below_id 'leprikon' 0 100 0 100 'leprikon/menu.html' %}
+                    </nav>
+                    {% if request.user.is_authenticated %}
+                    <form action="{% url 'leprikon:support' %}" method="post" class="form-horizontal">{% csrf_token %}
+                        <input type="hidden" name="{% param_back %}" value="{% current_url %}"/>
+                        <div class="box">
+                            <div class="box-header">
+                                <label for="id_question">{% trans 'Help needed?' %}</label>
+                            </div>
+                            <div class="box-content">
+                                <textarea class="form-control" id="id_question" name="question" rows="3"></textarea>
+                                <button class="btn btn-primary btn-xs" type="submit">{% trans 'send question or suggestion' %}</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% render_block "js" %}
+
+</body>
+</html>
