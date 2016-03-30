@@ -1,4 +1,4 @@
-{% load i18n leprikon_tags thumbnail %}
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
 
 <div class="box box-club">
     <div class="box-header">
@@ -19,8 +19,8 @@
 
     <div class="box-content">
         {% if object.photo %}
-        <a href="{% thumbnail object.photo 1500x1500 %}">
-            <img class="right" src="{% thumbnail object.photo 200x200 %}" />
+        <a href="{% thumbnail object.photo 1500x1500 %}" data-toggle="lightbox" data-title="{{ object.photo.name }}">
+            <img class="right" alt="{{ object.photo.name }}" src="{% thumbnail object.photo 200x200 %}" />
         </a>
         {% endif %}
         <p>{{ object.all_times | comma_separated }}</p>
@@ -67,6 +67,24 @@
             </a>
         </div>
         {% endif %}
-        <div class="clear"></div>
     </div>
 </div>
+
+{% addtoblock 'css' %}
+<link href="//cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.css" integrity="sha384-EsoR0pjPTZTUy5b8kJf6aTfA7quYluD5mNQ/Lz4hsxU2kXuuc6PlXVfBJCFdTXqD" rel="stylesheet" crossorigin="anonymous"/>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.js" integrity="sha384-2aVpK/uKiYlyFXHZ36wvxOPZyWeouEKvbSUlqCrkFhyT80n2aSYtT15Tgdn6g41M" crossorigin="anonymous"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script>
+<!--
+$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+});
+-->
+</script>
+{% endaddtoblock %}

@@ -111,11 +111,17 @@ form .alert {
     text-align: right;
 }
 
-img.right,
 .btn.right {
     text-align: left;
     float: right;
     margin-bottom: 5px;
+}
+
+img.right {
+    text-align: left;
+    float: right;
+    margin-left: 15px;
+    margin-bottom: 15px;
 }
 
 .form-group label {

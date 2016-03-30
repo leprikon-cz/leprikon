@@ -1,4 +1,4 @@
-{% load i18n leprikon_tags sekizai_tags %}
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
 
 <div class="box box-leader">
     <div class="box-header">
@@ -6,6 +6,11 @@
     </div>
 
     <div class="box-content">
+        {% if object.photo %}
+        <a href="{% thumbnail object.photo 1500x1500 %}" data-toggle="lightbox" data-title="{{ object.photo.name }}">
+            <img class="right" alt="{{ object.photo.name }}" src="{% thumbnail object.photo 200x200 %}" />
+        </a>
+        {% endif %}
         {{ object.description | safe }}
         <div class="row">
             <label class="col-sm-4">{% trans 'Clubs' %}:</label>
@@ -27,10 +32,33 @@
             </div>
         </div>
         {% endif %}
+
         {% if object.page %}
-        <div class="row">
-            <a href="{{ object.page.get_absolute_url }}" alt="{{ object.page.get_title }}">více informací</a>
-        </div>
+        <p>
+            {% trans 'More information' %}:
+            <a href="{{ object.page.get_absolute_url }}">
+                {{ object.page.get_title }}
+            </a>
+        </p>
         {% endif %}
     </div>
 </div>
+
+{% addtoblock 'css' %}
+<link href="//cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.css" integrity="sha384-EsoR0pjPTZTUy5b8kJf6aTfA7quYluD5mNQ/Lz4hsxU2kXuuc6PlXVfBJCFdTXqD" rel="stylesheet" crossorigin="anonymous"/>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.js" integrity="sha384-2aVpK/uKiYlyFXHZ36wvxOPZyWeouEKvbSUlqCrkFhyT80n2aSYtT15Tgdn6g41M" crossorigin="anonymous"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script>
+<!--
+$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+});
+-->
+</script>
+{% endaddtoblock %}
