@@ -5,13 +5,7 @@
     {{ school_year_form.school_year }}
 </form>
 
-{% addtoblock 'css' %}
-<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
-{% endaddtoblock %}
-
-{% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
-{% endaddtoblock %}
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
 
 {% addtoblock 'js' %}
 <script type="text/javascript">

@@ -86,25 +86,8 @@
 {% endif %}
 
 
-{% addtoblock "css" %}
-<link rel="stylesheet" href="{% static 'bootstrap-multiselect/css/bootstrap-multiselect.css' %}" type="text/css"/>
-{% endaddtoblock %}
-
-{% addtoblock "css" %}
-<link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" type="text/css"/>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static 'bootstrap-multiselect/js/bootstrap-multiselect.js' %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static 'moment.js/moment-with-locales.min.js' %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
-{% endaddtoblock %}
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
 
 {% addtoblock "js" %}
 <script type="text/javascript">
