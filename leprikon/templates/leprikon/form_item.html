@@ -9,7 +9,7 @@
         {% endfor %}
 
         {% if item.help_text %}
-            <span class="help-block">{{ item.help_text }}</span>
+            <span class="help-block">{{ item.help_text | safe }}</span>
         {% endif %}
     </div>
 </div>
