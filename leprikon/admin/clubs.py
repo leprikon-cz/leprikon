@@ -214,7 +214,6 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
-    form            = ClubRegistrationAdminForm
     list_display    = (
         'id', 'get_download_tag', 'club', 'participant', 'parents_link',
         'discount', 'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
@@ -246,11 +245,14 @@ class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    def get_fields(self, request, obj=None):
-        fields = super(ClubRegistrationAdmin, self).get_fields(request, obj)
-        if obj:
-            fields += ['q_'+q.name for q in obj.club.all_questions]
-        return fields
+    def get_form(self, request, obj, **kwargs):
+        questions       = obj.club.all_questions
+        answers         = obj.get_answers()
+        kwargs['form']  = type(ClubRegistrationAdminForm.__name__, (ClubRegistrationAdminForm,), dict(
+            ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
+            for q in questions
+        ))
+        return super(ClubRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
     def parents(self, obj):
         return comma_separated(obj.participant.all_parents)

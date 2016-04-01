@@ -140,7 +140,6 @@ class EventAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
-    form            = EventRegistrationAdminForm
     list_display    = (
         'id', 'get_download_tag', 'event', 'participant', 'parents_link',
         'discount', 'get_payments_html', 'created',
@@ -173,11 +172,14 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    def get_fields(self, request, obj=None):
-        fields = super(EventRegistrationAdmin, self).get_fields(request, obj)
-        if obj:
-            fields += ['q_'+q.name for q in obj.event.all_questions]
-        return fields
+    def get_form(self, request, obj, **kwargs):
+        questions       = set(obj.event.event_type.all_questions + obj.event.all_questions)
+        answers         = obj.get_answers()
+        kwargs['form']  = type(EventRegistrationAdminForm.__name__, (EventRegistrationAdminForm,), dict(
+            ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
+            for q in questions
+        ))
+        return super(EventRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
     def parents(self, obj):
         return comma_separated(obj.participant.all_parents)

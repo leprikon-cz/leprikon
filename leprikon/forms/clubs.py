@@ -443,15 +443,13 @@ class ClubRegistrationForm(FormMixin, ClubRegistrationBaseForm):
 
 
 
-class ClubRegistrationAdminForm(ClubRegistrationBaseForm):
+class ClubRegistrationAdminForm(forms.ModelForm):
 
     class Meta:
         model = ClubRegistration
-        fields = [
-            'club', 'participant', 'canceled',
-            'age_group', 'citizenship', 'insurance',
-            'school', 'school_other', 'school_class', 'health',
-            'discount', 'explanation',
-        ]
+        fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(ClubRegistrationAdminForm, self).__init__(*args, **kwargs)
+        self.fields['age_group'].widget.choices.queryset = kwargs['instance'].club.age_groups
 

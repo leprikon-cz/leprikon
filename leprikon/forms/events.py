@@ -174,15 +174,13 @@ class EventRegistrationForm(FormMixin, EventRegistrationBaseForm):
 
 
 
-class EventRegistrationAdminForm(EventRegistrationBaseForm):
+class EventRegistrationAdminForm(forms.ModelForm):
 
     class Meta:
         model = EventRegistration
-        fields = [
-            'event', 'participant', 'canceled',
-            'age_group', 'citizenship', 'insurance',
-            'school', 'school_other', 'school_class', 'health',
-            'discount', 'explanation',
-        ]
+        fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(EventRegistrationAdminForm, self).__init__(*args, **kwargs)
+        self.fields['age_group'].widget.choices.queryset = kwargs['instance'].event.age_groups
 
