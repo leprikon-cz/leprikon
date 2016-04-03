@@ -91,16 +91,9 @@ class LeprikonMenu(CMSAttachMenu):
             attr={'require_leader': True},
         ))
         nodes.append(NavigationNode(
-            _('Events'),
-            reverse('leprikon:event_list'),
-            len(nodes),
-        ))
-        events_id=len(nodes)-1
-        nodes.append(NavigationNode(
             _('My Events'),
             reverse('leprikon:event_list_mine'),
             len(nodes),
-            parent_id=events_id,
             attr={'require_leader': True},
         ))
         for event_type in EventType.objects.all():
@@ -108,7 +101,6 @@ class LeprikonMenu(CMSAttachMenu):
                 event_type.name,
                 reverse('leprikon:event_list', kwargs={'event_type': event_type.slug}),
                 len(nodes),
-                parent_id=events_id,
             ))
         nodes.append(NavigationNode(
             _('Leaders'),

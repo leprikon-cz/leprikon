@@ -50,7 +50,7 @@ urlpatterns = [
     d_url(r'^{timesheets}/{journal}/{entry}/(?P<pk>[0-9]+)/$',           'clubjournalleaderentry_update'),
     d_url(r'^{timesheets}/{journal}/{entry}/(?P<pk>[0-9]+)/{delete}/$',  'clubjournalleaderentry_delete'),
 
-    d_url(r'^{events}/$',                                           'event_list'),
+    url(  r'^{events}/$'.format(**LEPRIKON_URL), RedirectView.as_view(url='../', permanent=True)),
     d_url(r'^{events}/{mine}/$',                                    'event_list_mine'),
     d_url(r'^{events}/(?P<pk>[0-9]+)/$',                            'event_detail'),
     d_url(r'^{events}/(?P<event_type>[^/]+)/$',                     'event_list'),
