@@ -442,15 +442,15 @@ class ClubJournalLeaderEntryInlineAdmin(admin.TabularInline):
 class ClubJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form            = ClubJournalEntryAdminForm
     date_hierarchy  = 'date'
-    list_display    = ('club_name', 'period_name', 'date', 'start', 'end', 'duration', 'agenda_html')
+    list_display    = ('id', 'club_name', 'date', 'start', 'end', 'duration', 'agenda_html')
     list_filter     = (
-        ('period__club__school_year',   SchoolYearListFilter),
-        ('period__club',                ClubListFilter),
+        ('club__school_year',   SchoolYearListFilter),
+        ('club',                ClubListFilter),
     )
     filter_horizontal = ('participants',)
     inlines         = (ClubJournalLeaderEntryInlineAdmin,)
     ordering        = ('-date', '-start')
-    readonly_fields = ('club_name', 'period_name', 'date',)
+    readonly_fields = ('club_name', 'date',)
 
     def has_add_permission(self, request):
         return False
@@ -470,14 +470,9 @@ class ClubJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         return actions
 
     def club_name(self, obj):
-        return obj.period.club.name
+        return obj.club.name
     club_name.short_description = _('club')
-    club_name.admin_order_field = 'period__club__name'
-
-    def period_name(self, obj):
-        return obj.period.name
-    period_name.short_description = _('period')
-    period_name.admin_order_field = 'period__name'
+    club_name.admin_order_field = 'club__name'
 
     def agenda_html(self, obj):
         return obj.agenda
