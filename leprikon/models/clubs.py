@@ -345,7 +345,7 @@ class ClubRegistration(models.Model):
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
     canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
-    discount        = PriceField(_('discount'), blank=True, default=0)
+    discount        = PriceField(_('discount'), default=0)
     explanation     = models.TextField(_('discount explanation'), blank=True, default='')
 
     class Meta:
