@@ -22,6 +22,7 @@ Vytvoření projektu:
 ```shell
 django-admin startproject myddm --template=https://github.com/leprikon-cz/project_template/archive/master.zip
 cd myddm
+chmod +x manage.py
 ```
 
 Inicializace databáze:
