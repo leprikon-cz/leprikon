@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from json import dumps
 
@@ -24,6 +25,7 @@ class EventFilterForm(FormMixin, forms.Form):
     leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    past        = forms.BooleanField(label=_('Include past'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
     def __init__(self, request, event_type, *args, **kwargs):
@@ -54,6 +56,8 @@ class EventFilterForm(FormMixin, forms.Form):
             qs = qs.filter(leaders__in = self.cleaned_data['leader'])
         if self.cleaned_data['age_group']:
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
+        if not self.cleaned_data['past']:
+            qs = qs.filter(end_date__gte = now())
         if request.user.is_staff and not self.cleaned_data['invisible']:
             qs = qs.filter(public=True)
         return qs
