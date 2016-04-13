@@ -36,8 +36,8 @@ from .utils import PaymentStatus
 
 @python_2_unicode_compatible
 class EventType(models.Model):
-    slug        = models.SlugField()
     name        = models.CharField(_('name'), max_length=150)
+    slug        = models.SlugField()
     order       = models.IntegerField(_('order'), blank=True, default=0)
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                     blank=True,

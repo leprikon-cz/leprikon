@@ -28,6 +28,7 @@ class EventTypeAttachmentInlineAdmin(admin.TabularInline):
 class EventTypeAdmin(admin.ModelAdmin):
     list_display    = ('name', 'order')
     list_editable   = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
     inlines         = (
         EventTypeAttachmentInlineAdmin,
     )
