@@ -36,8 +36,8 @@ class EventTypeAdmin(admin.ModelAdmin):
 
 
 class EventGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'order')
-    list_editable   = ('order',)
+    list_display    = ('name', 'color','order')
+    list_editable   = ('color', 'order')
 
 
 

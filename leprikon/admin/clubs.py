@@ -25,8 +25,8 @@ from .filters import SchoolYearListFilter, ClubListFilter, LeaderListFilter
 
 
 class ClubGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'order')
-    list_editable   = ('order',)
+    list_display    = ('name', 'color','order')
+    list_editable   = ('color', 'order')
 
 
 
