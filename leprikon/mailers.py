@@ -6,12 +6,11 @@ from .templatemailer import TemplateMailer
 
 
 class RegistrationMailer(TemplateMailer):
-    def send_mail(self, registration, **kwargs):
+    def send_mail(self, registration):
         super(RegistrationMailer, self).send_mail(
             recipient_list  = registration.all_recipients,
             object          = registration,
             site            = Site.objects.get_current(),
-            **kwargs
         )
 
 
@@ -23,4 +22,17 @@ class ClubRegistrationMailer(RegistrationMailer):
 
 class EventRegistrationMailer(RegistrationMailer):
     template_name   = 'leprikon/eventregistration_mail.txt'
+
+
+
+class MessageMailer(TemplateMailer):
+    template_name       = 'leprikon/message_mail.txt'
+    html_template_name  = 'leprikon/message_mail.html'
+
+    def send_mail(self, message_recipient):
+        super(MessageMailer, self).send_mail(
+            recipient_list      = ['{} <{}>'.format(message_recipient.recipient.get_full_name(), message_recipient.recipient.email)],
+            message_recipient   = message_recipient,
+            site                = Site.objects.get_current(),
+        )
 

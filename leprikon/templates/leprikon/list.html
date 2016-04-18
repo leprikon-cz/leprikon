@@ -38,11 +38,13 @@
 
 {% include 'leprikon/pagination.html' %}
 
+{% block list %}
 {% for object in object_list %}
 {% include preview_template %}
 {% empty %}
 <p>{{ message_empty }}</p>
 {% endfor %}
+{% endblock %}
 
 {% include 'leprikon/pagination.html' %}
 

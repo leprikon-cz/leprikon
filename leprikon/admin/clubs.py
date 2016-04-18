@@ -5,8 +5,10 @@ from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.encoding import smart_text
@@ -66,7 +68,7 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
-        'merge',
+        'merge', 'send_message',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -157,6 +159,16 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
         }, context_instance=RequestContext(request))
     merge.short_description = _('Merge selected clubs into one')
 
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_participants__club_registrations__club__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
+
     def get_registrations_link(self, obj):
         icon = False
         if obj.registrations_count == 0:
@@ -232,7 +244,7 @@ class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         ('club',                ClubListFilter),
         ('club__leaders',       LeaderListFilter),
     )
-    actions         = ('send_mail',)
+    actions         = ('send_mail', 'send_message')
     search_fields   = (
         'participant__first_name', 'participant__last_name',
         'participant__birth_num', 'participant__email',
@@ -368,6 +380,16 @@ class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
                     ),
                 )
     send_mail.short_description = _('Send selected registrations by email')
+
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_participants__club_registrations__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
 
 
 

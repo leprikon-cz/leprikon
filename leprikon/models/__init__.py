@@ -17,4 +17,5 @@ from .events import (
     LeprikonEventListPlugin, LeprikonFilteredEventListPlugin,
 )
 from .timesheets import Timesheet, TimesheetPeriod, TimesheetEntry, TimesheetEntryType
+from .messages import Message, MessageRecipient
 

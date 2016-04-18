@@ -1,0 +1,12 @@
+{% extends 'leprikon/list.html' %}
+{% load i18n leprikon_tags %}
+
+{% block list %}
+
+{% if object_list.count %}
+{% include 'leprikon/messages_table.html' %}
+{% else %}
+<p>{{ message_empty }}</p>
+{% endif %}
+
+{% endblock %}

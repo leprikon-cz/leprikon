@@ -1,0 +1,19 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n sekizai_tags %}
+
+{% block content %}
+
+<a class="btn btn-sm btn-default" href="{{ back_url }}">{{ back_label }}</a>
+
+<h1>{% block title %}{{ messagerecipient.message.subject }}{% endblock %}</h1>
+
+<div class="message-details">
+    {% trans 'Sent' %}: {{ messagerecipient.sent }}<br />
+    {% trans 'Received' %}: {{ messagerecipient.received }}
+</div>
+
+<div class="message-text">
+{{ messagerecipient.message.text | safe }}
+</div>
+
+{% endblock %}

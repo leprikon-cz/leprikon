@@ -1,0 +1,9 @@
+{% load i18n %}
+{{ message_recipient.message.subject }}
+{{ message_recipient.message.text | striptags }}
+
+~ ~ ~
+
+{% blocktrans with name=site.name %}Show this message on site {{ name }}:{% endblocktrans %}
+http://{{ site.domain }}{{ message_recipient.get_absolute_url }}
+

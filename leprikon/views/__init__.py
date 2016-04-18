@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import available_attrs
+from django.views.decorators.csrf import csrf_exempt
 from functools import wraps
 
 from ..conf import settings
@@ -13,6 +14,7 @@ from .parents import *
 from .clubs import *
 from .events import *
 from .leaders import *
+from .messages import *
 from .timesheets import *
 from .schoolyear import *
 from .support import *
@@ -91,6 +93,9 @@ event_registration_form         = lr(EventRegistrationFormView.as_view())
 event_registration_confirm      = lr(EventRegistrationConfirmView.as_view())
 event_registration_pdf          = lr(EventRegistrationPdfView.as_view())
 event_registration_cancel       = lr(EventRegistrationCancelView.as_view())
+
+message_list                    = lr(MessageListView.as_view())
+message_detail                  = csrf_exempt(MessageDetailView.as_view())
 
 leader_list                     = LeaderListView.as_view()
 

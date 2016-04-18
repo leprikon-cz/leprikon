@@ -185,3 +185,24 @@ input.form-control[type="checkbox"] {
   vertical-align: middle;
 }
 
+tr.message.notread {
+    font-weight: bold;
+}
+
+td.message-subject a {
+    display: block;
+    padding: 3px;
+}
+
+.message-details {
+    float: right;
+    text-align: right;
+    margin-left:   30px;
+    margin-bottom: 30px;
+}
+
+.message-text {
+    font-size: 120%;
+    padding:   15px;
+}
+

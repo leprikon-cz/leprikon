@@ -84,23 +84,16 @@ class FilteredListView(ListView):
 
 
 
-class FormViewMixin(GenericViewMixin):
-    template_name = 'leprikon/form.html'
+class BackViewMixin(object):
     back_url = reverse('leprikon:summary')
     back_label = _('Back')
-    submit_label = _('Save')
-    success_url = reverse('leprikon:summary')
 
     def get_context_data(self, *args, **kwargs):
-        return super(FormViewMixin, self).get_context_data(*args,
-            submit_label    = self.get_submit_label(),
+        return super(BackViewMixin, self).get_context_data(*args,
             back_url        = self.get_back_url(),
             back_label      = self.get_back_label(),
             **kwargs
         )
-
-    def get_submit_label(self):
-        return self.submit_label
 
     def get_back_label(self):
         return self.back_label
@@ -112,6 +105,22 @@ class FormViewMixin(GenericViewMixin):
             return url
         else:
             return self.back_url
+
+
+
+class FormViewMixin(BackViewMixin, GenericViewMixin):
+    template_name = 'leprikon/form.html'
+    submit_label = _('Save')
+    success_url = reverse('leprikon:summary')
+
+    def get_context_data(self, *args, **kwargs):
+        return super(FormViewMixin, self).get_context_data(*args,
+            submit_label    = self.get_submit_label(),
+            **kwargs
+        )
+
+    def get_submit_label(self):
+        return self.submit_label
 
     def get_success_url(self):
         return self.get_back_url()

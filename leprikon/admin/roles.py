@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.encoding import smart_text
@@ -22,7 +23,7 @@ class LeaderAdmin(admin.ModelAdmin):
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
     list_display        = ('id', 'user_link', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts')
     ordering            = ('user__first_name', 'user__last_name')
-    actions             = ('add_current_school_year',)
+    actions             = ('add_current_school_year', 'send_message')
     list_filter         = (('school_years', SchoolYearListFilter),)
     raw_id_fields       = ('user',)
 
@@ -85,6 +86,16 @@ class LeaderAdmin(admin.ModelAdmin):
     events_link.allow_tags = True
     events_link.short_description = _('events')
 
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_leader__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
+
 
 
 class ParentAdmin(admin.ModelAdmin):
@@ -92,6 +103,7 @@ class ParentAdmin(admin.ModelAdmin):
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
     list_display    = ('id', 'user_link', 'first_name', 'last_name', 'address', 'email', 'phone', 'participants_link')
     raw_id_fields   = ('user',)
+    actions         = ('send_message',)
 
     def first_name(self, obj):
         return obj.user.first_name
@@ -133,6 +145,16 @@ class ParentAdmin(admin.ModelAdmin):
     participants_link.allow_tags = True
     participants_link.short_description = _('participants')
 
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_parents__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
+
 
 
 class ParticipantAdmin(admin.ModelAdmin):
@@ -142,6 +164,7 @@ class ParticipantAdmin(admin.ModelAdmin):
                        'registrations_links', 'parents_link')
     filter_horizontal = ('parents',)
     raw_id_fields   = ('user',)
+    actions         = ('send_message',)
 
     def user_link(self, obj):
         return '<a href="{url}">{user}</a>'.format(
@@ -191,4 +214,14 @@ class ParticipantAdmin(admin.ModelAdmin):
     def school_name(self, obj):
         return obj.school_name
     school_name.short_description = _('school')
+
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_participants__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
 

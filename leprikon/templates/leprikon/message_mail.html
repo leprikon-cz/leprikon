@@ -1,0 +1,11 @@
+{% load i18n %}
+{{ message_recipient.message.text | safe }}
+
+<hr>
+
+<p>
+    {% blocktrans with name=site.name %}Show this message on site {{ name }}:{% endblocktrans %}<br/>
+    <a href="http://{{ site.domain }}{{ message_recipient.get_absolute_url }}">
+        http://{{ site.domain }}{{ message_recipient.get_absolute_url }}
+    </a>
+</p>

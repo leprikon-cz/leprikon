@@ -17,6 +17,11 @@
 </p>
 {% endif %}
 
+{% if new_messages.count %}
+<h2>{% trans 'New messages' %}</h2>
+{% include 'leprikon/messages_table.html' with object_list=new_messages %}
+{% endif %}
+
 {% if timesheets.count %}
 <h2>{% trans 'Timesheets to be submitted' %}</h2>
 {% for object in timesheets %}

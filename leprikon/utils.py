@@ -18,14 +18,6 @@ except ImportError:
 
 
 
-def get_mailer(name):
-    return import_string(getattr(settings,
-        'LEPRIKON_{}_MAILER'.format(name.upper()),
-        'leprikon.mailers.{}Mailer'.format(name),
-    ))
-
-
-
 class LocaleConv:
     def __init__(self, languages):
         """

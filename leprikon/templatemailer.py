@@ -21,16 +21,18 @@ class Context(_Context):
 
 class TemplateMailer(object):
 
-    template        = None
-    template_name   = None
-    from_email      = settings.SERVER_EMAIL
-    recipient_list  = None
-    auth_user       = None
-    auth_password   = None
-    connection      = None
-    fail_silently   = False
-    context         = None
-    context_class   = Context
+    template            = None
+    template_name       = None
+    html_template       = None
+    html_template_name  = None
+    from_email          = settings.SERVER_EMAIL
+    recipient_list      = None
+    auth_user           = None
+    auth_password       = None
+    connection          = None
+    fail_silently       = False
+    context             = None
+    context_class       = Context
 
     def __init__(self, **kwargs):
         for name in kwargs:
@@ -39,6 +41,8 @@ class TemplateMailer(object):
         self.kwargs = kwargs
         if not self.template:
             self.template = self.get_template()
+        if not self.html_template:
+            self.html_template = self.get_html_template()
         if not self.context:
             self.context = self.context_class(kwargs)
         if not self.connection:
@@ -51,6 +55,9 @@ class TemplateMailer(object):
     def get_template(self):
         return get_template(self.template_name)
 
+    def get_html_template(self):
+        return self.html_template_name and get_template(self.html_template_name)
+
     def get_context(self, dictionary):
         context = self.context_class(**self.kwargs)
         context.update(dictionary)
@@ -58,17 +65,21 @@ class TemplateMailer(object):
 
     def send_mail(self, from_email=None, recipient_list=None, **kwargs):
         with self.context.update(kwargs):
-            content = self.template.render(self.context).split('\n', 1)
+            content = self.template.render(self.context).strip().split('\n', 1)
+            html_message = self.html_template and self.html_template.render(self.context)
         subject = content[0]
         try:
             message = content[1]
         except:
             message = ''
+        def xsend_mail(**kwargs):
+            raise Exception(kwargs)
         send_mail(
             subject         = subject,
             message         = message,
             from_email      = from_email      or self.from_email,
             recipient_list  = recipient_list  or self.recipient_list,
             connection      = self.connection,
+            html_message    = html_message
         )
 

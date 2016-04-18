@@ -16,7 +16,7 @@ from ..forms.user import UserAdminCreateForm
 
 
 class UserAdmin(_UserAdmin):
-    actions = ('merge',)
+    actions = ('merge', 'send_message')
     add_form = UserAdminCreateForm
     add_fieldsets = (
         (None, {
@@ -107,4 +107,11 @@ class UserAdmin(_UserAdmin):
         )
     participants_link.allow_tags = True
     participants_link.short_description = _('participants')
+
+    def send_message(self, request, queryset):
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in queryset.all()),
+        ))
+    send_message.short_description = _('Send message')
 

@@ -1,0 +1,22 @@
+{% load i18n leprikon_tags %}
+
+<table class="table table-hover messages">
+<thead>
+    <tr>
+        <th>{% trans 'Subject' %}</th>
+        <th>{% trans 'Date' %}</th>
+    </tr>
+</thead>
+<tbody>
+    {% for object in object_list %}
+    <tr class="message {% if not object.received %}not{% endif %}read">
+        <td class="message-subject">
+            <a href="{% url_with_back 'leprikon:message_detail' object.slug %}">{{ object.message.subject }}</a>
+        </td>
+        <td class="message-date">
+            {{ object.sent }}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>

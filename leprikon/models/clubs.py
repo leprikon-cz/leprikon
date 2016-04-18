@@ -19,7 +19,8 @@ from filer.fields.image import FilerImageField
 from json import loads
 
 from ..conf import settings
-from ..utils import get_mailer, currency, comma_separated
+from ..mailers import ClubRegistrationMailer
+from ..utils import currency, comma_separated
 
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .fields import ColorField, BirthNumberField, PostalCodeField, PriceField
@@ -450,7 +451,7 @@ class ClubRegistration(models.Model):
         return reverse('leprikon:club_registration_pdf', kwargs={'slug':self.slug})
 
     def send_mail(self):
-        get_mailer('ClubRegistration')().send_mail(self)
+        ClubRegistrationMailer().send_mail(self)
 
     def save(self, *args, **kwargs):
         if not self.slug:

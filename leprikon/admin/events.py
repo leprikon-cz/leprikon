@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
 from django.http import HttpResponseRedirect
@@ -67,6 +68,7 @@ class EventAdmin(AdminExportMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
+        'send_message',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -105,6 +107,16 @@ class EventAdmin(AdminExportMixin, admin.ModelAdmin):
         Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = False)
         self.message_user(request, _('Registration was disallowed for selected events.'))
     disallow_registration.short_description = _('Disallow registration for selected events')
+
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_participants__event_registrations__event__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
 
     def get_registrations_link(self, obj):
         icon = False
@@ -160,7 +172,7 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         ('event',               EventListFilter),
         ('event__leaders',      LeaderListFilter),
     )
-    actions         = ('send_mail',)
+    actions         = ('send_mail', 'send_message')
     search_fields   = (
         'participant__first_name', 'participant__last_name',
         'participant__birth_num', 'participant__email',
@@ -273,6 +285,16 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
                     ),
                 )
     send_mail.short_description = _('Send selected registrations by email')
+
+    def send_message(self, request, queryset):
+        users = get_user_model().objects.filter(
+            leprikon_participants__event_registrations__in = queryset
+        ).distinct()
+        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
+            url         = reverse('admin:leprikon_message_add'),
+            recipients  = ','.join(str(u.id) for u in users),
+        ))
+    send_message.short_description = _('Send message')
 
 
 

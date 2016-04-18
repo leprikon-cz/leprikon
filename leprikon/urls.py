@@ -63,6 +63,9 @@ urlpatterns = [
 
     d_url(r'^{leaders}/$',                                          'leader_list'),
 
+    d_url(r'^{messages}/$',                                         'message_list'),
+    d_url(r'^{messages}/(?P<slug>[^.]+)/$',                         'message_detail'),
+
     d_url(r'^{timesheets}/$',                                       'timesheet_list'),
     d_url(r'^{timesheets}/(?P<pk>[0-9]+)/$',                        'timesheet_detail'),
     d_url(r'^{timesheets}/(?P<pk>[0-9]+)/{submit}/$',               'timesheet_submit'),

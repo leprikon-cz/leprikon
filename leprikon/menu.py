@@ -46,6 +46,12 @@ class LeprikonMenu(CMSAttachMenu):
             attr={'visible_for_anonymous': False},
         ))
         nodes.append(NavigationNode(
+            _('Messages'),
+            reverse('leprikon:message_list'),
+            len(nodes),
+            attr={'visible_for_anonymous': False},
+        ))
+        nodes.append(NavigationNode(
             _('Registrations'),
             reverse('leprikon:registrations'),
             len(nodes),
