@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='Message',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sent', models.DateTimeField(auto_now_add=True)),
+                ('sent', models.DateTimeField(auto_now_add=True, verbose_name='sent')),
                 ('subject', models.CharField(max_length=150, verbose_name='subject')),
                 ('text', djangocms_text_ckeditor.fields.HTMLField(default='', verbose_name='text')),
             ],
@@ -35,10 +35,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('slug', models.SlugField(editable=False)),
-                ('sent', models.DateTimeField(auto_now_add=True)),
-                ('received', models.DateTimeField(default=None, null=True)),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipients', to='leprikon.Message')),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_messages', to=settings.AUTH_USER_MODEL)),
+                ('sent', models.DateTimeField(auto_now_add=True, verbose_name='sent')),
+                ('received', models.DateTimeField(default=None, null=True, verbose_name='received')),
+                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipients', to='leprikon.Message', verbose_name='message')),
+                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_messages', to=settings.AUTH_USER_MODEL, verbose_name='recipient')),
             ],
             options={
                 'ordering': ('-message__sent',),
