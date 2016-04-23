@@ -17,8 +17,8 @@
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
     {% for ro in form.readonly_fields %}
-    <div class="form-group">
-        <label class="control-label col-md-3">{{ ro.label }}:</label>
+    <div class="form-group required">
+        <label class="control-label col-md-3">{{ ro.label }}</label>
         <div class="col-md-9">
             <div class="form-control">{{ ro.value }}</div>
         </div>
