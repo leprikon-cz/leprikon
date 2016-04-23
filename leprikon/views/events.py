@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic.base import RedirectView
+from django.views.generic.detail import SingleObjectMixin
 
 from ..forms.events import EventForm, EventFilterForm, EventRegistrationForm, EventRegistrationPublicForm
 from ..models import Event, EventType, EventRegistration, Participant
@@ -70,7 +72,26 @@ class EventDetailView(DetailView):
         qs = super(EventDetailView, self).get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(public=True)
+        return qs.filter(event_type__slug=self.kwargs['event_type'])
+
+
+
+class EventDetailRedirectView(RedirectView, SingleObjectMixin):
+    model   = Event
+
+    def get_queryset(self):
+        qs = super(EventDetailRedirectView, self).get_queryset()
+        if not self.request.user.is_staff:
+            qs = qs.filter(public=True)
         return qs
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = self.get_object().get_absolute_url()
+
+        args = self.request.META.get('QUERY_STRING', '')
+        if args and self.query_string:
+            url = "%s?%s" % (url, args)
+        return url
 
 
 
@@ -120,7 +141,7 @@ class EventRegistrationPublicFormView(CreateView):
             event_kwargs['public'] = True
         self.event = get_object_or_404(Event, **event_kwargs)
         if self.request.user.is_authenticated() and not self.request.toolbar.use_draft:
-            return HttpResponseRedirect(reverse('leprikon:event_detail', args=(self.event.id, )))
+            return HttpResponseRedirect(reverse('leprikon:event_detail', args=(self.event.event_type.slug, self.event.id)))
         return super(EventRegistrationPublicFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):

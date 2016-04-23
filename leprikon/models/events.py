@@ -183,7 +183,7 @@ class Event(models.Model):
         return list(self.registrations.all())
 
     def get_absolute_url(self):
-        return reverse('leprikon:event_detail', args=(self.id,))
+        return reverse('leprikon:event_detail', args=(self.event_type.slug, self.id))
 
     def get_public_registration_url(self):
         return reverse('leprikon:event_registration_public', args=(self.id,))

@@ -52,7 +52,8 @@ urlpatterns = [
 
     url(  r'^{events}/$'.format(**LEPRIKON_URL), RedirectView.as_view(url='../', permanent=True)),
     d_url(r'^{events}/{mine}/$',                                    'event_list_mine'),
-    d_url(r'^{events}/(?P<pk>[0-9]+)/$',                            'event_detail'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/$',      'event_detail'),
+    d_url(r'^{events}/(?P<pk>[0-9]+)/$',                            'event_detail_redirect'),
     d_url(r'^{events}/(?P<event_type>[^/]+)/$',                     'event_list'),
     d_url(r'^{events}/(?P<pk>[0-9]+)/{participants}/$',             'event_participants'),
     d_url(r'^{events}/(?P<pk>[0-9]+)/{edit}/$',                     'event_update'),
