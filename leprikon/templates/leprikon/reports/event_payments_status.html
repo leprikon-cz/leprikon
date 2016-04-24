@@ -12,8 +12,8 @@
 <table class="table table-hover">
     <tr>
         <th>{% trans 'Event' %}</th>
-        <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Price' %}</th>
+        <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Discount' %}</th>
         <th>{% trans 'Received payments' %}</th>
         <th>{% trans 'Total receivables' %}</th>
@@ -26,8 +26,8 @@
     <tr id="report-{{ report.event.id }}">
     {% endif %}
         <th>{{ report.event.name }}</th>
-        <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.event.price | currency }}</td>
+        <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
         <td class="right">{{ report.status.paid | currency }}</td>
         <td class="right">{{ report.status.price | currency }}</td>
@@ -67,18 +67,12 @@
         <th>{% trans 'All events' %}</th>
         <td></td>
         <td class="right">{{ sum.registrations }}</td>
-        <td class="right">{{ sum.discount | currency }}</td>
-        <td class="right">{{ sum.partial.price | currency }}</td>
-        <td class="right">{{ sum.total.price | currency }}</td>
-        <td class="right">{{ sum.total.paid | currency }}</td>
+        <td class="right">{{ sum.status.discount | currency }}</td>
+        <td class="right">{{ sum.status.paid | currency }}</td>
+        <td class="right">{{ sum.status.price | currency }}</td>
         <td class="right">
-            <strong style="color: {{ sum.partial.color }}" title="{{ sum.partial.title }}">
-                {{ sum.partial.balance | currency }}
-            </strong>
-        </td>
-        <td class="right">
-            <strong style="color: {{ sum.total.color }}" title="{{ sum.total.title }}">
-                {{ sum.total.balance | currency }}
+            <strong style="color: {{ sum.status.color }}" title="{{ sum.status.title }}">
+                {{ sum.status.balance | currency }}
             </strong>
         </td>
     </tr>

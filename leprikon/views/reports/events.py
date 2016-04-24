@@ -11,10 +11,10 @@ from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...models import EventPayment
 from ...models.utils import PaymentStatus
 
-from ..generic import FormView
+from . import ReportBaseView
 
 
-class ReportEventPaymentsView(FormView):
+class ReportEventPaymentsView(ReportBaseView):
     form_class      = EventPaymentsForm
     template_name   = 'leprikon/reports/event_payments.html'
     title           = _('Event payments')
@@ -33,9 +33,9 @@ class ReportEventPaymentsView(FormView):
 
 
 
-class ReportEventPaymentsStatusView(FormView):
+class ReportEventPaymentsStatusView(ReportBaseView):
     form_class      = EventPaymentsStatusForm
-    template_name   = 'leprikon/reports/event_payments.html'
+    template_name   = 'leprikon/reports/event_payments_status.html'
     title           = _('Event payments status')
     submit_label    = _('Show')
     back_url        = reverse('leprikon:reports')
@@ -53,7 +53,7 @@ class ReportEventPaymentsStatusView(FormView):
             registrations   = sum(len(r.registrations)  for r in context['reports']),
             status          = sum(r.status              for r in context['reports']),
         )
-        return TemplateResponse(self.request, 'leprikon/reports/event_payments.html', self.get_context_data(**context))
+        return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
     class Report:
         def __init__(self, event, d):
@@ -69,7 +69,7 @@ class ReportEventPaymentsStatusView(FormView):
         RegPaymentStatus = namedtuple('RegPaymentStatus', ('registration', 'status'))
 
         @cached_property
-        def registration_status(self):
+        def registration_statuses(self):
             return [
                 self.RegPaymentStatus(
                     registration = registration,
@@ -81,8 +81,8 @@ class ReportEventPaymentsStatusView(FormView):
         @cached_property
         def status(self):
             return PaymentStatus(
-                price       = sum(rs.status.price    for rs in self.registration_status),
-                paid        = sum(rs.status.paid     for rs in self.registration_status),
-                discount    = sum(rs.status.discount for rs in self.registration_status),
+                price       = sum(rs.status.price    for rs in self.registration_statuses),
+                paid        = sum(rs.status.paid     for rs in self.registration_statuses),
+                discount    = sum(rs.status.discount for rs in self.registration_statuses),
             )
 

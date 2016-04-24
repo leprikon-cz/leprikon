@@ -12,8 +12,8 @@
 <table class="table table-hover">
     <tr>
         <th>{% trans 'Club' %}</th>
-        <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Price' %}</th>
+        <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Discount' %}</th>
         <th>{% trans 'Received payments' %}</th>
         <th>{% trans 'Partial receivables' %}</th>
@@ -28,8 +28,8 @@
     <tr id="report-{{ report.club.id }}">
     {% endif %}
         <th>{{ report.club.name }}</th>
-        <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.club.price | currency }}</td>
+        <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.total.discount | currency }}</td>
         <td class="right">{{ report.total.paid | currency }}</td>
         <td class="right">{{ report.partial.price | currency }}</td>
@@ -81,15 +81,15 @@
         <th>{% trans 'All clubs' %}</th>
         <td></td>
         <td class="right">{{ sum.registrations }}</td>
-        <td class="right">{{ sum.discount | currency }}</td>
-        <td class="right">{{ sum.partial.price | currency }}</td>
-        <td class="right">{{ sum.total.price | currency }}</td>
+        <td class="right">{{ sum.total.discount | currency }}</td>
         <td class="right">{{ sum.total.paid | currency }}</td>
+        <td class="right">{{ sum.partial.price | currency }}</td>
         <td class="right">
             <strong style="color: {{ sum.partial.color }}" title="{{ sum.partial.title }}">
                 {{ sum.partial.balance | currency }}
             </strong>
         </td>
+        <td class="right">{{ sum.total.price | currency }}</td>
         <td class="right">
             <strong style="color: {{ sum.total.color }}" title="{{ sum.total.title }}">
                 {{ sum.total.balance | currency }}

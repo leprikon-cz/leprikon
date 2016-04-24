@@ -10,10 +10,10 @@ from django.utils.translation import ugettext_lazy as _
 from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm
 from ...models import ClubPayment
 
-from ..generic import FormView
+from . import ReportBaseView
 
 
-class ReportClubPaymentsView(FormView):
+class ReportClubPaymentsView(ReportBaseView):
     form_class      = ClubPaymentsForm
     template_name   = 'leprikon/reports/club_payments.html'
     title           = _('Club payments')
@@ -32,7 +32,7 @@ class ReportClubPaymentsView(FormView):
 
 
 
-class ReportClubPaymentsStatusView(FormView):
+class ReportClubPaymentsStatusView(ReportBaseView):
     form_class      = ClubPaymentsStatusForm
     template_name   = 'leprikon/reports/club_payments_status.html'
     title           = _('Club payments status')
