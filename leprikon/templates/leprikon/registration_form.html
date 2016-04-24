@@ -1,5 +1,5 @@
 {% extends 'leprikon/base.html' %}
-{% load i18n cms_tags %}
+{% load i18n cms_tags sekizai_tags %}
 
 {% block content %}
 
@@ -26,26 +26,49 @@
     {% endfor %}
 
     <h3>{% trans 'Participant' %}</h3>
+    {% if form.participant_select_form.all_participants %}
+        {% for item in form.participant_select_form %}
+            {% include 'leprikon/form_item.html' %}
+        {% endfor %}
 
+        <div id="registration_partial_form" class="{% if not form.participant_select_form.participant.data or form.participant_select_form.participant.data == 'new' %}hidden{% endif %}">
+        {% for item in form.registration_partial_form %}
+            {% include 'leprikon/form_item.html' %}
+        {% endfor %}
+        </div>
+    {% else %}
+        <input name="participant_select-participant" value="new" type="hidden"/>
+    {% endif %}
+
+    <div id="participant_form" class="{% if form.participant_select_form.all_participants and form.participant_select_form.participant.data != 'new' %}hidden{% endif %}">
     {% for item in form.participant_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
+    </div>
 
     {% for item in form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
 
-    <h3>{% trans 'Parent' %}</h3>
+    <h3>{% trans 'Parents' %}</h3>
 
-    {% for item in form.parent_form %}
+    {% for item in form.parent_select_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
 
+    <div id="parent_form" class="{% if 'new' in form.parent_select_form.parents.data %}{% else %}hidden{% endif %}">
+    {% for item in form.parent_form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+    </div>
+
+    {% if not request.user.is_authenticated %}
     <h3>{% trans 'User' %}</h3>
 
     {% for item in form.user_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
+    {% endif %}
 
     <!-- SUBMIT -->
     <div class="form-group">
@@ -57,5 +80,42 @@
         </div>
     </div>
 </form>
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+    /* Select participant */
+    $('input[type=radio][name=participant_select-participant]').change(function() {
+        if (this.value == 'new') {
+            $('#participant_form').removeClass('hidden');
+            $('#registration_partial_form').addClass('hidden');
+        }
+        {% for participant in form.participant_select_form.all_participants.values %}
+        else if (this.value == {{ participant.id }}) {
+            $('#participant_form').addClass('hidden');
+            $('#registration_partial_form').removeClass('hidden');
+            $('#id_registration_partial-age_group').val('{{ participant.age_group_id }}')
+            $('#id_registration_partial-citizenship').val('{{ participant.citizenship | escapejs }}')
+            $('#id_registration_partial-insurance').val('{{ participant.insurance | escapejs }}')
+            $('#id_registration_partial-school').val('{{ participant.school_id }}')
+            $('#id_registration_partial-school_other').val('{{ participant.school_other | escapejs }}')
+            $('#id_registration_partial-school_class').val('{{ participant.school_class | escapejs }}')
+            $('#id_registration_partial-health').val('{{ participant.health | escapejs }}')
+        }
+        {% endfor %}
+    });
+    /* Select parent */
+    $('input[type=checkbox][name=parent_select-parents][value=new]').change(function() {
+        if (this.checked) {
+            $('#parent_form').removeClass('hidden');
+        } else {
+            $('#parent_form').addClass('hidden');
+        }
+    });
+});
+
+</script>
+{% endaddtoblock %}
 
 {% endblock %}

@@ -55,6 +55,7 @@
                     <ul class="dropdown-menu" aria-labelledby="user_menu">
                         <li><a href="{% url_with_back 'leprikon:user_update' %}">{% trans 'Edit' %}</a></li>
                         <li><a href="{% url_with_back 'leprikon:user_password' %}">{% trans 'Change password' %}</a></li>
+                        <li><a href="{% url_with_back 'leprikon:user_logout' %}">{% trans 'Log out' %}</a></li>
                     </ul>
                 </div>
                 {% endif %}

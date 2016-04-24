@@ -55,13 +55,5 @@
                 {{ object.health | linebreaks }}
             </div>
         </div>
-        {% if object.all_parents %}
-        <div class="row">
-            <label class="col-sm-4">{% trans 'Parents' %}:</label>
-            <div class="col-sm-8">
-                {{ object.all_parents | comma_separated }}
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>

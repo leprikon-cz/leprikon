@@ -1,17 +1,11 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
-from datetime import datetime, timedelta
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.utils import formats, timezone
-from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
-from json import dumps
+from django.utils import formats
+from django.utils.translation import ugettext_lazy as _
 
-from ..forms.widgets import CheckboxSelectMultipleBootstrap
 from ..models import TimesheetEntry
-from ..models.fields import DAY_OF_WEEK
-from ..utils import comma_separated
 
 from .fields import ReadonlyField
 from .form import FormMixin

@@ -2,10 +2,9 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 
 import calendar
 from collections import namedtuple
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
-from django.db.models import Q
 from django.utils.dateformat import DateFormat
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property

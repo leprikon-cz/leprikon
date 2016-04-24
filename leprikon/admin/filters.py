@@ -1,8 +1,6 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
 
 from ..models import SchoolYear, Club, Event, Leader
 

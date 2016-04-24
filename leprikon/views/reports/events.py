@@ -7,7 +7,6 @@ from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ...conf import settings
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...models import EventPayment
 from ...models.utils import PaymentStatus

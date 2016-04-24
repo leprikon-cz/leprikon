@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.views.generic.base import RedirectView
 
 from . import views
@@ -40,8 +40,7 @@ urlpatterns = [
     d_url(r'^{clubs}/(?P<pk>[0-9]+)/{participants}/$',              'club_participants'),
     d_url(r'^{clubs}/(?P<pk>[0-9]+)/{journal}/$',                   'club_journal'),
     d_url(r'^{clubs}/(?P<pk>[0-9]+)/{edit}/$',                      'club_update'),
-    d_url(r'^{clubs}/(?P<club>[0-9]+)/{registration}/$',            'club_registration_public'),
-    d_url(r'^{clubs}/(?P<club>[0-9]+)/(?P<participant>[0-9]+)/$',   'club_registration_form'),
+    d_url(r'^{clubs}/(?P<pk>[0-9]+)/{registration}/$',              'club_registration_form'),
     d_url(r'^{clubs}/{registration}/(?P<slug>[^.]+).pdf$',          'club_registration_pdf'),
     d_url(r'^{clubs}/{registration}/(?P<pk>[0-9]+)/{cancel}/$',     'club_registration_cancel'),
     d_url(r'^{clubs}/{journal}/{entry}/{add}/(?P<club>[0-9]+)/$',   'clubjournalentry_create'),
@@ -51,16 +50,16 @@ urlpatterns = [
     d_url(r'^{timesheets}/{journal}/{entry}/(?P<pk>[0-9]+)/{delete}/$',  'clubjournalleaderentry_delete'),
 
     url(  r'^{events}/$'.format(**LEPRIKON_URL), RedirectView.as_view(url='../', permanent=True)),
-    d_url(r'^{events}/{mine}/$',                                    'event_list_mine'),
-    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/$',      'event_detail'),
-    d_url(r'^{events}/(?P<pk>[0-9]+)/$',                            'event_detail_redirect'),
-    d_url(r'^{events}/(?P<event_type>[^/]+)/$',                     'event_list'),
-    d_url(r'^{events}/(?P<pk>[0-9]+)/{participants}/$',             'event_participants'),
-    d_url(r'^{events}/(?P<pk>[0-9]+)/{edit}/$',                     'event_update'),
-    d_url(r'^{events}/(?P<event>[0-9]+)/{registration}/$',          'event_registration_public'),
-    d_url(r'^{events}/(?P<event>[0-9]+)/(?P<participant>[0-9]+)/$', 'event_registration_form'),
-    d_url(r'^{events}/{registration}/(?P<slug>[^.]+).pdf$',         'event_registration_pdf'),
-    d_url(r'^{events}/{registration}/(?P<pk>[0-9]+)/{cancel}/$',    'event_registration_cancel'),
+    d_url(r'^{events}/{mine}/$',                                                'event_list_mine'),
+    # TODO remove event_detail_redirect
+    d_url(r'^{events}/(?P<pk>[0-9]+)/$',                                        'event_detail_redirect'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/$',                                 'event_list'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/$',                  'event_detail'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/{participants}/$',   'event_participants'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/{edit}/$',           'event_update'),
+    d_url(r'^{events}/(?P<event_type>[^/]+)/(?P<pk>[0-9]+)/{registration}/$',   'event_registration_form'),
+    d_url(r'^{events}/{registration}/(?P<slug>[^.]+).pdf$',                     'event_registration_pdf'),
+    d_url(r'^{events}/{registration}/(?P<pk>[0-9]+)/{cancel}/$',                'event_registration_cancel'),
 
     d_url(r'^{leaders}/$',                                          'leader_list'),
 

@@ -10,7 +10,7 @@
         {% endfor %}
         <small>{{ object.price | currency }}</small>
         {% if request.user.is_staff or request.leader in object.all_leaders %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:event_update' object.id %}">
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:event_update' object.event_type.slug object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}
         </a>
@@ -67,7 +67,7 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_participants' object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_participants' object.event_type.slug object.id %}">
                 {% trans 'participants' %}
                 ({{ object.registrations.count }})
             </a>

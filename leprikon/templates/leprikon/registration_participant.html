@@ -41,7 +41,7 @@
                 {{ reg.health | linebreaks }}
             </div>
         </div>
-        {% for parent in reg.participant.all_parents %}
+        {% for parent in reg.all_parents %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Parent' %}:</label>
             <div class="col-sm-8">

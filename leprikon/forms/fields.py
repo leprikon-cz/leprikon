@@ -3,9 +3,6 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from collections import namedtuple
 from django import forms
 
-from ..conf import settings
-from ..utils import import_string
-
 
 class TextField(forms.CharField):
     widget = forms.Textarea

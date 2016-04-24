@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
-from ..conf import settings
 from ..forms.participant import ParticipantForm
 from ..models import Participant
 from ..utils import reverse_with_back

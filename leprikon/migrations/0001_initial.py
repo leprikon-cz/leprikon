@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 import cms.models.fields
-from django.conf import settings
 from django.db import migrations, models
+from leprikon.conf import settings
 import django.db.models.deletion
 import djangocms_text_ckeditor.fields
 import filer.fields.file
@@ -440,7 +440,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=50, unique=True, verbose_name='name')),
                 ('question', models.CharField(max_length=50, verbose_name='question')),
                 ('help_text', models.TextField(blank=True, help_text='This is help text. The help text is shown next to the form field.', null=True, verbose_name='help text')),
-                ('field', models.CharField(choices=[('char', 'char field'), ('text', 'text field'), ('boolean', 'boolean field'), ('date', 'date field'), ('choice', 'choice field')], max_length=150, verbose_name='field')),
+                ('field', models.CharField(choices=((key, val['name']) for key, val in settings.LEPRIKON_QUESTION_FIELDS.items()), max_length=150, verbose_name='field')),
                 ('field_args', models.TextField(blank=True, default='{}', help_text='Enter valid JSON structure representing field configuration.', verbose_name='field_args')),
             ],
             options={

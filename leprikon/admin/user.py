@@ -11,7 +11,6 @@ from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import Leader, Parent, Participant
 from ..forms.user import UserAdminCreateForm
 
 

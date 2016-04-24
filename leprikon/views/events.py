@@ -1,16 +1,15 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.contrib.auth import login
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy as reverse
 from django.shortcuts import get_object_or_404
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
-from ..forms.events import EventForm, EventFilterForm, EventRegistrationForm, EventRegistrationPublicForm
-from ..models import Event, EventType, EventRegistration, Participant
+from ..forms.events import EventForm, EventFilterForm
+from ..forms.registrations import EventRegistrationForm
+from ..models import Event, EventType, EventRegistration
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, PdfView
 
@@ -96,7 +95,7 @@ class EventDetailRedirectView(RedirectView, SingleObjectMixin):
 
 
 class EventParticipantsView(DetailView):
-    model = Event
+    model   = Event
     template_name_suffix = '_participants'
 
     def get_queryset(self):
@@ -110,7 +109,7 @@ class EventParticipantsView(DetailView):
 class EventUpdateView(UpdateView):
     model       = Event
     form_class  = EventForm
-    title = _('Change event')
+    title       = _('Change event')
 
     def get_queryset(self):
         qs = super(EventUpdateView, self).get_queryset()
@@ -123,77 +122,42 @@ class EventUpdateView(UpdateView):
 
 
 
-class EventRegistrationPublicFormView(CreateView):
-    model           = EventRegistration
-    form_class      = EventRegistrationPublicForm
+class EventRegistrationFormView(CreateView):
+    back_url    = reverse('leprikon:registrations')
+    model       = EventRegistration
+    form_class  = EventRegistrationForm
     template_name   = 'leprikon/registration_form.html'
 
     def get_title(self):
         return _('Registration for event {}').format(self.event.name)
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, event_type, pk, *args, **kwargs):
         event_kwargs = {
-            'id':           int(kwargs.pop('event')),
-            'school_year':  self.request.school_year,
-            'reg_active':   True,
+            'id':               int(pk),
+            'event_type__slug': event_type,
+            'school_year':      self.request.school_year,
+            'reg_active':       True,
         }
         if not self.request.user.is_staff:
             event_kwargs['public'] = True
         self.event = get_object_or_404(Event, **event_kwargs)
-        if self.request.user.is_authenticated() and not self.request.toolbar.use_draft:
-            return HttpResponseRedirect(reverse('leprikon:event_detail', args=(self.event.event_type.slug, self.event.id)))
-        return super(EventRegistrationPublicFormView, self).dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs  = super(EventRegistrationPublicFormView, self).get_form_kwargs()
-        kwargs['event'] = self.event
-        return kwargs
-
-    def form_valid(self, form):
-        response = super(EventRegistrationPublicFormView, self).form_valid(form)
-        user = form.instance.participant.user
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(self.request, user)
-        return response
-
-    def get_message(self, form):
-        return _('The registration has been accepted.')
-
-
-
-class EventRegistrationFormView(CreateView):
-    model       = EventRegistration
-    form_class  = EventRegistrationForm
-
-    def get_title(self):
-        return _('Registration for event {}').format(self.event.name)
-
-    def dispatch(self, request, *args, **kwargs):
-        event_kwargs = {
-            'id':           int(kwargs.pop('event')),
-            'school_year':  self.request.school_year,
-            'reg_active':   True,
-        }
-        if not self.request.user.is_staff:
-            event_kwargs['public'] = True
-        self.event = get_object_or_404(Event, **event_kwargs)
-        self.participant = get_object_or_404(Participant,
-            user    = self.request.user,
-            id      = int(kwargs.pop('participant')),
-        )
-        # user may get back to this page after successful registration
-        if self.event.registrations.filter(participant=self.participant).exists():
-            return HttpResponseRedirect(reverse('leprikon:summary'))
         return super(EventRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs  = super(EventRegistrationFormView, self).get_form_kwargs()
-        kwargs['event']         = self.event
-        kwargs['participant']   = self.participant
+        kwargs['event'] = self.event
+        kwargs['user']  = self.request.user
         return kwargs
 
     def get_message(self, form):
         return _('The registration has been accepted.')
+
+    def form_valid(self, form):
+        response = super(EventRegistrationFormView, self).form_valid(form)
+        if self.request.user.is_anonymous():
+            form.user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(self.request, form.user)
+        return response
 
 
 

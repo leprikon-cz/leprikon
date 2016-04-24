@@ -30,6 +30,12 @@
             </div>
         </div>
         <div class="row">
+            <label class="col-sm-4">{% trans 'Parents' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.all_parents | comma_separated }}
+            </div>
+        </div>
+        <div class="row">
             <label class="col-sm-4">{% trans 'Date and time of registration' %}:</label>
             <div class="col-sm-8">
                 {{ reg.created }}

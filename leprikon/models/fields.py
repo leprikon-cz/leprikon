@@ -9,8 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 from localflavor.cz.forms import CZBirthNumberField, CZPostalCodeField
 
 from ..conf import settings
-from ..utils import import_string
-
 
 
 class ColorInput(forms.TextInput):

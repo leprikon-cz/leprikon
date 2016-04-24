@@ -5,7 +5,7 @@ import colorsys
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from collections import namedtuple
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -23,12 +23,12 @@ from ..mailers import ClubRegistrationMailer
 from ..utils import currency, comma_separated
 
 from .fields import DAY_OF_WEEK, DayOfWeekField
-from .fields import ColorField, BirthNumberField, PostalCodeField, PriceField
+from .fields import ColorField, PriceField
 
-from .question import Question
 from .agegroup import AgeGroup
 from .place import Place
-from .roles import Leader, Participant
+from .question import AnswersBaseModel, Question
+from .roles import Leader, Participant, Parent
 from .school import School
 from .schoolyear import SchoolYear
 from .startend import StartEndMixin
@@ -151,11 +151,8 @@ class Club(models.Model):
     def get_absolute_url(self):
         return reverse('leprikon:club_detail', args=(self.id,))
 
-    def get_public_registration_url(self):
-        return reverse('leprikon:club_registration_public', args=(self.id,))
-
-    def get_registration_url(self, participant):
-        return reverse('leprikon:club_registration_form', kwargs={'club': self.id, 'participant': participant.id})
+    def get_registration_url(self):
+        return reverse('leprikon:club_registration_form', args=(self.id,))
 
     def get_edit_url(self):
         return reverse('admin:leprikon_club_change', args=(self.id,))
@@ -331,11 +328,12 @@ class ClubAttachment(models.Model):
 
 
 @python_2_unicode_compatible
-class ClubRegistration(models.Model):
+class ClubRegistration(AnswersBaseModel):
     slug            = models.SlugField(editable=False)
     created         = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
     club            = models.ForeignKey(Club, verbose_name=_('club'), related_name='registrations')
     participant     = models.ForeignKey(Participant, verbose_name=_('participant'), related_name='club_registrations')
+    parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='club_registrations', blank=True)
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
     citizenship     = models.CharField(_('citizenship'),  max_length=50)
     insurance       = models.CharField(_('insurance'),    max_length=50)
@@ -343,7 +341,6 @@ class ClubRegistration(models.Model):
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
     health          = models.TextField(_('health'), blank=True, default='')
-    answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
     canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
     discount        = PriceField(_('discount'), default=0)
@@ -376,6 +373,10 @@ class ClubRegistration(models.Model):
             return list(self.club.periods.filter(end__gt=self.created))
 
     @cached_property
+    def all_parents(self):
+        return list(self.parents.all())
+
+    @cached_property
     def all_payments(self):
         return list(self.payments.all())
 
@@ -395,7 +396,7 @@ class ClubRegistration(models.Model):
         recipients = set()
         if self.participant.user.email:
             recipients.add(self.participant.user.email)
-        for parent in self.participant.all_parents:
+        for parent in self.all_parents:
             if parent.email:
                 recipients.add(parent.email)
         return recipients

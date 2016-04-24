@@ -11,12 +11,6 @@ from urllib import urlencode
 
 from .conf import settings
 
-try:
-    from django.utils.module_loading import import_string
-except ImportError:
-    from django.utils.module_loading import import_by_path as import_string
-
-
 
 class LocaleConv:
     def __init__(self, languages):
@@ -131,4 +125,33 @@ def url_with_back(url, url_back):
 
 def reverse_with_back(request, *args, **kwargs):
     return url_with_back(reverse(*args, **kwargs), current_url(request))
+
+
+
+def get_birth_date(birth_num):
+    birth_num = birth_num.replace('/','')
+    y = int(birth_num[:2])
+    if len(birth_num) == 9:
+        # before 1954
+        if y < 54:
+            year = 1900+y
+        else:
+            year = 1800+y
+    else:
+        year = int(date.today().year/100)*100 + y
+        if y > date.today().year%100:
+            year -= 100
+    month = int(birth_num[2:4])
+    if month > 12:
+        month -= 50
+    day = int(birth_num[4:6])
+    return date(year, month, day)
+
+def get_age(birth_date):
+    today = date.today()
+    if date(today.year, birth_date.month, birth_date.day) > today:
+        return today.year - birth_date.year - 1
+    else:
+        return today.year - birth_date.year
+
 

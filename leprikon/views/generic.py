@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy as reverse
-from django.utils.http import is_safe_url, urlsafe_base64_decode
+from django.utils.http import is_safe_url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
     ListView as _ListView,

@@ -26,7 +26,7 @@
                 Bydliště: <b>{{ object.participant.address }}</b><br/>
                 Státní občanství: <b>{{ object.citizenship }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zdravotní pojišťovna: <b>{{ object.insurance }}</b><br/>
                 E-mail účastníka: <b>{{ object.participant.email }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telefon účastníka: <b>{{ object.participant.phone }}</b><br/>
-                {% for parent in object.participant.parents.all %}
+                {% for parent in object.all_parents %}
                 Jméno a příjmení zákonného zástupce: <b>{{ parent.full_name }}</b><br/>
                 E-mail zák. zástupce: <b>{{ parent.email }}</b><br/>
                 Telefon zák. zástupce: <b>{{ parent.phone }}</b><br/>

@@ -1,14 +1,14 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.contrib.auth import login
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.core.urlresolvers import reverse_lazy as reverse
+from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.clubs import ClubForm, ClubFilterForm, ClubRegistrationForm, ClubRegistrationPublicForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm
-from ..models import Club, ClubPeriod, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, Participant
+from ..forms.clubs import ClubForm, ClubFilterForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm
+from ..forms.registrations import ClubRegistrationForm
+from ..models import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView, TemplateView, PdfView
 
@@ -82,7 +82,7 @@ class ClubParticipantsView(DetailView):
 
 
 class ClubJournalView(DetailView):
-    model = Club
+    model   = Club
     template_name_suffix = '_journal'
 
     def get_queryset(self):
@@ -96,7 +96,7 @@ class ClubJournalView(DetailView):
 class ClubUpdateView(UpdateView):
     model       = Club
     form_class  = ClubForm
-    title = _('Change club')
+    title       = _('Change club')
 
     def get_queryset(self):
         qs = super(ClubUpdateView, self).get_queryset()
@@ -217,77 +217,41 @@ class ClubJournalLeaderEntryDeleteView(DeleteView):
 
 
 
-class ClubRegistrationPublicFormView(CreateView):
-    model           = ClubRegistration
-    form_class      = ClubRegistrationPublicForm
+class ClubRegistrationFormView(CreateView):
+    back_url    = reverse('leprikon:registrations')
+    model       = ClubRegistration
+    form_class  = ClubRegistrationForm
     template_name   = 'leprikon/registration_form.html'
 
     def get_title(self):
         return _('Registration for club {}').format(self.club.name)
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, pk, *args, **kwargs):
         club_kwargs = {
-            'id':           int(kwargs.pop('club')),
+            'id':           int(pk),
             'school_year':  self.request.school_year,
             'reg_active':   True,
         }
         if not self.request.user.is_staff:
             club_kwargs['public'] = True
         self.club = get_object_or_404(Club, **club_kwargs)
-        if self.request.user.is_authenticated() and not self.request.toolbar.use_draft:
-            return HttpResponseRedirect(reverse('leprikon:club_detail', args=(self.club.id, )))
-        return super(ClubRegistrationPublicFormView, self).dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs  = super(ClubRegistrationPublicFormView, self).get_form_kwargs()
-        kwargs['club'] = self.club
-        return kwargs
-
-    def form_valid(self, form):
-        response = super(ClubRegistrationPublicFormView, self).form_valid(form)
-        user = form.instance.participant.user
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(self.request, user)
-        return response
-
-    def get_message(self, form):
-        return _('The registration has been accepted.')
-
-
-
-class ClubRegistrationFormView(CreateView):
-    model       = ClubRegistration
-    form_class  = ClubRegistrationForm
-
-    def get_title(self):
-        return _('Registration for club {}').format(self.club.name)
-
-    def dispatch(self, request, *args, **kwargs):
-        club_kwargs = {
-            'id':           int(kwargs.pop('club')),
-            'school_year':  self.request.school_year,
-            'reg_active':   True,
-        }
-        if not self.request.user.is_staff:
-            club_kwargs['public'] = True
-        self.club = get_object_or_404(Club, **club_kwargs)
-        self.participant = get_object_or_404(Participant,
-            user    = self.request.user,
-            id      = int(kwargs.pop('participant')),
-        )
-        # user may get back to this page after successful registration
-        if self.club.registrations.filter(participant=self.participant).exists():
-            return HttpResponseRedirect(reverse('leprikon:summary'))
         return super(ClubRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        kwargs = super(ClubRegistrationFormView, self).get_form_kwargs()
-        kwargs['club']          = self.club
-        kwargs['participant']   = self.participant
+        kwargs  = super(ClubRegistrationFormView, self).get_form_kwargs()
+        kwargs['club']  = self.club
+        kwargs['user']  = self.request.user
         return kwargs
 
     def get_message(self, form):
         return _('The registration has been accepted.')
+
+    def form_valid(self, form):
+        response = super(ClubRegistrationFormView, self).form_valid(form)
+        if self.request.user.is_anonymous():
+            form.user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(self.request, form.user)
+        return response
 
 
 

@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -101,7 +100,7 @@ class LeaderAdmin(admin.ModelAdmin):
 class ParentAdmin(admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
-    list_display    = ('id', 'user_link', 'first_name', 'last_name', 'address', 'email', 'phone', 'participants_link')
+    list_display    = ('id', 'first_name', 'last_name', 'address', 'email', 'phone', 'user_link', 'registrations_links')
     raw_id_fields   = ('user',)
     actions         = ('send_message',)
 
@@ -124,26 +123,38 @@ class ParentAdmin(admin.ModelAdmin):
     email.short_description = _('email')
     email.admin_order_field = 'user__email'
 
+    @cached_property
+    def users_url(self):
+        return reverse('admin:auth_user_changelist')
+
     def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
+        return '<a href="{url}?id={id}">{user}</a>'.format(
+            url     = self.users_url,
+            id      = obj.user.id,
             user    = obj.user,
         )
     user_link.allow_tags = True
     user_link.short_description = _('user')
 
     @cached_property
-    def participants_url(self):
-        return reverse('admin:leprikon_participant_changelist')
+    def club_regs_url(self):
+        return reverse('admin:leprikon_clubregistration_changelist')
 
-    def participants_link(self, obj):
-        return '<a href="{url}?parents__id={parent}">{names}</a>'.format(
-            url     = self.participants_url,
-            parent  = obj.id,
-            names   = ', '.join(smart_text(participant) for participant in obj.all_participants),
+    @cached_property
+    def event_regs_url(self):
+        return reverse('admin:leprikon_eventregistration_changelist')
+
+    def registrations_links(self, obj):
+        return '<a href="{club_regs_url}?parents__id={parent}">{club_regs_name}</a>, '\
+               '<a href="{event_regs_url}?parents__id={parent}">{event_regs_name}</a>'.format(
+            club_regs_url   = self.club_regs_url,
+            event_regs_url  = self.event_regs_url,
+            club_regs_name  = _('clubs'),
+            event_regs_name = _('events'),
+            parent          = obj.id,
         )
-    participants_link.allow_tags = True
-    participants_link.short_description = _('participants')
+    registrations_links.allow_tags = True
+    registrations_links.short_description = _('registrations')
 
     def send_message(self, request, queryset):
         users = get_user_model().objects.filter(
@@ -160,15 +171,19 @@ class ParentAdmin(admin.ModelAdmin):
 class ParticipantAdmin(admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'birth_num', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
-    list_display    = ('id', 'user_link', 'first_name', 'last_name', 'birth_num', 'address', 'email', 'phone', 'school_name',
-                       'registrations_links', 'parents_link')
-    filter_horizontal = ('parents',)
+    list_display    = ('id', 'first_name', 'last_name', 'birth_num', 'address', 'email', 'phone', 'school_name', 'user_link',
+                       'registrations_links')
     raw_id_fields   = ('user',)
     actions         = ('send_message',)
 
+    @cached_property
+    def users_url(self):
+        return reverse('admin:auth_user_changelist')
+
     def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
+        return '<a href="{url}?id={id}">{user}</a>'.format(
+            url     = self.users_url,
+            id      = obj.user.id,
             user    = obj.user,
         )
     user_link.allow_tags = True
@@ -186,10 +201,6 @@ class ParticipantAdmin(admin.ModelAdmin):
     def event_regs_url(self):
         return reverse('admin:leprikon_eventregistration_changelist')
 
-    @cached_property
-    def parents_url(self):
-        return reverse('admin:leprikon_parent_changelist')
-
     def registrations_links(self, obj):
         return '<a href="{club_regs_url}?participant__id={participant}">{club_regs_name}</a>, '\
                '<a href="{event_regs_url}?participant__id={participant}">{event_regs_name}</a>'.format(
@@ -201,15 +212,6 @@ class ParticipantAdmin(admin.ModelAdmin):
         )
     registrations_links.allow_tags = True
     registrations_links.short_description = _('registrations')
-
-    def parents_link(self, obj):
-        return '<a href="{url}?participants__id={participant}">{names}</a>'.format(
-            url         = self.parents_url,
-            participant = obj.id,
-            names       = ', '.join(smart_text(parent) for parent in obj.all_parents),
-        )
-    parents_link.allow_tags = True
-    parents_link.short_description = _('parents')
 
     def school_name(self, obj):
         return obj.school_name

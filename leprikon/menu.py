@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from menus.base import NavigationNode, Modifier
 from menus.menu_pool import menu_pool
 
-from .conf import settings
 from .models import EventType
 from .utils import url_with_back, current_url
 

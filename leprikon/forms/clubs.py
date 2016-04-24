@@ -1,14 +1,11 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
-from datetime import date, datetime, timedelta
+from datetime import date
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.utils import formats, timezone
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
-from json import dumps
 
 from ..models import Leader, Place, AgeGroup, Timesheet, TimesheetPeriod
 from ..models.clubs import ClubGroup, Club, ClubRegistration, ClubJournalEntry, ClubJournalLeaderEntry
@@ -17,7 +14,6 @@ from ..utils import comma_separated
 
 from .fields import ReadonlyField
 from .form import FormMixin
-from .questions import QuestionsFormMixin
 
 User = get_user_model()
 
@@ -334,112 +330,6 @@ class ClubJournalEntryForm(FormMixin, ClubJournalEntryAdminForm):
             entry.save()
         for entry in self.deleted_entries:
             entry.delete()
-
-
-
-class ClubRegistrationPublicForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
-
-    from .parent import ParentForm as _ParentForm
-    from .participant import ParticipantForm
-    from .user import UserFormMixin
-    from django.contrib.auth.forms import UserCreationForm
-
-    class ParentForm(UserFormMixin, _ParentForm):
-        pass
-
-    def __init__(self, club, *args, **kwargs):
-        self.club = club
-        self.questions = self.club.all_questions
-        super(ClubRegistrationPublicForm, self).__init__(*args, **kwargs)
-        kwargs['prefix'] = 'parent'
-        self.parent_form = self.ParentForm(user=User(), *args, **kwargs)
-        kwargs['prefix'] = 'participant'
-        self.participant_form = self.ParticipantForm(user=User(), *args, **kwargs)
-        kwargs['prefix'] = 'user'
-        self.user_form = self.UserCreationForm(*args, **kwargs)
-        self.parent_form.fields['email'].required = True
-        del self.participant_form.fields['parents']
-
-    def is_valid(self):
-        return super(ClubRegistrationPublicForm, self).is_valid() \
-            and self.parent_form.is_valid() \
-            and self.participant_form.is_valid() \
-            and self.user_form.is_valid()
-
-    def save(self, commit=True):
-        user = self.user_form.save()
-        parent = self.parent_form.instance
-        participant = self.participant_form.instance
-
-        user.first_name = parent.first_name
-        user.last_name  = parent.last_name
-        user.email      = parent.email
-        user.save()
-
-        parent.user = user
-        parent.save()
-
-        participant.user = user
-        participant.save()
-        participant.parents.add(parent)
-
-        self.instance.club          = self.club
-        self.instance.participant   = participant
-        self.instance.age_group     = participant.age_group
-        self.instance.citizenship   = participant.citizenship
-        self.instance.insurance     = participant.insurance
-        self.instance.school        = participant.school
-        self.instance.school_other  = participant.school_other
-        self.instance.school_class  = participant.school_class
-        self.instance.health        = participant.health
-        return super(ClubRegistrationPublicForm, self).save(commit)
-    save.alters_data = True
-
-    class Meta:
-        model = ClubRegistration
-        fields = ()
-
-
-
-class ClubRegistrationBaseForm(QuestionsFormMixin, forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        if kwargs.get('instance', None):
-            self.club           = kwargs['instance'].club
-            self.participant    = kwargs['instance'].participant
-        else:
-            self.club           = kwargs.pop('club')
-            self.participant    = kwargs.pop('participant')
-        self.questions          = self.club.all_questions
-        super(ClubRegistrationBaseForm, self).__init__(*args, **kwargs)
-        if not self.instance.id:
-            for attr in ['age_group', 'citizenship', 'insurance', 'school', 'school_other', 'school_class', 'health']:
-                self.initial[attr] = getattr(self.participant, attr)
-        self.fields['age_group'].widget.choices.queryset = self.club.age_groups
-
-
-
-class ClubRegistrationForm(FormMixin, ClubRegistrationBaseForm):
-
-    def __init__(self, *args, **kwargs):
-        super(ClubRegistrationForm, self).__init__(*args, **kwargs)
-        self.readonly_fields = [
-            ReadonlyField(label=_('Club'),        value=self.club),
-            ReadonlyField(label=_('Participant'), value=self.participant),
-        ]
-
-    def save(self, commit=True):
-        self.instance.club = self.club
-        self.instance.participant = self.participant
-        return super(ClubRegistrationForm, self).save(commit)
-    save.alters_data = True
-
-    class Meta:
-        model = ClubRegistration
-        fields = [
-            'age_group', 'citizenship', 'insurance',
-            'school', 'school_other', 'school_class', 'health',
-        ]
 
 
 

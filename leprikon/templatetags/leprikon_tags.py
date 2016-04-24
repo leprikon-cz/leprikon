@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django import template
-from django.core.urlresolvers import reverse_lazy as reverse
 
 from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
@@ -60,23 +59,10 @@ def registration_links(context, subject):
     context = context.__copy__()
     context['reg_active'] = subject.reg_active
     if context['request'].user.is_authenticated():
-        context['links'] = [
-            {
-                'participant': participant,
-                'registration': subject.registrations.filter(participant=participant).first(),
-                'url': _url_with_back(
-                    subject.get_registration_url(participant),
-                    _current_url(context['request']),
-                ),
-            }
-            for participant in context['request'].user.leprikon_participants.all()
-        ]
-        context['participant_create_url'] = _url_with_back(
-            reverse('leprikon:participant_create'),
-            subject.get_absolute_url(),
-        )
+        context['registrations'] = subject.registrations.filter(participant__user=context['request'].user)
     else:
-        context['public_registration_url'] = subject.get_public_registration_url()
+        context['registrations'] = []
+    context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
     return context
 
 

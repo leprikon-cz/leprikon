@@ -1,16 +1,10 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.contrib import admin
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.utils.encoding import smart_text
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.messages import MessageAdminForm
 from ..models import *
-
-from .filters import SchoolYearListFilter
 
 
 class MessageRecipientInlineAdmin(admin.TabularInline):

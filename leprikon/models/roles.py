@@ -23,7 +23,7 @@ class Leader(models.Model):
     description     = HTMLField(_('description'), blank=True, default='')
     photo           = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
     page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True)
-    school_years    = models.ManyToManyField('leprikon.SchoolYear', verbose_name=_('school years'), related_name='leaders')
+    school_years    = models.ManyToManyField(SchoolYear, verbose_name=_('school years'), related_name='leaders')
 
     class Meta:
         app_label           = 'leprikon'
@@ -146,7 +146,6 @@ class Parent(models.Model):
 class Participant(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                         related_name='leprikon_participants')
-    parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='participants', blank=True)
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
     first_name      = models.CharField(_('first name'),   max_length=30)
     last_name       = models.CharField(_('last name'),    max_length=30)
@@ -174,10 +173,6 @@ class Participant(models.Model):
             last_name   = self.last_name,
             birth_num   = self.birth_num,
         )
-
-    @cached_property
-    def all_parents(self):
-        return list(self.parents.all())
 
     @cached_property
     def full_name(self):

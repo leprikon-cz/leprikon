@@ -5,15 +5,14 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from json import dumps
 
-from ..conf import settings
 from ..forms.events import EventRegistrationAdminForm
 from ..models import *
 from ..utils import currency, comma_separated
@@ -154,7 +153,7 @@ class EventAdmin(AdminExportMixin, admin.ModelAdmin):
 
 class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'event', 'participant', 'parents_link',
+        'id', 'get_download_tag', 'event', 'participant_link', 'parents_link',
         'discount', 'get_payments_html', 'created',
         'cancel_request', 'canceled',
     )
@@ -176,17 +175,18 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
     search_fields   = (
         'participant__first_name', 'participant__last_name',
         'participant__birth_num', 'participant__email',
-        'participant__parents__first_name', 'participant__parents__last_name', 'participant__parents__email',
+        'parents__first_name', 'parents__last_name', 'parents__email',
         'school__name', 'event__name',
     )
     ordering        = ('-cancel_request', '-created')
     raw_id_fields   = ('event', 'participant')
+    filter_horizontal = ('parents',)
 
     def has_add_permission(self, request):
         return False
 
     def get_form(self, request, obj, **kwargs):
-        questions       = set(obj.event.event_type.all_questions + obj.event.all_questions)
+        questions       = obj.event.all_questions
         answers         = obj.get_answers()
         kwargs['form']  = type(EventRegistrationAdminForm.__name__, (EventRegistrationAdminForm,), dict(
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
@@ -194,14 +194,22 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         ))
         return super(EventRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
+    def save_form(self, request, form, change):
+        questions   = form.instance.event.all_questions
+        answers     = {}
+        for q in questions:
+            answers[q.name] = form.cleaned_data['q_'+q.name]
+        form.instance.answers = dumps(answers)
+        return super(EventRegistrationAdmin, self).save_form(request, form, change)
+
     def parents(self, obj):
-        return comma_separated(obj.participant.all_parents)
+        return comma_separated(obj.all_parents)
     parents.short_description = _('parents')
 
     def parent_emails(self, obj):
         return ', '.join(
             '{} <{}>'.format(p.full_name, p.email)
-            for p in obj.participant.all_parents if p.email
+            for p in obj.all_parents if p.email
         )
     parent_emails.short_description = _('parent emails')
 
@@ -219,14 +227,27 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
     get_fullname.short_description = _('full name')
 
     @cached_property
+    def participants_url(self):
+        return reverse('admin:leprikon_participant_changelist')
+
+    def participant_link(self, obj):
+        return '<a href="{url}?id={id}">{name}</a>'.format(
+            url     = self.participants_url,
+            id      = obj.participant.id,
+            name    = obj.participant,
+        )
+    participant_link.allow_tags = True
+    participant_link.short_description = _('participant')
+
+    @cached_property
     def parents_url(self):
         return reverse('admin:leprikon_parent_changelist')
 
     def parents_link(self, obj):
-        return '<a href="{url}?participants__id={participant}">{names}</a>'.format(
+        return '<a href="{url}?event_registrations__id={participant}">{names}</a>'.format(
             url         = self.parents_url,
-            participant = obj.participant.id,
-            names       = ', '.join(smart_text(parent) for parent in obj.participant.all_parents),
+            participant = obj.id,
+            names       = ', '.join(smart_text(parent) for parent in obj.all_parents),
         )
     parents_link.allow_tags = True
     parents_link.short_description = _('parents')

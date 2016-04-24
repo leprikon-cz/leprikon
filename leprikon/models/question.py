@@ -4,11 +4,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from json import loads
 
 from ..conf import settings
-from ..utils import import_string
 
 
 
@@ -69,9 +69,9 @@ class AnswersBaseModel(models.Model):
 
     def get_questions_and_answers(self):
         answers = self.get_answers()
-        for q in self.all_questions:
+        for q in self.subject.all_questions:
             yield {
                 'question': q.question,
-                'answer': q.get_value(answers.get(q.name, None)),
+                'answer': answers.get(q.name, ''),
             }
 
