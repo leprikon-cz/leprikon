@@ -12,3 +12,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js" integrity="sha384-V936AaxnYTkq53cO2z8e42PFtCCdZhbRttfhgX8U1K9weNYVdCMbDetUKTtllFdc" crossorigin="anonymous"></script>
 {% endaddtoblock %}
 
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(function () {
+    $('input[data-type=DateField]').datetimepicker({
+        locale: 'cs',
+        format: 'L',
+    });
+});
+</script>
+{% endaddtoblock %}

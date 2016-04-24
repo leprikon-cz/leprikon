@@ -33,24 +33,4 @@
 
 {% include 'leprikon/static/bootstrap-datetimepicker.html' %}
 
-{% addtoblock "js" %}
-<script type="text/javascript">
-
-$(function () {
-    $('#id_date_start').datetimepicker({
-        locale: 'cs',
-        format: 'L',
-    });
-});
-
-$(function () {
-    $('#id_date_end').datetimepicker({
-        locale: 'cs',
-        format: 'L',
-    });
-});
-
-</script>
-{% endaddtoblock %}
-
 {% endblock %}
