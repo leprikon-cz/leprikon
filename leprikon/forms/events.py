@@ -89,4 +89,10 @@ class EventRegistrationAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventRegistrationAdminForm, self).__init__(*args, **kwargs)
         self.fields['age_group'].widget.choices.queryset = kwargs['instance'].event.age_groups
+        self.fields['parents'].choices = (
+            (parent.id, parent)
+            for parent in self.fields['parents'].choices.queryset.filter(
+                user=kwargs['instance'].participant.user
+            )
+        )
 

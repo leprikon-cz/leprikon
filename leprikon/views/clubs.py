@@ -25,14 +25,8 @@ class ClubListView(FilteredListView):
         return _('Clubs in school year {}').format(self.request.school_year)
 
     def get_queryset(self):
-        qs = super(ClubListView, self).get_queryset()
-        qs = qs.filter(school_year=self.request.school_year)
-        if not self.request.user.is_staff:
-            qs = qs.filter(public=True)
         form = self.get_form()
-        if form.is_valid():
-            qs = form.filter_queryset(self.request, qs)
-        return qs
+        return form.get_queryset()
 
 
 

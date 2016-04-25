@@ -39,19 +39,15 @@ class EventListView(FilteredListView):
         return super(EventListView, self).dispatch(request, *args, **kwargs)
 
     def get_form(self):
-        return self.form_class(self.request, self.event_type, data=self.request.GET)
+        return self.form_class(
+            request     = self.request,
+            event_types = [self.event_type],
+            data        = self.request.GET,
+        )
 
     def get_queryset(self):
-        qs = super(EventListView, self).get_queryset()
-        qs = qs.filter(school_year=self.request.school_year)
-        if self.event_type:
-            qs = qs.filter(event_type = self.event_type)
-        if not self.request.user.is_staff:
-            qs = qs.filter(public=True)
         form = self.get_form()
-        if form.is_valid():
-            qs = form.filter_queryset(self.request, qs)
-        return qs
+        return form.get_queryset()
 
 
 

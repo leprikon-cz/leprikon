@@ -162,8 +162,8 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         'participant__first_name', 'participant__last_name', 'participant__birth_num',
         'participant__email', 'participant__phone', 'school_name', 'school_class',
         'participant__street', 'participant__city', 'participant__postal_code', 'citizenship', 'insurance', 'health',
-        'parents', 'parent_emails',
-        'get_payments_paid', 'get_payments_balance',
+        'parents_list', 'parent_emails',
+        'discount', 'get_payments_paid', 'get_payments_balance',
     )
     list_filter     = (
         ('event__school_year',  SchoolYearListFilter),
@@ -202,9 +202,9 @@ class EventRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         form.instance.answers = dumps(answers)
         return super(EventRegistrationAdmin, self).save_form(request, form, change)
 
-    def parents(self, obj):
+    def parents_list(self, obj):
         return comma_separated(obj.all_parents)
-    parents.short_description = _('parents')
+    parents_list.short_description = _('parents')
 
     def parent_emails(self, obj):
         return ', '.join(
