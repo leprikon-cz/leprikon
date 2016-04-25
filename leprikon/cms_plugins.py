@@ -63,16 +63,16 @@ class LeprikonFilteredClubListPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         school_year = instance.school_year or context['request'].school_year
-        clubs  = school_year.clubs.filter(public=True).distinct()
-
-        form = ClubFilterForm(context['request'], data=context['request'].GET)
-        if form.is_valid():
-            clubs = form.filter_queryset(context['request'], clubs)
+        form = ClubFilterForm(
+            request     = context['request'],
+            school_year = school_year,
+            data=context['request'].GET,
+        )
 
         context.update({
             'school_year':  school_year,
             'form':         form,
-            'clubs':        clubs,
+            'clubs':        form.get_queryset(),
             'instance':     instance,
             'placeholder':  placeholder,
         })
@@ -126,16 +126,16 @@ class LeprikonFilteredEventListPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         school_year = instance.school_year or context['request'].school_year
-        events      = school_year.events.filter(event_type=instance.event_type, public=True).distinct()
-
-        form = EventFilterForm(context['request'], instance.event_type, data=context['request'].GET)
-        if form.is_valid():
-            events = form.filter_queryset(context['request'], events)
-
+        form = EventFilterForm(
+            request     = context['request'],
+            school_year = school_year,
+            event_types = instance.event_types.all(),
+            data=context['request'].GET,
+        )
         context.update({
             'school_year':  school_year,
             'form':         form,
-            'events':       events,
+            'events':       form.get_queryset(),
             'instance':     instance,
             'placeholder':  placeholder,
         })

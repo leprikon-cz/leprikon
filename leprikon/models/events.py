@@ -366,7 +366,7 @@ class LeprikonEventListPlugin(CMSPlugin):
 class LeprikonFilteredEventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
-    event_type  = models.ForeignKey(EventType, verbose_name=_('event type'))
+    event_types = models.ManyToManyField(EventType, verbose_name=_('event type'))
 
     class Meta:
         app_label = 'leprikon'

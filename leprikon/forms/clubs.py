@@ -28,18 +28,31 @@ class ClubFilterForm(FormMixin, forms.Form):
                     choices=tuple(sorted(DAY_OF_WEEK.items())),required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
-    def __init__(self, request, *args, **kwargs):
-        super(ClubFilterForm, self).__init__(*args, **kwargs)
-        self.fields['group'     ].queryset = ClubGroup.objects.all()
-        self.fields['leader'    ].queryset = Leader.objects.filter(school_years=request.school_year).order_by('user__first_name', 'user__last_name')
-        self.fields['place'     ].queryset = Place.objects.all()
-        self.fields['age_group' ].queryset = AgeGroup.objects.all()
+    def __init__(self, request, school_year=None, **kwargs):
+        super(ClubFilterForm, self).__init__(**kwargs)
+        self.request = request
+
+        school_year = school_year or request.school_year
+
+        # filter clubs by plugin settings
+        self.clubs  = school_year.clubs.all()
+        if not request.user.is_staff or 'invisible' not in request.GET:
+            self.clubs = self.clubs.filter(public=True)
+
+        club_ids = [c[0] for c in self.clubs.values_list('id').order_by()]
+        self.fields['group'     ].queryset = ClubGroup.objects.filter(clubs__id__in=club_ids).distinct()
+        self.fields['leader'    ].queryset = Leader.objects.filter(clubs__id__in=club_ids).distinct().order_by('user__first_name', 'user__last_name')
+        self.fields['place'     ].queryset = Place.objects.filter(clubs__id__in=club_ids).distinct()
+        self.fields['age_group' ].queryset = AgeGroup.objects.filter(clubs__id__in=club_ids).distinct()
         if not request.user.is_staff:
             del self.fields['invisible']
         for f in self.fields:
             self.fields[f].help_text=None
 
-    def filter_queryset(self, request, qs):
+    def get_queryset(self):
+        qs = self.clubs
+        if not self.is_valid():
+            return qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
                 Q(name__icontains = word)
@@ -55,8 +68,6 @@ class ClubFilterForm(FormMixin, forms.Form):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
         if self.cleaned_data['day_of_week']:
             qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
-        if request.user.is_staff and not self.cleaned_data['invisible']:
-            qs = qs.filter(public=True)
         return qs
 
 

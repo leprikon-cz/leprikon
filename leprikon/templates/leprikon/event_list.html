@@ -9,8 +9,9 @@
 {% addtoblock "js" %}
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#id_group').multiselect({
+    $('#list_filter_form select[data-type=ModelMultipleChoiceField]').multiselect({
         nonSelectedText: '',
+        allSelectedText: false,
         numberDisplayed: 2,
         nSelectedText: '{% trans 'selected' %}',
         onDropdownHide: function(element, checked) {
@@ -18,34 +19,8 @@ $(document).ready(function() {
         },
         disableIfEmpty: true,
     });
-    $('#id_leader').multiselect({
-        nonSelectedText: '',
-        numberDisplayed: 2,
-        nSelectedText: '{% trans 'selected' %}',
-        enableFiltering: true,
-        filterPlaceholder: '{% trans 'Search' %}',
-        onDropdownHide: function(element, checked) {
-            $('#list_filter_form').submit();
-        },
-        disableIfEmpty: true,
-    });
-    $('#id_place').multiselect({
-        nonSelectedText: '',
-        numberDisplayed: 2,
-        nSelectedText: '{% trans 'selected' %}',
-        onDropdownHide: function(element, checked) {
-            $('#list_filter_form').submit();
-        },
-        disableIfEmpty: true,
-    });
-    $('#id_age_group').multiselect({
-        nonSelectedText: '',
-        numberDisplayed: 2,
-        nSelectedText: '{% trans 'selected' %}',
-        onDropdownHide: function(element, checked) {
-            $('#list_filter_form').submit();
-        },
-        disableIfEmpty: true,
+    $('#list_filter_form input').change(function() {
+        $('#list_filter_form').submit();
     });
 });
 </script>
