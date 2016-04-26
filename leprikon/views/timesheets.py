@@ -67,17 +67,9 @@ class TimesheetEntryCreateView(CreateView):
     title           = _('New timesheet entry')
     message         = _('New timesheet entry has been created.')
 
-    def dispatch(self, request, *args, **kwargs):
-        self.timesheet = get_object_or_404(Timesheet,
-            id          = int(kwargs.pop('pk')),
-            leader      = self.request.leader,
-            submitted   = False,
-        )
-        return super(TimesheetEntryCreateView, self).dispatch(request, *args, **kwargs)
-
     def get_form_kwargs(self):
         kwargs = super(TimesheetEntryCreateView, self).get_form_kwargs()
-        kwargs['timesheet'] = self.timesheet
+        kwargs['leader'] = self.request.leader
         return kwargs
 
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-25 20:06+0200\n"
+"POT-Creation-Date: 2016-04-27 01:35+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -177,7 +177,7 @@ msgstr "upravit záznam"
 #: templates/leprikon/event_preview.html:15
 #: templates/leprikon/participant_preview.html:8
 #: templates/leprikon/participant_preview.html:18
-#: templates/leprikon/timesheet_detail.html:42
+#: templates/leprikon/timesheet_detail.html:38
 msgid "edit"
 msgstr "upravit"
 
@@ -299,7 +299,7 @@ msgid "address"
 msgstr "adresa"
 
 #: admin/timesheets.py:57 models/clubs.py:82 models/events.py:123
-#: models/roles.py:23 templates/leprikon/timesheet_detail.html.py:28
+#: models/roles.py:23 templates/leprikon/timesheet_detail.html.py:24
 msgid "description"
 msgstr "popis"
 
@@ -444,7 +444,7 @@ msgstr "Záznam deníku končí v {end}."
 msgid "Club"
 msgstr "Kroužek"
 
-#: forms/clubs.py:130 forms/clubs.py:161 forms/timesheets.py:33
+#: forms/clubs.py:130 forms/clubs.py:161 forms/timesheets.py:32
 #: templates/leprikon/club_journal.html:183
 #: templates/leprikon/messages_table.html:7
 #: templates/leprikon/reports/club_payments.html:14
@@ -452,14 +452,14 @@ msgstr "Kroužek"
 msgid "Date"
 msgstr "Datum"
 
-#: forms/clubs.py:135 forms/timesheets.py:34
+#: forms/clubs.py:135 forms/timesheets.py:33
 #: templates/leprikon/event_list/default.html:26
 #: templates/leprikon/event_list/grouped.html:28
 #: templates/leprikon/event_preview.html:27
 msgid "Start"
 msgstr "Začátek"
 
-#: forms/clubs.py:136 forms/timesheets.py:35
+#: forms/clubs.py:136 forms/timesheets.py:34
 #: templates/leprikon/event_list/default.html:29
 #: templates/leprikon/event_list/grouped.html:31
 #: templates/leprikon/event_preview.html:30
@@ -480,7 +480,7 @@ msgstr "Některé odevzdané záznamy práce začínají v {start}"
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/clubs.py:221 menu.py:111 templates/leprikon/club_journal.html.py:138
+#: forms/clubs.py:221 menu.py:110 templates/leprikon/club_journal.html.py:138
 msgid "Leaders"
 msgstr "Vedoucí"
 
@@ -559,7 +559,7 @@ msgstr "Školní rok"
 msgid "Help needed?"
 msgstr "Potřebujete poradit?"
 
-#: forms/timesheets.py:36
+#: forms/timesheets.py:35
 msgid "Entry type"
 msgstr "Druh záznamu"
 
@@ -573,7 +573,13 @@ msgstr "Období {period} začíná {start}"
 msgid "The timesheet period {period} ends {end}"
 msgstr "Období {period} končí {end}"
 
-#: forms/timesheets.py:66
+#: forms/timesheets.py:56
+#, fuzzy, python-brace-format
+#| msgid "Your timesheet for period {period} has already been submitted."
+msgid "Your timesheet for period {period} has already been submitted."
+msgstr "Váš výkaz práce za {} byl již odevzdán."
+
+#: forms/timesheets.py:72
 msgid "An overlaping entry has already been added in the timesheet."
 msgstr "Ve výkazu práce už je kolidující záznam."
 
@@ -586,69 +592,73 @@ msgstr ""
 "uživatelské jméno nebo heslo ke svému existujícímu účtu, použijte formulář "
 "pro reset hesla."
 
-#: menu.py:24 templates/leprikon/password_reset_complete.html.py:12
+#: menu.py:23 templates/leprikon/password_reset_complete.html.py:12
 #: views/user.py:74 views/user.py:75
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: menu.py:30 views/user.py:33
+#: menu.py:29 views/user.py:33
 msgid "Create account"
 msgstr "Vytvořit účet"
 
-#: menu.py:36 views/user.py:76
+#: menu.py:35 views/user.py:76
 msgid "Reset password"
 msgstr "Reset hesla"
 
-#: menu.py:42 templates/leprikon/summary.html.py:6
+#: menu.py:41 templates/leprikon/summary.html.py:6
 msgid "Summary"
 msgstr "Přehled"
 
-#: menu.py:48 views/messages.py:22
+#: menu.py:47 views/messages.py:22
 msgid "Messages"
 msgstr "Zprávy"
 
-#: menu.py:54
+#: menu.py:53
 msgid "Registrations"
 msgstr "Přihlášky"
 
-#: menu.py:60 templates/leprikon/club_journal.html.py:162
+#: menu.py:59 templates/leprikon/club_journal.html.py:162
 msgid "Participants"
 msgstr "Účastníci"
 
-#: menu.py:66
+#: menu.py:65
 msgid "Add participant"
 msgstr "Přidat účastníka"
 
-#: menu.py:73
+#: menu.py:72
 msgid "Add parent"
 msgstr "Přidat zástupce"
 
-#: menu.py:80 templates/leprikon/admin/club_merge.html.py:17
+#: menu.py:79 templates/leprikon/admin/club_merge.html.py:17
 #: templates/leprikon/leader_preview.html:16
 msgid "Clubs"
 msgstr "Kroužky"
 
-#: menu.py:85
+#: menu.py:84
 msgid "My Clubs"
 msgstr "Moje kroužky"
 
-#: menu.py:92
+#: menu.py:91
 msgid "Alternating"
 msgstr "Suplování"
 
-#: menu.py:99
+#: menu.py:98
 msgid "My Events"
 msgstr "Moje akce"
 
-#: menu.py:116 views/timesheets.py:20
+#: menu.py:115 views/timesheets.py:20
 msgid "Timesheets"
 msgstr "Výkazy práce"
 
-#: menu.py:122 templates/leprikon/reports/index.html.py:6
+#: menu.py:121
+msgid "Add new entry"
+msgstr "Přidat nový záznam"
+
+#: menu.py:128 templates/leprikon/reports/index.html.py:6
 msgid "Reports"
 msgstr "Reporty"
 
-#: menu.py:128 templates/leprikon/base.html.py:58
+#: menu.py:134 templates/leprikon/base.html.py:58
 msgid "Log out"
 msgstr "Odhlásit se"
 
@@ -905,7 +915,7 @@ msgstr "poučení o BOZP"
 
 #: models/clubs.py:491 models/clubs.py:599 models/timesheets.py:155
 #: templates/leprikon/club_alternating.html:14
-#: templates/leprikon/timesheet_detail.html:24
+#: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
 
@@ -926,7 +936,7 @@ msgid "journal entries"
 msgstr "záznamy deníku"
 
 #: models/clubs.py:532 models/clubs.py:618 models/timesheets.py:180
-#: templates/leprikon/timesheet_detail.html:26
+#: templates/leprikon/timesheet_detail.html:22
 msgid "duration"
 msgstr "doba trvání"
 
@@ -1263,7 +1273,7 @@ msgid "send question or suggestion"
 msgstr "odeslat dotaz nebo podnět"
 
 #: templates/leprikon/club_alternating.html:16
-#: templates/leprikon/timesheet_detail.html:25
+#: templates/leprikon/timesheet_detail.html:21
 msgid "start"
 msgstr "začátek"
 
@@ -1727,19 +1737,14 @@ msgstr "Moje akce"
 
 #: templates/leprikon/timesheet_detail.html:12
 #: templates/leprikon/timesheet_preview.html:9
-msgid "new entry"
-msgstr "přidat záznam"
-
-#: templates/leprikon/timesheet_detail.html:16
-#: templates/leprikon/timesheet_preview.html:13
 msgid "submit"
 msgstr "odevzdat"
 
-#: templates/leprikon/timesheet_detail.html:27
+#: templates/leprikon/timesheet_detail.html:23
 msgid "type"
 msgstr "typ"
 
-#: templates/leprikon/timesheet_detail.html:47
+#: templates/leprikon/timesheet_detail.html:43
 msgid "delete"
 msgstr "smazat"
 
@@ -1755,87 +1760,87 @@ msgstr "Žádné kroužky neodpovídají zadanému filtru."
 msgid "Clubs in school year {}"
 msgstr "Kroužky ve školním roce {}"
 
-#: views/clubs.py:44
+#: views/clubs.py:38
 msgid "My clubs in school year {}"
 msgstr "Moje kroužky ve školním roce {}"
 
-#: views/clubs.py:52
+#: views/clubs.py:46
 msgid "Alternating in school year {}"
 msgstr "Suplování ve školním roce {}"
 
-#: views/clubs.py:99
+#: views/clubs.py:93
 msgid "Change club"
 msgstr "Aktualizace údajů o kroužku"
 
-#: views/clubs.py:108
+#: views/clubs.py:102
 msgid "The club {} has been updated."
 msgstr "Kroužek {} byl upraven."
 
-#: views/clubs.py:116
+#: views/clubs.py:110
 msgid "New journal entry"
 msgstr "Nový záznam deníku"
 
-#: views/clubs.py:136
+#: views/clubs.py:111
 msgid "The journal entry has been created."
 msgstr "Záznam deníku byl vytvořen."
 
-#: views/clubs.py:144
+#: views/clubs.py:136
 msgid "Change journal entry"
 msgstr "Změnit záznam deníku"
 
-#: views/clubs.py:155
+#: views/clubs.py:137
 msgid "The journal entry has been updated."
 msgstr "Záznam deníku byl upraven."
 
-#: views/clubs.py:161
+#: views/clubs.py:151
 msgid "Delete journal entry"
 msgstr "Smazat záznam deníku"
 
-#: views/clubs.py:175
-msgid "Do You really want to delete club journal entry?"
-msgstr "Opravdu chcete smazat záznam deníku kroužku?"
-
-#: views/clubs.py:178
+#: views/clubs.py:152
 msgid "The journal entry has been deleted."
 msgstr "Záznam deníku byl smazán."
 
-#: views/clubs.py:186 views/timesheets.py:91
+#: views/clubs.py:166
+msgid "Do You really want to delete club journal entry?"
+msgstr "Opravdu chcete smazat záznam deníku kroužku?"
+
+#: views/clubs.py:174 views/timesheets.py:81
 msgid "Change timesheet entry"
 msgstr "Aktualizace záznamu výkazu práce"
 
-#: views/clubs.py:198 views/timesheets.py:106
+#: views/clubs.py:175 views/timesheets.py:82
 msgid "The timesheet entry has been updated."
 msgstr "Záznam výkazu práce byl upraven."
 
-#: views/clubs.py:204 views/timesheets.py:112
+#: views/clubs.py:190 views/timesheets.py:100
 msgid "Delete timesheet entry"
 msgstr "Smazat záznam výkazu práce"
 
-#: views/clubs.py:213 views/timesheets.py:127
-msgid "Do You really want to delete timesheet entry?"
-msgstr "Opravdu chcete smazat záznam výkazu práce?"
-
-#: views/clubs.py:216 views/timesheets.py:130
+#: views/clubs.py:191 views/timesheets.py:101
 msgid "The timesheet entry has been deleted."
 msgstr "Záznam výkazu práce byl smazán."
 
-#: views/clubs.py:227
-msgid "Registration for club {}"
-msgstr "Přihláška na kroužek {}"
+#: views/clubs.py:200 views/timesheets.py:116
+msgid "Do You really want to delete timesheet entry?"
+msgstr "Opravdu chcete smazat záznam výkazu práce?"
 
-#: views/clubs.py:247 views/events.py:149
+#: views/clubs.py:209 views/events.py:120
 msgid "The registration has been accepted."
 msgstr "Přihláška byla přijata."
 
-#: views/clubs.py:272 views/events.py:174
+#: views/clubs.py:212
+msgid "Registration for club {}"
+msgstr "Přihláška na kroužek {}"
+
+#: views/clubs.py:254 views/events.py:166
 msgid "Cancellation request"
 msgstr "Požadavek na zrušení"
 
-#: views/clubs.py:278 views/events.py:180
+#: views/clubs.py:260 views/events.py:172
 msgid "Are you sure You want to cancel the registration \"{}\"?"
 msgstr "Opravdu chcete stornovat přihlášku \"{}\"?"
 
-#: views/clubs.py:281 views/events.py:183
+#: views/clubs.py:263 views/events.py:175
 msgid "The cancellation request for {} has been saved."
 msgstr "Požadavek o stornování přihlášky {} byl uložen."
 
@@ -1843,28 +1848,24 @@ msgstr "Požadavek o stornování přihlášky {} byl uložen."
 msgid "No events matching given filter."
 msgstr "Žádné akce neodpovídají zadanému filtru."
 
-#: views/events.py:27
+#: views/events.py:26
 #, python-brace-format
 msgid "{event_type} in school year {school_year}"
 msgstr "{event_type} ve školním roce {school_year}"
 
-#: views/events.py:32
-msgid "Events in school year {}"
-msgstr "Akce ve školním roce {}"
-
-#: views/events.py:59
+#: views/events.py:53
 msgid "My events in school year {}"
 msgstr "Moje akce ve školním roce {}"
 
-#: views/events.py:108
+#: views/events.py:102
 msgid "Change event"
 msgstr "Aktualizace údajů o akci"
 
-#: views/events.py:117
+#: views/events.py:111
 msgid "The event {} has been updated."
 msgstr "Akce {} byla upravena."
 
-#: views/events.py:128
+#: views/events.py:123
 msgid "Registration for event {}"
 msgstr "Přihláška na akci {}"
 
@@ -1884,11 +1885,11 @@ msgstr "Žádné položky neodpovídají zadanému filtru."
 msgid "Save"
 msgstr "Uložit"
 
-#: views/generic.py:142
+#: views/generic.py:148
 msgid "Yes"
 msgstr "Ano"
 
-#: views/generic.py:184
+#: views/generic.py:190
 msgid "Delete"
 msgstr "Smazat"
 
@@ -1978,15 +1979,15 @@ msgstr "Nyní pracujete se školním rokem {}"
 msgid "Support"
 msgstr "Podpora"
 
-#: views/support.py:16
+#: views/support.py:14
 msgid "Your question has been sent to our support team. Thank You."
 msgstr "Váš dotaz byl zaslán pracovníkům podpory. Děkujeme Vám."
 
-#: views/support.py:22
+#: views/support.py:20
 msgid "Question from web"
 msgstr "Otázka z webu"
 
-#: views/support.py:23
+#: views/support.py:21
 #, python-brace-format
 msgid ""
 "User {user} asks:\n"
@@ -2014,7 +2015,7 @@ msgstr "Výkaz práce za {} byl odevzdán."
 msgid "New timesheet entry"
 msgstr "Nový záznam výkazu práce"
 
-#: views/timesheets.py:83
+#: views/timesheets.py:68
 msgid "New timesheet entry has been created."
 msgstr "Nový záznam výkazu práce byl vytvořen."
 

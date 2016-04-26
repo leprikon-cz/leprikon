@@ -14,7 +14,6 @@ from .utils import url_with_back, current_url
 class LeprikonMenu(CMSAttachMenu):
     name = _('Leprikon')
 
-
     def get_nodes(self, request):
         """
         This method is used to build the menu tree.
@@ -119,6 +118,13 @@ class LeprikonMenu(CMSAttachMenu):
             attr={'require_leader': True},
         ))
         nodes.append(NavigationNode(
+            _('Add new entry'),
+            reverse('leprikon:timesheetentry_create'),
+            len(nodes),
+            parent_id=len(nodes)-1,
+            attr={'require_leader': True, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
             _('Reports'),
             reverse('leprikon:reports'),
             len(nodes),
@@ -155,6 +161,9 @@ class LeprikonModifier(Modifier):
 
 menu_pool.register_modifier(LeprikonModifier)
 
+
+# clear menu cache with each reload
+menu_pool.clear()
 
 
 def invalidate_menu_cache(sender, **kwargs):

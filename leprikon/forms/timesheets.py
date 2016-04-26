@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils import formats
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import TimesheetEntry
+from ..models import Timesheet, TimesheetEntry
 
 from .fields import ReadonlyField
 from .form import FormMixin
@@ -21,10 +21,9 @@ class TimesheetEntryAdminForm(forms.ModelForm):
         model   = TimesheetEntry
         fields  = ('date', 'start', 'end', 'entry_type', 'description')
 
-    def __init__(self, *args, **kwargs):
-        timesheet = kwargs.pop('timesheet', None) or kwargs['instance'].timesheet
-        super(TimesheetEntryAdminForm, self).__init__(*args, **kwargs)
-        self.instance.timesheet = timesheet
+    def __init__(self, **kwargs):
+        self.leader = kwargs.pop('leader', None) or kwargs['instance'].timesheet.leader
+        super(TimesheetEntryAdminForm, self).__init__(**kwargs)
 
         # make date, start and end read only, if timesheet is already submitted
         if self.instance.id and self.instance.timesheet.submitted:
@@ -40,16 +39,23 @@ class TimesheetEntryAdminForm(forms.ModelForm):
             self.readonly = False
 
     def clean_date(self):
-        if self.cleaned_data['date'] < self.instance.timesheet.period.start:
-            raise ValidationError(_('The timesheet period {period} starts {start}').format(
-                period  = self.instance.timesheet.period.name,
-                start   = formats.date_format(self.instance.timesheet.period.start, "SHORT_DATE_FORMAT"),
-            ))
-        if self.cleaned_data['date'] > self.instance.timesheet.period.end:
-            raise ValidationError(_('The timesheet period {period} ends {end}').format(
-                period  = self.instance.timesheet.period.name,
-                end   = formats.date_format(self.instance.timesheet.period.end, "SHORT_DATE_FORMAT"),
-            ))
+        if self.instance.id:
+            if self.cleaned_data['date'] < self.instance.timesheet.period.start:
+                raise ValidationError(_('The timesheet period {period} starts {start}').format(
+                    period  = self.instance.timesheet.period.name,
+                    start   = formats.date_format(self.instance.timesheet.period.start, "SHORT_DATE_FORMAT"),
+                ))
+            if self.cleaned_data['date'] > self.instance.timesheet.period.end:
+                raise ValidationError(_('The timesheet period {period} ends {end}').format(
+                    period  = self.instance.timesheet.period.name,
+                    end   = formats.date_format(self.instance.timesheet.period.end, "SHORT_DATE_FORMAT"),
+                ))
+        else:
+            self.instance.timesheet = Timesheet.objects.for_leader_and_date(leader=self.leader, date=self.cleaned_data['date'])
+            if self.instance.timesheet.submitted:
+                raise ValidationError(_('Your timesheet for period {period} has already been submitted.').format(
+                    period  = self.instance.timesheet.period.name,
+                ))
         return self.cleaned_data['date']
 
     def clean(self):

@@ -4,10 +4,6 @@
     <div class="box-header">
         <a href="{% url 'leprikon:timesheet_detail' object.id %}?page={{ page_obj.number }}"><strong>{{ object.period.name }}</strong></a>
         {% if not object.submitted %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheetentry_create' object.id %}">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            {% trans 'new entry' %}
-        </a>
         <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
             <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
             {% trans 'submit' %}
