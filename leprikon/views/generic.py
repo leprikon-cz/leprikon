@@ -70,8 +70,8 @@ class ListView(GenericViewMixin, _ListView):
 
 
 class FilteredListView(ListView):
-    form_class          = None
-    message_empty       = _('No items found matching filter.')
+    form_class      = None
+    message_empty   = _('No items found matching filter.')
 
     def get_form(self):
         return self.form_class(self.request, data=self.request.GET)
@@ -85,8 +85,8 @@ class FilteredListView(ListView):
 
 
 class BackViewMixin(object):
-    back_url = reverse('leprikon:summary')
-    back_label = _('Back')
+    back_url    = reverse('leprikon:summary')
+    back_label  = _('Back')
 
     def get_context_data(self, *args, **kwargs):
         return super(BackViewMixin, self).get_context_data(*args,
@@ -109,9 +109,10 @@ class BackViewMixin(object):
 
 
 class FormViewMixin(BackViewMixin, GenericViewMixin):
-    template_name = 'leprikon/form.html'
-    submit_label = _('Save')
-    success_url = reverse('leprikon:summary')
+    template_name   = 'leprikon/form.html'
+    submit_label    = _('Save')
+    success_url     = reverse('leprikon:summary')
+    message         = None
 
     def get_context_data(self, *args, **kwargs):
         return super(FormViewMixin, self).get_context_data(*args,
@@ -125,12 +126,17 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
     def get_success_url(self):
         return self.get_back_url()
 
+    def get_message(self):
+        return self.message
+
     def form_valid(self, form):
         response = super(FormViewMixin, self).form_valid(form)
-        messages.info(
-            self.request,
-            self.get_message(form),
-        )
+        message = self.get_message()
+        if message:
+            messages.info(
+                self.request,
+                message,
+            )
         return response
 
 
@@ -181,14 +187,16 @@ class ConfirmUpdateView(ConfirmFormViewMixin, _UpdateView):
 
 
 class DeleteView(ConfirmFormViewMixin, _DeleteView):
-    submit_label    = _('Delete')
+    submit_label = _('Delete')
 
     def delete(self, request, *args, **kwargs):
         response = super(DeleteView, self).delete(request, *args, **kwargs)
-        messages.info(
-            self.request,
-            self.get_message(),
-        )
+        message = self.get_message()
+        if message:
+            messages.info(
+                self.request,
+                message,
+            )
         return response
 
 

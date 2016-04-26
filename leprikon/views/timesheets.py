@@ -36,8 +36,8 @@ class TimesheetDetailView(DetailView):
 
 
 class TimesheetSubmitView(ConfirmUpdateView):
-    model       = Timesheet
-    title       = _('Submit timesheet')
+    model = Timesheet
+    title = _('Submit timesheet')
 
     def get_queryset(self):
         return super(TimesheetSubmitView, self).get_queryset().filter(
@@ -51,7 +51,7 @@ class TimesheetSubmitView(ConfirmUpdateView):
             'You won\'t be able to edit the entries for {} any more.'
         ).format(self.object.period.name)
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The timesheet for () has been submitted.').format(self.object.period.name)
 
     def confirmed(self):
@@ -61,10 +61,11 @@ class TimesheetSubmitView(ConfirmUpdateView):
 
 
 class TimesheetEntryCreateView(CreateView):
-    model = TimesheetEntry
-    form_class = TimesheetEntryForm
-    template_name = 'leprikon/timesheetentry_form.html'
-    title = _('New timesheet entry')
+    model           = TimesheetEntry
+    form_class      = TimesheetEntryForm
+    template_name   = 'leprikon/timesheetentry_form.html'
+    title           = _('New timesheet entry')
+    message         = _('New timesheet entry has been created.')
 
     def dispatch(self, request, *args, **kwargs):
         self.timesheet = get_object_or_404(Timesheet,
@@ -79,16 +80,14 @@ class TimesheetEntryCreateView(CreateView):
         kwargs['timesheet'] = self.timesheet
         return kwargs
 
-    def get_message(self, form):
-        return _('New timesheet entry has been created.')
-
 
 
 class TimesheetEntryUpdateView(UpdateView):
-    model = TimesheetEntry
-    form_class = TimesheetEntryForm
-    template_name = 'leprikon/timesheetentry_form.html'
-    title = _('Change timesheet entry')
+    model           = TimesheetEntry
+    form_class      = TimesheetEntryForm
+    template_name   = 'leprikon/timesheetentry_form.html'
+    title           = _('Change timesheet entry')
+    message         = _('The timesheet entry has been updated.')
 
     def get_queryset(self):
         # only allow to edit user's own not submitted timesheets
@@ -102,14 +101,12 @@ class TimesheetEntryUpdateView(UpdateView):
             qs = qs.filter(leader = self.request.leader)
         return qs
 
-    def get_message(self, form):
-        return _('The timesheet entry has been updated.')
-
 
 
 class TimesheetEntryDeleteView(DeleteView):
-    model = TimesheetEntry
-    title = _('Delete timesheet entry')
+    model   = TimesheetEntry
+    title   = _('Delete timesheet entry')
+    message = _('The timesheet entry has been deleted.')
 
     def get_queryset(self):
         qs = super(TimesheetEntryDeleteView, self).get_queryset()
@@ -126,6 +123,4 @@ class TimesheetEntryDeleteView(DeleteView):
     def get_question(self):
         return _('Do You really want to delete timesheet entry?')
 
-    def get_message(self):
-        return _('The timesheet entry has been deleted.')
 

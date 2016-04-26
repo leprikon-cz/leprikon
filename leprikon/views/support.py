@@ -9,11 +9,9 @@ from .generic import FormView
 
 
 class SupportView(FormView):
-    form_class = SupportForm
-    title = _('Support')
-
-    def get_message(self, form):
-        return _('Your question has been sent to our support team. Thank You.')
+    form_class  = SupportForm
+    title       = _('Support')
+    message     = _('Your question has been sent to our support team. Thank You.')
 
     def form_valid(self, form):
         question = form.cleaned_data['question']

@@ -10,10 +10,10 @@ from .generic import CreateView, UpdateView
 
 
 class ParentCreateView(CreateView):
-    model = Parent
-    form_class = ParentForm
+    model       = Parent
+    form_class  = ParentForm
     success_url = reverse('leprikon:summary')
-    title = _('New parent')
+    title       = _('New parent')
 
     def get_form_kwargs(self):
         kwargs = super(ParentCreateView, self).get_form_kwargs()
@@ -23,16 +23,16 @@ class ParentCreateView(CreateView):
                 for attr in ['first_name', 'last_name', 'email'])
         return kwargs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('New parent {} has been created.').format(self.object)
 
 
 
 class ParentUpdateView(UpdateView):
-    model = Parent
-    form_class = ParentForm
+    model       = Parent
+    form_class  = ParentForm
     success_url = reverse('leprikon:summary')
-    title = _('Change parent')
+    title       = _('Change parent')
 
     def get_queryset(self):
         # only allow to edit user's own parents
@@ -43,6 +43,7 @@ class ParentUpdateView(UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The parent {} has been updated.').format(self.object)
+
 

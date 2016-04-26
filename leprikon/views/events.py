@@ -23,20 +23,14 @@ class EventListView(FilteredListView):
     paginate_by         = 10
 
     def get_title(self):
-        if self.event_type:
-            return _('{event_type} in school year {school_year}').format(
-                event_type  = self.event_type,
-                school_year = self.request.school_year,
-            )
-        else:
-            return _('Events in school year {}').format(self.request.school_year)
+        return _('{event_type} in school year {school_year}').format(
+            event_type  = self.event_type,
+            school_year = self.request.school_year,
+        )
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'event_type' in kwargs:
-            self.event_type = get_object_or_404(EventType, slug=kwargs.pop('event_type'))
-        else:
-            self.event_type = None
-        return super(EventListView, self).dispatch(request, *args, **kwargs)
+    def dispatch(self, request, event_type, **kwargs):
+        self.event_type = get_object_or_404(EventType, slug=event_type)
+        return super(EventListView, self).dispatch(request, **kwargs)
 
     def get_form(self):
         return self.form_class(
@@ -61,7 +55,7 @@ class EventListMineView(EventListView):
 
 
 class EventDetailView(DetailView):
-    model   = Event
+    model = Event
 
     def get_queryset(self):
         qs = super(EventDetailView, self).get_queryset()
@@ -72,7 +66,7 @@ class EventDetailView(DetailView):
 
 
 class EventDetailRedirectView(RedirectView, SingleObjectMixin):
-    model   = Event
+    model = Event
 
     def get_queryset(self):
         qs = super(EventDetailRedirectView, self).get_queryset()
@@ -91,7 +85,7 @@ class EventDetailRedirectView(RedirectView, SingleObjectMixin):
 
 
 class EventParticipantsView(DetailView):
-    model   = Event
+    model = Event
     template_name_suffix = '_participants'
 
     def get_queryset(self):
@@ -113,16 +107,17 @@ class EventUpdateView(UpdateView):
             qs = qs.filter(leaders=self.request.leader)
         return qs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The event {} has been updated.').format(self.object)
 
 
 
 class EventRegistrationFormView(CreateView):
-    back_url    = reverse('leprikon:registrations')
-    model       = EventRegistration
-    form_class  = EventRegistrationForm
+    back_url        = reverse('leprikon:registrations')
+    model           = EventRegistration
+    form_class      = EventRegistrationForm
     template_name   = 'leprikon/registration_form.html'
+    message         = _('The registration has been accepted.')
 
     def get_title(self):
         return _('Registration for event {}').format(self.event.name)
@@ -144,9 +139,6 @@ class EventRegistrationFormView(CreateView):
         kwargs['event'] = self.event
         kwargs['user']  = self.request.user
         return kwargs
-
-    def get_message(self, form):
-        return _('The registration has been accepted.')
 
     def form_valid(self, form):
         response = super(EventRegistrationFormView, self).form_valid(form)
@@ -170,8 +162,8 @@ class EventRegistrationPdfView(PdfView):
 
 
 class EventRegistrationCancelView(ConfirmUpdateView):
-    model   = EventRegistration
-    title   = _('Cancellation request')
+    model = EventRegistration
+    title = _('Cancellation request')
 
     def get_queryset(self):
         return super(EventRegistrationCancelView, self).get_queryset().filter(participant__user=self.request.user)
@@ -179,7 +171,7 @@ class EventRegistrationCancelView(ConfirmUpdateView):
     def get_question(self):
         return _('Are you sure You want to cancel the registration "{}"?').format(self.object)
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The cancellation request for {} has been saved.').format(self.object)
 
     def confirmed(self):

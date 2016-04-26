@@ -28,24 +28,24 @@ __all__ = [
 
 
 class UserCreateView(CreateView):
-    model = get_user_model()
-    form_class = UserCreateForm
-    title = _('Create account')
+    model       = get_user_model()
+    form_class  = UserCreateForm
+    title       = _('Create account')
 
-    def get_message(self, form):
+    def get_message(self):
         return _('User account {} has been created.').format(self.object)
 
 
 
 class UserUpdateView(UpdateView):
-    model = get_user_model()
-    form_class = UserUpdateForm
-    title = _('Change user')
+    model       = get_user_model()
+    form_class  = UserUpdateForm
+    title       = _('Change user')
 
     def get_object(self):
         return self.request.user
 
-    def get_message(self, form):
+    def get_message(self):
         return _('User account {} has been updated.').format(self.object)
 
 

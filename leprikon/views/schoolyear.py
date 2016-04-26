@@ -11,7 +11,7 @@ class SchoolYearView(FormView):
     form_class = SchoolYearForm
     title = _('Switch school year')
 
-    def get_message(self, form):
+    def get_message(self):
         return _('You now work with school year {}.').format(self.request.school_year)
 
     def get_form_kwargs(self):

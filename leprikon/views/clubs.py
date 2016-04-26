@@ -40,7 +40,7 @@ class ClubListMineView(ClubListView):
 
 
 class ClubAlternatingView(TemplateView):
-    template_name       = 'leprikon/club_alternating.html'
+    template_name = 'leprikon/club_alternating.html'
 
     def get_title(self):
         return _('Alternating in school year {}').format(self.request.school_year)
@@ -76,7 +76,7 @@ class ClubParticipantsView(DetailView):
 
 
 class ClubJournalView(DetailView):
-    model   = Club
+    model = Club
     template_name_suffix = '_journal'
 
     def get_queryset(self):
@@ -98,16 +98,17 @@ class ClubUpdateView(UpdateView):
             qs = qs.filter(leaders=self.request.leader)
         return qs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The club {} has been updated.').format(self.object)
 
 
 
 class ClubJournalEntryCreateView(CreateView):
-    model       = ClubJournalEntry
-    form_class  = ClubJournalEntryForm
-    template_name = 'leprikon/clubjournalentry_form.html'
-    title = _('New journal entry')
+    model           = ClubJournalEntry
+    form_class      = ClubJournalEntryForm
+    template_name   = 'leprikon/clubjournalentry_form.html'
+    title           = _('New journal entry')
+    message         = _('The journal entry has been created.')
 
     def dispatch(self, request, *args, **kwargs):
         if self.request.user.is_staff:
@@ -126,16 +127,14 @@ class ClubJournalEntryCreateView(CreateView):
         kwargs['club'] = self.club
         return kwargs
 
-    def get_message(self, form):
-        return _('The journal entry has been created.')
-
 
 
 class ClubJournalEntryUpdateView(UpdateView):
-    model       = ClubJournalEntry
-    form_class  = ClubJournalEntryForm
-    template_name = 'leprikon/clubjournalentry_form.html'
-    title = _('Change journal entry')
+    model           = ClubJournalEntry
+    form_class      = ClubJournalEntryForm
+    template_name   = 'leprikon/clubjournalentry_form.html'
+    title           = _('Change journal entry')
+    message         = _('The journal entry has been updated.')
 
     def get_object(self):
         obj = super(ClubJournalEntryUpdateView, self).get_object()
@@ -145,14 +144,12 @@ class ClubJournalEntryUpdateView(UpdateView):
         else:
             raise Http404()
 
-    def get_message(self, form):
-        return _('The journal entry has been updated.')
-
 
 
 class ClubJournalEntryDeleteView(DeleteView):
-    model = ClubJournalEntry
-    title = _('Delete journal entry')
+    model   = ClubJournalEntry
+    title   = _('Delete journal entry')
+    message = _('The journal entry has been deleted.')
 
     def get_queryset(self):
         return super(ClubJournalEntryDeleteView, self).get_queryset().filter(
@@ -168,16 +165,14 @@ class ClubJournalEntryDeleteView(DeleteView):
     def get_question(self):
         return _('Do You really want to delete club journal entry?')
 
-    def get_message(self):
-        return _('The journal entry has been deleted.')
-
 
 
 class ClubJournalLeaderEntryUpdateView(UpdateView):
-    model       = ClubJournalLeaderEntry
-    form_class  = ClubJournalLeaderEntryForm
-    template_name = 'leprikon/clubjournalleaderentry_form.html'
-    title = _('Change timesheet entry')
+    model           = ClubJournalLeaderEntry
+    form_class      = ClubJournalLeaderEntryForm
+    template_name   = 'leprikon/clubjournalleaderentry_form.html'
+    title           = _('Change timesheet entry')
+    message         = _('The timesheet entry has been updated.')
 
     def get_object(self):
         obj = super(ClubJournalLeaderEntryUpdateView, self).get_object()
@@ -188,14 +183,12 @@ class ClubJournalLeaderEntryUpdateView(UpdateView):
         else:
             raise Http404()
 
-    def get_message(self, form):
-        return _('The timesheet entry has been updated.')
-
 
 
 class ClubJournalLeaderEntryDeleteView(DeleteView):
-    model = ClubJournalLeaderEntry
-    title = _('Delete timesheet entry')
+    model   = ClubJournalLeaderEntry
+    title   = _('Delete timesheet entry')
+    message = _('The timesheet entry has been deleted.')
 
     def get_queryset(self):
         return super(ClubJournalLeaderEntryDeleteView, self).get_queryset().filter(
@@ -206,16 +199,14 @@ class ClubJournalLeaderEntryDeleteView(DeleteView):
     def get_question(self):
         return _('Do You really want to delete timesheet entry?')
 
-    def get_message(self):
-        return _('The timesheet entry has been deleted.')
-
 
 
 class ClubRegistrationFormView(CreateView):
-    back_url    = reverse('leprikon:registrations')
-    model       = ClubRegistration
-    form_class  = ClubRegistrationForm
+    back_url        = reverse('leprikon:registrations')
+    model           = ClubRegistration
+    form_class      = ClubRegistrationForm
     template_name   = 'leprikon/registration_form.html'
+    message         = _('The registration has been accepted.')
 
     def get_title(self):
         return _('Registration for club {}').format(self.club.name)
@@ -236,9 +227,6 @@ class ClubRegistrationFormView(CreateView):
         kwargs['club']  = self.club
         kwargs['user']  = self.request.user
         return kwargs
-
-    def get_message(self, form):
-        return _('The registration has been accepted.')
 
     def form_valid(self, form):
         response = super(ClubRegistrationFormView, self).form_valid(form)
@@ -262,8 +250,8 @@ class ClubRegistrationPdfView(PdfView):
 
 
 class ClubRegistrationCancelView(ConfirmUpdateView):
-    model   = ClubRegistration
-    title   = _('Cancellation request')
+    model = ClubRegistration
+    title = _('Cancellation request')
 
     def get_queryset(self):
         return super(ClubRegistrationCancelView, self).get_queryset().filter(participant__user=self.request.user)
@@ -271,7 +259,7 @@ class ClubRegistrationCancelView(ConfirmUpdateView):
     def get_question(self):
         return _('Are you sure You want to cancel the registration "{}"?').format(self.object)
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The cancellation request for {} has been saved.').format(self.object)
 
     def confirmed(self):

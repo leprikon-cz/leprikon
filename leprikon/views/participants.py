@@ -14,8 +14,8 @@ from .generic import ListView, CreateView, UpdateView
 
 
 class ParticipantListView(ListView):
-    add_label   = _('add participant')
-    model   = Participant
+    add_label           = _('add participant')
+    model               = Participant
     template_name       = 'leprikon/participants.html'
     preview_template    = 'leprikon/participant_preview.html'
 
@@ -31,10 +31,10 @@ class ParticipantListView(ListView):
 
 
 class ParticipantCreateView(CreateView):
-    model = Participant
-    form_class = ParticipantForm
+    model       = Participant
+    form_class  = ParticipantForm
     success_url = reverse('leprikon:summary')
-    title = _('New participant')
+    title       = _('New participant')
 
     def get(self, request, *args, **kwargs):
         if self.request.user.leprikon_parents.count():
@@ -55,16 +55,16 @@ class ParticipantCreateView(CreateView):
             kwargs['initial']['parents'] = self.request.user.leprikon_parents.all()
         return kwargs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('New participant {} has been created.').format(self.object)
 
 
 
 class ParticipantUpdateView(UpdateView):
-    model = Participant
-    form_class = ParticipantForm
+    model       = Participant
+    form_class  = ParticipantForm
     success_url = reverse('leprikon:summary')
-    title = _('Change participant')
+    title       = _('Change participant')
 
     def get_queryset(self):
         # only allow to edit user's own participants
@@ -75,6 +75,6 @@ class ParticipantUpdateView(UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-    def get_message(self, form):
+    def get_message(self):
         return _('The participant {} has been updated.').format(self.object)
 
