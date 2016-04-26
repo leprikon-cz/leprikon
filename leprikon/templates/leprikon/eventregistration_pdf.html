@@ -22,7 +22,13 @@
             <p align="center">{{ object.age_group }}</p>
             <p>
                 Název akce: <b>{{ object.event.name }}</b><br/>
-                Datum konání: <b>{{ object.event.start }}{% if object.event.start != object.event.end %} - {{ object.event.end }}{% endif %}</b><br/>
+                Datum konání:
+                <b>
+                    {{ object.event.start_date }}{% if object.event.start_time %}, {{ object.event.start_time }}{% endif %}
+                    {% if object.event.start_date != object.event.end_date or object.event.end_time %}- {% endif %}
+                    {% if object.event.end_date %} {{ object.event.end_date }}{% endif %}{% if object.event.start_date != object.event.end_date and object.event.end_time %}, {% endif %}
+                    {% if object.event.end_time %} {{ object.event.end_time }}{% endif %}
+                </b><br/>
                 Jméno a příjmení: <b>{{ object.participant.full_name }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rodné číslo <b>{{ object.participant.birth_num }}</b><br/>
                 Bydliště: <b>{{ object.participant.address }}</b><br/>
                 Státní občanství: <b>{{ object.citizenship }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zdravotní pojišťovna: <b>{{ object.insurance }}</b><br/>
