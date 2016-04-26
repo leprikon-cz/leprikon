@@ -41,12 +41,6 @@ html {
     padding: 1px 5px;
 }
 
-.box-header:after {
-    content: '';
-    display: block;
-    clear: both;
-}
-
 .box-header small {
     margin-left: 15px;
 }
@@ -64,6 +58,13 @@ html {
     margin-bottom: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+
+.box-header:after,
+.box-content:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .box-content label {
