@@ -98,6 +98,10 @@ form .alert {
     padding: 10px;
 }
 
+#messages .alert {
+    font-size: 20px;
+}
+
 .alert .close {
     top: 0;
     right: 0;
@@ -204,7 +208,7 @@ td.message-subject a {
 
 @media print {
     #cms-top,
-    #header, #sidebar,
+    #header, #messages, #sidebar,
     #list_filter_form,
     .btn, .btn-group {
         display: none;
