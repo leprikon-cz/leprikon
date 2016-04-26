@@ -89,10 +89,6 @@ h2 {
     font-size: 22px;
 }
 
-/*form li {
-    list-style-type: none;
-}*/
-
 form .panel,
 form .alert {
     margin-bottom: 0;
@@ -100,7 +96,6 @@ form .alert {
 
 .alert {
     padding: 10px;
-    font-size: 20px;
 }
 
 .alert .close {
@@ -207,3 +202,27 @@ td.message-subject a {
     padding:   15px;
 }
 
+@media print {
+    #cms-top,
+    #header, #sidebar,
+    #list_filter_form,
+    .btn, .btn-group {
+        display: none;
+    }
+    #body {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    #content {
+        width: 17cm;
+        font-size: 12px;
+    }
+    h1 { font-size: 18px; }
+    h2 { font-size: 16px; }
+    h3 { font-size: 14px; }
+    .box-header { font-size: 14px; }
+    .box {
+        page-break-inside: avoid;
+        margin: 5mm 0;
+    }
+}

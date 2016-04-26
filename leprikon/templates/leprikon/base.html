@@ -44,7 +44,7 @@
             <div class="col-sm-9">
                 {% include 'leprikon/brand.html' %}
             </div>
-            <div class="col-sm-3 hidden-print">
+            <div class="col-sm-3">
                 {% school_year_form %}
                 {% if request.user.is_authenticated %}
                 <div class="dropdown">
@@ -66,7 +66,7 @@
     <div id="body">
         <div class="container">
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-9" id="content">
                     {% if messages %}
                     <div class="hidden-print modal fade" id="messages" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-lg" role="document">
@@ -93,7 +93,7 @@
                     {% endif %}
                     {% block content %}{% endblock %}
                 </div>
-                <div class="col-sm-3 hidden-print">
+                <div class="col-sm-3" id="sidebar">
                     <nav class="list-group">
                         {% show_menu_below_id 'leprikon' 0 100 0 100 'leprikon/menu.html' %}
                     </nav>
