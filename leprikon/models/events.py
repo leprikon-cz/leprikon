@@ -371,4 +371,7 @@ class LeprikonFilteredEventListPlugin(CMSPlugin):
     class Meta:
         app_label = 'leprikon'
 
+    def copy_relations(self, oldinstance):
+        self.event_types = oldinstance.event_types.all()
+
 
