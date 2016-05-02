@@ -1,6 +1,9 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+import uuid
+
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,6 +14,8 @@ from .parent import ParentForm
 from .participant import ParticipantForm
 from .questions import QuestionsFormMixin
 from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap
+
+User = get_user_model()
 
 
 class ParticipantSelectForm(FormMixin, forms.Form):
@@ -40,7 +45,7 @@ class RegistrationPartialForm(FormMixin, forms.ModelForm):
 
 
 class ParentSelectForm(FormMixin, forms.Form):
-    parents     = forms.MultipleChoiceField(label=_('Parents'), widget=CheckboxSelectMultipleBootstrap(), required=False)
+    parents = forms.MultipleChoiceField(label=_('Parents'), widget=CheckboxSelectMultipleBootstrap(), required=False)
 
     def __init__(self, user, **kwargs):
         super(ParentSelectForm, self).__init__(**kwargs)
@@ -50,6 +55,17 @@ class ParentSelectForm(FormMixin, forms.Form):
             self.all_parents = {}
         self.fields['parents'].choices = self.all_parents.items() + [('new', _('new parent'))]
         self.fields['parents'].widget.choices = self.fields['parents'].choices
+
+
+
+class UserSelectForm(FormMixin, forms.Form):
+    create_account = forms.BooleanField(label=_('Create account'), initial=True, required=False,
+                    help_text=_('Having user account allows you to view and easily manage your registrations, payments, etc.'))
+
+
+
+class UserForm(FormMixin, UserCreationForm):
+    pass
 
 
 
@@ -84,8 +100,12 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
         kwargs['prefix'] = 'parent'
         self.parent_form = ParentForm(user=user, **kwargs)
 
+        kwargs['prefix'] = 'user_select'
+        self.user_select_form = UserSelectForm(**kwargs)
+
         kwargs['prefix'] = 'user'
-        self.user_form = UserCreationForm(**kwargs)
+        self.user_form = UserForm(**kwargs)
+        self.user_form.fields['username'].help_text = None
 
     def is_valid(self):
         # validate participant
@@ -118,15 +138,30 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
         else:
             self.parent_form.is_bound = False
 
-        if self.user.is_anonymous() and not self.user_form.is_valid():
-            return False
+        # validate user
+        if self.user.is_anonymous():
+            if not self.user_select_form.is_valid():
+                self.user_form.is_bound = False
+                return False
+            if self.user_select_form.cleaned_data['create_account']:
+                if not self.user_form.is_valid():
+                    return False
 
         return super(RegistrationForm, self).is_valid()
 
 
     def save(self, commit=True):
         if self.user.is_anonymous():
-            self.user = self.user_form.save()
+            if self.user_select_form.cleaned_data['create_account']:
+                self.user = self.user_form.save()
+            else:
+                # create inactive user
+                self.user = User()
+                self.user.is_active = False
+                self.user.username = str(uuid.uuid4())[:30]
+                while User.objects.filter(username=self.user.username).exists():
+                    self.user.username = str(uuid.uuid4())[:30]
+                self.user.save()
             new_user = True
         else:
             new_user = False

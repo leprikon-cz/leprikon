@@ -142,7 +142,7 @@ class EventRegistrationFormView(CreateView):
 
     def form_valid(self, form):
         response = super(EventRegistrationFormView, self).form_valid(form)
-        if self.request.user.is_anonymous():
+        if self.request.user.is_anonymous() and form.user.is_active:
             form.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(self.request, form.user)
         return response

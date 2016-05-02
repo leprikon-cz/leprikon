@@ -65,9 +65,15 @@
     {% if not request.user.is_authenticated %}
     <h3>{% trans 'User' %}</h3>
 
+    {% for item in form.user_select_form %}
+        {% include 'leprikon/form_item.html' %}
+    {% endfor %}
+
+    <div id="user_form" class="{% if not form.user_select_form.create_account.value %}hidden{% endif %}">
     {% for item in form.user_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
+    </div>
     {% endif %}
 
     <!-- SUBMIT -->
@@ -111,6 +117,14 @@ $(document).ready(function() {
             $('#parent_form').removeClass('hidden');
         } else {
             $('#parent_form').addClass('hidden');
+        }
+    });
+    /* Select user */
+    $('input[type=checkbox][name=user_select-create_account]').change(function() {
+        if (this.checked) {
+            $('#user_form').removeClass('hidden');
+        } else {
+            $('#user_form').addClass('hidden');
         }
     });
 });

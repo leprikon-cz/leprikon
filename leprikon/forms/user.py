@@ -54,6 +54,10 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
 
 class UserCreateForm(UserFormMixin, _UserCreationForm):
 
+    def __init__(self, **kwargs):
+        super(UserCreateForm, self).__init__(**kwargs)
+        self.fields['username'].help_text = None
+
     def save(self, commit=True):
         user = super(UserCreateForm, self).save()
         parent = Parent()
@@ -71,6 +75,10 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
 
 
 class UserUpdateForm(FormMixin, forms.ModelForm):
+
+    def __init__(self, **kwargs):
+        super(UserUpdateForm, self).__init__(**kwargs)
+        self.fields['username'].help_text = None
 
     class Meta:
         model = User

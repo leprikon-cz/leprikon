@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-27 01:35+0200\n"
+"POT-Creation-Date: 2016-05-02 22:52+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -520,24 +520,35 @@ msgstr "Zahrnout minulé"
 msgid "Recipients"
 msgstr "Příjemci"
 
-#: forms/registrations.py:17 templates/leprikon/registration_form.html.py:28
+#: forms/registrations.py:22 templates/leprikon/registration_form.html.py:28
 #: templates/leprikon/registration_preview.html:27
 msgid "Participant"
 msgstr "Účastník"
 
-#: forms/registrations.py:22
+#: forms/registrations.py:27
 msgid "new participant"
 msgstr "nový účastník"
 
-#: forms/registrations.py:43 templates/leprikon/participants.html.py:7
+#: forms/registrations.py:48 templates/leprikon/participants.html.py:7
 #: templates/leprikon/registration_form.html:53
 #: templates/leprikon/registration_preview.html:33
 msgid "Parents"
 msgstr "Zástupci"
 
-#: forms/registrations.py:51
+#: forms/registrations.py:56
 msgid "new parent"
 msgstr "nový zástupce"
+
+#: forms/registrations.py:62 menu.py:29 views/user.py:33
+msgid "Create account"
+msgstr "Vytvořit účet"
+
+#: forms/registrations.py:63
+msgid ""
+"Having user account allows you to view and easily manage your registrations, "
+"payments, etc."
+msgstr ""
+"Uživatelský účet Vám umožní snadno spravovat přihlášky, platby a mnohem více."
 
 #: forms/reports/clubs.py:10 forms/reports/events.py:10
 msgid "Start date"
@@ -574,10 +585,9 @@ msgid "The timesheet period {period} ends {end}"
 msgstr "Období {period} končí {end}"
 
 #: forms/timesheets.py:56
-#, fuzzy, python-brace-format
-#| msgid "Your timesheet for period {period} has already been submitted."
+#, python-brace-format
 msgid "Your timesheet for period {period} has already been submitted."
-msgstr "Váš výkaz práce za {} byl již odevzdán."
+msgstr "Váš výkaz práce za {period} byl již odevzdán."
 
 #: forms/timesheets.py:72
 msgid "An overlaping entry has already been added in the timesheet."
@@ -596,10 +606,6 @@ msgstr ""
 #: views/user.py:74 views/user.py:75
 msgid "Log in"
 msgstr "Přihlásit se"
-
-#: menu.py:29 views/user.py:33
-msgid "Create account"
-msgstr "Vytvořit účet"
 
 #: menu.py:35 views/user.py:76
 msgid "Reset password"
