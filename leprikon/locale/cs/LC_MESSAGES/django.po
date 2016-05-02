@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-02 22:52+0200\n"
+"POT-Creation-Date: 2016-05-02 22:54+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -519,6 +519,10 @@ msgstr "Zahrnout minulé"
 #: forms/messages.py:33 forms/messages.py:36
 msgid "Recipients"
 msgstr "Příjemci"
+
+#: forms/participant.py:27
+msgid "Failed to parse birth day"
+msgstr "Nepodařilo se rozpoznat datum narození"
 
 #: forms/registrations.py:22 templates/leprikon/registration_form.html.py:28
 #: templates/leprikon/registration_preview.html:27

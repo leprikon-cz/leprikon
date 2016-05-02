@@ -1,8 +1,10 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from ..models import Participant
+from ..utils import get_birth_date
 
 from .form import FormMixin
 
@@ -18,6 +20,12 @@ class ParticipantForm(FormMixin, forms.ModelForm):
         return super(ParticipantForm, self).save(commit)
     save.alters_data = True
 
+    def clean_birth_num(self):
+        try:
+            get_birth_date(self.cleaned_data['birth_num'])
+        except:
+            raise forms.ValidationError(_('Failed to parse birth day'), code='invalid')
+        return self.cleaned_data['birth_num']
 
     class Meta:
         model = Participant
