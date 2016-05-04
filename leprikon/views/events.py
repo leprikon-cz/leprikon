@@ -46,11 +46,20 @@ class EventListView(FilteredListView):
 
 
 class EventListMineView(EventListView):
-    def get_queryset(self):
-        return super(EventListMineView, self).get_queryset().filter(leaders=self.request.leader)
-
     def get_title(self):
         return _('My events in school year {}').format(self.request.school_year)
+
+    def dispatch(self, request, **kwargs):
+        return super(EventListView, self).dispatch(request, **kwargs)
+
+    def get_form(self):
+        return self.form_class(
+            request     = self.request,
+            data        = self.request.GET,
+        )
+
+    def get_queryset(self):
+        return super(EventListMineView, self).get_queryset().filter(leaders=self.request.leader)
 
 
 
