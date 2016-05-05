@@ -180,13 +180,22 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
                 self.initial['date']  = date.today()
 
     def clean(self):
+        start   = self.cleaned_data.get('start', None)
+        end     = self.cleaned_data.get('end', None)
+
+        # start and end must be both set or both None
+        if start is None and end is not None:
+            raise ValidationError({'start': _('If You fill in start time, You must fill end time too.')})
+        elif end is None and start is not None:
+            raise ValidationError({'end':   _('If You fill in end time, You must fill start time too.')})
+
         # check overlaping entries
-        if self.cleaned_data.get('start', None) and self.cleaned_data.get('end', None):
+        if start:
             qs = ClubJournalEntry.objects.filter(
                 club        = self.instance.club,
                 date        = self.cleaned_data.get('date', self.instance.date),
-                start__lt   = self.cleaned_data['end'],
-                end__gt     = self.cleaned_data['start'],
+                start__lt   = end,
+                end__gt     = start,
             )
             if self.instance.id:
                 qs = qs.exclude(id=self.instance.id)
@@ -202,11 +211,11 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
             max_start   = min(e.start for e in submitted_leader_entries)
             min_end     = max(e.end   for e in submitted_leader_entries)
             errors = {}
-            if self.cleaned_data['start'] > max_start:
+            if (start is None) or (start > max_start):
                 errors['start'] = _('Some submitted timesheet entries start at {start}').format(
                     start = max_start,
                 )
-            if self.cleaned_data['end'] < min_end:
+            if (end is None) or (end < min_end):
                 errors['end'] = _('Some submitted timesheet entries end at {end}').format(
                     end = min_end,
                 )
