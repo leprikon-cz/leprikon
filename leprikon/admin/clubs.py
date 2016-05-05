@@ -119,8 +119,9 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
             form = MergeForm(request.POST)
             if form.is_valid():
                 target = form.cleaned_data['target']
-                clubs = [ club for club in queryset.all() if club != target ]
-                for club in clubs:
+                for club in queryset.all():
+                    if club == target:
+                        continue
                     # merge groups
                     for group in club.all_groups:
                         target.groups.add(group)
@@ -146,12 +147,17 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
                         entry.club = target
                         entry.save()
                     club.delete()
-                self.message_user(request, _('Selected clubs were merged into club {}.').format(club))
+                self.message_user(request, _('Selected clubs were merged into club {}.').format(target))
                 return
         else:
             form = MergeForm()
-        return render_to_response('leprikon/admin/club_merge.html', {
-            'title':    _('Select target club for merge'),
+        return render_to_response('leprikon/admin/merge.html', {
+            'title':    _('Merge selected clubs into one'),
+            'question': _('Are you sure you want to merge selected clubs into one? '
+                          'All leaders, registrations, payments and other related information '
+                          'will be added to the target club and the remaining clubs will be deleted.'),
+            'objects_title':    _('Clubs'),
+            'form_title':       _('Select target club for merge'),
             'queryset': queryset,
             'opts': self.model._meta,
             'form': form,

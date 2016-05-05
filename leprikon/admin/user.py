@@ -1,12 +1,15 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+from django import forms
 from django.conf.urls import url as urls_url
+from django.contrib.admin import helpers
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -25,24 +28,56 @@ class UserAdmin(_UserAdmin):
     )
 
     def merge(self, request, queryset):
-        users = list(queryset.order_by('id'))
-        latest      = users[-1]
-        for user in users[:-1]:
-            try:
-                leader = user.leprikon_leader
-            except:
-                leader = None
-            if leader:
-                leader.user = latest
-                leader.save()
-            for participant in user.leprikon_participants.all():
-                participant.user = latest
-                participant.save()
-            for parent in user.leprikon_parents.all():
-                parent.user = latest
-                parent.save()
-            user.delete()
-        self.message_user(request, _('Selected users were merged into user {}.').format(latest))
+        class MergeForm(forms.Form):
+            target = forms.ModelChoiceField(
+                label=_('Target user'),
+                help_text=_('All information will be merged into selected account.'),
+                queryset=queryset,
+            )
+        if request.POST.get('post', 'no') == 'yes':
+            form = MergeForm(request.POST)
+            if form.is_valid():
+                target = form.cleaned_data['target']
+                for user in queryset.all():
+                    if user == target:
+                        continue
+                    if not target.first_name and user.first_name:
+                        target.first_name = user.first_name
+                    if not target.last_name and user.last_name:
+                        target.last_name = user.last_name
+                    if not target.email and user.email:
+                        target.email = user.email
+                    try:
+                        leader = user.leprikon_leader
+                    except:
+                        leader = None
+                    if leader:
+                        leader.user = target
+                        leader.save()
+                    for participant in user.leprikon_participants.all():
+                        participant.user = target
+                        participant.save()
+                    for parent in user.leprikon_parents.all():
+                        parent.user = target
+                        parent.save()
+                    user.delete()
+                target.save()
+                self.message_user(request, _('Selected users were merged into user {}.').format(target))
+                return
+        else:
+            form = MergeForm()
+        return render_to_response('leprikon/admin/merge.html', {
+            'title':    _('Select target user for merge'),
+            'question': _('Are you sure you want to merge selected users into one? '
+                          'All participants, parents, registrations and other related information '
+                          'will be added to the target user account and the remaining users will be deleted.'),
+            'queryset': queryset,
+            'objects_title':    _('Users'),
+            'form_title':       _('Select target account for merge'),
+            'opts': self.model._meta,
+            'form': form,
+            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
     merge.short_description = _('Merge selected user accounts')
 
     def get_list_display(self, request):

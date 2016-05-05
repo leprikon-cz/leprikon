@@ -8,19 +8,20 @@
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
 &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst|escape }}</a>
-&rsaquo; {% trans 'Merge selected clubs into one' %}
+&rsaquo; {{ title }}
 </div>
 {% endblock %}
 
 {% block content %}
-<p>{% blocktrans %}Are you sure you want to merge selected clubs into one? All leaders, registrations, payments and other related information will be added to the target club and the remaining clubs will be deleted.{% endblocktrans %}</p>
-<h2>{% trans 'Clubs' %}</h2>
+<p>{{ question }}</p>
+<h2>{{ objects_title }}</h2>
 <ul>
 {% for obj in queryset %}
     <li>{{ obj }}</li>
 {% endfor %}
 </ul>
 
+<h2>{{ form_title }}</h2>
 <form method="post">{% csrf_token %}
 {% for obj in queryset %}
 <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
