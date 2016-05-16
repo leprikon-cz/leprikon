@@ -18,9 +18,10 @@ Group = namedtuple('Group', ('group', 'objects'))
 
 
 class LeprikonClubListPlugin(CMSPluginBase):
-    cache = False
-    model = LeprikonClubListPlugin
-    name = _('Club list')
+    module  = _('Leprikon')
+    name    = _('Club list')
+    model   = LeprikonClubListPlugin
+    cache   = False
     text_enabled = True
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
@@ -56,9 +57,10 @@ class LeprikonClubListPlugin(CMSPluginBase):
 
 
 class LeprikonFilteredClubListPlugin(CMSPluginBase):
-    cache = False
-    model = LeprikonFilteredClubListPlugin
-    name = _('Club list with filter form')
+    module  = _('Leprikon')
+    name    = _('Club list with filter form')
+    model   = LeprikonFilteredClubListPlugin
+    cache   = False
     render_template = 'leprikon/filtered_club_list.html'
 
     def render(self, context, instance, placeholder):
@@ -81,9 +83,10 @@ class LeprikonFilteredClubListPlugin(CMSPluginBase):
 
 
 class LeprikonEventListPlugin(CMSPluginBase):
-    cache = False
-    model = LeprikonEventListPlugin
-    name = _('Event list')
+    module  = _('Leprikon')
+    name    = _('Event list')
+    model   = LeprikonEventListPlugin
+    cache   = False
     text_enabled = True
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
@@ -119,9 +122,10 @@ class LeprikonEventListPlugin(CMSPluginBase):
 
 
 class LeprikonFilteredEventListPlugin(CMSPluginBase):
-    cache = False
-    model = LeprikonFilteredEventListPlugin
-    name = _('Event list with filter form')
+    module  = _('Leprikon')
+    name    = _('Event list with filter form')
+    model   = LeprikonFilteredEventListPlugin
+    cache   = False
     render_template = 'leprikon/filtered_event_list.html'
 
     def render(self, context, instance, placeholder):
