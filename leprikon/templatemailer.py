@@ -72,8 +72,6 @@ class TemplateMailer(object):
             message = content[1]
         except:
             message = ''
-        def xsend_mail(**kwargs):
-            raise Exception(kwargs)
         send_mail(
             subject         = subject,
             message         = message,

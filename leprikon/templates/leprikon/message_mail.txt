@@ -1,5 +1,4 @@
 {% load i18n %}
-{{ message_recipient.message.subject }}
 {{ message_recipient.message.text | striptags }}
 
 ~ ~ ~

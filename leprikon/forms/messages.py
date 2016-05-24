@@ -24,28 +24,3 @@ class MessageFilterForm(FormMixin, forms.Form):
             )
         return qs
 
-
-
-class MessageAdminForm(forms.ModelForm):
-    recipients = forms.ModelMultipleChoiceField(
-        queryset    = get_user_model().objects.all(),
-        widget      = widgets.FilteredSelectMultiple(
-            _('Recipients'),
-            False,
-        ),
-        label       = _('Recipients'),
-    )
-
-    class Meta:
-        model = Message
-        fields = ['subject', 'text']
-
-    def _save_m2m(self):
-        super(MessageAdminForm, self)._save_m2m()
-        for user in self.cleaned_data['recipients']:
-            recipient = MessageRecipient()
-            recipient.recipient = user
-            recipient.message   = self.instance
-            recipient.save()
-        return self.instance
-

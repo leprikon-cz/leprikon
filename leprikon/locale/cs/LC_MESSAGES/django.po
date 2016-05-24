@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-06 11:12+0200\n"
+"POT-Creation-Date: 2016-05-25 01:22+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -263,11 +263,11 @@ msgstr "Exportovat vybrané záznamy ve formátu CSV (hodnoty oddělené čárko
 msgid "Export selected records as XLS"
 msgstr "Exportovat vybrané záznamy ve formátu XLS"
 
-#: admin/messages.py:44
+#: admin/messages.py:42
 msgid "recipients count"
 msgstr "počet příjemců"
 
-#: admin/messages.py:48 models/messages.py:38
+#: admin/messages.py:46 models/messages.py:48
 msgid "received"
 msgstr "doručeno"
 
@@ -381,11 +381,12 @@ msgstr "přihlásit"
 msgid "participants"
 msgstr "účastníci"
 
-#: apps.py:9 cms_app.py:13 menu.py:15
+#: apps.py:9 cms_app.py:13 cms_plugins.py:21 cms_plugins.py:60
+#: cms_plugins.py:86 cms_plugins.py:125 menu.py:15
 msgid "Leprikon"
 msgstr "Leprikón"
 
-#: cms_plugins.py:23
+#: cms_plugins.py:22
 msgid "Club list"
 msgstr "Seznam kroužků"
 
@@ -393,11 +394,11 @@ msgstr "Seznam kroužků"
 msgid "Club list with filter form"
 msgstr "Výpis kroužků s filtrováním"
 
-#: cms_plugins.py:86
+#: cms_plugins.py:87
 msgid "Event list"
 msgstr "Výpis akcí"
 
-#: cms_plugins.py:124
+#: cms_plugins.py:126
 msgid "Event list with filter form"
 msgstr "Výpis akcí s filtrováním"
 
@@ -567,10 +568,6 @@ msgstr "Druh akce"
 #: forms/events.py:21
 msgid "Include past"
 msgstr "Zahrnout minulé"
-
-#: forms/messages.py:33 forms/messages.py:36
-msgid "Recipients"
-msgstr "Příjemci"
 
 #: forms/participant.py:27
 msgid "Failed to parse birth day"
@@ -890,10 +887,12 @@ msgid "{name}, {start:%m/%d %y} - {end:%m/%d %y}"
 msgstr "{name}, {start:%d. %m. %y} až {end:%d. %m. %y}"
 
 #: models/clubs.py:322 models/events.py:71 models/events.py:209
+#: models/messages.py:100
 msgid "attachment"
 msgstr "příloha"
 
 #: models/clubs.py:323 models/events.py:72 models/events.py:210
+#: models/messages.py:101
 msgid "attachments"
 msgstr "přílohy"
 
@@ -1098,29 +1097,33 @@ msgstr "sobota"
 msgid "Sunday"
 msgstr "neděle"
 
-#: models/messages.py:17 models/messages.py:37
+#: models/messages.py:23 models/messages.py:47
 msgid "sent"
 msgstr "odesláno"
 
-#: models/messages.py:18
+#: models/messages.py:24
 msgid "subject"
 msgstr "předmět"
 
-#: models/messages.py:19
+#: models/messages.py:25
 msgid "text"
 msgstr "text"
 
-#: models/messages.py:24 models/messages.py:35
+#: models/messages.py:30 models/messages.py:45 models/messages.py:95
 msgid "message"
 msgstr "zpráva"
 
-#: models/messages.py:25
+#: models/messages.py:31
 msgid "messages"
 msgstr "zprávy"
 
-#: models/messages.py:36
+#: models/messages.py:46 models/messages.py:52
 msgid "recipient"
 msgstr "příjemce"
+
+#: models/messages.py:53
+msgid "recipients"
+msgstr "příjemci"
 
 #: models/place.py:17
 msgid "places"
@@ -1427,6 +1430,7 @@ msgstr[1] "Vedou"
 #: templates/leprikon/event_list/default.html:51
 #: templates/leprikon/event_list/grouped.html:53
 #: templates/leprikon/event_preview.html:47
+#: templates/leprikon/messagerecipient_detail.html:20
 msgid "Attachments"
 msgstr "Přílohy"
 
@@ -1499,7 +1503,7 @@ msgstr "vyčistit filter"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: templates/leprikon/message_mail.html:7 templates/leprikon/message_mail.txt:7
+#: templates/leprikon/message_mail.html:7 templates/leprikon/message_mail.txt:6
 #, python-format
 msgid "Show this message on site %(name)s:"
 msgstr "Zobrazit tuto zprávu na webu %(name)s:"

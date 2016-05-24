@@ -16,4 +16,11 @@
 {{ messagerecipient.message.text | safe }}
 </div>
 
+{% if messagerecipient.message.all_attachments %}
+<h2>{% trans 'Attachments' %}</h2>
+{% for attachment in messagerecipient.message.all_attachments %}
+<a href="{{ attachment.file.url }}">{{ attachment.file }}</a><br/>
+{% endfor %}
+{% endif %}
+
 {% endblock %}
