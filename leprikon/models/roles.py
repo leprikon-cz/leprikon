@@ -22,7 +22,7 @@ class Leader(models.Model):
     user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='leprikon_leader')
     description     = HTMLField(_('description'), blank=True, default='')
     photo           = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
-    page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True)
+    page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
     school_years    = models.ManyToManyField(SchoolYear, verbose_name=_('school years'), related_name='leaders')
 
     class Meta:
