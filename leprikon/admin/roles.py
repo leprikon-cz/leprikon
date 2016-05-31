@@ -20,7 +20,7 @@ class LeaderAdmin(admin.ModelAdmin):
     filter_horizontal   = ('school_years',)
     inlines             = (ContactInlineAdmin,)
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
-    list_display        = ('id', 'user_link', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts')
+    list_display        = ('id', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts', 'user_link', 'icon')
     ordering            = ('user__first_name', 'user__last_name')
     actions             = ('add_current_school_year', 'send_message')
     list_filter         = (('school_years', SchoolYearListFilter),)
@@ -84,6 +84,14 @@ class LeaderAdmin(admin.ModelAdmin):
         )
     events_link.allow_tags = True
     events_link.short_description = _('events')
+
+    def icon(self, obj):
+        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
+            src = obj.photo.icons['48'],
+            alt = obj.photo.label,
+        ) or ''
+    icon.allow_tags = True
+    icon.short_description = _('photo')
 
     def send_message(self, request, queryset):
         users = get_user_model().objects.filter(
