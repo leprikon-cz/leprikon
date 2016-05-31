@@ -222,9 +222,9 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
         }, context_instance=RequestContext(request))
 
     def icon(self, obj):
-        return obj.photo and '<a href="{admin_url}"><img src="{icon_url}" alt=""/>'.format(
-            admin_url   = obj.photo.get_admin_url_path(),
-            icon_url    = obj.photo.icons['48'],
+        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
+            src = obj.photo.icons['48'],
+            alt = obj.photo.label,
         ) or ''
     icon.allow_tags = True
     icon.short_description = _('photo')
