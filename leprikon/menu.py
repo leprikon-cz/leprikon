@@ -163,7 +163,13 @@ menu_pool.register_modifier(LeprikonModifier)
 
 
 # clear menu cache with each reload
-menu_pool.clear()
+try:
+    menu_pool.clear()
+except:
+    # menu_pool.clear() uses database,
+    # but this code may be executed
+    # before the database is created
+    pass
 
 
 def invalidate_menu_cache(sender, **kwargs):
