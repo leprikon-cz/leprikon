@@ -39,13 +39,13 @@
 
 {% block content %}
 
+<button id="send_mails">{% trans 'Start sending' %}</button>
+
 <ul>
     {% for recipient in recipients %}
     <li>{{ recipient }}: <span id="status_{{ recipient.id }}" class="recipient queued">{% trans 'queued' %}</span></li>
     {% endfor %}
 </ul>
-
-<a href="{% url opts|admin_urlname:'changelist' %}?message={{ message.id }}" class="button cancel-link">{% trans 'back' %}: {{ message.subject }} &ndash; {{ opts.verbose_name_plural|capfirst|escape }}</a>
 
 <script>
 
@@ -73,7 +73,7 @@
             });
         }
         recipient_id = recipient_ids.shift();
-        if (recipient_id) send_mail(recipient_id);
+        if (recipient_id) $("#send_mails").one("click", function() { send_mail(recipient_id); });
     });
 })(django.jQuery);
 

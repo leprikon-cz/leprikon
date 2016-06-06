@@ -10,19 +10,20 @@ from django.utils.translation import ugettext_lazy as _
 from ..models import *
 
 from .filters import SchoolYearListFilter
+from .messages import SendMessageAdminMixin
 
 
 class ContactInlineAdmin(admin.TabularInline):
     model = Contact
     extra = 0
 
-class LeaderAdmin(admin.ModelAdmin):
+class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     filter_horizontal   = ('school_years',)
     inlines             = (ContactInlineAdmin,)
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
     list_display        = ('id', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts', 'user_link', 'icon')
     ordering            = ('user__first_name', 'user__last_name')
-    actions             = ('add_current_school_year', 'send_message')
+    actions             = ('add_current_school_year',)
     list_filter         = (('school_years', SchoolYearListFilter),)
     raw_id_fields       = ('user',)
 
@@ -93,24 +94,18 @@ class LeaderAdmin(admin.ModelAdmin):
     icon.allow_tags = True
     icon.short_description = _('photo')
 
-    def send_message(self, request, queryset):
-        users = get_user_model().objects.filter(
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
             leprikon_leader__in = queryset
         ).distinct()
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in users),
-        ))
-    send_message.short_description = _('Send message')
 
 
 
-class ParentAdmin(admin.ModelAdmin):
+class ParentAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
     list_display    = ('id', 'first_name', 'last_name', 'address', 'email', 'phone', 'user_link', 'registrations_links')
     raw_id_fields   = ('user',)
-    actions         = ('send_message',)
 
     def first_name(self, obj):
         return obj.user.first_name
@@ -164,25 +159,19 @@ class ParentAdmin(admin.ModelAdmin):
     registrations_links.allow_tags = True
     registrations_links.short_description = _('registrations')
 
-    def send_message(self, request, queryset):
-        users = get_user_model().objects.filter(
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
             leprikon_parents__in = queryset
         ).distinct()
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in users),
-        ))
-    send_message.short_description = _('Send message')
 
 
 
-class ParticipantAdmin(admin.ModelAdmin):
+class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'birth_num', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
     list_display    = ('id', 'first_name', 'last_name', 'birth_num', 'address', 'email', 'phone', 'school_name', 'user_link',
                        'registrations_links')
     raw_id_fields   = ('user',)
-    actions         = ('send_message',)
 
     @cached_property
     def users_url(self):
@@ -225,13 +214,9 @@ class ParticipantAdmin(admin.ModelAdmin):
         return obj.school_name
     school_name.short_description = _('school')
 
-    def send_message(self, request, queryset):
-        users = get_user_model().objects.filter(
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
             leprikon_participants__in = queryset
         ).distinct()
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in users),
-        ))
-    send_message.short_description = _('Send message')
+
 

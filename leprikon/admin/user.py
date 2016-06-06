@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 
 from django import forms
 from django.conf.urls import url as urls_url
-from django.contrib.admin import helpers
+from django.contrib import admin
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.decorators import user_passes_test
@@ -16,9 +16,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.user import UserAdminCreateForm
 
+from .messages import SendMessageAdminMixin
 
-class UserAdmin(_UserAdmin):
-    actions = ('merge', 'send_message')
+
+class UserAdmin(SendMessageAdminMixin, _UserAdmin):
+    actions = ('merge',)
     add_form = UserAdminCreateForm
     add_fieldsets = (
         (None, {
@@ -76,7 +78,7 @@ class UserAdmin(_UserAdmin):
             'form_title':       _('Select target account for merge'),
             'opts': self.model._meta,
             'form': form,
-            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
         }, context_instance=RequestContext(request))
     merge.short_description = _('Merge selected user accounts')
 
@@ -142,10 +144,7 @@ class UserAdmin(_UserAdmin):
     participants_link.allow_tags = True
     participants_link.short_description = _('participants')
 
-    def send_message(self, request, queryset):
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in queryset.all()),
-        ))
-    send_message.short_description = _('Send message')
+    def get_message_recipients(self, request, queryset):
+        return queryset.all()
+
 

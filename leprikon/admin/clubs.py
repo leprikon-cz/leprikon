@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
-from django.contrib.admin import helpers
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -24,6 +23,7 @@ from ..utils import currency, comma_separated
 
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter, ClubListFilter, LeaderListFilter
+from .messages import SendMessageAdminMixin
 
 
 class ClubGroupAdmin(admin.ModelAdmin):
@@ -45,7 +45,7 @@ class ClubAttachmentInlineAdmin(admin.TabularInline):
     model   = ClubAttachment
     extra   = 3
 
-class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
+class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
         'name', 'get_groups_list', 'get_leaders_list',
         'get_times_list', 'get_periods_list',
@@ -68,7 +68,7 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
-        'merge', 'send_message',
+        'merge',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -161,19 +161,14 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
             'queryset': queryset,
             'opts': self.model._meta,
             'form': form,
-            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
         }, context_instance=RequestContext(request))
     merge.short_description = _('Merge selected clubs into one')
 
-    def send_message(self, request, queryset):
-        users = get_user_model().objects.filter(
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
             leprikon_participants__club_registrations__club__in = queryset
         ).distinct()
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in users),
-        ))
-    send_message.short_description = _('Send message')
 
     def get_registrations_link(self, obj):
         icon = False
@@ -231,7 +226,7 @@ class ClubAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 
-class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
+class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
         'id', 'get_download_tag', 'club', 'participant_link', 'parents_link',
         'discount', 'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
@@ -250,7 +245,7 @@ class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
         ('club',                ClubListFilter),
         ('club__leaders',       LeaderListFilter),
     )
-    actions         = ('send_mail', 'send_message')
+    actions         = ('send_mail',)
     search_fields   = (
         'participant__first_name', 'participant__last_name',
         'participant__birth_num', 'participant__email',
@@ -409,15 +404,10 @@ class ClubRegistrationAdmin(AdminExportMixin, admin.ModelAdmin):
                 )
     send_mail.short_description = _('Send selected registrations by email')
 
-    def send_message(self, request, queryset):
-        users = get_user_model().objects.filter(
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
             leprikon_participants__club_registrations__in = queryset
         ).distinct()
-        return HttpResponseRedirect('{url}?recipients={recipients}'.format(
-            url         = reverse('admin:leprikon_message_add'),
-            recipients  = ','.join(str(u.id) for u in users),
-        ))
-    send_message.short_description = _('Send message')
 
 
 

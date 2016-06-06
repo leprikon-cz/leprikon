@@ -1,16 +1,69 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+from django import forms
 from django.conf.urls import url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.messages import MessageAdminForm
 from ..models.messages import Message, MessageAttachment, MessageRecipient
+
+
+def messagerecipient_send_mails(request, message, recipients, media):
+    return render_to_response('admin/leprikon/messagerecipient/send_mails.html', {
+        'title':        _('Sending emails'),
+        'message':      message,
+        'recipients':   recipients,
+        'media':        media,
+        'message_opts': Message._meta,
+        'opts':         MessageRecipient._meta,
+    }, context_instance=RequestContext(request))
+
+
+
+class SendMessageAdminMixin(object):
+    actions = ('send_message', 'add_to_message')
+
+    def get_message_recipients(self, request, queryset):
+        raise NotImplementedError('{} must implement method get_message_recipients'.format(self.__class__.__name__))
+
+    def send_message(self, request, queryset):
+        from ..models import Message
+        request.method = 'GET'
+        request.leprikon_message_recipients = [r.id for r in self.get_message_recipients(request, queryset)]
+        return admin.site._registry[Message].changeform_view(request, form_url=reverse('admin:leprikon_message_add'))
+    send_message.short_description = _('Send message')
+
+    def add_to_message(self, request, queryset):
+        from ..models import Message, MessageRecipient
+        class MessageForm(forms.Form):
+            message = forms.ModelChoiceField(
+                label=_('Target message'),
+                help_text=_('Recipients will be added to selected message.'),
+                queryset=Message.objects.all(),
+            )
+        if request.POST.get('post', 'no') == 'yes':
+            form = MessageForm(request.POST)
+            if form.is_valid():
+                message = form.cleaned_data['message']
+                for recipient in self.get_message_recipients(request, queryset):
+                    MessageRecipient.objects.get_or_create(message=message, recipient=recipient)
+                return HttpResponseRedirect(reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(message.id))
+        else:
+            form = MessageForm()
+        return render_to_response('admin/leprikon/message/add_recipients.html', {
+            'title':    _('Select target message'),
+            'queryset': queryset,
+            'opts': self.model._meta,
+            'form': form,
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
+    add_to_message.short_description = _('Add recipients to existing message')
 
 
 class MessageAttachmentInlineAdmin(admin.TabularInline):
@@ -21,60 +74,75 @@ class MessageAdmin(admin.ModelAdmin):
     form            = MessageAdminForm
     inlines         = (MessageAttachmentInlineAdmin,)
     search_fields   = ('subject', 'text')
-    list_display    = ('subject', 'created', 'recipients_count', 'sent_mails_count', 'recipients_viewed_count', 'action_links')
-    actions         = ('send_mails_new', 'send_mails_all')
+    list_display    = ('subject', 'created', 'recipients', 'action_links')
 
     def get_changeform_initial_data(self, request):
         initial = super(MessageAdmin, self).get_changeform_initial_data(request)
         try:
-            initial['recipients'] = map(int, initial['recipients'].split(','))
+            initial['recipients'] = request.leprikon_message_recipients
         except:
-            initial['recipients'] = []
+            pass
         return initial
 
-    def recipients_count(self, obj):
-        return obj.recipients.count()
-    recipients_count.short_description = _('recipients count')
-
-    def sent_mails_count(self, obj):
-        return obj.recipients.exclude(sent_mail=None).count()
-    sent_mails_count.short_description = _('sent emails count')
-
-    def recipients_viewed_count(self, obj):
-        return obj.recipients.exclude(viewed=None).count()
-    recipients_viewed_count.short_description = _('viewed on site')
+    def recipients(self, obj):
+        return (
+            '<a href="{recipients_url}">'
+            '    <span title="{all_title}">{all_count}</span>'
+            '  / <span title="{mails_title}">{mails_count}</span>'
+            '  / <span title="{viewed_title}">{viewed_count}</span>'
+            '</a> '
+        ).format(
+            recipients_url  = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
+            all_title       = _('recipients count'),
+            mails_title     = _('sent mail'),
+            viewed_title    = _('viewed on site'),
+            all_count       = obj.recipients.count(),
+            mails_count     = obj.recipients.exclude(sent_mail=None).count(),
+            viewed_count    = obj.recipients.exclude(viewed=None).count(),
+        )
+    recipients.allow_tags = True
+    recipients.short_description = _('recipients')
 
     def action_links(self, obj):
-        return '<a href="{url}" title="{title}">{label}</a>'.format(
-            url     = reverse('admin:{}_{}_changelist'.format(
-                        MessageRecipient._meta.app_label,
-                        MessageRecipient._meta.model_name,
-                    )) + '?message={}'.format(obj.id),
-            title   = _('show recipients details'),
-            label   = _('recipients'),
+        return (
+            '<a href="{recipients_url}" class="button" title="{recipients_title}">{recipients}</a> '
+            '<a href="{send_mails_all_url}" class="button" title="{send_mails_all_title}">{send_mails_all}</a> '
+            '<a href="{send_mails_new_url}" class="button" title="{send_mails_new_title}">{send_mails_new}</a> '
+        ).format(
+            recipients              = _('recipients'),
+            recipients_title        = _('show recipients details'),
+            recipients_url          = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
+            send_mails_all          = _('send mails'),
+            send_mails_all_title    = _('send mail to all recipients'),
+            send_mails_all_url      = reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
+            send_mails_new          = _('send unsent'),
+            send_mails_new_title    = _('send mails to new recipients only'),
+            send_mails_new_url      = reverse('admin:leprikon_message_send_mails') + '?message={}&new=1'.format(obj.id),
         )
     action_links.allow_tags = True
-    action_links.short_description = _('recipients')
+    action_links.short_description = _('actions')
 
-    def send_mails_all(self, request, queryset):
-        return render_to_response('admin/leprikon/messagerecipient/send_mails.html', {
-            'title': _('Sending emails'),
-            'recipients': queryset.filter(''),
-            'options': form.cleaned_data['options'],
-            'media':    self.media,
-            'opts': self.model._meta,
-        }, context_instance=RequestContext(request))
-    send_mails_all.short_description = _('Send email to all recipients')
+    def get_urls(self):
+        return [
+            url(r'^send-mails/$', self.admin_site.admin_view(self.send_mails), name='leprikon_message_send_mails'),
+        ] + super(MessageAdmin, self).get_urls()
 
-    def send_mails_new(self, request, queryset):
-        return self.send_mails_all(request, queryset.filter(sent_mail=None))
-    send_mails_new.short_description = _('Sent email to new recipients')
+    def send_mails(self, request):
+        try:
+            message_id = int(request.GET['message'])
+        except:
+            return HttpResponseBadRequest()
+        message = get_object_or_404(Message, id=message_id)
+        recipients = message.recipients.all()
+        if request.GET.get('new', False):
+            recipients = recipients.filter(sent_mail=None)
+        return messagerecipient_send_mails(request, message, recipients, self.media)
 
 
 
 class MessageRecipientAdmin(admin.ModelAdmin):
     list_display    = ('recipient', 'sent', 'viewed', 'sent_mail')
-    actions         = ('send_mails_new', 'send_mails_all')
+    actions         = ('send_mails',)
 
     def get_model_perms(self, request):
         # hide the model from admin index
@@ -86,21 +154,13 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def send_mails_all(self, request, queryset):
-        #raise Exception(request.POST)
-        return render_to_response('admin/leprikon/messagerecipient/send_mails.html', {
-            'title':        _('Sending emails'),
-            'message':      get_object_or_404(Message, id=request.GET.get('message', 0)),
-            'recipients':   queryset,
-            'media':        self.media,
-            'message_opts':       Message._meta,
-            'opts':         self.model._meta,
-        }, context_instance=RequestContext(request))
-    send_mails_all.short_description = _('Send email to all recipients')
-
-    def send_mails_new(self, request, queryset):
-        return self.send_mails_all(request, queryset.filter(sent_mail=None))
-    send_mails_new.short_description = _('Sent email to new recipients')
+    def send_mails(self, request, queryset):
+        return messagerecipient_send_mails(request,
+            message     = get_object_or_404(Message, id=request.GET.get('message', 0)),
+            recipients  = queryset,
+            media       = self.media,
+        )
+    send_mails.short_description = _('Send email to selected recipients')
 
     def changelist_view(self, request, extra_context=None):
         message = get_object_or_404(Message, id=request.GET.get('message', 0))
@@ -115,9 +175,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         return [
-            url(r'^send-mail/$', self.send_mail, name="{}_{}_send_mail".format(
-                self.model._meta.app_label, self.model._meta.model_name,
-            )),
+            url(r'^send-mail/$', self.admin_site.admin_view(self.send_mail), name='leprikon_messagerecipient_send_mail'),
         ] + super(MessageRecipientAdmin, self).get_urls()
 
     @transaction.atomic
