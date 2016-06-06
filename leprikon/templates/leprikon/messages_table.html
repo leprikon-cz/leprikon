@@ -9,7 +9,7 @@
 </thead>
 <tbody>
     {% for object in object_list %}
-    <tr class="message {% if not object.received %}not{% endif %}read">
+    <tr class="message {% if not object.viewed %}not{% endif %}read">
         <td class="message-subject">
             <a href="{% url_with_back 'leprikon:message_detail' object.slug %}">{{ object.message.subject }}</a>
         </td>

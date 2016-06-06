@@ -31,7 +31,7 @@ class SummaryView(TemplateView):
             context['clubs'] = self.request.leader.clubs.filter(school_year=self.request.school_year)
             context['events'] = self.request.leader.events.filter(school_year=self.request.school_year)
             context['timesheets'] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
-        context['new_messages'] = self.request.user.leprikon_messages.filter(received=None)
+        context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)
         return context
 
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-06 19:23+0200\n"
+"POT-Creation-Date: 2016-06-06 22:59+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1603,8 +1603,8 @@ msgid "Sent"
 msgstr "Odesláno"
 
 #: templates/leprikon/messagerecipient_detail.html:12
-msgid "Received"
-msgstr "Doručeno"
+msgid "Viewed"
+msgstr "Zobrazeno"
 
 #: templates/leprikon/messages_table.html:6
 msgid "Subject"
