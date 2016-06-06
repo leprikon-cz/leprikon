@@ -1,0 +1,82 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+.recipient {
+    font-weight: bold;
+}
+.recipient.queued {
+    color: darkblue;
+}
+.recipient.sending {
+    color: orange;
+}
+.recipient.sent {
+    color: darkgreen;
+}
+.recipient.failed {
+    color: darkred;
+}
+</style>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url message_opts|admin_urlname:'changelist' %}">{{ message_opts.verbose_name_plural|capfirst|escape }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}?message={{ message.id }}">{{ message.subject }} &ndash; {{ opts.verbose_name_plural|capfirst|escape }}</a>
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<ul>
+    {% for recipient in recipients %}
+    <li>{{ recipient }}: <span id="status_{{ recipient.id }}" class="recipient queued">{% trans 'queued' %}</span></li>
+    {% endfor %}
+</ul>
+
+<a href="{% url opts|admin_urlname:'changelist' %}?message={{ message.id }}" class="button cancel-link">{% trans 'back' %}: {{ message.subject }} &ndash; {{ opts.verbose_name_plural|capfirst|escape }}</a>
+
+<script>
+
+(function($) {
+    $(document).ready(function($) {
+        var recipient_ids = [{% for recipient in recipients %}{{ recipient.id }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        function send_mail(recipient_id) {
+            s = $("#status_" + recipient_id);
+            s.removeClass("queued");
+            s.addClass("sending");
+            s.text("{% trans 'sending' %}")
+            $.get("{% url 'admin:leprikon_messagerecipient_send_mail' %}", { recipient_id: recipient_id } )
+            .done(function() {
+                s.addClass("sent");
+                s.text("{% trans 'sent' %}")
+            })
+            .fail(function() {
+                s.addClass("failed");
+                s.text("{% trans 'failed' %}")
+            })
+            .always(function() {
+                s.removeClass("sending");
+                recipient_id = recipient_ids.shift();
+                if (recipient_id) send_mail(recipient_id);
+            });
+        }
+        recipient_id = recipient_ids.shift();
+        if (recipient_id) send_mail(recipient_id);
+    });
+})(django.jQuery);
+
+</script>
+
+{% endblock %}

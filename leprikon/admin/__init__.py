@@ -10,7 +10,7 @@ from .agegroup import AgeGroupAdmin
 from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
 from .clubs import ClubAdmin, ClubGroupAdmin, ClubRegistrationAdmin, ClubPaymentAdmin, ClubJournalEntryAdmin, ClubJournalLeaderEntryAdmin
 from .events import EventAdmin, EventTypeAdmin, EventGroupAdmin, EventRegistrationAdmin, EventPaymentAdmin
-from .messages import MessageAdmin
+from .messages import MessageAdmin, MessageRecipientAdmin
 from .question import QuestionAdmin
 from .user import UserAdmin
 from .timesheets import TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin
@@ -41,6 +41,7 @@ admin.site.register(EventRegistration,  EventRegistrationAdmin)
 admin.site.register(EventPayment,       EventPaymentAdmin)
 
 admin.site.register(Message,            MessageAdmin)
+admin.site.register(MessageRecipient,   MessageRecipientAdmin)
 
 admin.site.register(Question,           QuestionAdmin)
 
