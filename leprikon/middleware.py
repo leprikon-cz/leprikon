@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
-import datetime
 import warnings
 
 from .models import Leader, SchoolYear
@@ -15,21 +14,9 @@ class school_year(object):
         except AttributeError:
             try:
                 # return year stored in the session
-                school_year = SchoolYear.objects.get(id=request.session['school_year_id'])
+                request._leprikon_school_year = SchoolYear.objects.get(id=request.session['school_year_id'])
             except (KeyError, SchoolYear.DoesNotExist):
-                try:
-                    # return last active year
-                    school_year = SchoolYear.objects.filter(active=True).order_by('-year')[0]
-                except IndexError:
-                    # Create or activate current year
-                    if datetime.date.today().month < 7:
-                        year = datetime.date.today().year - 1
-                    else:
-                        year = datetime.date.today().year
-                    school_year = SchoolYear.objects.get_or_create(year=year)[0]
-                    school_year.active = True
-                    school_year.save()
-            request._leprikon_school_year = school_year
+                request._leprikon_school_year = SchoolYear.objects.get_current()
         return request._leprikon_school_year
 
     def __set__(self, request, school_year):
