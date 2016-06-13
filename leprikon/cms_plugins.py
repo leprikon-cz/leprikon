@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _
 from .forms.clubs import ClubFilterForm
 from .forms.events import EventFilterForm
 from .models import (
+    SchoolYear,
     LeprikonClubListPlugin, LeprikonFilteredClubListPlugin, ClubGroup,
     LeprikonEventListPlugin, LeprikonFilteredEventListPlugin, EventGroup,
 )
@@ -17,7 +18,18 @@ Group = namedtuple('Group', ('group', 'objects'))
 
 
 
-class LeprikonClubListPlugin(CMSPluginBase):
+class LeprikonListPluginBase(CMSPluginBase):
+    def get_school_year(self, context, instance):
+        return (
+            instance.school_year
+            or getattr(context['request'], 'school_year', None)
+            or SchoolYear.objects.get_current()
+        )
+
+
+
+
+class LeprikonClubListPlugin(LeprikonListPluginBase):
     module  = _('Leprikon')
     name    = _('Club list')
     model   = LeprikonClubListPlugin
@@ -26,7 +38,7 @@ class LeprikonClubListPlugin(CMSPluginBase):
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def render(self, context, instance, placeholder):
-        school_year = instance.school_year or context['request'].school_year
+        school_year = self.get_school_year(context, instance)
         clubs       = school_year.clubs.filter(public=True).distinct()
 
         if instance.age_groups.count():
@@ -56,7 +68,7 @@ class LeprikonClubListPlugin(CMSPluginBase):
 
 
 
-class LeprikonFilteredClubListPlugin(CMSPluginBase):
+class LeprikonFilteredClubListPlugin(LeprikonListPluginBase):
     module  = _('Leprikon')
     name    = _('Club list with filter form')
     model   = LeprikonFilteredClubListPlugin
@@ -64,7 +76,7 @@ class LeprikonFilteredClubListPlugin(CMSPluginBase):
     render_template = 'leprikon/filtered_club_list.html'
 
     def render(self, context, instance, placeholder):
-        school_year = instance.school_year or context['request'].school_year
+        school_year = self.get_school_year(context, instance)
         form = ClubFilterForm(
             request     = context['request'],
             school_year = school_year,
@@ -82,7 +94,7 @@ class LeprikonFilteredClubListPlugin(CMSPluginBase):
 
 
 
-class LeprikonEventListPlugin(CMSPluginBase):
+class LeprikonEventListPlugin(LeprikonListPluginBase):
     module  = _('Leprikon')
     name    = _('Event list')
     model   = LeprikonEventListPlugin
@@ -91,7 +103,7 @@ class LeprikonEventListPlugin(CMSPluginBase):
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def render(self, context, instance, placeholder):
-        school_year = instance.school_year or context['request'].school_year
+        school_year = self.get_school_year(context, instance)
         events      = school_year.events.filter(event_type=instance.event_type, public=True).distinct()
 
         if instance.age_groups.count():
@@ -121,7 +133,7 @@ class LeprikonEventListPlugin(CMSPluginBase):
 
 
 
-class LeprikonFilteredEventListPlugin(CMSPluginBase):
+class LeprikonFilteredEventListPlugin(LeprikonListPluginBase):
     module  = _('Leprikon')
     name    = _('Event list with filter form')
     model   = LeprikonFilteredEventListPlugin
@@ -129,7 +141,7 @@ class LeprikonFilteredEventListPlugin(CMSPluginBase):
     render_template = 'leprikon/filtered_event_list.html'
 
     def render(self, context, instance, placeholder):
-        school_year = instance.school_year or context['request'].school_year
+        school_year = self.get_school_year(context, instance)
         form = EventFilterForm(
             request     = context['request'],
             school_year = school_year,
