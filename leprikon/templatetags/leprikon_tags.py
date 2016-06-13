@@ -95,3 +95,12 @@ def url_with_back(parser, token):
     """
     return URLWithBackNode(template.defaulttags.url(parser, token))
 
+
+
+@register.simple_tag(takes_context = True)
+def query_string(context, key, value):
+    get = context['request'].GET.copy()
+    get[key] = value
+    return get.urlencode()
+
+

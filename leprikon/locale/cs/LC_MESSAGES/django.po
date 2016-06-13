@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-06 22:59+0200\n"
+"POT-Creation-Date: 2016-06-13 09:46+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -439,24 +439,24 @@ msgstr "přihlásit"
 msgid "participants"
 msgstr "účastníci"
 
-#: apps.py:9 cms_app.py:13 cms_plugins.py:21 cms_plugins.py:60
-#: cms_plugins.py:86 cms_plugins.py:125 menu.py:15
+#: apps.py:9 cms_app.py:13 cms_plugins.py:33 cms_plugins.py:72
+#: cms_plugins.py:98 cms_plugins.py:137 menu.py:15
 msgid "Leprikon"
 msgstr "Leprikón"
 
-#: cms_plugins.py:22
+#: cms_plugins.py:34
 msgid "Club list"
 msgstr "Seznam kroužků"
 
-#: cms_plugins.py:61
+#: cms_plugins.py:73
 msgid "Club list with filter form"
 msgstr "Výpis kroužků s filtrováním"
 
-#: cms_plugins.py:87
+#: cms_plugins.py:99
 msgid "Event list"
 msgstr "Výpis akcí"
 
-#: cms_plugins.py:126
+#: cms_plugins.py:138
 msgid "Event list with filter form"
 msgstr "Výpis akcí s filtrováním"
 
@@ -819,7 +819,7 @@ msgstr "skupiny kroužků"
 
 #: models/clubs.py:80 models/clubs.py:633 models/clubs.py:660
 #: models/events.py:121 models/events.py:339 models/events.py:367
-#: models/schoolyear.py:17
+#: models/schoolyear.py:38
 msgid "school year"
 msgstr "školní rok"
 
@@ -1234,7 +1234,7 @@ msgstr "Nepodařilo se vytvořit vstupní pole se zadanými parametry: {}"
 msgid "additional answers"
 msgstr "doplňující odpovědi"
 
-#: models/roles.py:26 models/schoolyear.py:18
+#: models/roles.py:26 models/schoolyear.py:39
 msgid "school years"
 msgstr "školní roky"
 
@@ -1283,15 +1283,15 @@ msgstr "{first_name} {last_name} ({birth_num})"
 msgid "schools"
 msgstr "školy"
 
-#: models/schoolyear.py:11
+#: models/schoolyear.py:30
 msgid "year"
 msgstr "rok"
 
-#: models/schoolyear.py:12
+#: models/schoolyear.py:31
 msgid "active"
 msgstr "aktivní"
 
-#: models/schoolyear.py:25
+#: models/schoolyear.py:46
 msgid "Can not delete sclool year with clubs or events."
 msgstr "Nemůžete smazat školní rok, pokud má nějaké kroužky nebo akce."
 
@@ -1609,6 +1609,19 @@ msgstr "Zobrazeno"
 #: templates/leprikon/messages_table.html:6
 msgid "Subject"
 msgstr "Předmět"
+
+#: templates/leprikon/pagination.html:4
+msgid "previous"
+msgstr "předchozí"
+
+#: templates/leprikon/pagination.html:8
+msgid "next"
+msgstr "další"
+
+#: templates/leprikon/pagination.html:14
+#, python-format
+msgid "displaying %(from)s – %(until)s of %(count)s"
+msgstr "zobrazeno %(from)s – %(until)s z %(count)s"
 
 #: templates/leprikon/parent_preview.html:15
 msgid "Parent has not filled all contact information."
