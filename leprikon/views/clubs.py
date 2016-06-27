@@ -224,8 +224,8 @@ class ClubRegistrationFormView(CreateView):
 
     def get_form_kwargs(self):
         kwargs  = super(ClubRegistrationFormView, self).get_form_kwargs()
-        kwargs['club']  = self.club
-        kwargs['user']  = self.request.user
+        kwargs['subject'] = self.club
+        kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):

@@ -145,8 +145,8 @@ class EventRegistrationFormView(CreateView):
 
     def get_form_kwargs(self):
         kwargs  = super(EventRegistrationFormView, self).get_form_kwargs()
-        kwargs['event'] = self.event
-        kwargs['user']  = self.request.user
+        kwargs['subject'] = self.event
+        kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):

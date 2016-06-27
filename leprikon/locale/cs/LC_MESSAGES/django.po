@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 16:20+0200\n"
+"POT-Creation-Date: 2016-06-27 17:42+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -635,35 +635,49 @@ msgstr "Příjemci"
 msgid "Failed to parse birth day"
 msgstr "Nepodařilo se rozpoznat datum narození"
 
-#: forms/registrations.py:22 templates/leprikon/registration_form.html.py:28
+#: forms/registrations.py:24 templates/leprikon/registration_form.html.py:28
 #: templates/leprikon/registration_preview.html:27
 msgid "Participant"
 msgstr "Účastník"
 
-#: forms/registrations.py:27
+#: forms/registrations.py:29
 msgid "new participant"
 msgstr "nový účastník"
 
-#: forms/registrations.py:48 templates/leprikon/participants.html.py:7
+#: forms/registrations.py:50 templates/leprikon/participants.html.py:7
 #: templates/leprikon/registration_form.html:53
 #: templates/leprikon/registration_preview.html:33
 msgid "Parents"
 msgstr "Zástupci"
 
-#: forms/registrations.py:56
+#: forms/registrations.py:58
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/registrations.py:62 menu.py:29 views/user.py:33
+#: forms/registrations.py:64 menu.py:29 views/user.py:33
 msgid "Create account"
 msgstr "Vytvořit účet"
 
-#: forms/registrations.py:63
+#: forms/registrations.py:65
 msgid ""
 "Having user account allows you to view and easily manage your registrations, "
 "payments, etc."
 msgstr ""
 "Uživatelský účet Vám umožní snadno spravovat přihlášky, platby a mnohem více."
+
+#: forms/registrations.py:75 menu.py:134
+#: templates/leprikon/terms_conditions.html:6
+msgid "Terms and Conditions"
+msgstr "Obchodní podmínky"
+
+#: forms/registrations.py:76
+msgid ""
+"By checking the checkbox above I confirm that I have read, understood and "
+"agree with the <a href=\"{}\" target=\"_blank\">Terms and Conditions</a>."
+msgstr ""
+"Zaškrtnutím políčka výše potvrzuji, že jsem si přečetl(a), porozuměl(a) a "
+"souhlasím s <a href=\"{}\" target=\"_blank\">Obchodními podmínkami a "
+"vnitřním řádem</a>."
 
 #: forms/reports/clubs.py:10 forms/reports/events.py:10
 msgid "Start date"
@@ -773,10 +787,6 @@ msgstr "Přidat nový záznam"
 #: menu.py:128 templates/leprikon/reports/index.html.py:6
 msgid "Reports"
 msgstr "Reporty"
-
-#: menu.py:134 templates/leprikon/terms_conditions.html.py:6
-msgid "Terms and Conditions"
-msgstr "Obchodní podmínky"
 
 #: menu.py:139 templates/leprikon/base.html.py:58
 msgid "Log out"
@@ -1725,6 +1735,10 @@ msgstr "Tým %(site_name)s"
 #: templates/leprikon/registration_form.html:66
 msgid "User"
 msgstr "Uživatel"
+
+#: templates/leprikon/registration_form.html:79
+msgid "Legal Agreement"
+msgstr "Právní ujednání"
 
 #: templates/leprikon/registration_links.html:7
 #, python-format

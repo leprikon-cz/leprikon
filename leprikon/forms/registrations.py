@@ -5,6 +5,8 @@ import uuid
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.core.urlresolvers import reverse
+from django.utils.functional import SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _
 
 from ..models import ClubRegistration, EventRegistration
@@ -69,9 +71,17 @@ class UserForm(FormMixin, UserCreationForm):
 
 
 
+class AgreementForm(FormMixin, forms.Form):
+    agreement = forms.BooleanField(label=_('Terms and Conditions'),
+        help_text=SimpleLazyObject(lambda:_('By checking the checkbox above I confirm that I have read, understood and agree with the '
+            '<a href="{}" target="_blank">Terms and Conditions</a>.').format(reverse('leprikon:terms_conditions'))))
+
+
+
 class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
 
-    def __init__(self, user, **kwargs):
+    def __init__(self, subject, user, **kwargs):
+        self.subject    = subject
         self.user       = user
         self.questions  = self.subject.all_questions
         super(RegistrationForm, self).__init__(**kwargs)
@@ -106,6 +116,9 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
         kwargs['prefix'] = 'user'
         self.user_form = UserForm(**kwargs)
         self.user_form.fields['username'].help_text = None
+
+        kwargs['prefix'] = 'agreement'
+        self.agreement_form = AgreementForm(**kwargs)
 
     def is_valid(self):
         # validate participant
@@ -146,6 +159,10 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
             if self.user_select_form.cleaned_data['create_account']:
                 if not self.user_form.is_valid():
                     return False
+
+        # validate agreement
+        if not self.agreement_form.is_valid():
+            return False
 
         return super(RegistrationForm, self).is_valid()
 
@@ -221,10 +238,6 @@ class EventRegistrationForm(RegistrationForm):
         model = EventRegistration
         fields = ()
 
-    def __init__(self, event, **kwargs):
-        self.subject    = event
-        super(EventRegistrationForm, self).__init__(**kwargs)
-
 
 
 class ClubRegistrationForm(RegistrationForm):
@@ -233,8 +246,4 @@ class ClubRegistrationForm(RegistrationForm):
     class Meta:
         model = ClubRegistration
         fields = ()
-
-    def __init__(self, club, **kwargs):
-        self.subject    = club
-        super(ClubRegistrationForm, self).__init__(**kwargs)
 
