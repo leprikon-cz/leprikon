@@ -1,0 +1,10 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% trans 'Terms and Conditions' %}{% endblock %}</h2>
+
+{% static_placeholder "terms_conditions" %}
+
+{% endblock %}

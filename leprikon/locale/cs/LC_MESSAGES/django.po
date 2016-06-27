@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-13 09:46+0200\n"
+"POT-Creation-Date: 2016-06-27 16:20+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -774,7 +774,11 @@ msgstr "Přidat nový záznam"
 msgid "Reports"
 msgstr "Reporty"
 
-#: menu.py:134 templates/leprikon/base.html.py:58
+#: menu.py:134 templates/leprikon/terms_conditions.html.py:6
+msgid "Terms and Conditions"
+msgstr "Obchodní podmínky"
+
+#: menu.py:139 templates/leprikon/base.html.py:58
 msgid "Log out"
 msgstr "Odhlásit se"
 

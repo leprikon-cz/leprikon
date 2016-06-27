@@ -131,6 +131,11 @@ class LeprikonMenu(CMSAttachMenu):
             attr={'require_staff': True},
         ))
         nodes.append(NavigationNode(
+            _('Terms and Conditions'),
+            reverse('leprikon:terms_conditions'),
+            len(nodes),
+        ))
+        nodes.append(NavigationNode(
             _('Log out'),
             reverse('leprikon:user_logout'),
             len(nodes),

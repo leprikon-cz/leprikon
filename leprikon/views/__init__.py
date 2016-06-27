@@ -22,6 +22,7 @@ from .registrations import *
 from .reports import *
 from .reports.clubs import *
 from .reports.events import *
+from .terms_conditions import *
 
 def lr(function):
     from django.core.urlresolvers import reverse_lazy as reverse
@@ -114,3 +115,4 @@ report_club_payments_status     = staff_required(ReportClubPaymentsStatusView.as
 report_event_payments           = staff_required(ReportEventPaymentsView.as_view())
 report_event_payments_status    = staff_required(ReportEventPaymentsStatusView.as_view())
 
+terms_conditions                = TermsConditionsView.as_view()
