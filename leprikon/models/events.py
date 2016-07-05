@@ -335,7 +335,19 @@ class EventPayment(models.Model):
 
 
 
-class LeprikonEventListPlugin(CMSPlugin):
+class EventPlugin(CMSPlugin):
+    event       = models.ForeignKey(Event, verbose_name=_('event'))
+    template    = models.CharField(_('template'), max_length=100,
+                    choices=settings.LEPRIKON_EVENT_TEMPLATES,
+                    default=settings.LEPRIKON_EVENT_TEMPLATES[0][0],
+                    help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class EventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
     event_type  = models.ForeignKey(EventType, verbose_name=_('event type'))
@@ -363,7 +375,7 @@ class LeprikonEventListPlugin(CMSPlugin):
 
 
 
-class LeprikonFilteredEventListPlugin(CMSPlugin):
+class FilteredEventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
     event_types = models.ManyToManyField(EventType, verbose_name=_('event type'))

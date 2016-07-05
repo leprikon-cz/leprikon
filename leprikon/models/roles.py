@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible, smart_text
@@ -199,4 +200,42 @@ class Participant(models.Model):
             return '{}, {}'.format(self.school_name, self.school_class)
         else:
             return self.school_name or self.school_class or ''
+
+
+
+class LeaderPlugin(CMSPlugin):
+    leader      = models.ForeignKey(Leader, verbose_name=_('leader'))
+    template    = models.CharField(_('template'), max_length=100,
+                    choices=settings.LEPRIKON_LEADER_TEMPLATES,
+                    default=settings.LEPRIKON_LEADER_TEMPLATES[0][0],
+                    help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class LeaderListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                    blank=True, null=True)
+    club        = models.ForeignKey('leprikon.Club', verbose_name=_('club'),
+                    blank=True, null=True)
+    event       = models.ForeignKey('leprikon.Event', verbose_name=_('event'),
+                    blank=True, null=True)
+    template    = models.CharField(_('template'), max_length=100,
+                    choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,
+                    default=settings.LEPRIKON_LEADERLIST_TEMPLATES[0][0],
+                    help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class FilteredLeaderListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                    blank=True, null=True)
+
+    class Meta:
+        app_label = 'leprikon'
 

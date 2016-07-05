@@ -1,0 +1,66 @@
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
+
+{% for leader in leaders %}
+
+<div class="leprikon_leader">
+
+    <h3 class="leader_name leader_name_{{ leader.id }}">
+        {% if leader.page %}
+        <a href="{{ leader.page.get_absolute_url }}" alt="{{ leader.page.get_title }}">{{ leader.name }}</a>
+        {% else %}
+        {{ leader.name }}
+        {% endif %}
+    </h3>
+
+    <div class="leader_description">
+        {% if leader.photo %}
+        <a href="{% thumbnail leader.photo 1500x1500 %}">
+            <img class="right" src="{% thumbnail leader.photo 200x200 %}" />
+        </a>
+        {% endif %}
+        {{ leader.description | safe }}
+
+        {% if leader.all_public_contacts %}
+        <p>
+            {% trans 'Contact' %}:<br/>
+            <ul class="contacts">
+            {% for contact in leader.all_public_contacts %}
+                <li class="contact contact-{{ contact.contact_type }}">
+                    {{ contact.contact }}
+                </div>
+            {% endfor %}
+            </ul>
+        </p>
+        {% endif %}
+
+        {% if leader.page %}
+        <p>
+            {% trans 'More information' %}:
+            <a href="{{ leader.page.get_absolute_url }}">
+                {{ event.page.get_title }}
+            </a>
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% if request.toolbar.use_draft %}
+{% addtoblock 'js' %}
+<script>
+(function($) {
+$(document).ready(function () {
+    new CMS.Plugin('leader_name_{{ leader.id }}', {
+        'plugin_name': '{{ leader.name }}',
+        'urls': {
+            'edit_plugin': '{{ leader.get_edit_url }}',
+        },
+    });
+});
+})(CMS.$);
+</script>
+{% endaddtoblock %}
+{% endif %}
+
+{% endfor %}
+

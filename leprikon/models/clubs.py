@@ -629,7 +629,19 @@ class ClubJournalLeaderEntry(StartEndMixin, models.Model):
 
 
 
-class LeprikonClubListPlugin(CMSPlugin):
+class ClubPlugin(CMSPlugin):
+    club        = models.ForeignKey(Club, verbose_name=_('club'))
+    template    = models.CharField(_('template'), max_length=100,
+                    choices=settings.LEPRIKON_CLUB_TEMPLATES,
+                    default=settings.LEPRIKON_CLUB_TEMPLATES[0][0],
+                    help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class ClubListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'),
@@ -656,7 +668,7 @@ class LeprikonClubListPlugin(CMSPlugin):
 
 
 
-class LeprikonFilteredClubListPlugin(CMSPlugin):
+class FilteredClubListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
 

@@ -15,6 +15,18 @@ LEPRIKON_CONTACT_TYPES = (
     ('url', _('url')),
 )
 
+LEPRIKON_CLUB_TEMPLATES = (
+    ('default', _('Default')),
+)
+
+LEPRIKON_EVENT_TEMPLATES = (
+    ('default', _('Default')),
+)
+
+LEPRIKON_LEADER_TEMPLATES = (
+    ('default', _('Default')),
+)
+
 LEPRIKON_CLUBLIST_TEMPLATES = (
     ('default', _('Default')),
     ('grouped', _('Grouped by club groups')),
@@ -23,6 +35,10 @@ LEPRIKON_CLUBLIST_TEMPLATES = (
 LEPRIKON_EVENTLIST_TEMPLATES = (
     ('default', _('Default')),
     ('grouped', _('Grouped by event groups')),
+)
+
+LEPRIKON_LEADERLIST_TEMPLATES = (
+    ('default', _('Default')),
 )
 
 LEPRIKON_COLOR_PAID      = '#0a0'
