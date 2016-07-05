@@ -10,6 +10,8 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('#list_filter_form select[data-type=ModelMultipleChoiceField]').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
         nonSelectedText: '',
         allSelectedText: false,
         numberDisplayed: 2,

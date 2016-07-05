@@ -1,1 +1,31 @@
 {% extends 'leprikon/list.html' %}
+{% load i18n sekizai_tags staticfiles %}
+
+{% block content %}
+{{ block.super }}
+
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#list_filter_form select[data-type=ModelMultipleChoiceField]').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        nonSelectedText: '',
+        allSelectedText: false,
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#list_filter_form input').change(function() {
+        $('#list_filter_form').submit();
+    });
+});
+</script>
+{% endaddtoblock %}
+
+{% endblock %}
