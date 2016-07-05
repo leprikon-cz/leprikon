@@ -14,20 +14,12 @@ class LeaderListView(FilteredListView):
     preview_template    = 'leprikon/leader_preview.html'
     template_name       = 'leprikon/leader_list.html'
     message_empty       = _('No leaders matching given query.')
+    paginate_by         = 10
 
     def get_title(self):
         return _('Leaders in school year {}').format(self.request.school_year)
 
     def get_queryset(self):
-        qs = super(LeaderListView, self).get_queryset()
-        qs = qs.filter(school_years=self.request.school_year)
         form = self.get_form()
-        if form.is_valid():
-            for word in form.cleaned_data['q'].split():
-                qs = qs.filter(
-                    Q(user__first_name__icontains = word)
-                  | Q(user__last_name__icontains = word)
-                  | Q(description__icontains = word)
-                )
-        return qs
+        return form.get_queryset()
 
