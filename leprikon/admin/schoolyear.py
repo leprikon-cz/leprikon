@@ -4,9 +4,10 @@ from django.contrib import admin
 
 
 class SchoolYearAdmin(admin.ModelAdmin):
-    list_display    = ('name',)
+    list_display    = ('name', 'active')
+    list_editable   = ('active',)
 
-    # do not allow to add entries in admin (keep it simple)
+    # do not allow to delete entries in admin
     def has_delete_permission(self, request, obj=None):
         return False
 
