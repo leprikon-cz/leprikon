@@ -14,3 +14,9 @@ class SchoolYearForm(forms.Form):
     )
     back = settings.LEPRIKON_PARAM_BACK
 
+    def __init__(self, request, *args, **kwargs):
+        kwargs['initial'] = {'school_year': request.school_year}
+        super(SchoolYearForm, self).__init__(*args, **kwargs)
+        if not request.user.is_staff:
+            self.fields['school_year'].queryset = (
+            self.fields['school_year'].queryset.filter(active=True))

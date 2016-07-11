@@ -12,9 +12,12 @@ class school_year(object):
         try:
             return request._leprikon_school_year
         except AttributeError:
+            years = SchoolYear.objects
+            if not request.user.is_staff:
+                years = years.filter(active=True)
             try:
                 # return year stored in the session
-                request._leprikon_school_year = SchoolYear.objects.get(id=request.session['school_year_id'])
+                request._leprikon_school_year = years.get(id=request.session['school_year_id'])
             except (KeyError, SchoolYear.DoesNotExist):
                 request._leprikon_school_year = SchoolYear.objects.get_current()
         return request._leprikon_school_year
