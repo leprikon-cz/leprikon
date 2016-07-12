@@ -7,12 +7,6 @@ domy dětí a mládeže a podobné organizace.
 Instalace
 ---------
 
-Vytvoření a aktivace virtuálního prostředí:
-```shell
-virtualenv env
-. env/bin/activate
-```
-
 Instalace Leprikónu včetně závislostí:
 ```shell
 pip install https://github.com/leprikon-cz/leprikon/archive/master.zip
