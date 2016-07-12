@@ -9,7 +9,7 @@
         <span class="glyphicon glyphicon-chevron-right"></span>
     </a>
 </div>
-{% endif %}
 {% with from=page_obj.start_index until=page_obj.end_index count=page_obj.paginator.count %}
 {% blocktrans %}displaying {{ from }} – {{ until }} of {{ count }}{% endblocktrans %}
 {% endwith %}
+{% endif %}
