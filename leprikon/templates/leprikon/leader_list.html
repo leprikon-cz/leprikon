@@ -21,7 +21,10 @@ $(document).ready(function() {
         },
         disableIfEmpty: true,
     });
-    $('#list_filter_form input').change(function() {
+    $('#list_filter_form input[data-type=CharField]').change(function() {
+        $('#list_filter_form').submit();
+    });
+    $('#list_filter_form input[data-type=BooleanField]').change(function() {
         $('#list_filter_form').submit();
     });
 });
