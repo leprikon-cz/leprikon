@@ -68,7 +68,7 @@ class ClubFilterForm(FormMixin, forms.Form):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
         if self.cleaned_data['day_of_week']:
             qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
-        return qs
+        return qs.distinct()
 
 
 

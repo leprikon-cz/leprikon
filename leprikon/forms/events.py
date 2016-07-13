@@ -68,7 +68,7 @@ class EventFilterForm(FormMixin, forms.Form):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
         if not self.cleaned_data['past']:
             qs = qs.filter(end_date__gte = now())
-        return qs
+        return qs.distinct()
 
 
 

@@ -39,5 +39,5 @@ class LeaderFilterForm(FormMixin, forms.Form):
             qs = qs.filter(clubs__in = self.cleaned_data['club'])
         if self.cleaned_data['event']:
             qs = qs.filter(events__in = self.cleaned_data['event'])
-        return qs
+        return qs.distinct()
 

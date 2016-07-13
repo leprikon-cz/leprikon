@@ -22,7 +22,7 @@ class MessageFilterForm(FormMixin, forms.Form):
                 Q(message__subject__icontains = word)
               | Q(message__text__icontains = word)
             )
-        return qs
+        return qs.distinct()
 
 
 
