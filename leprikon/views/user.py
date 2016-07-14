@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import (
     password_change, login, logout,
     password_reset as pr,
@@ -34,6 +34,12 @@ class UserCreateView(CreateView):
 
     def get_message(self):
         return _('User account {} has been created.').format(self.object)
+
+    def form_valid(self, form):
+        response = super(UserCreateView, self).form_valid(form)
+        self.object.backend = 'django.contrib.auth.backends.ModelBackend'
+        auth_login(self.request, self.object)
+        return response
 
 
 
