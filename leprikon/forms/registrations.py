@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 import uuid
 
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import UserCreationForm
 from django.core.urlresolvers import reverse
 from django.utils.functional import SimpleLazyObject
@@ -116,6 +116,7 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
         kwargs['prefix'] = 'user'
         self.user_form = UserForm(**kwargs)
         self.user_form.fields['username'].help_text = None
+        self.user_form.fields['password1'].help_text = password_validation.password_validators_help_text_html()
 
         kwargs['prefix'] = 'agreement'
         self.agreement_form = AgreementForm(**kwargs)

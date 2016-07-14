@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import (
     UserCreationForm as _UserCreationForm,
     AuthenticationForm as _AuthenticationForm,
@@ -57,6 +57,7 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
     def __init__(self, **kwargs):
         super(UserCreateForm, self).__init__(**kwargs)
         self.fields['username'].help_text = None
+        self.fields['password1'].help_text = password_validation.password_validators_help_text_html()
 
     def save(self, commit=True):
         user = super(UserCreateForm, self).save()
