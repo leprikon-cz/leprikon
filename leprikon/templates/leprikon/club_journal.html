@@ -31,6 +31,10 @@
             background: white;
             margin: 20px auto;
             padding-bottom: 25px;
+            font-size: 9pt;
+        }
+        h1 {
+            font-size: 14pt;
         }
         table {
             width: 100%;
@@ -57,8 +61,11 @@
             -o-transform: rotate(-90deg);
             transform: rotate(-90deg);
         }
-        #plan .empty {
+        .empty {
             width: 90%;
+        }
+        .placeholder {
+            height: 100px;
         }
         p {
             margin: 0;
@@ -67,6 +74,10 @@
             float: right;
         }
         @media print {
+            html, body, .paper {
+                margin: 0;
+                padding: 0;
+            }
             .paper {
                 width: 100%;
                 page-break-after: always;
@@ -76,6 +87,9 @@
             }
             .presence th.vertical {
                 height: 11em;
+            }
+            a[href]:after {
+                 content: '';
             }
         }
     </style>
@@ -105,6 +119,7 @@
     </div>
     {% endif %}
     {% for period in club.all_periods %}
+    {% with period.journal_entries.count|add:2 as columns_count %}
     <div class="container paper">
         <h1>{% trans 'Attendance' %} - {{ period.name }}</h1>
         <table class="table-hover presence">
@@ -135,7 +150,7 @@
                 {% endif %}
             </tr>
             <tr>
-                <th>{% trans 'Leaders' %}</td>
+                <th colspan="{{ columns_count }}">{% trans 'Leaders' %}</td>
             </tr>
             {% for pr in period.get_leader_presences %}
             <tr>
@@ -146,9 +161,6 @@
                 <td>&nbsp;</td>
             </tr>
             {% endfor %}
-            <tr>
-                <th>{% trans 'Alternates' %}</td>
-            </tr>
             {% for pr in period.get_alternate_presences %}
             <tr>
                 <td>{{ pr.name }}</td>
@@ -159,7 +171,7 @@
             </tr>
             {% endfor %}
             <tr>
-                <th>{% trans 'Participants' %}</td>
+                <th colspan="{{ columns_count }}">{% trans 'Participants' %}</td>
             </tr>
             {% for pr in period.get_participant_presences %}
             <tr>
@@ -172,6 +184,7 @@
             {% endfor %}
         </table>
     </div>
+    {% endwith %}
     {% endfor %}
 
     {% for period in club.all_periods %}
@@ -237,7 +250,7 @@
                 <th>{% trans 'Place / Risk' %}</th>
             </tr>
             <tr>
-                <td>{{ club.risks | safe }}</td>
+                <td class="placeholder">{{ club.risks | safe }}</td>
             </tr>
         </table>
 
@@ -252,10 +265,10 @@
         </h1>
         <table id="plan">
             <tr>
-                <td colspan="2">{{ club.plan | safe }}</td>
+                <td class="placeholder" colspan="2">{{ club.plan | safe }}</td>
             </tr>
             <tr>
-                <th>Podpis</th>
+                <th>{% trans 'Signature' %}</th>
                 <td class="empty"></td>
             </tr>
         </table>
@@ -271,10 +284,10 @@
         </h1>
         <table id="evaluation">
             <tr>
-                <td colspan="2">{{ club.evaluation | safe }}</td>
+                <td class="placeholder" colspan="2">{{ club.evaluation | safe }}</td>
             </tr>
             <tr>
-                <th>Podpis</th>
+                <th>{% trans 'Signature' %}</th>
                 <td class="empty"></td>
             </tr>
         </table>
