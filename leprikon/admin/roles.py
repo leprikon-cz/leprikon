@@ -44,7 +44,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
                 school_year = form.cleaned_data['school_year']
                 for leader in queryset.all():
                     leader.school_years.add(school_year)
-                self.message_user(request, _('Selected leaders were added to school_year {}.').format(school_year))
+                self.message_user(request, _('Selected leaders were added to school year {}.').format(school_year))
                 return
         else:
             form = SchoolYearForm()
