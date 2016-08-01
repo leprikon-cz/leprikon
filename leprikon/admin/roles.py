@@ -1,9 +1,12 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -23,15 +26,37 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
     list_display        = ('id', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts', 'user_link', 'icon')
     ordering            = ('user__first_name', 'user__last_name')
-    actions             = ('add_current_school_year',)
+    actions             = ('add_school_year',)
     list_filter         = (('school_years', SchoolYearListFilter),)
     raw_id_fields       = ('user',)
 
-    def add_current_school_year(self, request, queryset):
-        for leader in queryset.all():
-            leader.school_years.add(request.school_year)
-        self.message_user(request, _('Selected leaders were added to school_year {}.').format(request.school_year))
-    add_current_school_year.short_description = _('Add to current school year')
+    def add_school_year(self, request, queryset):
+
+        class SchoolYearForm(forms.Form):
+            school_year = forms.ModelChoiceField(
+                label=_('Target school year'),
+                help_text=_('All selected leaders will be added to selected school year.'),
+                queryset=SchoolYear.objects.all(),
+            )
+        if request.POST.get('post', 'no') == 'yes':
+            form = SchoolYearForm(request.POST)
+            if form.is_valid():
+                school_year = form.cleaned_data['school_year']
+                for leader in queryset.all():
+                    leader.school_years.add(school_year)
+                self.message_user(request, _('Selected leaders were added to school_year {}.').format(school_year))
+                return
+        else:
+            form = SchoolYearForm()
+        return render_to_response('leprikon/admin/action_form.html', {
+            'title': _('Select target school year'),
+            'queryset': queryset,
+            'opts': self.model._meta,
+            'form': form,
+            'action': 'add_school_year',
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
+    add_school_year.short_description = _('Add selected leaders to another school year')
 
     def first_name(self, obj):
         return obj.user.first_name

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-05 16:19+0200\n"
+"POT-Creation-Date: 2016-08-01 11:44+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -93,7 +93,7 @@ msgstr "Přihlášek je méně než {}."
 msgid "The number of registrations is greater than {}."
 msgstr "Přihlášek je více než {}."
 
-#: admin/clubs.py:193 admin/events.py:135 admin/roles.py:160 admin/roles.py:211
+#: admin/clubs.py:193 admin/events.py:135 admin/roles.py:185 admin/roles.py:236
 msgid "registrations"
 msgstr "přihlášky"
 
@@ -106,7 +106,7 @@ msgstr "tisknutelný deník kroužku"
 msgid "journal"
 msgstr "deník"
 
-#: admin/clubs.py:225 admin/events.py:145 admin/roles.py:95 models/clubs.py:91
+#: admin/clubs.py:225 admin/events.py:145 admin/roles.py:120 models/clubs.py:91
 #: models/events.py:136 models/roles.py:25
 msgid "photo"
 msgstr "fotka"
@@ -121,7 +121,7 @@ msgstr "zástupci"
 msgid "parent emails"
 msgstr "e-maily zástupců"
 
-#: admin/clubs.py:292 admin/events.py:213 admin/roles.py:215
+#: admin/clubs.py:292 admin/events.py:213 admin/roles.py:240
 #: models/clubs.py:340 models/events.py:227 models/roles.py:161
 #: models/school.py:18
 msgid "school"
@@ -176,11 +176,11 @@ msgid "update entry"
 msgstr "upravit záznam"
 
 #: admin/clubs.py:477 admin/timesheets.py:65
-#: templates/leprikon/club_journal.html:117
-#: templates/leprikon/club_journal.html:201
-#: templates/leprikon/club_journal.html:230
-#: templates/leprikon/club_journal.html:249
-#: templates/leprikon/club_journal.html:268
+#: templates/leprikon/club_journal.html:132
+#: templates/leprikon/club_journal.html:214
+#: templates/leprikon/club_journal.html:243
+#: templates/leprikon/club_journal.html:262
+#: templates/leprikon/club_journal.html:281
 #: templates/leprikon/club_preview.html:15
 #: templates/leprikon/event_preview.html:15
 #: templates/leprikon/participant_preview.html:8
@@ -329,44 +329,57 @@ msgstr "Odeslat e-mail vybraným příjemcům"
 msgid "Recipients of message {}"
 msgstr "Příjemci zprávy {}"
 
-#: admin/roles.py:33
+#: admin/roles.py:37
+msgid "Target school year"
+msgstr "Cílový školní rok"
+
+#: admin/roles.py:38
+msgid "All selected leaders will be added to selected school year."
+msgstr "Vybraní vedoucí budou přidáni do vybraného školního roku."
+
+#: admin/roles.py:47
 msgid "Selected leaders were added to school_year {}."
 msgstr "Vybraní vedoucí byli přidáni do školního roku {}."
 
-#: admin/roles.py:34
-msgid "Add to current school year"
-msgstr "Přidat do aktuálního školního roku"
+#: admin/roles.py:52
+msgid "Select target school year"
+msgstr "Vyberte cílový školní rok"
 
-#: admin/roles.py:38 admin/roles.py:112 models/roles.py:109 models/roles.py:151
+#: admin/roles.py:59
+msgid "Add selected leaders to another school year"
+msgstr "Přidat vybrané vedoucí do jiného školního roku"
+
+#: admin/roles.py:63 admin/roles.py:137 models/roles.py:109 models/roles.py:151
 msgid "first name"
 msgstr "jméno"
 
-#: admin/roles.py:43 admin/roles.py:117 models/roles.py:110 models/roles.py:152
+#: admin/roles.py:68 admin/roles.py:142 models/roles.py:110 models/roles.py:152
 msgid "last name"
 msgstr "příjmení"
 
-#: admin/roles.py:48 admin/roles.py:126 conf/default_settings.py:13
+#: admin/roles.py:73 admin/roles.py:151 conf/default_settings.py:13
 msgid "email"
 msgstr "e-mail"
 
-#: admin/roles.py:53 models/roles.py:94
+#: admin/roles.py:78 models/roles.py:94
 msgid "contacts"
 msgstr "kontakty"
 
-#: admin/roles.py:61 admin/roles.py:140 admin/roles.py:187 models/roles.py:23
+#: admin/roles.py:86 admin/roles.py:165 admin/roles.py:212 models/roles.py:23
 #: models/roles.py:107 models/roles.py:148
 msgid "user"
 msgstr "uživatel"
 
-#: admin/roles.py:78 admin/roles.py:155 admin/roles.py:206 models/clubs.py:107
+#: admin/roles.py:103 admin/roles.py:180 admin/roles.py:231 models/clubs.py:107
 msgid "clubs"
 msgstr "kroužky"
 
-#: admin/roles.py:87 admin/roles.py:156 admin/roles.py:207 models/events.py:152
+#: admin/roles.py:112 admin/roles.py:181 admin/roles.py:232
+#: models/events.py:152
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:122 admin/roles.py:191
+#: admin/roles.py:147 admin/roles.py:216
 msgid "address"
 msgstr "adresa"
 
@@ -567,7 +580,7 @@ msgid "The club journal entry ends at {end}"
 msgstr "Záznam deníku končí v {end}."
 
 #: forms/clubs.py:130 forms/clubs.py:161 forms/timesheets.py:32
-#: templates/leprikon/club_journal.html:183
+#: templates/leprikon/club_journal.html:196
 #: templates/leprikon/messages_table.html:7
 #: templates/leprikon/reports/club_payments.html:14
 #: templates/leprikon/reports/event_payments.html:14
@@ -610,11 +623,11 @@ msgstr "Některé odevzdané záznamy práce začínají v {start}"
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/clubs.py:230 menu.py:110 templates/leprikon/club_journal.html.py:138
+#: forms/clubs.py:230 menu.py:110 templates/leprikon/club_journal.html.py:153
 msgid "Leaders"
 msgstr "Vedoucí"
 
-#: forms/clubs.py:231 templates/leprikon/club_journal.html.py:150
+#: forms/clubs.py:231
 msgid "Alternates"
 msgstr "Náhradní vedoucí"
 
@@ -751,11 +764,11 @@ msgstr ""
 "pro reset hesla."
 
 #: menu.py:23 templates/leprikon/password_reset_complete.html.py:12
-#: views/user.py:74 views/user.py:75
+#: views/user.py:80 views/user.py:81
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: menu.py:35 views/user.py:76
+#: menu.py:35 views/user.py:82
 msgid "Reset password"
 msgstr "Reset hesla"
 
@@ -771,7 +784,7 @@ msgstr "Zprávy"
 msgid "Registrations"
 msgstr "Přihlášky"
 
-#: menu.py:59 templates/leprikon/club_journal.html.py:162
+#: menu.py:59 templates/leprikon/club_journal.html.py:174
 msgid "Participants"
 msgstr "Účastníci"
 
@@ -1393,12 +1406,13 @@ msgid "add"
 msgstr "přidat"
 
 #: templates/admin/leprikon/message/add_recipients.html:13
-#: templates/leprikon/club_journal.html:90
+#: templates/leprikon/club_journal.html:104
 msgid "back"
 msgstr "zpět"
 
 #: templates/admin/leprikon/messagerecipient/change_list.html:6
 #: templates/admin/leprikon/messagerecipient/send_mails.html:32
+#: templates/leprikon/admin/action_form.html:8
 #: templates/leprikon/admin/merge.html:8
 #: templates/leprikon/admin/send_message.html:8
 msgid "Home"
@@ -1420,6 +1434,14 @@ msgstr "odesílání"
 msgid "failed"
 msgstr "selhalo"
 
+#: templates/leprikon/admin/action_form.html:23
+msgid "Continue"
+msgstr "Pokračovat"
+
+#: templates/leprikon/admin/action_form.html:24
+msgid "Cancel"
+msgstr "Zrušit"
+
 #: templates/leprikon/admin/merge.html:32
 msgid "Yes, I'm sure"
 msgstr "Ano, jsem si jist(a)"
@@ -1433,7 +1455,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:89
-#: views/user.py:60
+#: views/user.py:66
 msgid "Back"
 msgstr "Zpět"
 
@@ -1441,7 +1463,7 @@ msgstr "Zpět"
 msgid "Edit"
 msgstr "Upravit"
 
-#: templates/leprikon/base.html:57 views/user.py:59
+#: templates/leprikon/base.html:57 views/user.py:65
 msgid "Change password"
 msgstr "Změnit heslo"
 
@@ -1470,74 +1492,88 @@ msgstr "upravit záznam výkazu práce"
 msgid "edit club journal entry"
 msgstr "upravit záznam deníku"
 
-#: templates/leprikon/club_journal.html:109
+#: templates/leprikon/club_journal.html:124
 msgid "Attendance"
 msgstr "Docházka"
 
-#: templates/leprikon/club_journal.html:112
+#: templates/leprikon/club_journal.html:127
 msgctxt "person"
 msgid "Name"
 msgstr "Jméno"
 
-#: templates/leprikon/club_journal.html:130
-#: templates/leprikon/club_journal.html:213 views/timesheets.py:17
+#: templates/leprikon/club_journal.html:145
+#: templates/leprikon/club_journal.html:226 views/timesheets.py:17
 msgid "add entry"
 msgstr "přidat záznam"
 
-#: templates/leprikon/club_journal.html:180
+#: templates/leprikon/club_journal.html:193
 msgid "Agenda"
 msgstr "Program"
 
-#: templates/leprikon/club_journal.html:184
+#: templates/leprikon/club_journal.html:197
 msgid "Time"
 msgstr "Čas"
 
-#: templates/leprikon/club_journal.html:185
+#: templates/leprikon/club_journal.html:198
 msgid "Number of hours"
 msgstr "Počet hodin"
 
-#: templates/leprikon/club_journal.html:186
+#: templates/leprikon/club_journal.html:199
 msgid "Number of leaders"
 msgstr "Počet vedoucích"
 
-#: templates/leprikon/club_journal.html:187
+#: templates/leprikon/club_journal.html:200
 msgid "Number of participants"
 msgstr "Počet přítomných"
 
-#: templates/leprikon/club_journal.html:188
+#: templates/leprikon/club_journal.html:201
 msgid "Session agenda"
 msgstr "Program schůzky"
 
-#: templates/leprikon/club_journal.html:193
-#: templates/leprikon/club_journal.html:194
+#: templates/leprikon/club_journal.html:206
+#: templates/leprikon/club_journal.html:207
 msgid "canceled"
 msgstr "zrušeno"
 
-#: templates/leprikon/club_journal.html:226
+#: templates/leprikon/club_journal.html:239
 msgid "Risks"
 msgstr "Rizika"
 
-#: templates/leprikon/club_journal.html:237
+#: templates/leprikon/club_journal.html:250
 msgid "Place / Risk"
 msgstr "Místo / Riziko"
 
-#: templates/leprikon/club_journal.html:245
+#: templates/leprikon/club_journal.html:258
 msgid "Plan for the whole year club activity"
 msgstr "Celoroční plán činnosti zájmového útvaru"
 
-#: templates/leprikon/club_journal.html:264
+#: templates/leprikon/club_journal.html:271
+#: templates/leprikon/club_journal.html:290
+msgid "Signature"
+msgstr "Podpis"
+
+#: templates/leprikon/club_journal.html:277
 msgid "Evaluation of the whole year club activity"
 msgstr "Roční hodnocení činnosti zájmového útvaru"
 
-#: templates/leprikon/club_list.html:16 templates/leprikon/club_list.html:26
+#: templates/leprikon/club_list.html:14
+#: templates/leprikon/clubjournalentry_form.html:34
+#: templates/leprikon/event_list.html:14
+#: templates/leprikon/filtered_leader_list.html:34
+#: templates/leprikon/leader_list.html:14
+msgid "Search"
+msgstr "Hledat"
+
+#: templates/leprikon/club_list.html:18 templates/leprikon/club_list.html:28
 #: templates/leprikon/clubjournalentry_form.html:20
 #: templates/leprikon/clubjournalentry_form.html:29
 #: templates/leprikon/clubjournalentry_form.html:39
-#: templates/leprikon/event_list.html:16
+#: templates/leprikon/event_list.html:18
 #: templates/leprikon/filtered_club_list.html:36
 #: templates/leprikon/filtered_club_list.html:46
 #: templates/leprikon/filtered_event_list.html:36
 #: templates/leprikon/filtered_leader_list.html:38
+#: templates/leprikon/leader_list.html:18
 msgid "selected"
 msgstr "vybraných"
 
@@ -1587,11 +1623,6 @@ msgstr "přidat záznam deníku"
 #: templates/leprikon/clubjournalentry_form.html:36
 msgid "select all"
 msgstr "vybrat všechny"
-
-#: templates/leprikon/clubjournalentry_form.html:34
-#: templates/leprikon/filtered_leader_list.html:34
-msgid "Search"
-msgstr "Hledat"
 
 #: templates/leprikon/clubregistration_pdf.html:6
 #: templates/leprikon/clubregistration_pdf.html:21
@@ -1661,7 +1692,7 @@ msgstr "předchozí"
 msgid "next"
 msgstr "další"
 
-#: templates/leprikon/pagination.html:14
+#: templates/leprikon/pagination.html:13
 #, python-format
 msgid "displaying %(from)s – %(until)s of %(count)s"
 msgstr "zobrazeno %(from)s – %(until)s z %(count)s"
@@ -2089,7 +2120,7 @@ msgstr "Smazat"
 msgid "No leaders matching given query."
 msgstr "Žádní vedoucí neodpovídají hledanému výrazu."
 
-#: views/leaders.py:19
+#: views/leaders.py:20
 msgid "Leaders in school year {}"
 msgstr "Vedoucí ve školním roce {}"
 
@@ -2215,31 +2246,31 @@ msgstr "Nový záznam výkazu práce byl vytvořen."
 msgid "User account {} has been created."
 msgstr "Uživatel {} byl vytvořen."
 
-#: views/user.py:43
+#: views/user.py:49
 msgid "Change user"
 msgstr "Aktualizace údajů o uživateli"
 
-#: views/user.py:49
+#: views/user.py:55
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:96
+#: views/user.py:102
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:97
+#: views/user.py:103
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:113
+#: views/user.py:119
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:114
+#: views/user.py:120
 msgid "Set my password"
 msgstr "Nastavit heslo"
