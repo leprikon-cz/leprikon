@@ -68,7 +68,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
-        'merge',
+        'merge', 'copy_to_school_year',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -164,6 +164,33 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
         }, context_instance=RequestContext(request))
     merge.short_description = _('Merge selected clubs into one')
+
+    def copy_to_school_year(self, request, queryset):
+        class SchoolYearForm(forms.Form):
+            school_year = forms.ModelChoiceField(
+                label=_('Target school year'),
+                help_text=_('All selected clubs will be copied to selected school year.'),
+                queryset=SchoolYear.objects.all(),
+            )
+        if request.POST.get('post', 'no') == 'yes':
+            form = SchoolYearForm(request.POST)
+            if form.is_valid():
+                school_year = form.cleaned_data['school_year']
+                for club in queryset.all():
+                    club.copy_to_school_year(school_year)
+                self.message_user(request, _('Selected clubs were copied to school year {}.').format(school_year))
+                return
+        else:
+            form = SchoolYearForm()
+        return render_to_response('leprikon/admin/action_form.html', {
+            'title': _('Select target school year'),
+            'queryset': queryset,
+            'opts': self.model._meta,
+            'form': form,
+            'action': 'copy_to_school_year',
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
+    copy_to_school_year.short_description = _('Copy selected clubs to another school year')
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(

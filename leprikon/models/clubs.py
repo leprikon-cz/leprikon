@@ -180,6 +180,38 @@ class Club(models.Model):
         except ValueError:
             return None
 
+    def copy_to_school_year(old, school_year):
+        new = Club.objects.get(id=old.id)
+        new.id = None
+        new.school_year = school_year
+        new.public      = False
+        new.reg_active  = False
+        new.evaluation  = ''
+        new.note        = ''
+        new.save()
+        new.groups      = old.groups.all()
+        new.age_groups  = old.age_groups.all()
+        new.leaders     = old.leaders.all()
+        new.questions   = old.questions.all()
+        new.times       = old.times.all()
+        new.attachments = old.attachments.all()
+        year_offset = school_year.year - old.school_year.year
+        for period in old.all_periods:
+            period.id = None
+            period.club = new
+            try:
+                period.start = date(period.start.year + year_offset, period.start.month, period.start.day)
+            except ValueError:
+                # handle leap-year
+                period.start = date(period.start.year + year_offset, period.start.month, period.start.day - 1)
+            try:
+                period.end   = date(period.end.year   + year_offset, period.end.month,   period.end.day)
+            except ValueError:
+                # handle leap-year
+                period.end   = date(period.end.year   + year_offset, period.end.month,   period.end.day - 1)
+            period.save()
+        return new
+
 
 
 @python_2_unicode_compatible
