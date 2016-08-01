@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
+from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
@@ -7,6 +8,8 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.html import format_html
@@ -68,6 +71,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
+        'copy_to_school_year',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -106,6 +110,33 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = False)
         self.message_user(request, _('Registration was disallowed for selected events.'))
     disallow_registration.short_description = _('Disallow registration for selected events')
+
+    def copy_to_school_year(self, request, queryset):
+        class SchoolYearForm(forms.Form):
+            school_year = forms.ModelChoiceField(
+                label=_('Target school year'),
+                help_text=_('All selected events will be copied to selected school year.'),
+                queryset=SchoolYear.objects.all(),
+            )
+        if request.POST.get('post', 'no') == 'yes':
+            form = SchoolYearForm(request.POST)
+            if form.is_valid():
+                school_year = form.cleaned_data['school_year']
+                for event in queryset.all():
+                    event.copy_to_school_year(school_year)
+                self.message_user(request, _('Selected events were copied to school year {}.').format(school_year))
+                return
+        else:
+            form = SchoolYearForm()
+        return render_to_response('leprikon/admin/action_form.html', {
+            'title': _('Select target school year'),
+            'queryset': queryset,
+            'opts': self.model._meta,
+            'form': form,
+            'action': 'copy_to_school_year',
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
+    copy_to_school_year.short_description = _('Copy selected events to another school year')
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(

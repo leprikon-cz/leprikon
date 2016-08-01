@@ -4,6 +4,7 @@ import colorsys
 
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
+from datetime import date
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -194,6 +195,33 @@ class Event(models.Model):
     def get_leaders_list(self):
         return comma_separated(self.all_leaders)
     get_leaders_list.short_description = _('leaders list')
+
+    def copy_to_school_year(old, school_year):
+        new = Event.objects.get(id=old.id)
+        new.id = None
+        new.school_year = school_year
+        new.public      = False
+        new.reg_active  = False
+        new.evaluation  = ''
+        new.note        = ''
+        year_offset = school_year.year - old.school_year.year
+        try:
+            new.start_date = date(new.start_date.year + year_offset, new.start_date.month, new.start_date.day)
+        except ValueError:
+            # handle leap-year
+            new.start_date = date(new.start_date.year + year_offset, new.start_date.month, new.start_date.day - 1)
+        try:
+            new.end_date   = date(new.end_date.year   + year_offset, new.end_date.month,   new.end_date.day)
+        except ValueError:
+            # handle leap-year
+            new.end_date   = date(new.end_date.year   + year_offset, new.end_date.month,   new.end_date.day - 1)
+        new.save()
+        new.groups      = old.groups.all()
+        new.age_groups  = old.age_groups.all()
+        new.leaders     = old.leaders.all()
+        new.questions   = old.questions.all()
+        new.attachments = old.attachments.all()
+        return new
 
 
 
