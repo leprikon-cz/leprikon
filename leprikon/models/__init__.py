@@ -11,7 +11,7 @@ from .agegroup import AgeGroup
 from .question import Question
 from .clubs import (
     Club, ClubGroup, ClubTime, ClubPeriod, ClubAttachment,
-    ClubRegistration, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry,
+    ClubRegistration, ClubRegistrationDiscount, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry,
     ClubPlugin, ClubListPlugin, FilteredClubListPlugin,
 )
 from .events import (

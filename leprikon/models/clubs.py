@@ -375,8 +375,6 @@ class ClubRegistration(AnswersBaseModel):
     health          = models.TextField(_('health'), blank=True, default='')
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
     canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
-    discount        = PriceField(_('discount'), default=0)
-    explanation     = models.TextField(_('discount explanation'), blank=True, default='')
 
     class Meta:
         app_label           = 'leprikon'
@@ -397,12 +395,20 @@ class ClubRegistration(AnswersBaseModel):
     def subject(self):
         return self.club
 
+    @property
+    def periods(self):
+        if self.canceled:
+            return self.club.periods.filter(end__gt=self.created, start__lt=self.canceled)
+        else:
+            return self.club.periods.filter(end__gt=self.created)
+
     @cached_property
     def all_periods(self):
-        if self.canceled:
-            return list(self.club.periods.filter(end__gt=self.created, start__lt=self.canceled))
-        else:
-            return list(self.club.periods.filter(end__gt=self.created))
+        return list(self.periods.all())
+
+    @cached_property
+    def all_discounts(self):
+        return list(self.discounts.all())
 
     @cached_property
     def all_parents(self):
@@ -450,18 +456,24 @@ class ClubRegistration(AnswersBaseModel):
     def get_period_payment_statuses(self, d=None):
         price       = self.club.price
         paid        = self.get_paid(d)
-        discount    = self.discount
-        for period in self.all_periods:
+        for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
+            try:
+                discount_obj = filter(lambda d: d.period == period, self.all_discounts).pop()
+                discount    = discount_obj.discount
+                explanation = discount_obj.explanation
+            except:
+                discount    = 0
+                explanation = ''
             yield self.PeriodPaymentStatus(
                 period  = period,
                 status  = PaymentStatus(
                     price       = price,
                     discount    = discount,
-                    paid        = min(price - discount, paid),
+                    explanation = explanation,
+                    paid        = min(price - discount, paid) if counter < -1 else paid,
                 ),
             )
             paid = max(paid - (price - discount), 0)
-            discount = 0 # discount if one for all periods
 
     @cached_property
     def payment_statuses(self):
@@ -474,10 +486,14 @@ class ClubRegistration(AnswersBaseModel):
         price = self.club.price
         partial_price   = price * len(filter(lambda p: p.start <= d, self.all_periods))
         total_price     = price * len(self.all_periods)
+        partial_discount= sum(discount.discount for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
+        partial_explanation = comma_separated(discount.explanation for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
+        total_discount  = sum(discount.discount for discount in self.all_discounts)
+        total_explanation   = comma_separated(discount.explanation for discount in self.all_discounts)
         paid            = self.get_paid(d)
         return self.PaymentStatuses(
-            partial = PaymentStatus(price = partial_price, discount = self.discount, paid = paid),
-            total   = PaymentStatus(price = total_price,   discount = self.discount, paid = paid),
+            partial = PaymentStatus(price=partial_price, discount=partial_discount, explanation=partial_explanation, paid=paid),
+            total   = PaymentStatus(price=total_price,   discount=total_discount,   explanation=total_explanation,   paid=paid),
         )
 
     def get_absolute_url(self):
@@ -492,6 +508,29 @@ class ClubRegistration(AnswersBaseModel):
         if self.canceled:
             self.cancel_request = False
         super(ClubRegistration, self).save(*args, **kwargs)
+
+
+
+@python_2_unicode_compatible
+class ClubRegistrationDiscount(models.Model):
+    registration    = models.ForeignKey(ClubRegistration, verbose_name=_('registration'), related_name='discounts')
+    period          = models.ForeignKey(ClubPeriod, verbose_name=_('period'), related_name='discounts')
+    discount        = PriceField(_('discount'), default=0)
+    explanation     = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
+
+    class Meta:
+        app_label           = 'leprikon'
+        verbose_name        = _('club discount')
+        verbose_name_plural = _('club discounts')
+        ordering            = ('period',)
+        unique_together     = (('registration', 'period'),)
+
+    def __str__(self):
+        return '{registration}, {period}, {discount}'.format(
+            registration    = self.registration,
+            period          = self.period,
+            discount        = currency(self.discount),
+        )
 
 
 

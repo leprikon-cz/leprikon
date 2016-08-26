@@ -253,10 +253,20 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 
 
+class ClubRegistrationDiscountInlineAdmin(admin.TabularInline):
+    model = ClubRegistrationDiscount
+    extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        field = super(ClubRegistrationDiscountInlineAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == 'period':
+            field.queryset = request._leprikon_registration.periods.all()
+        return field
+
 class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
         'id', 'get_download_tag', 'club', 'participant_link', 'parents_link',
-        'discount', 'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
+        'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
         'cancel_request', 'canceled',
     )
     list_export     = (
@@ -265,7 +275,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
         'participant__email', 'participant__phone', 'school_name', 'school_class',
         'participant__street', 'participant__city', 'participant__postal_code', 'citizenship', 'insurance', 'health',
         'parents_list', 'parent_emails',
-        'discount', 'get_payments_partial_balance', 'get_payments_total_balance',
+        'get_payments_partial_balance', 'get_payments_total_balance',
     )
     list_filter     = (
         ('club__school_year',   SchoolYearListFilter),
@@ -278,6 +288,9 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
         'participant__birth_num', 'participant__email',
         'parents__first_name', 'parents__last_name', 'parents__email',
         'school__name', 'club__name',
+    )
+    inlines         = (
+        ClubRegistrationDiscountInlineAdmin,
     )
     ordering        = ('-cancel_request', '-created')
     raw_id_fields   = ('club', 'participant')
@@ -293,6 +306,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
             for q in questions
         ))
+        request._leprikon_registration = obj
         return super(ClubRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
     def save_form(self, request, form, change):

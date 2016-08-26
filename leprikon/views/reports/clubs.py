@@ -39,7 +39,7 @@ class ReportClubPaymentsStatusView(ReportBaseView):
     submit_label    = _('Show')
     back_url        = reverse('leprikon:reports')
 
-    ClubPaymentsStatusSums = namedtuple('ClubPaymentsStatusSums', ('registrations', 'partial', 'total'))
+    ClubPaymentsStatusSums = namedtuple('ClubPaymentsStatusSums', ('registrations', 'status'))
 
     def form_valid(self, form):
         context = form.cleaned_data
@@ -50,8 +50,7 @@ class ReportClubPaymentsStatusView(ReportBaseView):
         ]
         context['sum'] = self.ClubPaymentsStatusSums(
             registrations   = sum(len(r.registrations)  for r in context['reports']),
-            partial         = sum(r.partial             for r in context['reports']),
-            total           = sum(r.total               for r in context['reports']),
+            status          = sum(r.status              for r in context['reports']),
         )
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
@@ -70,23 +69,19 @@ class ReportClubPaymentsStatusView(ReportBaseView):
                 created__lte=self.date,
             ))
 
-        RegPaymentStatuses = namedtuple('RegPaymentStatuses', ('registration', 'statuses'))
+        RegPaymentStatuses = namedtuple('RegPaymentStatuses', ('registration', 'status'))
 
         @cached_property
         def registration_statuses(self):
             return [
                 self.RegPaymentStatuses(
                     registration = registration,
-                    statuses     = registration.get_payment_statuses(self.date),
+                    status       = registration.get_payment_statuses(self.date).partial,
                 )
                 for registration in self.registrations
             ]
 
         @cached_property
-        def partial(self):
-            return sum(rs.statuses.partial for rs in self.registration_statuses)
-
-        @cached_property
-        def total(self):
-            return sum(rs.statuses.total for rs in self.registration_statuses)
+        def status(self):
+            return sum(rs.status for rs in self.registration_statuses)
 

@@ -7,11 +7,15 @@ from ..conf import settings
 from ..utils import currency
 
 
-class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))):
+class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'explanation', 'paid'))):
+
+    @property
+    def receivable(self):
+        return self.price - self.discount
 
     @property
     def balance(self):
-        return self.paid - (self.price - self.discount)
+        return self.paid - self.receivable
 
     @property
     def color(self):
@@ -45,6 +49,7 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
         return PaymentStatus(
             price       = self.price    + other.price,
             discount    = self.discount + other.discount,
+            explanation = '{}, {}'.format(other.explanation, self.explanation),
             paid        = self.paid     + other.paid,
         )
 

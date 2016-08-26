@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...models import EventPayment
 from ...models.utils import PaymentStatus
+from ...utils import comma_separated
 
 from . import ReportBaseView
 
@@ -84,5 +85,6 @@ class ReportEventPaymentsStatusView(ReportBaseView):
                 price       = sum(rs.status.price    for rs in self.registration_statuses),
                 paid        = sum(rs.status.paid     for rs in self.registration_statuses),
                 discount    = sum(rs.status.discount for rs in self.registration_statuses),
+                explanation = comma_separated(rs.status.explanation for rs in self.registration_statuses),
             )
 

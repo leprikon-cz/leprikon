@@ -326,6 +326,7 @@ class EventRegistration(AnswersBaseModel):
         return PaymentStatus(
             price       = self.event.price,
             discount    = self.discount,
+            explanation = self.explanation,
             paid        = self.get_paid(d),
         )
 

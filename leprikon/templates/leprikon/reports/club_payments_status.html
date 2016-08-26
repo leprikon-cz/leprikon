@@ -15,11 +15,9 @@
         <th>{% trans 'Price' %}</th>
         <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Discount' %}</th>
+        <th>{% trans 'Receivables' %}</th>
         <th>{% trans 'Received payments' %}</th>
-        <th>{% trans 'Partial receivables' %}</th>
-        <th>{% trans 'Partial balance' %}</th>
-        <th>{% trans 'Total receivables' %}</th>
-        <th>{% trans 'Total balance' %}</th>
+        <th>{% trans 'Balance' %}</th>
     </tr>
     {% for report in reports %}
     {% if report.registrations %}
@@ -30,18 +28,12 @@
         <th>{{ report.club.name }}</th>
         <td class="right">{{ report.club.price | currency }}</td>
         <td class="right">{{ report.registrations | length }}</td>
-        <td class="right">{{ report.total.discount | currency }}</td>
-        <td class="right">{{ report.total.paid | currency }}</td>
-        <td class="right">{{ report.partial.price | currency }}</td>
+        <td class="right">{{ report.status.discount | currency }}</td>
+        <td class="right">{{ report.status.price | currency }}</td>
+        <td class="right">{{ report.status.paid | currency }}</td>
         <td class="right">
-            <strong style="color: {{ report.partial.color }}" title="{{ report.partial.title }}">
-                {{ report.partial.balance | currency }}
-            </strong>
-        </td>
-        <td class="right">{{ report.total.price | currency }}</td>
-        <td class="right">
-            <strong style="color: {{ report.total.color }}" title="{{ report.total.title }}">
-                {{ report.total.balance | currency }}
+            <strong style="color: {{ report.status.color }}" title="{{ report.status.title }}">
+                {{ report.status.balance | currency }}
             </strong>
         </td>
     </tr>
@@ -53,25 +45,23 @@
             </a>
         </th>
         <td class="right">
-            {% if rs.registration.explanation %}
-            <span data-toggle="tooltip" data-html="true" title="{{ rs.registration.explanation | linebreaks }}">
-                {{ rs.registration.discount | currency }}
+            {% if rs.status.explanation %}
+            <span data-toggle="tooltip" data-html="true" title="{{ rs.status.explanation | linebreaks }}">
+                {{ rs.status.discount | currency }}
             </span>
             {% else %}
-            {{ rs.registration.discount | currency }}
+            {{ rs.status.discount | currency }}
             {% endif %}
         </td>
-        <td class="right">{{ rs.statuses.total.paid | currency }}</td>
-        <td class="right">{{ rs.statuses.partial.price | currency }}</td>
+        <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">
-            <strong style="color: {{ rs.statuses.partial.color }}" title="{{ rs.statuses.partial.title }}">
-                {{ rs.statuses.partial.balance | currency }}
-            </strong>
+            <a href="{% url 'admin:leprikon_clubpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.paid | currency }}
+            </a>
         </td>
-        <td class="right">{{ rs.statuses.total.price | currency }}</td>
         <td class="right">
-            <strong style="color: {{ rs.statuses.total.color }}" title="{{ rs.statuses.total.title }}">
-                {{ rs.statuses.total.balance | currency }}
+            <strong style="color: {{ rs.status.color }}" title="{{ rs.status.title }}">
+                {{ rs.status.balance | currency }}
             </strong>
         </td>
     </tr>
@@ -81,18 +71,12 @@
         <th>{% trans 'All clubs' %}</th>
         <td></td>
         <td class="right">{{ sum.registrations }}</td>
-        <td class="right">{{ sum.total.discount | currency }}</td>
-        <td class="right">{{ sum.total.paid | currency }}</td>
-        <td class="right">{{ sum.partial.price | currency }}</td>
+        <td class="right">{{ sum.status.discount | currency }}</td>
+        <td class="right">{{ sum.status.receivable | currency }}</td>
+        <td class="right">{{ sum.status.paid | currency }}</td>
         <td class="right">
-            <strong style="color: {{ sum.partial.color }}" title="{{ sum.partial.title }}">
-                {{ sum.partial.balance | currency }}
-            </strong>
-        </td>
-        <td class="right">{{ sum.total.price | currency }}</td>
-        <td class="right">
-            <strong style="color: {{ sum.total.color }}" title="{{ sum.total.title }}">
-                {{ sum.total.balance | currency }}
+            <strong style="color: {{ sum.status.color }}" title="{{ sum.status.title }}">
+                {{ sum.status.balance | currency }}
             </strong>
         </td>
     </tr>

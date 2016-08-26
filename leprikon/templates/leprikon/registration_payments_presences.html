@@ -1,5 +1,5 @@
 {% load i18n leprikon_tags %}
-        {% if reg.discount %}
+        {% if reg.discount %}{# events #}
         <div class="row">
             <label class="col-sm-4">{% trans 'Discount' %}:</label>
             <div class="col-sm-8">
@@ -15,11 +15,11 @@
         <div class="row">
             <label class="col-sm-4">{% trans 'Payments' %}:</label>
             <div class="col-sm-8">
-                {% if reg.payment_status %}
+                {% if reg.payment_status %}{# events #}
                 <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
                     {{ reg.payment_status.paid | currency }}
                 </strong>
-                {% else %}
+                {% else %}{# clubs #}
                 <strong class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#period-payments-{{ reg.id }}"
                     style="color: {{ reg.payment_statuses.partial.color }}" title="{{ reg.payment_statuses.total.title }}">
                     {{ reg.payment_statuses.total.paid | currency }}
@@ -29,7 +29,9 @@
                     {{ ps.period.name }}:
                     <strong style="color: {{ ps.status.color }}" title="{{ ps.status.title }}">
                         {{ ps.status.paid | currency }}
-                    </strong><br />
+                    </strong>
+                    {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
+                    <br />
                     {% endfor %}
                 </div>
                 {% endif %}

@@ -15,9 +15,9 @@
         <th>{% trans 'Price' %}</th>
         <th>{% trans 'Number of registrations' %}</th>
         <th>{% trans 'Discount' %}</th>
+        <th>{% trans 'Receivables' %}</th>
         <th>{% trans 'Received payments' %}</th>
-        <th>{% trans 'Total receivables' %}</th>
-        <th>{% trans 'Total balance' %}</th>
+        <th>{% trans 'Balance' %}</th>
     </tr>
     {% for report in reports %}
     {% if report.registrations %}
@@ -29,8 +29,8 @@
         <td class="right">{{ report.event.price | currency }}</td>
         <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
-        <td class="right">{{ report.status.paid | currency }}</td>
         <td class="right">{{ report.status.price | currency }}</td>
+        <td class="right">{{ report.status.paid | currency }}</td>
         <td class="right">
             <strong style="color: {{ report.status.color }}" title="{{ report.status.title }}">
                 {{ report.status.balance | currency }}
@@ -45,16 +45,20 @@
             </a>
         </th>
         <td class="right">
-            {% if rs.registration.explanation %}
-            <span data-toggle="tooltip" data-html="true" title="{{ rs.registration.explanation | linebreaks }}">
-                {{ rs.registration.discount | currency }}
+            {% if rs.status.explanation %}
+            <span data-toggle="tooltip" data-html="true" title="{{ rs.status.explanation | linebreaks }}">
+                {{ rs.status.discount | currency }}
             </span>
             {% else %}
-            {{ rs.registration.discount | currency }}
+            {{ rs.status.discount | currency }}
             {% endif %}
         </td>
-        <td class="right">{{ rs.status.paid | currency }}</td>
-        <td class="right">{{ rs.status.price | currency }}</td>
+        <td class="right">{{ rs.status.receivable | currency }}</td>
+        <td class="right">
+            <a href="{% url 'admin:leprikon_eventpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.paid | currency }}
+            </a>
+        </td>
         <td class="right">
             <strong style="color: {{ rs.status.color }}" title="{{ rs.status.title }}">
                 {{ rs.status.balance | currency }}
@@ -68,8 +72,8 @@
         <td></td>
         <td class="right">{{ sum.registrations }}</td>
         <td class="right">{{ sum.status.discount | currency }}</td>
+        <td class="right">{{ sum.status.receivable | currency }}</td>
         <td class="right">{{ sum.status.paid | currency }}</td>
-        <td class="right">{{ sum.status.price | currency }}</td>
         <td class="right">
             <strong style="color: {{ sum.status.color }}" title="{{ sum.status.title }}">
                 {{ sum.status.balance | currency }}
