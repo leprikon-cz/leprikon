@@ -135,12 +135,12 @@ class EventRegistrationFormView(CreateView):
         event_kwargs = {
             'id':               int(pk),
             'event_type__slug': event_type,
-            'school_year':      self.request.school_year,
             'reg_active':       True,
         }
         if not self.request.user.is_staff:
             event_kwargs['public'] = True
         self.event = get_object_or_404(Event, **event_kwargs)
+        self.request.school_year = self.event.school_year
         return super(EventRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):

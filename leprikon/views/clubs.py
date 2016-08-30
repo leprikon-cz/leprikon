@@ -214,12 +214,12 @@ class ClubRegistrationFormView(CreateView):
     def dispatch(self, request, pk, *args, **kwargs):
         club_kwargs = {
             'id':           int(pk),
-            'school_year':  self.request.school_year,
             'reg_active':   True,
         }
         if not self.request.user.is_staff:
             club_kwargs['public'] = True
         self.club = get_object_or_404(Club, **club_kwargs)
+        self.request.school_year = self.club.school_year
         return super(ClubRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
