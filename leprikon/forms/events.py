@@ -19,6 +19,7 @@ class EventFilterForm(FormMixin, forms.Form):
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
     past        = forms.BooleanField(label=_('Include past'), required=False)
+    reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
     def __init__(self, request, school_year=None, event_types=None, **kwargs):
@@ -68,6 +69,8 @@ class EventFilterForm(FormMixin, forms.Form):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
         if not self.cleaned_data['past']:
             qs = qs.filter(end_date__gte = now())
+        if self.cleaned_data['reg_active']:
+            qs = qs.filter(reg_active=True)
         return qs.distinct()
 
 

@@ -26,6 +26,7 @@ class ClubFilterForm(FormMixin, forms.Form):
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
     day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
                     choices=tuple(sorted(DAY_OF_WEEK.items())),required=False)
+    reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
     def __init__(self, request, school_year=None, **kwargs):
@@ -68,6 +69,8 @@ class ClubFilterForm(FormMixin, forms.Form):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
         if self.cleaned_data['day_of_week']:
             qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
+        if self.cleaned_data['reg_active']:
+            qs = qs.filter(reg_active=True)
         return qs.distinct()
 
 

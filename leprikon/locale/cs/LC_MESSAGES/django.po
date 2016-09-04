@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-31 02:28+0200\n"
+"POT-Creation-Date: 2016-09-04 20:44+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -483,7 +483,7 @@ msgstr "účastníci"
 msgid "Leprikon"
 msgstr "Leprikón"
 
-#: cms_plugins/clubs.py:18 forms/clubs.py:129 forms/clubs.py:236
+#: cms_plugins/clubs.py:18 forms/clubs.py:132 forms/clubs.py:239
 #: forms/leaders.py:12 templates/leprikon/registration_preview.html.py:21
 #: templates/leprikon/reports/club_payments_status.html:14
 msgid "Club"
@@ -511,7 +511,7 @@ msgstr "Výpis akcí"
 msgid "Event list with filter form"
 msgstr "Výpis akcí s filtrováním"
 
-#: cms_plugins/leaders.py:18 forms/clubs.py:24 forms/clubs.py:131
+#: cms_plugins/leaders.py:18 forms/clubs.py:24 forms/clubs.py:134
 #: forms/events.py:18
 msgid "Leader"
 msgstr "Vedoucí"
@@ -590,20 +590,24 @@ msgid "Day of week"
 msgstr "Den v týdnu"
 
 #: forms/clubs.py:29 forms/events.py:22
+msgid "Available for registration"
+msgstr "Povoleno přihlašování"
+
+#: forms/clubs.py:30 forms/events.py:23
 msgid "Show invisible"
 msgstr "Zobrazit neviditelné"
 
-#: forms/clubs.py:110
+#: forms/clubs.py:113
 #, python-brace-format
 msgid "The club journal entry starts at {start}"
 msgstr "Záznam deníku začíná v {start}."
 
-#: forms/clubs.py:114
+#: forms/clubs.py:117
 #, python-brace-format
 msgid "The club journal entry ends at {end}"
 msgstr "Záznam deníku končí v {end}."
 
-#: forms/clubs.py:130 forms/clubs.py:161 forms/timesheets.py:32
+#: forms/clubs.py:133 forms/clubs.py:164 forms/timesheets.py:32
 #: templates/leprikon/club_journal.html:196
 #: templates/leprikon/messages_table.html:7
 #: templates/leprikon/reports/club_payments.html:14
@@ -611,51 +615,51 @@ msgstr "Záznam deníku končí v {end}."
 msgid "Date"
 msgstr "Datum"
 
-#: forms/clubs.py:135 forms/timesheets.py:33
+#: forms/clubs.py:138 forms/timesheets.py:33
 #: templates/leprikon/event_list/default.html:26
 #: templates/leprikon/event_list/grouped.html:28
 #: templates/leprikon/event_preview.html:27
 msgid "Start"
 msgstr "Začátek"
 
-#: forms/clubs.py:136 forms/timesheets.py:34
+#: forms/clubs.py:139 forms/timesheets.py:34
 #: templates/leprikon/event_list/default.html:29
 #: templates/leprikon/event_list/grouped.html:31
 #: templates/leprikon/event_preview.html:30
 msgid "End"
 msgstr "Konec"
 
-#: forms/clubs.py:188
+#: forms/clubs.py:191
 msgid "If You fill in start time, You must fill end time too."
 msgstr "Pokud vyplníte čas začátku, musíte vyplnit také čas konce."
 
-#: forms/clubs.py:190
+#: forms/clubs.py:193
 msgid "If You fill in end time, You must fill start time too."
 msgstr "Pokud vyplníte čas konce, musíte vyplnit také čas začátku."
 
-#: forms/clubs.py:203
+#: forms/clubs.py:206
 msgid "An overlaping entry has already been added in the club journal."
 msgstr "V deníku kroužku už je kolidující záznam."
 
-#: forms/clubs.py:215
+#: forms/clubs.py:218
 #, python-brace-format
 msgid "Some submitted timesheet entries start at {start}"
 msgstr "Některé odevzdané záznamy práce začínají v {start}"
 
-#: forms/clubs.py:219
+#: forms/clubs.py:222
 #, python-brace-format
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/clubs.py:230 menu.py:110 templates/leprikon/club_journal.html.py:153
+#: forms/clubs.py:233 menu.py:110 templates/leprikon/club_journal.html.py:153
 msgid "Leaders"
 msgstr "Vedoucí"
 
-#: forms/clubs.py:231
+#: forms/clubs.py:234
 msgid "Alternates"
 msgstr "Náhradní vedoucí"
 
-#: forms/clubs.py:325
+#: forms/clubs.py:328
 #, python-brace-format
 msgid "Leader {leaders} has already submitted timesheet for {period}."
 msgid_plural "Leaders {leaders} have already submitted timesheet for {period}."
@@ -663,7 +667,7 @@ msgstr[0] "Vedoucí {leaders} má již odevzdaný výkaz práce za {period}."
 msgstr[1] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 msgstr[2] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 
-#: forms/clubs.py:334
+#: forms/clubs.py:337
 #, python-brace-format
 msgid "Alternate {leaders} has already submitted timesheet for {period}."
 msgid_plural ""
