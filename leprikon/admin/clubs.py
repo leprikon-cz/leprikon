@@ -47,10 +47,16 @@ class ClubAttachmentInlineAdmin(admin.TabularInline):
 
 class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'name', 'get_groups_list', 'get_leaders_list',
-        'get_times_list', 'get_periods_list',
+        'id', 'name', 'get_groups_list', 'get_leaders_list',
+        'get_times_list',
         'place', 'public', 'reg_active',
         'get_registrations_link', 'get_journal_link', 'icon', 'note',
+    )
+    list_export     = (
+        'id', 'name', 'get_groups_list', 'get_leaders_list',
+        'get_times_list',
+        'place', 'public', 'reg_active',
+        'get_registrations_count', 'note',
     )
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
@@ -221,6 +227,11 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
+    def get_registrations_count(self, obj):
+        return obj.registrations_count
+    get_registrations_count.short_description = _('registrations count')
+    get_registrations_count.admin_order_field = 'registrations_count'
+
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
             url     = reverse('admin:leprikon_club_journal', args=[obj.id]),
@@ -265,7 +276,7 @@ class ClubRegistrationDiscountInlineAdmin(admin.TabularInline):
 
 class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'club', 'participant_link', 'parents_link',
+        'id', 'get_download_tag', 'club_name', 'participant_link', 'parents_link',
         'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
         'cancel_request', 'canceled',
     )
@@ -316,6 +327,10 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
             answers[q.name] = form.cleaned_data['q_'+q.name]
         form.instance.answers = dumps(answers)
         return super(ClubRegistrationAdmin, self).save_form(request, form, change)
+
+    def club_name(self, obj):
+        return obj.club.name
+    club_name.short_description = _('club')
 
     def parents_list(self, obj):
         return comma_separated(obj.all_parents)

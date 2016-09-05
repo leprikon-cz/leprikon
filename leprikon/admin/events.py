@@ -51,9 +51,14 @@ class EventAttachmentInlineAdmin(admin.TabularInline):
 
 class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'start_date', 'start_time', 'end_date', 'end_time',
-        'name', 'event_type', 'get_groups_list', 'get_leaders_list', 'place', 'public', 'reg_active',
+        'id', 'name', 'event_type', 'start_date', 'start_time', 'end_date', 'end_time',
+        'get_groups_list', 'get_leaders_list', 'place', 'public', 'reg_active',
         'get_registrations_link', 'icon', 'note',
+    )
+    list_export     = (
+        'id', 'name', 'event_type', 'start_date', 'start_time', 'end_date', 'end_time',
+        'get_groups_list', 'get_leaders_list', 'place', 'public', 'reg_active',
+        'get_registrations_count', 'note',
     )
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
@@ -167,6 +172,11 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
+    def get_registrations_count(self, obj):
+        return obj.registrations_count
+    get_registrations_count.short_description = _('registrations count')
+    get_registrations_count.admin_order_field = 'registrations_count'
+
     def icon(self, obj):
         return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
             src = obj.photo.icons['48'],
@@ -179,7 +189,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'event', 'participant_link', 'parents_link',
+        'id', 'get_download_tag', 'event_name', 'participant_link', 'parents_link',
         'discount', 'get_payments_html', 'created',
         'cancel_request', 'canceled',
     )
@@ -227,6 +237,10 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
             answers[q.name] = form.cleaned_data['q_'+q.name]
         form.instance.answers = dumps(answers)
         return super(EventRegistrationAdmin, self).save_form(request, form, change)
+
+    def event_name(self, obj):
+        return obj.event.name
+    event_name.short_description = _('event')
 
     def parents_list(self, obj):
         return comma_separated(obj.all_parents)
