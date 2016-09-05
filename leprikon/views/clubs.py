@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.clubs import ClubForm, ClubFilterForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm
 from ..forms.registrations import ClubRegistrationForm
-from ..models import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration
+from ..models import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, ClubRegistrationRequest
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView, TemplateView, PdfView
 
@@ -220,6 +220,8 @@ class ClubRegistrationFormView(CreateView):
             club_kwargs['public'] = True
         self.club = get_object_or_404(Club, **club_kwargs)
         self.request.school_year = self.club.school_year
+        if self.club.max_count and self.club.registrations.count() >= self.club.max_count:
+            return ClubRegistrationRequestFormView.as_view()(request, club=self.club)
         return super(ClubRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -234,6 +236,48 @@ class ClubRegistrationFormView(CreateView):
             form.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(self.request, form.user)
         return response
+
+
+
+class ClubRegistrationRequestFormView(UpdateView):
+    back_url        = reverse('leprikon:registrations')
+    model           = ClubRegistrationRequest
+    template_name   = 'leprikon/form.html'
+    message         = _('The registration request has been accepted.')
+    fields          = ['contact']
+
+    def get_title(self):
+        return _('Registration request for club {}').format(self.kwargs['club'].name)
+
+    def get_object(self, queryset=None):
+        club = self.kwargs['club']
+        user = self.request.user if self.request.user.is_authenticated() else None
+        req = None
+        if user:
+            try:
+                req = ClubRegistrationRequest.objects.get(club=club, user=user)
+            except ClubRegistrationRequest.DoesNotExist:
+                pass
+        if req is None:
+            req = ClubRegistrationRequest()
+            req.club = club
+            req.user = user
+        return req
+
+    def get_instructions(self):
+        if self.object.created:
+            instructions = _(
+                'Your request was already submitted. '
+                'We will contact you, if someone cancels the registration. '
+                'You may update the contact, if necessary.'
+            )
+        else:
+            instructions = _(
+                'The capacity of this club has already been filled. '
+                'However, we may contact you, if someone cancels the registration. '
+                'Please, leave your contact information in the form below.'
+            )
+        return '<p>{}</p>'.format(instructions)
 
 
 

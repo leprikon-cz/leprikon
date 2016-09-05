@@ -9,7 +9,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from ..forms.events import EventForm, EventFilterForm
 from ..forms.registrations import EventRegistrationForm
-from ..models import Event, EventType, EventRegistration
+from ..models import Event, EventType, EventRegistration, EventRegistrationRequest
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, PdfView
 
@@ -141,6 +141,8 @@ class EventRegistrationFormView(CreateView):
             event_kwargs['public'] = True
         self.event = get_object_or_404(Event, **event_kwargs)
         self.request.school_year = self.event.school_year
+        if self.event.max_count and self.event.registrations.count() >= self.event.max_count:
+            return EventRegistrationRequestFormView.as_view()(request, event=self.event)
         return super(EventRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -155,6 +157,48 @@ class EventRegistrationFormView(CreateView):
             form.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(self.request, form.user)
         return response
+
+
+
+class EventRegistrationRequestFormView(UpdateView):
+    back_url        = reverse('leprikon:registrations')
+    model           = EventRegistrationRequest
+    template_name   = 'leprikon/form.html'
+    message         = _('The registration request has been accepted.')
+    fields          = ['contact']
+
+    def get_title(self):
+        return _('Registration request for event {}').format(self.kwargs['event'].name)
+
+    def get_object(self, queryset=None):
+        event = self.kwargs['event']
+        user = self.request.user if self.request.user.is_authenticated() else None
+        req = None
+        if user:
+            try:
+                req = EventRegistrationRequest.objects.get(event=event, user=user)
+            except EventRegistrationRequest.DoesNotExist:
+                pass
+        if req is None:
+            req = EventRegistrationRequest()
+            req.event = event
+            req.user = user
+        return req
+
+    def get_instructions(self):
+        if self.object.created:
+            instructions = _(
+                'Your request was already submitted. '
+                'We will contact you, if someone cancels the registration. '
+                'You may update the contact, if necessary.'
+            )
+        else:
+            instructions = _(
+                'The capacity of this event has already been filled. '
+                'However, we may contact you, if someone cancels the registration. '
+                'Please, leave your contact information in the form below.'
+            )
+        return '<p>{}</p>'.format(instructions)
 
 
 

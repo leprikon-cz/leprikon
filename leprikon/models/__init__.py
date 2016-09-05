@@ -11,12 +11,12 @@ from .agegroup import AgeGroup
 from .question import Question
 from .clubs import (
     Club, ClubGroup, ClubTime, ClubPeriod, ClubAttachment,
-    ClubRegistration, ClubRegistrationDiscount, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry,
+    ClubRegistration, ClubRegistrationDiscount, ClubRegistrationRequest, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry,
     ClubPlugin, ClubListPlugin, FilteredClubListPlugin,
 )
 from .events import (
     Event, EventType, EventTypeAttachment, EventGroup, EventAttachment,
-    EventRegistration, EventPayment,
+    EventRegistration, EventRegistrationRequest, EventPayment,
     EventPlugin, EventListPlugin, FilteredEventListPlugin,
 )
 from .timesheets import Timesheet, TimesheetPeriod, TimesheetEntry, TimesheetEntryType

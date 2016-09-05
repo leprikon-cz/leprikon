@@ -535,6 +535,28 @@ class ClubRegistrationDiscount(models.Model):
 
 
 @python_2_unicode_compatible
+class ClubRegistrationRequest(models.Model):
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='club_registration_requests', blank=True, null=True)
+    club    = models.ForeignKey(Club, verbose_name=_('club'), related_name='registration_requests')
+    created = models.DateTimeField(_('time of request'), editable=False, auto_now_add=True)
+    contact = models.CharField(_('contact'), max_length=150, help_text=_('Enter phone number, e-mail address or other contact.'))
+
+    class Meta:
+        app_label           = 'leprikon'
+        verbose_name        = _('club registration request')
+        verbose_name_plural = _('club registration requests')
+        ordering            = ('created',)
+        unique_together     = (('user', 'club'),)
+
+    def __str__(self):
+        return '{user}, {club}'.format(
+            user    = self.user,
+            club    = self.club,
+        )
+
+
+
+@python_2_unicode_compatible
 class ClubPayment(models.Model):
     registration    = models.ForeignKey(ClubRegistration, verbose_name=_('registration'), related_name='payments', on_delete=models.PROTECT)
     date            = models.DateField(_('payment date'))

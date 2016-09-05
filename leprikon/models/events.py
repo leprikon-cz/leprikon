@@ -346,6 +346,28 @@ class EventRegistration(AnswersBaseModel):
 
 
 @python_2_unicode_compatible
+class EventRegistrationRequest(models.Model):
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='event_registration_requests', blank=True, null=True)
+    event   = models.ForeignKey(Event, verbose_name=_('event'), related_name='registration_requests')
+    created = models.DateTimeField(_('time of request'), editable=False, auto_now_add=True)
+    contact = models.CharField(_('contact'), max_length=150, help_text=_('Enter phone number, e-mail address or other contact.'))
+
+    class Meta:
+        app_label           = 'leprikon'
+        verbose_name        = _('event registration request')
+        verbose_name_plural = _('event registration requests')
+        ordering            = ('created',)
+        unique_together     = (('user', 'event'),)
+
+    def __str__(self):
+        return '{user}, {event}'.format(
+            user    = self.user,
+            event   = self.event,
+        )
+
+
+
+@python_2_unicode_compatible
 class EventPayment(models.Model):
     registration    = models.ForeignKey(EventRegistration, verbose_name=_('registration'), related_name='payments', on_delete=models.PROTECT)
     date            = models.DateField(_('payment date'))

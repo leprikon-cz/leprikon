@@ -110,15 +110,20 @@ class BackViewMixin(object):
 
 class FormViewMixin(BackViewMixin, GenericViewMixin):
     template_name   = 'leprikon/form.html'
+    instructions    = ''
     submit_label    = _('Save')
     success_url     = reverse('leprikon:summary')
     message         = None
 
     def get_context_data(self, *args, **kwargs):
         return super(FormViewMixin, self).get_context_data(*args,
+            instructions    = self.get_instructions(),
             submit_label    = self.get_submit_label(),
             **kwargs
         )
+
+    def get_instructions(self):
+        return self.instructions
 
     def get_submit_label(self):
         return self.submit_label

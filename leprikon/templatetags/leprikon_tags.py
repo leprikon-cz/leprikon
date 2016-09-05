@@ -57,11 +57,12 @@ def current_url(context):
 @register.inclusion_tag('leprikon/registration_links.html', takes_context=True)
 def registration_links(context, subject):
     context = context.__copy__()
-    context['reg_active'] = subject.reg_active
     if context['request'].user.is_authenticated():
         context['registrations'] = subject.registrations.filter(participant__user=context['request'].user)
     else:
         context['registrations'] = []
+    context['exceeded'] = subject.max_count and (subject.registrations.count() >= subject.max_count)
+    context['reg_active'] = subject.reg_active and not context['exceeded']
     context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
     return context
 

@@ -1,15 +1,19 @@
 {% load i18n %}
 
+{% for reg in registrations %}
+<a class="btn btn-default btn-xs" href="{% url 'leprikon:registrations' %}#{{ reg.slug }}">
+    {% blocktrans with participant=reg.participant.full_name %}{{ participant }} already registered{% endblocktrans %}
+</a>
+{% endfor %}
+
 {% if reg_active %}
-
-    {% for reg in registrations %}
-    <a class="btn btn-default btn-xs" href="{% url 'leprikon:registrations' %}#{{ reg.slug }}">
-        {% blocktrans with participant=reg.participant.full_name %}{{ participant }} already registered{% endblocktrans %}
-    </a>
-    {% endfor %}
-
     <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
         {% trans 'register' %}
+    </a>
+{% elif exceeded %}
+    {% trans 'The capacity is already full.' %}
+    <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
+        {% trans 'contact me, if there is some place available' %}
     </a>
 {% else %}
     {% trans 'Registering is currently not allowed.' %}

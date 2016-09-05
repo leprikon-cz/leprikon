@@ -563,3 +563,22 @@ class ClubJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     agenda_html.allow_tags = True
 
 
+
+class ClubRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
+    date_hierarchy  = 'created'
+    list_display    = ('created', 'club', 'user_link', 'contact')
+    list_filter     = (
+        ('club__school_year',   SchoolYearListFilter),
+        ('club',                ClubListFilter),
+    )
+    ordering        = ('-created',)
+    raw_id_fields   = ('club', 'user')
+
+    def user_link(self, obj):
+        return '<a href="{url}">{user}</a>'.format(
+            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
+            user    = obj.user,
+        ) if obj.user else '-'
+    user_link.allow_tags = True
+    user_link.short_description = _('user')
+

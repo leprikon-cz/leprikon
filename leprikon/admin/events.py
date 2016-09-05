@@ -355,3 +355,22 @@ class EventPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     raw_id_fields   = ('registration',)
 
 
+
+class EventRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
+    date_hierarchy  = 'created'
+    list_display    = ('created', 'event', 'user_link', 'contact')
+    list_filter     = (
+        ('event__school_year',   SchoolYearListFilter),
+        ('event',                EventListFilter),
+    )
+    ordering        = ('-created',)
+    raw_id_fields   = ('event', 'user')
+
+    def user_link(self, obj):
+        return '<a href="{url}">{user}</a>'.format(
+            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
+            user    = obj.user,
+        ) if obj.user else '-'
+    user_link.allow_tags = True
+    user_link.short_description = _('user')
+

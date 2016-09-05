@@ -8,8 +8,8 @@ from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
 from .agegroup import AgeGroupAdmin
 from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
-from .clubs import ClubAdmin, ClubGroupAdmin, ClubRegistrationAdmin, ClubPaymentAdmin, ClubJournalEntryAdmin, ClubJournalLeaderEntryAdmin
-from .events import EventAdmin, EventTypeAdmin, EventGroupAdmin, EventRegistrationAdmin, EventPaymentAdmin
+from .clubs import ClubAdmin, ClubGroupAdmin, ClubRegistrationAdmin, ClubRegistrationRequestAdmin, ClubPaymentAdmin, ClubJournalEntryAdmin, ClubJournalLeaderEntryAdmin
+from .events import EventAdmin, EventTypeAdmin, EventGroupAdmin, EventRegistrationAdmin, EventRegistrationRequestAdmin, EventPaymentAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .question import QuestionAdmin
 from .user import UserAdmin
@@ -30,6 +30,7 @@ admin.site.register(Participant,        ParticipantAdmin)
 admin.site.register(ClubGroup,          ClubGroupAdmin)
 admin.site.register(Club,               ClubAdmin)
 admin.site.register(ClubRegistration,   ClubRegistrationAdmin)
+admin.site.register(ClubRegistrationRequest, ClubRegistrationRequestAdmin)
 admin.site.register(ClubPayment,        ClubPaymentAdmin)
 admin.site.register(ClubJournalEntry,   ClubJournalEntryAdmin)
 admin.site.register(ClubJournalLeaderEntry, ClubJournalLeaderEntryAdmin)
@@ -38,6 +39,7 @@ admin.site.register(EventType,          EventTypeAdmin)
 admin.site.register(EventGroup,         EventGroupAdmin)
 admin.site.register(Event,              EventAdmin)
 admin.site.register(EventRegistration,  EventRegistrationAdmin)
+admin.site.register(EventRegistrationRequest, EventRegistrationRequestAdmin)
 admin.site.register(EventPayment,       EventPaymentAdmin)
 
 admin.site.register(Message,            MessageAdmin)
