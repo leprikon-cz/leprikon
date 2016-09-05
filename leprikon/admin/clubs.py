@@ -457,6 +457,7 @@ class ClubPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     list_filter     = (
         ('registration__club__school_year', SchoolYearListFilter),
         ('registration__club',              ClubListFilter),
+        ('registration__club__leaders',     LeaderListFilter),
     )
     search_fields   = ('registration__club__name', 'registration__participant__first_name', 'registration__participant__last_name',
                        'registration__participant__birth_num')
