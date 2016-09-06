@@ -81,7 +81,7 @@ class Club(models.Model):
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
     groups      = models.ManyToManyField(ClubGroup, verbose_name=_('groups'), related_name='clubs')
-    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='clubs', blank=True, null=True)
+    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='clubs', blank=True, null=True, on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='clubs', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='clubs', blank=True)
     price       = PriceField(_('price'))

@@ -128,7 +128,7 @@ class Event(models.Model):
     end_time    = models.TimeField(_('end time'), blank=True, null=True)
     event_type  = models.ForeignKey(EventType, verbose_name=_('event type'), related_name='events')
     groups      = models.ManyToManyField(EventGroup, verbose_name=_('groups'), related_name='events')
-    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='events', blank=True, null=True)
+    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='events', blank=True, null=True, on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='events', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='events', blank=True)
     price       = PriceField(_('price'))
