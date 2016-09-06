@@ -17,5 +17,8 @@ class Place(models.Model):
         verbose_name_plural = _('places')
 
     def __str__(self):
-        return '{name}, {place}'.format(name=self.name, place=self.place)
+        if self.place:
+            return '{name}, {place}'.format(name=self.name, place=self.place)
+        else:
+            return '{name}'.format(name=self.name)
 
