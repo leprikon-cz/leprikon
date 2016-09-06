@@ -23,10 +23,11 @@
             <img class="right" alt="{{ object.photo.name }}" src="{% thumbnail object.photo 200x200 %}" />
         </a>
         {% endif %}
+
         <p>
             {% trans 'Start' %}: {{ object.start_date }}{% if objec.start_time %}, {{ objec.start_time }}{% endif %}
             {% if object.start_date != object.end_date or objec.end_time %}
-                <br>
+                <br/>
                 {% trans 'End' %}:
                 {% if object.start_date != object.end_date %}
                     {{ object.end_date }}{% if objec.end_time %}, {{ objec.end_time }}{% endif %}
@@ -34,7 +35,14 @@
                     {{ objec.end_time }}
                 {% endif %}
             {% endif %}
+            {% if object.place %}
+                <br/>
+                {% trans 'Place' %}: {{ object.place }}
+            {% endif %}
+        </p>
+
         {{ object.description | safe }}
+
         {% if object.all_leaders %}
         <p>
             {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-05 21:32+0200\n"
+"POT-Creation-Date: 2016-09-06 17:14+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -128,7 +128,7 @@ msgid "printable club journal"
 msgstr "tisknutelný deník kroužku"
 
 #: admin/clubs.py:239 admin/clubs.py:241
-#: templates/leprikon/club_preview.html:62
+#: templates/leprikon/club_preview.html:71
 msgid "journal"
 msgstr "deník"
 
@@ -485,8 +485,8 @@ msgid "login"
 msgstr "přihlásit"
 
 #: admin/user.py:145 models/clubs.py:590 models/roles.py:169
-#: templates/leprikon/club_preview.html:58
-#: templates/leprikon/event_preview.html:71
+#: templates/leprikon/club_preview.html:67
+#: templates/leprikon/event_preview.html:79
 msgid "participants"
 msgstr "účastníci"
 
@@ -589,7 +589,8 @@ msgstr "Hledaný výraz"
 msgid "Group"
 msgstr "Skupina"
 
-#: forms/clubs.py:25 forms/events.py:19
+#: forms/clubs.py:25 forms/events.py:19 templates/leprikon/club_preview.html:31
+#: templates/leprikon/event_preview.html:40
 msgid "Place"
 msgstr "Místo"
 
@@ -632,14 +633,14 @@ msgstr "Datum"
 #: forms/clubs.py:138 forms/timesheets.py:33
 #: templates/leprikon/event_list/default.html:26
 #: templates/leprikon/event_list/grouped.html:28
-#: templates/leprikon/event_preview.html:27
+#: templates/leprikon/event_preview.html:28
 msgid "Start"
 msgstr "Začátek"
 
 #: forms/clubs.py:139 forms/timesheets.py:34
 #: templates/leprikon/event_list/default.html:29
 #: templates/leprikon/event_list/grouped.html:31
-#: templates/leprikon/event_preview.html:30
+#: templates/leprikon/event_preview.html:31
 msgid "End"
 msgstr "Konec"
 
@@ -705,7 +706,7 @@ msgstr "Zahrnout minulé"
 msgid "Recipients"
 msgstr "Příjemci"
 
-#: forms/participant.py:28
+#: forms/participant.py:27
 msgid "Failed to parse birth day"
 msgstr "Nepodařilo se rozpoznat datum narození"
 
@@ -1582,6 +1583,7 @@ msgid "Agenda"
 msgstr "Program"
 
 #: templates/leprikon/club_journal.html:197
+#: templates/leprikon/club_preview.html:29
 msgid "Time"
 msgstr "Čas"
 
@@ -1650,10 +1652,10 @@ msgstr "vybraných"
 
 #: templates/leprikon/club_list/default.html:31
 #: templates/leprikon/club_list/grouped.html:34
-#: templates/leprikon/club_preview.html:30
+#: templates/leprikon/club_preview.html:39
 #: templates/leprikon/event_list/default.html:44
 #: templates/leprikon/event_list/grouped.html:46
-#: templates/leprikon/event_preview.html:40
+#: templates/leprikon/event_preview.html:48
 msgid "Led by"
 msgid_plural "Led by"
 msgstr[0] "Vede"
@@ -1662,20 +1664,20 @@ msgstr[2] "Vedou"
 
 #: templates/leprikon/club_list/default.html:38
 #: templates/leprikon/club_list/grouped.html:41
-#: templates/leprikon/club_preview.html:37
+#: templates/leprikon/club_preview.html:46
 #: templates/leprikon/event_list/default.html:51
 #: templates/leprikon/event_list/grouped.html:53
-#: templates/leprikon/event_preview.html:47
+#: templates/leprikon/event_preview.html:55
 #: templates/leprikon/messagerecipient_detail.html:20
 msgid "Attachments"
 msgstr "Přílohy"
 
 #: templates/leprikon/club_list/default.html:47
 #: templates/leprikon/club_list/grouped.html:50
-#: templates/leprikon/club_preview.html:46
+#: templates/leprikon/club_preview.html:55
 #: templates/leprikon/event_list/default.html:63
 #: templates/leprikon/event_list/grouped.html:65
-#: templates/leprikon/event_preview.html:59
+#: templates/leprikon/event_preview.html:67
 #: templates/leprikon/leader_list/default.html:38
 #: templates/leprikon/leader_preview.html:38
 msgid "More information"
@@ -1686,7 +1688,7 @@ msgstr "Více informací"
 msgid "Participants of club %(name)s"
 msgstr "Účastníci kroužku %(name)s"
 
-#: templates/leprikon/club_preview.html:66
+#: templates/leprikon/club_preview.html:75
 msgid "add journal entry"
 msgstr "přidat záznam deníku"
 

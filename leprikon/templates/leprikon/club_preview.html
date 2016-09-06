@@ -23,8 +23,17 @@
             <img class="right" alt="{{ object.photo.name }}" src="{% thumbnail object.photo 200x200 %}" />
         </a>
         {% endif %}
-        <p>{{ object.all_times | comma_separated }}</p>
+
+        {% if object.all_times or object.place %}
+        <p>
+            {% if object.all_times %}{% trans 'Time' %}: {{ object.all_times | comma_separated }}{% endif %}
+            {% if object.all_times and object.place %}<br/>{% endif %}
+            {% if object.place %}{% trans 'Place' %}: {{ object.place }}{% endif %}
+        </p>
+        {% endif %}
+
         {{ object.description | safe }}
+
         {% if object.all_leaders %}
         <p>
             {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
