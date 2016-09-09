@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-06 17:14+0200\n"
+"POT-Creation-Date: 2016-09-10 00:18+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -118,10 +118,8 @@ msgid "registrations"
 msgstr "přihlášky"
 
 #: admin/clubs.py:232 admin/events.py:177
-#, fuzzy
-#| msgid "registrations"
 msgid "registrations count"
-msgstr "přihlášky"
+msgstr "počet přihlášek"
 
 #: admin/clubs.py:238
 msgid "printable club journal"
@@ -706,10 +704,6 @@ msgstr "Zahrnout minulé"
 msgid "Recipients"
 msgstr "Příjemci"
 
-#: forms/participant.py:27
-msgid "Failed to parse birth day"
-msgstr "Nepodařilo se rozpoznat datum narození"
-
 #: forms/registrations.py:24 templates/leprikon/registration_form.html.py:28
 #: templates/leprikon/registration_preview.html:27
 msgid "Participant"
@@ -1252,37 +1246,41 @@ msgstr "žádosti o přihlášení na akci"
 msgid "event payment"
 msgstr "platba za akci"
 
-#: models/fields.py:20
+#: models/fields.py:22
 msgid "Enter a valid hex color."
 msgstr "Zadejte platnou barvu."
 
-#: models/fields.py:43
+#: models/fields.py:45
 msgid "Monday"
 msgstr "pondělí"
 
-#: models/fields.py:44
+#: models/fields.py:46
 msgid "Tuesday"
 msgstr "úterý"
 
-#: models/fields.py:45
+#: models/fields.py:47
 msgid "Wednesday"
 msgstr "středa"
 
-#: models/fields.py:46
+#: models/fields.py:48
 msgid "Thursday"
 msgstr "čtvrtek"
 
-#: models/fields.py:47
+#: models/fields.py:49
 msgid "Friday"
 msgstr "pátek"
 
-#: models/fields.py:48
+#: models/fields.py:50
 msgid "Saturday"
 msgstr "sobota"
 
-#: models/fields.py:49
+#: models/fields.py:51
 msgid "Sunday"
 msgstr "neděle"
+
+#: models/fields.py:75
+msgid "Enter a valid birth number."
+msgstr "Zadejte platné rodné číslo."
 
 #: models/messages.py:23
 msgid "created"

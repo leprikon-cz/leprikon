@@ -11,21 +11,14 @@ from .form import FormMixin
 
 class ParticipantForm(FormMixin, forms.ModelForm):
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, **kwargs):
         self.user = user
-        super(ParticipantForm, self).__init__(*args, **kwargs)
+        super(ParticipantForm, self).__init__(**kwargs)
 
     def save(self, commit=True):
         self.instance.user = self.user
         return super(ParticipantForm, self).save(commit)
     save.alters_data = True
-
-    def clean_birth_num(self):
-        try:
-            get_birth_date(self.cleaned_data['birth_num'])
-        except:
-            raise forms.ValidationError(_('Failed to parse birth day'), code='invalid')
-        return self.cleaned_data['birth_num']
 
     class Meta:
         model = Participant

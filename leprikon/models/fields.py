@@ -4,11 +4,13 @@ import re
 
 from django import forms
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 from localflavor.cz.forms import CZBirthNumberField, CZPostalCodeField
 
 from ..conf import settings
+from ..utils import get_birth_date
 
 
 class ColorInput(forms.TextInput):
@@ -59,32 +61,38 @@ class DayOfWeekField(models.IntegerField):
 
 
 
+birth_num_regex = re.compile('^[0-9]{2}([0257][1-9]|[1368][0-2])[0-3][0-9]/?[0-9]{3,4}$')
 
-class _BirthNumberField(CZBirthNumberField, forms.CharField):
-    '''
-    CZBirthNumberField derived from CharField instead of just Field
-    to support max_length
-    '''
+def validate_birth_num(value):
+    try:
+        assert birth_num_regex.match(value) is not None
+        get_birth_date(value)
+        value = value.replace('/','')
+        if len(value) > 9:
+            assert int(value) % 11 == 0
+    except:
+        raise ValidationError(
+            message=_('Enter a valid birth number.'),
+            code='invalid',
+        )
 
 class BirthNumberField(models.CharField):
+    default_validators = [validate_birth_num]
+
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 11
         super(BirthNumberField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
         name, path, args, kwargs = super(BirthNumberField, self).deconstruct()
-        del kwargs["max_length"]
+        del kwargs['max_length']
         return name, path, args, kwargs
-
-    def formfield(self, **kwargs):
-        defaults = {'form_class': _BirthNumberField}
-        defaults.update(kwargs)
-        return super(BirthNumberField, self).formfield(**defaults)
 
     def clean(self, value, model_instance):
         return super(BirthNumberField, self).clean(
             value[6]=='/' and value or '{}/{}'.format(value[:6], value[6:]),
-            model_instance)
+            model_instance,
+        )
 
 
 
@@ -113,5 +121,6 @@ class PostalCodeField(models.CharField):
     def clean(self, value, model_instance):
         return super(PostalCodeField, self).clean(
             value[3]==' ' and value or '{} {}'.format(value[:3], value[3:]),
-            model_instance)
+            model_instance,
+        )
 
