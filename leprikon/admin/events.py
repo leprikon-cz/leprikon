@@ -51,14 +51,17 @@ class EventAttachmentInlineAdmin(admin.TabularInline):
 
 class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'name', 'event_type', 'start_date', 'start_time', 'end_date', 'end_time',
-        'get_groups_list', 'get_leaders_list', 'place', 'public', 'reg_active',
-        'get_registrations_link', 'icon', 'note',
+        'id', 'name', 'event_type', 'get_groups_list', 'get_leaders_list',
+        'start_date', 'start_time', 'end_date', 'end_time',
+        'place', 'public', 'reg_active',
+        'get_registrations_link', 'get_registration_requests_link',
+        'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'event_type', 'start_date', 'start_time', 'end_date', 'end_time',
-        'get_groups_list', 'get_leaders_list', 'place', 'public', 'reg_active',
-        'get_registrations_count', 'note',
+        'id', 'name', 'event_type', 'get_groups_list', 'get_leaders_list',
+        'start_date', 'start_time', 'end_date', 'end_time',
+        'place', 'public', 'reg_active',
+        'get_registrations_count', 'get_registration_requests_count', 'note',
     )
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
@@ -82,8 +85,10 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     save_as         = True
 
     def get_queryset(self, request):
-        return super(EventAdmin, self).get_queryset(request)\
-            .annotate(registrations_count=Count('registrations'))
+        return super(EventAdmin, self).get_queryset(request).annotate(
+            registrations_count=Count('registrations', distinct=True),
+            registration_requests_count=Count('registration_requests', distinct=True),
+        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(EventAdmin, self).get_form(request, obj=None, **kwargs)
@@ -172,10 +177,27 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
+    def get_registration_requests_link(self, obj):
+        return '<a href="{url}">{count}</a>'.format(
+            url     = reverse('admin:{}_{}_changelist'.format(
+                        EventRegistrationRequest._meta.app_label,
+                        EventRegistrationRequest._meta.model_name,
+                    )) + '?event={}'.format(obj.id),
+            count   = obj.registration_requests_count,
+        )
+    get_registration_requests_link.short_description = _('registration requests')
+    get_registration_requests_link.admin_order_field = 'registration_requests_count'
+    get_registration_requests_link.allow_tags = True
+
     def get_registrations_count(self, obj):
         return obj.registrations_count
     get_registrations_count.short_description = _('registrations count')
     get_registrations_count.admin_order_field = 'registrations_count'
+
+    def get_registration_requests_count(self, obj):
+        return obj.registration_requests_count
+    get_registration_requests_count.short_description = _('registration requests count')
+    get_registration_requests_count.admin_order_field = 'registration_requests_count'
 
     def icon(self, obj):
         return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(

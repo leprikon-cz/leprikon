@@ -50,13 +50,14 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         'id', 'name', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
-        'get_registrations_link', 'get_journal_link', 'icon', 'note',
+        'get_registrations_link', 'get_registration_requests_link',
+        'get_journal_link', 'icon', 'note',
     )
     list_export     = (
         'id', 'name', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
-        'get_registrations_count', 'note',
+        'get_registrations_count', 'get_registration_requests_count', 'note',
     )
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
@@ -80,8 +81,10 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     save_as         = True
 
     def get_queryset(self, request):
-        return super(ClubAdmin, self).get_queryset(request)\
-            .annotate(registrations_count=Count('registrations'))
+        return super(ClubAdmin, self).get_queryset(request).annotate(
+            registrations_count=Count('registrations', distinct=True),
+            registration_requests_count=Count('registration_requests', distinct=True),
+        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(ClubAdmin, self).get_form(request, obj, **kwargs)
@@ -227,10 +230,27 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
+    def get_registration_requests_link(self, obj):
+        return '<a href="{url}">{count}</a>'.format(
+            url     = reverse('admin:{}_{}_changelist'.format(
+                        ClubRegistrationRequest._meta.app_label,
+                        ClubRegistrationRequest._meta.model_name,
+                    )) + '?club={}'.format(obj.id),
+            count   = obj.registration_requests_count,
+        )
+    get_registration_requests_link.short_description = _('registration requests')
+    get_registration_requests_link.admin_order_field = 'registration_requests_count'
+    get_registration_requests_link.allow_tags = True
+
     def get_registrations_count(self, obj):
         return obj.registrations_count
     get_registrations_count.short_description = _('registrations count')
     get_registrations_count.admin_order_field = 'registrations_count'
+
+    def get_registration_requests_count(self, obj):
+        return obj.registration_requests_count
+    get_registration_requests_count.short_description = _('registration requests count')
+    get_registration_requests_count.admin_order_field = 'registration_requests_count'
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
