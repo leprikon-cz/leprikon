@@ -32,6 +32,8 @@ class EventTypeAttachmentInlineAdmin(admin.TabularInline):
 class EventTypeAdmin(admin.ModelAdmin):
     list_display    = ('name', 'order')
     list_editable   = ('order',)
+    fields          = ('name', 'slug', 'questions',)
+    filter_horizontal = ('questions',)
     prepopulated_fields = {'slug': ('name',)}
     inlines         = (
         EventTypeAttachmentInlineAdmin,
@@ -74,7 +76,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     inlines         = (
         EventAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders')
+    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     date_hierarchy  = 'start_date'
     actions         = (
         'publish', 'unpublish',

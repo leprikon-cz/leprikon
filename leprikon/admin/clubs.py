@@ -71,7 +71,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         ClubPeriodInlineAdmin,
         ClubAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders')
+    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
