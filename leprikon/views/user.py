@@ -58,7 +58,7 @@ class UserUpdateView(UpdateView):
 
 def user_password(request):
     return password_change(request,
-        template_name='leprikon/form.html',
+        template_name='leprikon/password.html',
         password_change_form=UserPasswordForm,
         post_change_redirect=reverse('leprikon:summary'),
         extra_context={
@@ -73,7 +73,7 @@ def user_password(request):
 
 def user_login(request):
     return login(request,
-        template_name='leprikon/form.html',
+        template_name='leprikon/login.html',
         authentication_form=UserLoginForm,
         redirect_field_name=settings.LEPRIKON_PARAM_BACK,
         extra_context={
@@ -94,7 +94,7 @@ def user_logout(request):
 
 def password_reset(request):
     return pr(request,
-        template_name='leprikon/form.html',
+        template_name='leprikon/password_reset.html',
         password_reset_form=PasswordResetForm,
         email_template_name='leprikon/password_reset_email.html',
         from_email=settings.SERVER_EMAIL,
@@ -113,7 +113,7 @@ def password_reset_done(request):
 
 def password_reset_confirm(request, uidb64=None, token=None):
     return pr_confirm(request, uidb64, token,
-        template_name='leprikon/form.html',
+        template_name='leprikon/password_reset_confirm.html',
         set_password_form=SetPasswordForm,
         extra_context={
             'instructions': '<p>{}<p>'.format(_('Please enter your new password twice so we can verify you typed it in correctly.')),

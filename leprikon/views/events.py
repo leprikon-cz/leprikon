@@ -163,7 +163,7 @@ class EventRegistrationFormView(CreateView):
 class EventRegistrationRequestFormView(UpdateView):
     back_url        = reverse('leprikon:registrations')
     model           = EventRegistrationRequest
-    template_name   = 'leprikon/form.html'
+    template_name   = 'leprikon/registration_request_form.html'
     message         = _('The registration request has been accepted.')
     fields          = ['contact']
 
