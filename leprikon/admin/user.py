@@ -62,6 +62,11 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
                     for parent in user.leprikon_parents.all():
                         parent.user = target
                         parent.save()
+                    try:
+                        # support social auth
+                        target.social_auth = user.social_auth.all()
+                    except AttributeError:
+                        pass
                     user.delete()
                 target.save()
                 self.message_user(request, _('Selected users were merged into user {}.').format(target))
