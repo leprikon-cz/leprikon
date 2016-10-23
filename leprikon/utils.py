@@ -5,6 +5,8 @@ import os
 import string
 from datetime import date
 from django.core.urlresolvers import reverse_lazy as reverse
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.utils.encoding import iri_to_uri, smart_text
 from django.utils.translation import get_language, ugettext_lazy as _
 from urllib import urlencode
@@ -158,4 +160,36 @@ def get_age(birth_date):
     else:
         return today.year - birth_date.year
 
+
+
+@transaction.atomic
+def merge_users(source, target):
+    if not target.first_name and source.first_name:
+        target.first_name = source.first_name
+    if not target.last_name and source.last_name:
+        target.last_name = source.last_name
+    if not target.email and source.email:
+        target.email = source.email
+    target.date_joined = min(source.date_joined, target.date_joined)
+
+    try:
+        leader = source.leprikon_leader
+        leader.user = target
+        leader.save()
+    except ObjectDoesNotExist:
+        pass
+    except IntegrityError:
+        # both users are leaders
+        raise
+
+    source.leprikon_participants.update(user=target)
+    source.leprikon_parents.update(user=target)
+
+    try:
+        # support social auth
+        source.social_auth.update(user=target)
+    except AttributeError:
+        pass
+
+    source.delete()
 

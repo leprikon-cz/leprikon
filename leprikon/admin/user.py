@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.messages import ERROR
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
@@ -15,6 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.user import UserAdminCreateForm
+from ..utils import merge_users
 
 from .messages import SendMessageAdminMixin
 
@@ -41,35 +43,12 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
             if form.is_valid():
                 target = form.cleaned_data['target']
                 for user in queryset.all():
-                    if user == target:
-                        continue
-                    if not target.first_name and user.first_name:
-                        target.first_name = user.first_name
-                    if not target.last_name and user.last_name:
-                        target.last_name = user.last_name
-                    if not target.email and user.email:
-                        target.email = user.email
-                    try:
-                        leader = user.leprikon_leader
-                    except:
-                        leader = None
-                    if leader:
-                        leader.user = target
-                        leader.save()
-                    for participant in user.leprikon_participants.all():
-                        participant.user = target
-                        participant.save()
-                    for parent in user.leprikon_parents.all():
-                        parent.user = target
-                        parent.save()
-                    try:
-                        # support social auth
-                        target.social_auth = user.social_auth.all()
-                    except AttributeError:
-                        pass
-                    user.delete()
-                target.save()
-                self.message_user(request, _('Selected users were merged into user {}.').format(target))
+                    if user != target:
+                        try:
+                            merge_users(user, target)
+                            self.message_user(request, _('User {} was merged into user {}.').format(user, target))
+                        except:
+                            self.message_user(request, _('Can not merge user {} into user {}.').format(user, target), level=ERROR)
                 return
         else:
             form = MergeForm()
