@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
+from ...forms.reports.debtors import DebtorsForm
 
 from ..generic import FormView, TemplateView
 
@@ -43,6 +44,12 @@ class ReportsView(TemplateView):
                 instructions    = '',
                 form            = self.get_form(EventPaymentsStatusForm),
                 url             = reverse('leprikon:report_event_payments_status'),
+            ),
+            self.Report(
+                title           = _('Debtors list'),
+                instructions    = '',
+                form            = self.get_form(DebtorsForm),
+                url             = reverse('leprikon:report_debtors'),
             ),
         ])
 

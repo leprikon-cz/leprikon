@@ -1,0 +1,43 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if reports %}
+<h1>{% blocktrans with date=date %}Debtors list by date {{ date }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Debtor' %}</th>
+        <th>{% trans 'Debt' %}</th>
+    </tr>
+    {% for user, items in reports.items %}
+    <tr id="report-{{ user.id }}" class="clickable" data-toggle="collapse" data-target=".{{ user.id }}-collapsed">
+        <th>{{ user }}</th>
+        <td class="right">{{ items.balance | currency }}</td>
+    </tr>
+    {% for item in items %}
+    <tr class="collapse out {{ user.id }}-collapsed">
+        <th class="right">
+            {{ item.registration }}
+        </th>
+        <td class="right">
+            {{ item.balance | currency }}
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    <tr>
+        <th>{% trans 'Total debt' %}</th>
+        <td class="right">{{ sum }}</td>
+    </tr>
+</table>
+{% endif %}
+
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+
+{% endblock %}

@@ -22,6 +22,7 @@ from .registrations import *
 from .reports import *
 from .reports.clubs import *
 from .reports.events import *
+from .reports.debtors import *
 from .terms_conditions import *
 
 def lr(function):
@@ -114,5 +115,6 @@ report_club_payments            = staff_required(ReportClubPaymentsView.as_view(
 report_club_payments_status     = staff_required(ReportClubPaymentsStatusView.as_view())
 report_event_payments           = staff_required(ReportEventPaymentsView.as_view())
 report_event_payments_status    = staff_required(ReportEventPaymentsStatusView.as_view())
+report_debtors                  = staff_required(ReportDebtorsView.as_view())
 
 terms_conditions                = TermsConditionsView.as_view()

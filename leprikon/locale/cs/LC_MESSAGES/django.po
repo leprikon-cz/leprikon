@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 01:42+0200\n"
+"POT-Creation-Date: 2016-10-26 16:25+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -768,7 +768,8 @@ msgstr "Datum začátku"
 msgid "End date"
 msgstr "Datum konce"
 
-#: forms/reports/clubs.py:16 forms/reports/events.py:16
+#: forms/reports/clubs.py:16 forms/reports/debtors.py:10
+#: forms/reports/events.py:16
 msgid "Status for date"
 msgstr "Stav k datu"
 
@@ -1997,6 +1998,24 @@ msgstr "Zůstatek"
 msgid "All clubs"
 msgstr "Všechny kroužky"
 
+#: templates/leprikon/reports/debtors.html:10
+#, python-format
+#| msgid "Club payment status by date %(date)s"
+msgid "Debtors list by date %(date)s"
+msgstr "Seznam dlužníků ke dni %(date)s"
+
+#: templates/leprikon/reports/debtors.html:14
+msgid "Debtor"
+msgstr "Dlužník"
+
+#: templates/leprikon/reports/debtors.html:15
+msgid "Debt"
+msgstr "Dluh"
+
+#: templates/leprikon/reports/debtors.html:34
+msgid "Total debt"
+msgstr "Celkový dluh"
+
 #: templates/leprikon/reports/event_payments.html:10
 #, python-format
 msgid "Event payments from %(date_start)s to %(date_end)s"
@@ -2012,8 +2031,8 @@ msgid "All events"
 msgstr "Všechny akce"
 
 #: templates/leprikon/reports/index.html:36 views/reports/clubs.py:20
-#: views/reports/clubs.py:39 views/reports/events.py:22
-#: views/reports/events.py:41
+#: views/reports/clubs.py:39 views/reports/debtors.py:19
+#: views/reports/events.py:22 views/reports/events.py:41
 msgid "Show"
 msgstr "Zobrazit"
 
@@ -2296,21 +2315,25 @@ msgstr "Aktualizace údajů o účastníkovi"
 msgid "The participant {} has been updated."
 msgstr "Účastník {} byl upraven."
 
-#: views/reports/__init__.py:24 views/reports/clubs.py:19
+#: views/reports/__init__.py:25 views/reports/clubs.py:19
 msgid "Club payments"
 msgstr "Platby za kroužky"
 
-#: views/reports/__init__.py:30 views/reports/events.py:21
+#: views/reports/__init__.py:31 views/reports/events.py:21
 msgid "Event payments"
 msgstr "Platby za akce"
 
-#: views/reports/__init__.py:36 views/reports/clubs.py:38
+#: views/reports/__init__.py:37 views/reports/clubs.py:38
 msgid "Club payments status"
 msgstr "Stav plateb za kroužky"
 
-#: views/reports/__init__.py:42 views/reports/events.py:40
+#: views/reports/__init__.py:43 views/reports/events.py:40
 msgid "Event payments status"
 msgstr "Stav plateb za akce"
+
+#: views/reports/__init__.py:49 views/reports/debtors.py:18
+msgid "Debtors list"
+msgstr "Seznam dlužníků"
 
 #: views/schoolyear.py:12
 msgid "Switch school year"
