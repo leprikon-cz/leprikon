@@ -36,15 +36,6 @@ class ParticipantCreateView(CreateView):
     success_url = reverse('leprikon:summary')
     title       = _('New participant')
 
-    def get(self, request, *args, **kwargs):
-        if self.request.user.leprikon_parents.count():
-            return super(ParticipantCreateView, self).get(request, *args, **kwargs)
-        else:
-            messages.info(self.request, _('Before adding participant, you need to add parent.'))
-            return HttpResponseRedirect(
-                reverse_with_back(request, 'leprikon:parent_create')
-            )
-
     def get_form_kwargs(self):
         kwargs = super(ParticipantCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -52,7 +43,6 @@ class ParticipantCreateView(CreateView):
         if parent:
             kwargs['initial'] = dict((attr, getattr(parent, attr))
                 for attr in ['street', 'city', 'postal_code'])
-            kwargs['initial']['parents'] = self.request.user.leprikon_parents.all()
         return kwargs
 
     def get_message(self):

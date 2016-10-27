@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -150,7 +151,7 @@ class Participant(models.Model):
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
     first_name      = models.CharField(_('first name'),   max_length=30)
     last_name       = models.CharField(_('last name'),    max_length=30)
-    birth_num       = BirthNumberField(_('birth number'), unique=True)
+    birth_num       = BirthNumberField(_('birth number'))
     street          = models.CharField(_('street'),       max_length=150)
     city            = models.CharField(_('city'),         max_length=150)
     postal_code     = PostalCodeField(_('postal code'))
@@ -167,6 +168,7 @@ class Participant(models.Model):
         app_label           = 'leprikon'
         verbose_name        = _('participant')
         verbose_name_plural = _('participants')
+        unique_together     = (('user', 'birth_num'),)
 
     def __str__(self):
         return _('{first_name} {last_name} ({birth_num})').format(
@@ -174,6 +176,17 @@ class Participant(models.Model):
             last_name   = self.last_name,
             birth_num   = self.birth_num,
         )
+
+    def validate_unique(self, exclude=None):
+        try:
+            # perform the all unique checks, do not exclude anything
+            super(Participant, self).validate_unique(None)
+        except ValidationError as e:
+            # The only unique constraint is on birth_num and user.
+            # Let's use nice birth_num related message instead of the default one.
+            raise ValidationError(
+                message={'birth_num':_('You have already entered participant with this birth number')},
+            )
 
     @cached_property
     def full_name(self):

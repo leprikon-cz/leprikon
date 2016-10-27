@@ -15,10 +15,9 @@ class ParticipantForm(FormMixin, forms.ModelForm):
         self.user = user
         super(ParticipantForm, self).__init__(**kwargs)
 
-    def save(self, commit=True):
+    def validate_unique(self):
         self.instance.user = self.user
-        return super(ParticipantForm, self).save(commit)
-    save.alters_data = True
+        super(ParticipantForm, self).validate_unique()
 
     class Meta:
         model = Participant

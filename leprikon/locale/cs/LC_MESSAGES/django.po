@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-27 16:17+0200\n"
+"POT-Creation-Date: 2016-10-28 00:10+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -139,21 +139,21 @@ msgid "journal"
 msgstr "deník"
 
 #: admin/clubs.py:283 admin/events.py:210 admin/roles.py:120 models/clubs.py:91
-#: models/events.py:137 models/roles.py:25
+#: models/events.py:137 models/roles.py:26
 msgid "photo"
 msgstr "fotka"
 
 #: admin/clubs.py:353 admin/clubs.py:591 models/clubs.py:106
 #: models/clubs.py:219 models/clubs.py:270 models/clubs.py:347
 #: models/clubs.py:366 models/clubs.py:540 models/clubs.py:583
-#: models/clubs.py:698 models/clubs.py:726 models/roles.py:221
+#: models/clubs.py:698 models/clubs.py:726 models/roles.py:234
 #: templates/leprikon/club_alternating.html:15
 msgid "club"
 msgstr "kroužek"
 
 #: admin/clubs.py:357 admin/clubs.py:403 admin/events.py:271
 #: admin/events.py:317 admin/user.py:116 models/clubs.py:368
-#: models/events.py:251 models/roles.py:120
+#: models/events.py:251 models/roles.py:121
 msgid "parents"
 msgstr "zástupci"
 
@@ -162,7 +162,7 @@ msgid "parent emails"
 msgstr "e-maily zástupců"
 
 #: admin/clubs.py:368 admin/events.py:282 admin/roles.py:240
-#: models/clubs.py:372 models/events.py:255 models/roles.py:161
+#: models/clubs.py:372 models/events.py:255 models/roles.py:162
 #: models/school.py:18
 msgid "school"
 msgstr "škola"
@@ -177,7 +177,7 @@ msgid "full name"
 msgstr "celé jméno"
 
 #: admin/clubs.py:390 admin/events.py:304 models/clubs.py:367
-#: models/events.py:250 models/roles.py:168
+#: models/events.py:250 models/roles.py:169
 msgid "participant"
 msgstr "účastník"
 
@@ -235,7 +235,7 @@ msgstr "program"
 
 #: admin/clubs.py:618 admin/events.py:413 admin/roles.py:86 admin/roles.py:165
 #: admin/roles.py:212 models/clubs.py:539 models/events.py:350
-#: models/roles.py:23 models/roles.py:107 models/roles.py:148
+#: models/roles.py:24 models/roles.py:108 models/roles.py:149
 msgid "user"
 msgstr "uživatel"
 
@@ -289,7 +289,7 @@ msgstr "Na tuto akci se nikdo nepřihlásil."
 
 #: admin/events.py:267 models/events.py:152 models/events.py:230
 #: models/events.py:249 models/events.py:351 models/events.py:390
-#: models/roles.py:223
+#: models/roles.py:236
 msgid "event"
 msgstr "akce"
 
@@ -398,11 +398,11 @@ msgstr "Vybraní vedoucí byli přidáni do školního roku {}."
 msgid "Add selected leaders to another school year"
 msgstr "Přidat vybrané vedoucí do jiného školního roku"
 
-#: admin/roles.py:63 admin/roles.py:137 models/roles.py:109 models/roles.py:151
+#: admin/roles.py:63 admin/roles.py:137 models/roles.py:110 models/roles.py:152
 msgid "first name"
 msgstr "jméno"
 
-#: admin/roles.py:68 admin/roles.py:142 models/roles.py:110 models/roles.py:152
+#: admin/roles.py:68 admin/roles.py:142 models/roles.py:111 models/roles.py:153
 msgid "last name"
 msgstr "příjmení"
 
@@ -410,7 +410,7 @@ msgstr "příjmení"
 msgid "email"
 msgstr "e-mail"
 
-#: admin/roles.py:78 models/roles.py:94
+#: admin/roles.py:78 models/roles.py:95
 msgid "contacts"
 msgstr "kontakty"
 
@@ -428,7 +428,7 @@ msgid "address"
 msgstr "adresa"
 
 #: admin/timesheets.py:57 models/clubs.py:82 models/events.py:124
-#: models/roles.py:24 templates/leprikon/timesheet_detail.html.py:24
+#: models/roles.py:25 templates/leprikon/timesheet_detail.html.py:24
 msgid "description"
 msgstr "popis"
 
@@ -494,7 +494,7 @@ msgstr "Sloučit vybrané uživatele"
 msgid "login"
 msgstr "přihlásit"
 
-#: admin/user.py:129 models/clubs.py:590 models/roles.py:169
+#: admin/user.py:129 models/clubs.py:590 models/roles.py:170
 #: templates/leprikon/club_preview.html:67
 #: templates/leprikon/event_preview.html:79
 msgid "participants"
@@ -548,7 +548,7 @@ msgstr "Výpis vedoucích"
 msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
-#: conf/default_settings.py:14 models/roles.py:115 models/roles.py:158
+#: conf/default_settings.py:14 models/roles.py:116 models/roles.py:159
 msgid "phone"
 msgstr "telefon"
 
@@ -883,12 +883,12 @@ msgstr "název"
 
 #: models/agegroup.py:11 models/clubs.py:43 models/clubs.py:349
 #: models/events.py:39 models/events.py:67 models/events.py:85
-#: models/events.py:232 models/roles.py:85 models/timesheets.py:136
+#: models/events.py:232 models/roles.py:86 models/timesheets.py:136
 msgid "order"
 msgstr "pořadí"
 
 #: models/agegroup.py:16 models/clubs.py:369 models/events.py:252
-#: models/roles.py:150
+#: models/roles.py:151
 msgid "age group"
 msgstr "věková skupina"
 
@@ -915,7 +915,7 @@ msgstr "skupiny kroužků"
 
 #: models/clubs.py:80 models/clubs.py:738 models/clubs.py:765
 #: models/events.py:122 models/events.py:402 models/events.py:430
-#: models/roles.py:219 models/roles.py:236 models/schoolyear.py:38
+#: models/roles.py:232 models/roles.py:249 models/schoolyear.py:38
 msgid "school year"
 msgstr "školní rok"
 
@@ -929,7 +929,7 @@ msgid "place"
 msgstr "místo"
 
 #: models/clubs.py:86 models/clubs.py:746 models/events.py:133
-#: models/events.py:411 models/roles.py:33
+#: models/events.py:411 models/roles.py:34
 msgid "leaders"
 msgstr "vedoucí"
 
@@ -941,7 +941,7 @@ msgstr "cena"
 msgid "unit"
 msgstr "jednotka"
 
-#: models/clubs.py:89 models/events.py:135 models/roles.py:86
+#: models/clubs.py:89 models/events.py:135 models/roles.py:87
 msgid "public"
 msgstr "veřejný"
 
@@ -949,7 +949,7 @@ msgstr "veřejný"
 msgid "active registration"
 msgstr "povoleno přihlašování"
 
-#: models/clubs.py:92 models/events.py:138 models/roles.py:26
+#: models/clubs.py:92 models/events.py:138 models/roles.py:27
 msgid "page"
 msgstr "stránka"
 
@@ -1058,23 +1058,23 @@ msgstr "přílohy"
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: models/clubs.py:370 models/events.py:253 models/roles.py:159
+#: models/clubs.py:370 models/events.py:253 models/roles.py:160
 msgid "citizenship"
 msgstr "státní občanství"
 
-#: models/clubs.py:371 models/events.py:254 models/roles.py:160
+#: models/clubs.py:371 models/events.py:254 models/roles.py:161
 msgid "insurance"
 msgstr "zdravotní pojišťovna"
 
-#: models/clubs.py:373 models/events.py:256 models/roles.py:162
+#: models/clubs.py:373 models/events.py:256 models/roles.py:163
 msgid "other school"
 msgstr "jiná škola"
 
-#: models/clubs.py:374 models/events.py:257 models/roles.py:163
+#: models/clubs.py:374 models/events.py:257 models/roles.py:164
 msgid "class"
 msgstr "třída"
 
-#: models/clubs.py:375 models/events.py:258 models/roles.py:164
+#: models/clubs.py:375 models/events.py:258 models/roles.py:165
 msgid "health"
 msgstr "údaje o zdravotní způsobilosti účastníka (případná omezení)"
 
@@ -1124,8 +1124,8 @@ msgstr "slevy na kroužek"
 msgid "time of request"
 msgstr "čas požadavku"
 
-#: models/clubs.py:542 models/events.py:353 models/roles.py:84
-#: models/roles.py:93
+#: models/clubs.py:542 models/events.py:353 models/roles.py:85
+#: models/roles.py:94
 msgid "contact"
 msgstr "kontakt"
 
@@ -1201,12 +1201,12 @@ msgid "club journal leader entries"
 msgstr "záznamy vedoucích v deníku kroužku"
 
 #: models/clubs.py:727 models/clubs.py:749 models/events.py:391
-#: models/events.py:414 models/roles.py:208 models/roles.py:225
+#: models/events.py:414 models/roles.py:221 models/roles.py:238
 msgid "template"
 msgstr "šablona"
 
 #: models/clubs.py:730 models/clubs.py:752 models/events.py:394
-#: models/events.py:417 models/roles.py:211 models/roles.py:228
+#: models/events.py:417 models/roles.py:224 models/roles.py:241
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
@@ -1370,47 +1370,51 @@ msgstr "Nepodařilo se vytvořit vstupní pole se zadanými parametry: {}"
 msgid "additional answers"
 msgstr "doplňující odpovědi"
 
-#: models/roles.py:27 models/schoolyear.py:39
+#: models/roles.py:28 models/schoolyear.py:39
 msgid "school years"
 msgstr "školní roky"
 
-#: models/roles.py:32 models/roles.py:81 models/roles.py:207
+#: models/roles.py:33 models/roles.py:82 models/roles.py:220
 #: models/timesheets.py:72
 msgid "leader"
 msgstr "vedoucí"
 
-#: models/roles.py:82
+#: models/roles.py:83
 msgid "contact type"
 msgstr "druh kontaktu"
 
-#: models/roles.py:111 models/roles.py:154 models/school.py:12
+#: models/roles.py:112 models/roles.py:155 models/school.py:12
 msgid "street"
 msgstr "ulice a číslo popisné"
 
-#: models/roles.py:112 models/roles.py:155 models/school.py:13
+#: models/roles.py:113 models/roles.py:156 models/school.py:13
 msgid "city"
 msgstr "město (pošta)"
 
-#: models/roles.py:113 models/roles.py:156
+#: models/roles.py:114 models/roles.py:157
 msgid "postal code"
 msgstr "PSČ"
 
-#: models/roles.py:114 models/roles.py:157
+#: models/roles.py:115 models/roles.py:158
 msgid "email address"
 msgstr "e-mail"
 
-#: models/roles.py:119
+#: models/roles.py:120
 msgid "parent"
 msgstr "zástupce"
 
-#: models/roles.py:153
+#: models/roles.py:154
 msgid "birth number"
 msgstr "rodné číslo"
 
-#: models/roles.py:172
+#: models/roles.py:174
 #, python-brace-format
 msgid "{first_name} {last_name} ({birth_num})"
 msgstr "{first_name} {last_name} ({birth_num})"
+
+#: models/roles.py:188
+msgid "You have already entered participant with this birth number"
+msgstr "Účastníka s tímto rodným číslem již máte vytvořeného."
 
 #: models/school.py:19
 msgid "schools"
@@ -2296,21 +2300,15 @@ msgstr "Účastníci a zástupci"
 msgid "New participant"
 msgstr "Nový účastník"
 
-#: views/participants.py:43
-msgid "Before adding participant, you need to add parent."
-msgstr ""
-"Dříve než zadáte informace o účastníkovi, je třeba vyplnit údaje o zákonném "
-"zástupci."
-
-#: views/participants.py:59
+#: views/participants.py:49
 msgid "New participant {} has been created."
 msgstr "Účastník {} byl vytvořen."
 
-#: views/participants.py:67
+#: views/participants.py:57
 msgid "Change participant"
 msgstr "Aktualizace údajů o účastníkovi"
 
-#: views/participants.py:79
+#: views/participants.py:69
 msgid "The participant {} has been updated."
 msgstr "Účastník {} byl upraven."
 
