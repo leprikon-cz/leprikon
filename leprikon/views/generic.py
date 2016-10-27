@@ -71,7 +71,7 @@ class ListView(GenericViewMixin, _ListView):
 
 class FilteredListView(ListView):
     form_class      = None
-    message_empty   = _('No items found matching filter.')
+    message_empty   = _('No items found matching given search parameters.')
 
     def get_form(self):
         return self.form_class(self.request, data=self.request.GET)

@@ -18,7 +18,7 @@ class ClubListView(FilteredListView):
     form_class          = ClubFilterForm
     preview_template    = 'leprikon/club_preview.html'
     template_name       = 'leprikon/club_list.html'
-    message_empty       = _('No clubs matching given filter.')
+    message_empty       = _('No clubs matching given search parameters.')
     paginate_by         = 10
 
     def get_title(self):

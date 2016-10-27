@@ -19,7 +19,7 @@ class EventListView(FilteredListView):
     form_class          = EventFilterForm
     preview_template    = 'leprikon/event_preview.html'
     template_name       = 'leprikon/event_list.html'
-    message_empty       = _('No events matching given filter.')
+    message_empty       = _('No events matching given search parameters.')
     paginate_by         = 10
 
     def get_title(self):

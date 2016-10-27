@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-26 16:25+0200\n"
+"POT-Creation-Date: 2016-10-27 16:17+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -518,8 +518,8 @@ msgid "Club list"
 msgstr "Výpis kroužků"
 
 #: cms_plugins/clubs.py:72
-msgid "Club list with filter form"
-msgstr "Výpis kroužků s filtrováním"
+msgid "Club list with search form"
+msgstr "Výpis kroužků s vyhledávacím formulářem"
 
 #: cms_plugins/events.py:18 forms/leaders.py:13
 #: templates/leprikon/registration_preview.html:21
@@ -532,8 +532,8 @@ msgid "Event list"
 msgstr "Výpis akcí"
 
 #: cms_plugins/events.py:72
-msgid "Event list with filter form"
-msgstr "Výpis akcí s filtrováním"
+msgid "Event list with search form"
+msgstr "Výpis akcí s vyhledávacím formulářem"
 
 #: cms_plugins/leaders.py:18 forms/clubs.py:24 forms/clubs.py:134
 #: forms/events.py:18
@@ -545,8 +545,8 @@ msgid "Leader list"
 msgstr "Výpis vedoucích"
 
 #: cms_plugins/leaders.py:62
-msgid "Leader list with filter form"
-msgstr "Výpis vedoucích s filtrováním"
+msgid "Leader list with search form"
+msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
 #: conf/default_settings.py:14 models/roles.py:115 models/roles.py:158
 msgid "phone"
@@ -1211,16 +1211,16 @@ msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
 #: models/clubs.py:742 models/events.py:407
-msgid "Keep empty to skip filtering by age groups."
-msgstr "Ponechte prázdné, pokud nechcete filtrovat podle věkových skupin."
+msgid "Keep empty to skip searching by age groups."
+msgstr "Ponechte prázdné, pokud nechcete hledat podle věkových skupin."
 
 #: models/clubs.py:745 models/events.py:410
-msgid "Keep empty to skip filtering by groups."
-msgstr "Ponechte prázdné, pokud nechcete filtrovat podle skupin."
+msgid "Keep empty to skip searching by groups."
+msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin."
 
 #: models/clubs.py:748 models/events.py:413
-msgid "Keep empty to skip filtering by leaders."
-msgstr "Ponechte prázdné, pokud nechcete filtrovat podle vedoucích."
+msgid "Keep empty to skip searching by leaders."
+msgstr "Ponechte prázdné, pokud nechcete hledat podle vedoucích."
 
 #: models/events.py:47 models/events.py:65 models/events.py:129
 #: models/events.py:404 models/events.py:432
@@ -1735,15 +1735,15 @@ msgstr "Přihláška na akci"
 #: templates/leprikon/filtered_event_list.html:15
 #: templates/leprikon/filtered_leader_list.html:15
 #: templates/leprikon/list.html:25
-msgid "filter"
-msgstr "filtrovat"
+msgid "search"
+msgstr "vyhledat"
 
 #: templates/leprikon/filtered_club_list.html:16
 #: templates/leprikon/filtered_event_list.html:16
 #: templates/leprikon/filtered_leader_list.html:16
 #: templates/leprikon/list.html:26
-msgid "clear filter"
-msgstr "vyčistit filtr"
+msgid "cancel search"
+msgstr "zrušit hledání"
 
 #: templates/leprikon/leader_list/default.html:25
 #: templates/leprikon/leader_preview.html:25
@@ -2000,7 +2000,6 @@ msgstr "Všechny kroužky"
 
 #: templates/leprikon/reports/debtors.html:10
 #, python-format
-#| msgid "Club payment status by date %(date)s"
 msgid "Debtors list by date %(date)s"
 msgstr "Seznam dlužníků ke dni %(date)s"
 
@@ -2083,8 +2082,8 @@ msgid ", and "
 msgstr " a "
 
 #: views/clubs.py:21
-msgid "No clubs matching given filter."
-msgstr "Žádné kroužky neodpovídají zadanému filtru."
+msgid "No clubs matching given search parameters."
+msgstr "Žádné kroužky neodpovídají zadaným parametrům hledání."
 
 #: views/clubs.py:25
 msgid "Clubs in school year {}"
@@ -2200,8 +2199,8 @@ msgid "The cancellation request for {} has been saved."
 msgstr "Požadavek o stornování přihlášky {} byl uložen."
 
 #: views/events.py:22
-msgid "No events matching given filter."
-msgstr "Žádné akce neodpovídají zadanému filtru."
+msgid "No events matching given search parameters."
+msgstr "Žádné akce neodpovídají zadaným parametrům hledání."
 
 #: views/events.py:26
 #, python-brace-format
@@ -2242,8 +2241,8 @@ msgid "No items found."
 msgstr "Žádné položky nebyly nalezeny."
 
 #: views/generic.py:74
-msgid "No items found matching filter."
-msgstr "Žádné položky neodpovídají zadanému filtru."
+msgid "No items found matching given search parameters."
+msgstr "Žádné položky neodpovídají zadaným parametrům hledání."
 
 #: views/generic.py:114
 msgid "Save"

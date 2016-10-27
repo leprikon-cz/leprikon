@@ -69,7 +69,7 @@ class LeprikonClubListPlugin(ListPluginBase):
 @plugin_pool.register_plugin
 class LeprikonFilteredClubListPlugin(ListPluginBase):
     module  = _('Leprikon')
-    name    = _('Club list with filter form')
+    name    = _('Club list with search form')
     model   = FilteredClubListPlugin
     cache   = False
     render_template = 'leprikon/filtered_club_list.html'

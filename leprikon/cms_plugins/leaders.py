@@ -59,7 +59,7 @@ class LeprikonLeaderListPlugin(ListPluginBase):
 @plugin_pool.register_plugin
 class LeprikonFilteredLeaderListPlugin(ListPluginBase):
     module  = _('Leprikon')
-    name    = _('Leader list with filter form')
+    name    = _('Leader list with search form')
     model   = FilteredLeaderListPlugin
     cache   = False
     render_template = 'leprikon/filtered_leader_list.html'

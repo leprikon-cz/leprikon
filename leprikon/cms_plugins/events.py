@@ -69,7 +69,7 @@ class LeprikonEventListPlugin(ListPluginBase):
 @plugin_pool.register_plugin
 class LeprikonFilteredEventListPlugin(ListPluginBase):
     module  = _('Leprikon')
-    name    = _('Event list with filter form')
+    name    = _('Event list with search form')
     model   = FilteredEventListPlugin
     cache   = False
     render_template = 'leprikon/filtered_event_list.html'

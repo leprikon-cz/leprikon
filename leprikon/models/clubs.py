@@ -739,13 +739,13 @@ class ClubListPlugin(CMSPlugin):
                     blank=True, null=True)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'),
                     blank=True,
-                    help_text=_('Keep empty to skip filtering by age groups.'))
+                    help_text=_('Keep empty to skip searching by age groups.'))
     groups      = models.ManyToManyField(ClubGroup, verbose_name=_('club groups'),
                     blank=True,
-                    help_text=_('Keep empty to skip filtering by groups.'))
+                    help_text=_('Keep empty to skip searching by groups.'))
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'),
                     blank=True,
-                    help_text=_('Keep empty to skip filtering by leaders.'))
+                    help_text=_('Keep empty to skip searching by leaders.'))
     template    = models.CharField(_('template'), max_length=100,
                     choices=settings.LEPRIKON_CLUBLIST_TEMPLATES,
                     default=settings.LEPRIKON_CLUBLIST_TEMPLATES[0][0],
