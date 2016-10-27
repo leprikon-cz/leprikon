@@ -16,7 +16,7 @@
     </tr>
     {% for user, items in reports.items %}
     <tr id="report-{{ user.id }}" class="clickable" data-toggle="collapse" data-target=".{{ user.id }}-collapsed">
-        <th>{{ user }}</th>
+        <th>{{ user.get_full_name | default:user.get_username }}</th>
         <td class="right">{{ items.balance | currency }}</td>
     </tr>
     {% for item in items %}
@@ -32,7 +32,7 @@
     {% endfor %}
     <tr>
         <th>{% trans 'Total debt' %}</th>
-        <td class="right">{{ sum }}</td>
+        <td class="right">{{ sum | currency }}</td>
     </tr>
 </table>
 {% endif %}
