@@ -82,15 +82,9 @@ class TimesheetEntryUpdateView(UpdateView):
     message         = _('The timesheet entry has been updated.')
 
     def get_queryset(self):
-        # only allow to edit user's own not submitted timesheets
-        return super(TimesheetEntryUpdateView, self).get_queryset().filter(
-            leader = self.request.leader,
-        )
-
-    def get_queryset(self):
         qs = super(TimesheetEntryUpdateView, self).get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(leader = self.request.leader)
+            qs = qs.filter(timesheet__leader = self.request.leader)
         return qs
 
 
