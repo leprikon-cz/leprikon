@@ -16,7 +16,8 @@ class ParticipantForm(FormMixin, forms.ModelForm):
         super(ParticipantForm, self).__init__(**kwargs)
 
     def validate_unique(self):
-        self.instance.user = self.user
+        if self.user.id:
+            self.instance.user = self.user
         super(ParticipantForm, self).validate_unique()
 
     class Meta:

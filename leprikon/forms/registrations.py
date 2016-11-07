@@ -185,7 +185,7 @@ class RegistrationForm(FormMixin, QuestionsFormMixin, forms.ModelForm):
             new_user = False
 
         if self.participant_select_form.cleaned_data['participant']=='new':
-            self.participant_form.user = self.user
+            self.participant_form.instance.user = self.user
             participant = self.participant_form.save()
         else:
             participant = self.participant_select_form.all_participants[
