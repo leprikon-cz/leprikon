@@ -194,8 +194,9 @@ class ParentAdmin(SendMessageAdminMixin, admin.ModelAdmin):
 class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'birth_num', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
-    list_display    = ('id', 'first_name', 'last_name', 'birth_num', 'address', 'email', 'phone', 'school_name', 'user_link',
-                       'registrations_links')
+    list_display    = ('id', 'first_name', 'last_name', 'birth_num', 'gender',
+                       'address', 'email', 'phone', 'school_name',
+                       'user_link', 'registrations_links')
     raw_id_fields   = ('user',)
 
     @cached_property

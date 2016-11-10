@@ -163,6 +163,10 @@ class Participant(models.Model):
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
     health          = models.TextField(_('health'), blank=True, default='')
+    MALE = 'm'
+    FEMALE = 'f'
+    gender          = models.CharField(_('gender'), max_length=1, editable=False,
+                        choices=((MALE, _('male')), (FEMALE, _('female'))))
 
     class Meta:
         app_label           = 'leprikon'
@@ -187,6 +191,10 @@ class Participant(models.Model):
             raise ValidationError(
                 message={'birth_num':_('You have already entered participant with this birth number')},
             )
+
+    def save(self, *args, **kwargs):
+        self.gender = self.birth_num[2:4] > '50' and self.FEMALE or self.MALE
+        super(Participant, self).save(*args, **kwargs)
 
     @cached_property
     def full_name(self):
