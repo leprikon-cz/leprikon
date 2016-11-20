@@ -108,8 +108,8 @@ $(document).ready(function() {
             $('#participant_form').addClass('hidden');
             $('#registration_partial_form').removeClass('hidden');
             $('#id_registration_partial-age_group').val('{{ participant.age_group_id }}')
-            $('#id_registration_partial-citizenship').val('{{ participant.citizenship | escapejs }}')
-            $('#id_registration_partial-insurance').val('{{ participant.insurance | escapejs }}')
+            $('#id_registration_partial-citizenship').val('{{ participant.citizenship.code }}')
+            $('#id_registration_partial-insurance').val('{{ participant.insurance_id }}')
             $('#id_registration_partial-school').val('{{ participant.school_id }}')
             $('#id_registration_partial-school_other').val('{{ participant.school_other | escapejs }}')
             $('#id_registration_partial-school_class').val('{{ participant.school_class | escapejs }}')
