@@ -7,8 +7,9 @@ from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm
-from ...models import ClubPayment
+from ...conf import settings
+from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm
+from ...models import AgeGroup, Club, ClubRegistration, ClubPayment, Participant
 
 from . import ReportBaseView
 
@@ -84,4 +85,58 @@ class ReportClubPaymentsStatusView(ReportBaseView):
         @cached_property
         def status(self):
             return sum(rs.status for rs in self.registration_statuses)
+
+
+
+class ReportClubStatsView(ReportBaseView):
+    form_class      = ClubStatsForm
+    template_name   = 'leprikon/reports/club_stats.html'
+    title           = _('Club statistics')
+    submit_label    = _('Show')
+    back_url        = reverse('leprikon:reports')
+
+    ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'local', 'eu', 'noneu'))
+
+    EU_countries    = [
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
+        'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB',
+    ]
+    EU_countries.remove(settings.LEPRIKON_COUNTRY)
+
+    def form_valid(self, form):
+        d       = form.cleaned_data['date']
+        context = form.cleaned_data
+        context['form'] = form
+
+        clubs = Club.objects.filter(periods__start__lte=d, periods__end__gte=d).distinct()
+        context['clubs_count'] = clubs.count()
+
+        registrations = ClubRegistration.objects.filter(club__in=clubs, created__lte=d).exclude(canceled__lte=d)
+
+        def c(registrations):
+            return registrations.values('participant__birth_num').distinct().count()
+
+        context['participants_counts'] = self.ReportItem(
+            age_group=None,
+            all=c(registrations),
+            boys=c(registrations.filter(participant__gender=Participant.MALE)),
+            girls=c(registrations.filter(participant__gender=Participant.FEMALE)),
+            local=c(registrations.filter(participant__citizenship=settings.LEPRIKON_COUNTRY)),
+            eu=c(registrations.filter(participant__citizenship__in=self.EU_countries)),
+            noneu=c(registrations.exclude(participant__citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY])),
+        )
+        context['participants_counts_by_age_groups'] = []
+        for age_group in AgeGroup.objects.all():
+            regs = registrations.filter(age_group=age_group)
+            context['participants_counts_by_age_groups'].append(self.ReportItem(
+                age_group=age_group,
+                all=c(regs),
+                boys=c(regs.filter(participant__gender=Participant.MALE)),
+                girls=c(regs.filter(participant__gender=Participant.FEMALE)),
+                local=c(regs.filter(participant__citizenship=settings.LEPRIKON_COUNTRY)),
+                eu=c(regs.filter(participant__citizenship__in=self.EU_countries)),
+                noneu=c(regs.exclude(participant__citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY])),
+            ))
+
+        return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 

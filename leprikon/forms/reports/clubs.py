@@ -17,3 +17,8 @@ class ClubPaymentsStatusForm(FormMixin, forms.Form):
 
 
 
+class ClubStatsForm(FormMixin, forms.Form):
+    date = forms.DateField(label=_('Statistics for date'))
+
+
+

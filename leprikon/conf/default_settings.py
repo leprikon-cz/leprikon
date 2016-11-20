@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 PRICE_DECIMAL_PLACES  = 2
 PRICE_MAX_DIGITS      = 10
 
+LEPRIKON_COUNTRY = 'CZ'
 
 LEPRIKON_CONTACT_TYPES = (
     ('email', _('email')),
@@ -103,6 +104,7 @@ LEPRIKON_URL_CANCEL = 'zrusit'
 LEPRIKON_URL_REGISTRATION = 'prihlaska'
 LEPRIKON_URL_REGISTRATIONS = 'prihlasky'
 LEPRIKON_URL_TERMS_CONDITIONS = 'obchodni-podminky'
+LEPRIKON_URL_STATS = 'statistiky'
 
 LEPRIKON_MENU_ADD_LOGOUT = True
 

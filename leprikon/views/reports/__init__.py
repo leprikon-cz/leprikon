@@ -4,7 +4,7 @@ from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
-from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm
+from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...forms.reports.debtors import DebtorsForm
 
@@ -44,6 +44,12 @@ class ReportsView(TemplateView):
                 instructions    = '',
                 form            = self.get_form(EventPaymentsStatusForm),
                 url             = reverse('leprikon:report_event_payments_status'),
+            ),
+            self.Report(
+                title           = _('Club statistics'),
+                instructions    = '',
+                form            = self.get_form(ClubStatsForm),
+                url             = reverse('leprikon:report_club_stats'),
             ),
             self.Report(
                 title           = _('Debtors list'),

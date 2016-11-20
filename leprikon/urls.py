@@ -87,6 +87,7 @@ urlpatterns = [
     d_url(r'^{reports}/$',                                          'reports'),
     d_url(r'^{reports}/{clubs}/{payments}/$',                       'report_club_payments'),
     d_url(r'^{reports}/{clubs}/{payments_status}/$',                'report_club_payments_status'),
+    d_url(r'^{reports}/{clubs}/{stats}/$',                          'report_club_stats'),
     d_url(r'^{reports}/{events}/{payments}/$',                      'report_event_payments'),
     d_url(r'^{reports}/{events}/{payments_status}/$',               'report_event_payments_status'),
     d_url(r'^{reports}/{debtors}/$',                                'report_debtors'),
