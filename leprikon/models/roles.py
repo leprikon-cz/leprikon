@@ -8,6 +8,7 @@ from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
+from django_countries.fields import CountryField
 from filer.fields.image import FilerImageField
 
 from ..conf import settings
@@ -157,7 +158,7 @@ class Participant(models.Model):
     postal_code     = PostalCodeField(_('postal code'))
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
-    citizenship     = models.CharField(_('citizenship'),  max_length=50)
+    citizenship     = CountryField(_('citizenship'))
     insurance       = models.CharField(_('insurance'),    max_length=50)
     school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants', blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')

@@ -12,6 +12,7 @@ from django.utils.functional import cached_property
 from django.utils.encoding import smart_text, force_text
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -250,7 +251,7 @@ class EventRegistration(AnswersBaseModel):
     participant     = models.ForeignKey(Participant, verbose_name=_('participant'), related_name='event_registrations')
     parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='event_registrations', blank=True)
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
-    citizenship     = models.CharField(_('citizenship'),  max_length=50)
+    citizenship     = CountryField(_('citizenship'))
     insurance       = models.CharField(_('insurance'),    max_length=50)
     school          = models.ForeignKey(School, verbose_name=_('school'), related_name='event_registrations', blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
