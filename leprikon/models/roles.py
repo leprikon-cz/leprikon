@@ -21,7 +21,7 @@ from .fields import BirthNumberField, PostalCodeField
 
 @python_2_unicode_compatible
 class Leader(models.Model):
-    user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='leprikon_leader')
+    user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='leprikon_leader', on_delete=models.PROTECT)
     description     = HTMLField(_('description'), blank=True, default='')
     photo           = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
     page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
