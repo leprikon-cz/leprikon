@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from .place import Place
 from .school import School
 from .schoolyear import SchoolYear
+from .insurance import Insurance
 from .roles import (
     Leader, Parent, Participant, Contact,
     LeaderPlugin, LeaderListPlugin, FilteredLeaderListPlugin,

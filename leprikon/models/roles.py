@@ -14,6 +14,7 @@ from filer.fields.image import FilerImageField
 from ..conf import settings
 
 from .agegroup import AgeGroup
+from .insurance import Insurance
 from .school import School
 from .schoolyear import SchoolYear
 from .fields import BirthNumberField, PostalCodeField
@@ -159,7 +160,8 @@ class Participant(models.Model):
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = CountryField(_('citizenship'))
-    insurance       = models.CharField(_('insurance'),    max_length=50)
+    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='participants', null=True)
+    insurance_old   = models.CharField(_('insurance'),    max_length=50)
     school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants', blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')

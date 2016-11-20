@@ -25,6 +25,7 @@ from ..utils import currency, comma_separated
 from .fields import ColorField, PriceField
 
 from .agegroup import AgeGroup
+from .insurance import Insurance
 from .place import Place
 from .question import AnswersBaseModel, Question
 from .roles import Leader, Participant, Parent
@@ -252,7 +253,8 @@ class EventRegistration(AnswersBaseModel):
     parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='event_registrations', blank=True)
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
     citizenship     = CountryField(_('citizenship'))
-    insurance       = models.CharField(_('insurance'),    max_length=50)
+    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='event_registrations', null=True)
+    insurance_old   = models.CharField(_('insurance'),    max_length=50)
     school          = models.ForeignKey(School, verbose_name=_('school'), related_name='event_registrations', blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')

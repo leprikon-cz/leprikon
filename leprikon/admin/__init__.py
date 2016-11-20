@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, generators, nested_scopes, pri
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
+from .insurance import InsuranceAdmin
 from .place import PlaceAdmin
 from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
@@ -19,6 +20,7 @@ from ..models import *
 User = get_user_model()
 
 admin.site.register(AgeGroup,           AgeGroupAdmin)
+admin.site.register(Insurance,          InsuranceAdmin)
 admin.site.register(Place,              PlaceAdmin)
 admin.site.register(School,             SchoolAdmin)
 admin.site.register(SchoolYear,         SchoolYearAdmin)
