@@ -12,7 +12,7 @@
 <table class="table table-hover">
     <tr>
         <th>{% trans 'Clubs count' %}</th>
-        <td>{{ clubs_count }}</td>
+        <td colspan="6">{{ clubs_count }}</td>
     </tr>
     <tr>
         <th>{% trans 'Age Group' %}</th>
@@ -25,23 +25,23 @@
     </tr>
     {% for counts in participants_counts_by_age_groups %}
     <tr>
-        <th>{{ counts.age_group }}</th>
-        <td>{{ counts.all }}</td>
-        <td>{{ counts.boys }}</td>
-        <td>{{ counts.girls }}</td>
-        <td>{{ counts.local }}</td>
-        <td>{{ counts.eu }}</td>
-        <td>{{ counts.noneu }}</td>
+        <th>{{ counts.age_group.title }}</th>
+        <td class="right">{{ counts.all }}</td>
+        <td class="right">{{ counts.boys }}</td>
+        <td class="right">{{ counts.girls }}</td>
+        <td class="right">{{ counts.local }}</td>
+        <td class="right">{{ counts.eu }}</td>
+        <td class="right">{{ counts.noneu }}</td>
     </tr>
     {% endfor %}
     <tr>
         <th>{% trans 'Total' %}</th>
-        <td>{{ participants_counts.all }}</td>
-        <td>{{ participants_counts.boys }}</td>
-        <td>{{ participants_counts.girls }}</td>
-        <td>{{ participants_counts.local }}</td>
-        <td>{{ participants_counts.eu }}</td>
-        <td>{{ participants_counts.noneu }}</td>
+        <td class="right">{{ participants_counts.all }}</td>
+        <td class="right">{{ participants_counts.boys }}</td>
+        <td class="right">{{ participants_counts.girls }}</td>
+        <td class="right">{{ participants_counts.local }}</td>
+        <td class="right">{{ participants_counts.eu }}</td>
+        <td class="right">{{ participants_counts.noneu }}</td>
     </tr>
 </table>
 {% endif %}

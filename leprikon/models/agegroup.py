@@ -19,5 +19,6 @@ class AgeGroup(models.Model):
     def __str__(self):
         return self.name
 
-
+    def title(self):
+        return len(self.name) and self.name[0].upper() + self.name[1:] or ''
 
