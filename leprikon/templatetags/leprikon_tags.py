@@ -58,7 +58,7 @@ def current_url(context):
 def registration_links(context, subject):
     context = context.__copy__()
     if context['request'].user.is_authenticated():
-        context['registrations'] = subject.registrations.filter(participant__user=context['request'].user)
+        context['registrations'] = subject.registrations.filter(user=context['request'].user)
     else:
         context['registrations'] = []
     context['exceeded'] = subject.max_count and (subject.registrations.count() >= subject.max_count)

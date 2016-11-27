@@ -13,7 +13,6 @@ from django.utils.functional import cached_property
 from django.utils.encoding import smart_text, force_text
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -27,9 +26,9 @@ from .fields import DAY_OF_WEEK, DayOfWeekField
 from .fields import ColorField, PriceField
 
 from .agegroup import AgeGroup
-from .insurance import Insurance
 from .place import Place
-from .question import AnswersBaseModel, Question
+from .question import Question
+from .registrations import Registration
 from .roles import Leader, Participant, Parent
 from .school import School
 from .schoolyear import SchoolYear
@@ -361,37 +360,14 @@ class ClubAttachment(models.Model):
 
 
 
-@python_2_unicode_compatible
-class ClubRegistration(AnswersBaseModel):
-    slug            = models.SlugField(editable=False)
-    created         = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
-    club            = models.ForeignKey(Club, verbose_name=_('club'), related_name='registrations')
-    participant     = models.ForeignKey(Participant, verbose_name=_('participant'), related_name='club_registrations')
-    parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='club_registrations', blank=True)
-    age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
-    citizenship     = CountryField(_('citizenship'))
-    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='club_registrations', null=True)
-    school          = models.ForeignKey(School, verbose_name=_('school'), related_name='club_registrations', blank=True, null=True)
-    school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
-    health          = models.TextField(_('health'), blank=True, default='')
-    cancel_request  = models.BooleanField(_('cancel request'), default=False)
-    canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
+class ClubRegistration(Registration):
+    club = models.ForeignKey(Club, verbose_name=_('club'), related_name='registrations')
 
     class Meta:
         app_label           = 'leprikon'
         verbose_name        = _('club registration')
         verbose_name_plural = _('club registrations')
-        unique_together     = (('club', 'participant'),)
-
-    def __str__(self):
-        return _('{participant} - {subject}').format(
-            participant = self.participant,
-            subject     = self.club,
-        )
-
-    def get_answers(self):
-        return loads(self.answers)
+        unique_together     = (('club', 'participant_birth_num'),)
 
     @property
     def subject(self):
@@ -411,44 +387,6 @@ class ClubRegistration(AnswersBaseModel):
     @cached_property
     def all_discounts(self):
         return list(self.discounts.all())
-
-    @cached_property
-    def all_parents(self):
-        return list(self.parents.all())
-
-    @cached_property
-    def all_payments(self):
-        return list(self.payments.all())
-
-    @cached_property
-    def school_name(self):
-        return self.school and smart_text(self.school) or self.school_other
-
-    @cached_property
-    def school_and_class(self):
-        if self.school_name and self.school_class:
-            return '{}, {}'.format(self.school_name, self.school_class)
-        else:
-            return self.school_name or self.school_class or ''
-
-    @cached_property
-    def all_recipients(self):
-        recipients = set()
-        if self.participant.user.email:
-            recipients.add(self.participant.user.email)
-        for parent in self.all_parents:
-            if parent.email:
-                recipients.add(parent.email)
-        return recipients
-
-    def get_payments(self, d=None):
-        if d:
-            return filter(lambda p: p.date <= d, self.all_payments)
-        else:
-            return self.all_payments
-
-    def get_paid(self, d=None):
-        return sum(p.amount for p in self.get_payments(d))
 
     @cached_property
     def period_payment_statuses(self):
@@ -498,18 +436,8 @@ class ClubRegistration(AnswersBaseModel):
             total   = PaymentStatus(price=total_price,   discount=total_discount,   explanation=total_explanation,   paid=paid),
         )
 
-    def get_absolute_url(self):
-        return reverse('leprikon:club_registration_pdf', kwargs={'slug':self.slug})
-
     def send_mail(self):
         ClubRegistrationMailer().send_mail(self)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(smart_text(self))
-        if self.canceled:
-            self.cancel_request = False
-        super(ClubRegistration, self).save(*args, **kwargs)
 
 
 
@@ -675,7 +603,7 @@ class ClubJournalEntry(StartEndMixin, models.Model):
 @python_2_unicode_compatible
 class ClubJournalLeaderEntry(StartEndMixin, models.Model):
     club_entry  = models.ForeignKey(ClubJournalEntry, verbose_name=_('club journal entry'), related_name='leader_entries', editable=False)
-    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='club_entries', editable=False)
+    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='club_entries', editable=False, on_delete=models.PROTECT)
     start       = models.TimeField(_('start time'))
     end         = models.TimeField(_('end time'))
 

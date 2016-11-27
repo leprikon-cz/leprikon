@@ -17,7 +17,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from json import dumps
 
-from ..forms.clubs import ClubRegistrationAdminForm, ClubJournalEntryAdminForm, ClubJournalLeaderEntryAdminForm
+from ..forms.clubs import ClubJournalEntryAdminForm, ClubJournalLeaderEntryAdminForm
+from ..forms.registrations import RegistrationAdminForm
 from ..models import *
 from ..utils import currency, comma_separated
 
@@ -296,16 +297,23 @@ class ClubRegistrationDiscountInlineAdmin(admin.TabularInline):
 
 class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'club_name', 'participant_link', 'parents_link',
+        'id', 'get_download_tag', 'club_name', 'participant',
         'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_club_payments', 'created',
         'cancel_request', 'canceled',
     )
     list_export     = (
-        'id', 'created', 'club', 'age_group',
-        'participant__first_name', 'participant__last_name', 'participant__birth_num',
-        'participant__email', 'participant__phone', 'school_name', 'school_class',
-        'participant__street', 'participant__city', 'participant__postal_code', 'citizenship', 'insurance', 'health',
-        'parents_list', 'parent_emails',
+        'id', 'created', 'club', 'birth_num', 'age_group',
+        'participant_first_name', 'participant_last_name',
+        'participant_street', 'participant_city', 'participant_postal_code',
+        'participant_phone', 'participant_email',
+        'citizenship', 'insurance', 'health',
+        'school_name', 'school_class',
+        'parent1_first_name', 'parent1_last_name',
+        'parent1_street', 'parent1_city', 'parent1_postal_code',
+        'parent1_phone', 'parent1_email',
+        'parent2_first_name', 'parent2_last_name',
+        'parent2_street', 'parent2_city', 'parent2_postal_code',
+        'parent2_phone', 'parent2_email',
         'get_payments_partial_balance', 'get_payments_total_balance',
     )
     list_filter     = (
@@ -315,17 +323,16 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
     )
     actions         = ('send_mail',)
     search_fields   = (
-        'participant__first_name', 'participant__last_name',
-        'participant__birth_num', 'participant__email',
-        'parents__first_name', 'parents__last_name', 'parents__email',
-        'school__name', 'club__name',
+        'birth_num',
+        'participant_first_name', 'participant_last_name', 'participant_email',
+        'parent1_first_name', 'parent1_last_name', 'parent1_email',
+        'parent2_first_name', 'parent2_last_name', 'parent2_email',
     )
     inlines         = (
         ClubRegistrationDiscountInlineAdmin,
     )
     ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('club', 'participant')
-    filter_horizontal = ('parents',)
+    raw_id_fields   = ('club',)
 
     def has_add_permission(self, request):
         return False
@@ -333,7 +340,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
     def get_form(self, request, obj, **kwargs):
         questions       = obj.club.all_questions
         answers         = obj.get_answers()
-        kwargs['form']  = type(ClubRegistrationAdminForm.__name__, (ClubRegistrationAdminForm,), dict(
+        kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
             for q in questions
         ))
@@ -352,17 +359,6 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
         return obj.club.name
     club_name.short_description = _('club')
 
-    def parents_list(self, obj):
-        return comma_separated(obj.all_parents)
-    parents_list.short_description = _('parents')
-
-    def parent_emails(self, obj):
-        return ', '.join(
-            '{} <{}>'.format(p.full_name, p.email)
-            for p in obj.all_parents if p.email
-        )
-    parent_emails.short_description = _('parent emails')
-
     def school_name(self, obj):
         return obj.school_name
     school_name.short_description = _('school')
@@ -372,9 +368,9 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
     get_download_tag.short_description = _('download')
     get_download_tag.allow_tags = True
 
-    def get_fullname(self, obj):
-        return '{} {}'.format(obj.participant.first_name, obj.participant.last_name)
-    get_fullname.short_description = _('full name')
+    def full_name(self, obj):
+        return obj.participant.full_name
+    full_name.short_description = _('full name')
 
     @cached_property
     def participants_url(self):

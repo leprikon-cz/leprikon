@@ -354,21 +354,3 @@ class ClubJournalEntryForm(FormMixin, ClubJournalEntryAdminForm):
         for entry in self.deleted_entries:
             entry.delete()
 
-
-
-class ClubRegistrationAdminForm(forms.ModelForm):
-
-    class Meta:
-        model = ClubRegistration
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super(ClubRegistrationAdminForm, self).__init__(*args, **kwargs)
-        self.fields['age_group'].widget.choices.queryset = kwargs['instance'].club.age_groups
-        self.fields['parents'].choices = (
-            (parent.id, parent)
-            for parent in self.fields['parents'].choices.queryset.filter(
-                user=kwargs['instance'].participant.user
-            )
-        )
-

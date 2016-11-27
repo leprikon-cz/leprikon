@@ -37,6 +37,6 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name=model_name,
                 name='insurance',
-                field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name=model_name.replace('reg', '_reg')+'s', to='leprikon.Insurance', verbose_name='insurance'),
+                field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.Insurance', verbose_name='insurance'),
             ),
         ]

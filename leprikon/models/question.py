@@ -56,22 +56,3 @@ class Question(models.Model):
         except Exception as e:
             raise ValidationError({'field_args': [_('Failed to create field with given field args: {}').format(e)]})
 
-
-
-class AnswersBaseModel(models.Model):
-    answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
-
-    class Meta:
-        abstract    = True
-
-    def get_answers(self):
-        return loads(self.answers)
-
-    def get_questions_and_answers(self):
-        answers = self.get_answers()
-        for q in self.subject.all_questions:
-            yield {
-                'question': q.question,
-                'answer': answers.get(q.name, ''),
-            }
-

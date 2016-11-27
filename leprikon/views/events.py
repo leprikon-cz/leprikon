@@ -12,6 +12,7 @@ from ..forms.registrations import EventRegistrationForm
 from ..models import Event, EventType, EventRegistration, EventRegistrationRequest
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, PdfView
+from .registrations import RegistrationFormView
 
 
 class EventListView(FilteredListView):
@@ -49,6 +50,9 @@ class EventListMineView(EventListView):
     def get_title(self):
         return _('My events in school year {}').format(self.request.school_year)
 
+    def get_queryset(self):
+        return super(EventListMineView, self).get_queryset().filter(leaders=self.request.leader)
+
     def dispatch(self, request, **kwargs):
         return super(EventListView, self).dispatch(request, **kwargs)
 
@@ -57,9 +61,6 @@ class EventListMineView(EventListView):
             request     = self.request,
             data        = self.request.GET,
         )
-
-    def get_queryset(self):
-        return super(EventListMineView, self).get_queryset().filter(leaders=self.request.leader)
 
 
 
@@ -121,45 +122,6 @@ class EventUpdateView(UpdateView):
 
 
 
-class EventRegistrationFormView(CreateView):
-    back_url        = reverse('leprikon:registrations')
-    model           = EventRegistration
-    form_class      = EventRegistrationForm
-    template_name   = 'leprikon/registration_form.html'
-    message         = _('The registration has been accepted.')
-
-    def get_title(self):
-        return _('Registration for event {}').format(self.event.name)
-
-    def dispatch(self, request, event_type, pk, *args, **kwargs):
-        event_kwargs = {
-            'id':               int(pk),
-            'event_type__slug': event_type,
-            'reg_active':       True,
-        }
-        if not self.request.user.is_staff:
-            event_kwargs['public'] = True
-        self.event = get_object_or_404(Event, **event_kwargs)
-        self.request.school_year = self.event.school_year
-        if self.event.max_count and self.event.registrations.count() >= self.event.max_count:
-            return EventRegistrationRequestFormView.as_view()(request, event=self.event)
-        return super(EventRegistrationFormView, self).dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs  = super(EventRegistrationFormView, self).get_form_kwargs()
-        kwargs['subject'] = self.event
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        response = super(EventRegistrationFormView, self).form_valid(form)
-        if self.request.user.is_anonymous() and form.user.is_active:
-            form.user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(self.request, form.user)
-        return response
-
-
-
 class EventRegistrationRequestFormView(UpdateView):
     back_url        = reverse('leprikon:registrations')
     model           = EventRegistrationRequest
@@ -171,7 +133,7 @@ class EventRegistrationRequestFormView(UpdateView):
         return _('Registration request for event {}').format(self.kwargs['event'].name)
 
     def get_object(self, queryset=None):
-        event = self.kwargs['event']
+        event = self.kwargs['subject']
         user = self.request.user if self.request.user.is_authenticated() else None
         req = None
         if user:
@@ -199,6 +161,27 @@ class EventRegistrationRequestFormView(UpdateView):
                 'Please, leave your contact information in the form below.'
             )
         return '<p>{}</p>'.format(instructions)
+
+
+
+class EventRegistrationFormView(RegistrationFormView):
+    model           = EventRegistration
+    form_class      = EventRegistrationForm
+    request_view    = EventRegistrationRequestFormView
+
+    def get_title(self):
+        return _('Registration for event {}').format(self.subject.name)
+
+    def dispatch(self, request, event_type, pk, *args, **kwargs):
+        lookup_kwargs = {
+            'event_type__slug': event_type,
+            'id':               int(pk),
+            'reg_active':       True,
+        }
+        if not self.request.user.is_staff:
+            lookup_kwargs['public'] = True
+        self.subject = get_object_or_404(Event, **lookup_kwargs)
+        return super(EventRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
 
 

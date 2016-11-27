@@ -5,79 +5,76 @@
 
 <h1>{% block title %}{{ title }}{% endblock %}</h1>
 
-{% if placeholder %}
-{% static_placeholder placeholder %}
-{% endif %}
-
-{{ instructions | safe }}
-
 {% for error in form.non_field_errors %}
     <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endfor %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
-    {% for ro in form.readonly_fields %}
-    <div class="form-group">
-        <label class="control-label col-md-3">{{ ro.label }}:</label>
-        <div class="col-md-9">
-            <div class="form-control">{{ ro.value }}</div>
-        </div>
-    </div>
-    {% endfor %}
-
     <h3>{% trans 'Participant' %}</h3>
-    {% if form.participant_select_form.all_participants %}
-        {% for item in form.participant_select_form %}
-            {% include 'leprikon/form_item.html' %}
-        {% endfor %}
-
-        <div id="registration_partial_form" class="{% if not form.participant_select_form.participant.data or form.participant_select_form.participant.data == 'new' %}hidden{% endif %}">
-        {% for item in form.registration_partial_form %}
-            {% include 'leprikon/form_item.html' %}
-        {% endfor %}
-        </div>
+    {% if form.participants %}
+    {% include 'leprikon/form_item.html' with item=form.participant_select_form.participant %}
     {% else %}
-        <input name="participant_select-participant" value="new" type="hidden"/>
+    <input type="hidden" name="participant_select-participant" value="new"/>
     {% endif %}
 
-    <div id="participant_form" class="{% if form.participant_select_form.all_participants and form.participant_select_form.participant.data != 'new' %}hidden{% endif %}">
-    {% for item in form.participant_form %}
-        {% include 'leprikon/form_item.html' %}
-    {% endfor %}
+    {% include 'leprikon/form_item.html' with item=form.participant_first_name %}
+    {% include 'leprikon/form_item.html' with item=form.participant_last_name %}
+    {% include 'leprikon/form_item.html' with item=form.participant_birth_num %}
+    {% include 'leprikon/form_item.html' with item=form.participant_age_group %}
+    {% include 'leprikon/form_item.html' with item=form.participant_street %}
+    {% include 'leprikon/form_item.html' with item=form.participant_city %}
+    {% include 'leprikon/form_item.html' with item=form.participant_postal_code %}
+    {% include 'leprikon/form_item.html' with item=form.participant_citizenship %}
+    {% include 'leprikon/form_item.html' with item=form.participant_insurance %}
+    <div id="participant_contact">
+    {% include 'leprikon/form_item.html' with item=form.participant_phone %}
+    {% include 'leprikon/form_item.html' with item=form.participant_email %}
     </div>
-
-    {% for item in form %}
+    {% include 'leprikon/form_item.html' with item=form.participant_school %}
+    {% include 'leprikon/form_item.html' with item=form.participant_school_other %}
+    {% include 'leprikon/form_item.html' with item=form.participant_school_class %}
+    {% include 'leprikon/form_item.html' with item=form.participant_health %}
+    {% for item in form.questions_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
 
     <h3>{% trans 'Parents' %}</h3>
 
-    {% for item in form.parent_select_form %}
-        {% include 'leprikon/form_item.html' %}
-    {% endfor %}
-
-    <div id="parent_form" class="{% if 'new' in form.parent_select_form.parents.data %}{% else %}hidden{% endif %}">
-    {% for item in form.parent_form %}
-        {% include 'leprikon/form_item.html' %}
-    {% endfor %}
+    <div id="parent1_switch">
+        {% include 'leprikon/form_item.html' with item=form.has_parent1 %}
+    </div>
+    <div id="parent1_form"{% if not form.has_parent1.value %} class="hidden"{% endif %}>
+        {% if form.parents %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_select_form.parent %}
+        {% else %}
+        <input type="hidden" name="parent1_select-parent" value="new"/>
+        {% endif %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_first_name %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_last_name %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_street %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_city %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_postal_code %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_phone %}
+        {% include 'leprikon/form_item.html' with item=form.parent1_email %}
     </div>
 
-    {% if not request.user.is_authenticated %}
-    <h3>{% trans 'User' %}</h3>
-
-    {% for item in form.user_select_form %}
-        {% include 'leprikon/form_item.html' %}
-    {% endfor %}
-
-    <div id="user_form" class="{% if not form.user_select_form.create_account.value %}hidden{% endif %}">
-    {% for item in form.user_form %}
-        {% include 'leprikon/form_item.html' %}
-    {% endfor %}
+    {% include 'leprikon/form_item.html' with item=form.has_parent2 %}
+    <div id="parent2_form"{% if not form.has_parent2.value %} class="hidden"{% endif %}>
+        {% if form.parents %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_select_form.parent %}
+        {% else %}
+        <input type="hidden" name="parent2_select-parent" value="new"/>
+        {% endif %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_first_name %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_last_name %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_street %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_city %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_postal_code %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_phone %}
+        {% include 'leprikon/form_item.html' with item=form.parent2_email %}
     </div>
-    {% endif %}
 
     <h3>{% trans 'Legal Agreement' %}</h3>
-
     {% for item in form.agreement_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
@@ -96,43 +93,130 @@
 {% addtoblock "js" %}
 <script type="text/javascript">
 
+function getAge(birthNum) {
+    birthNum = birthNum.replace("/","");
+    y = parseInt(birthNum.substr(0, 2));
+    year = (birthNum.length == 10 ? 1900 : 1800) + (y < 54 ? 100 : 0) + y;
+    month = parseInt(birthNum.substr(2, 2)) % 50 % 20;
+    day = parseInt(birthNum.substr(4, 2));
+    today = new Date();
+    return today.getFullYear() - year - (new Date(today.getFullYear(), month-1, day) > today ? 1 : 0)
+}
+
+function changedBirthNum() {
+    age = getAge(this.value);
+    if (isNaN(age)) return;
+    if (age < 18) {
+        $('#parent1_switch .form-group').addClass('required');
+        $('#participant_contact .form-group').removeClass('required');
+    } else {
+        $('#parent1_switch .form-group').removeClass('required');
+        $('#participant_contact .form-group').addClass('required');
+    }
+}
+
 $(document).ready(function() {
     /* Select participant */
     $('input[type=radio][name=participant_select-participant]').change(function() {
         if (this.value == 'new') {
-            $('#participant_form').removeClass('hidden');
-            $('#registration_partial_form').addClass('hidden');
-        }
-        {% for participant in form.participant_select_form.all_participants.values %}
-        else if (this.value == {{ participant.id }}) {
-            $('#participant_form').addClass('hidden');
-            $('#registration_partial_form').removeClass('hidden');
-            $('#id_registration_partial-age_group').val('{{ participant.age_group_id }}')
-            $('#id_registration_partial-citizenship').val('{{ participant.citizenship.code }}')
-            $('#id_registration_partial-insurance').val('{{ participant.insurance_id }}')
-            $('#id_registration_partial-school').val('{{ participant.school_id }}')
-            $('#id_registration_partial-school_other').val('{{ participant.school_other | escapejs }}')
-            $('#id_registration_partial-school_class').val('{{ participant.school_class | escapejs }}')
-            $('#id_registration_partial-health').val('{{ participant.health | escapejs }}')
-        }
-        {% endfor %}
+            $('#id_participant_first_name').val('');
+            $('#id_participant_last_name').val('');
+            $('#id_participant_birth_num').val('');
+            $('#id_participant_age_group').val('');
+            $('#id_participant_street').val('');
+            $('#id_participant_city').val('');
+            $('#id_participant_postal_code').val('');
+            $('#id_participant_citizenship').val('');
+            $('#id_participant_insurance').val('');
+            $('#id_participant_phone').val('');
+            $('#id_participant_email').val('');
+            $('#id_participant_school').val('');
+            $('#id_participant_school_other').val('');
+            $('#id_participant_school_class').val('');
+            $('#id_participant_health').val('');
+        }{% for participant in form.participants %} else if (this.value == {{ participant.id }}) {
+            $('#id_participant_first_name').val('{{ participant.first_name | escapejs }}');
+            $('#id_participant_last_name').val('{{ participant.last_name | escapejs }}');
+            $('#id_participant_birth_num').val('{{ participant.birth_num | escapejs }}').change();
+            $('#id_participant_age_group').val('{{ participant.age_group_id }}');
+            $('#id_participant_street').val('{{ participant.street | escapejs }}');
+            $('#id_participant_city').val('{{ participant.city | escapejs }}');
+            $('#id_participant_postal_code').val('{{ participant.postal_code | escapejs }}');
+            $('#id_participant_citizenship').val('{{ participant.citizenship }}');
+            $('#id_participant_insurance').val('{{ participant.insurance_id }}');
+            $('#id_participant_phone').val('{{ participant.phone | escapejs }}');
+            $('#id_participant_email').val('{{ participant.email | escapejs }}');
+            $('#id_participant_school').val('{{ participant.school_id }}');
+            $('#id_participant_school_other').val('{{ participant.school_other | escapejs }}');
+            $('#id_participant_school_class').val('{{ participant.school_class | escapejs }}');
+            $('#id_participant_health').val('{{ participant.health | escapejs }}');
+        }{% endfor %}
     });
-    /* Select parent */
-    $('input[type=checkbox][name=parent_select-parents][value=new]').change(function() {
+
+    /* Toggle first parent */
+    $('#id_has_parent1').change(function() {
         if (this.checked) {
-            $('#parent_form').removeClass('hidden');
+            $('#parent1_form').removeClass('hidden');
+            $('#parent1_form .form-group').addClass('required');
         } else {
-            $('#parent_form').addClass('hidden');
+            $('#parent1_form').addClass('hidden');
         }
     });
-    /* Select user */
-    $('input[type=checkbox][name=user_select-create_account]').change(function() {
+
+    /* Toggle second parent */
+    $('#id_has_parent2').change(function() {
         if (this.checked) {
-            $('#user_form').removeClass('hidden');
+            $('#parent2_form').removeClass('hidden');
+            $('#parent2_form .form-group').addClass('required');
         } else {
-            $('#user_form').addClass('hidden');
+            $('#parent2_form').addClass('hidden');
         }
     });
+
+    /* Select first parent */
+    $('input[type=radio][name=parent1_select-parent]').change(function() {
+        if (this.value == 'new') {
+            $('#id_parent1_first_name').val('');
+            $('#id_parent1_last_name').val('');
+            $('#id_parent1_street').val('');
+            $('#id_parent1_city').val('');
+            $('#id_parent1_postal_code').val('');
+            $('#id_parent1_phone').val('');
+            $('#id_parent1_email').val('');
+        }{% for parent in form.parents %} else if (this.value == {{ parent.id }}) {
+            $('#id_parent1_first_name').val('{{ parent.first_name | escapejs }}');
+            $('#id_parent1_last_name').val('{{ parent.last_name | escapejs }}');
+            $('#id_parent1_street').val('{{ parent.street | escapejs }}');
+            $('#id_parent1_city').val('{{ parent.city | escapejs }}');
+            $('#id_parent1_postal_code').val('{{ parent.postal_code | escapejs }}');
+            $('#id_parent1_phone').val('{{ parent.phone | escapejs }}');
+            $('#id_parent1_email').val('{{ parent.email | escapejs }}');
+        }{% endfor %}
+    });
+
+    /* Select second parent */
+    $('input[type=radio][name=parent2_select-parent]').change(function() {
+        if (this.value == 'new') {
+            $('#id_parent2_first_name').val('');
+            $('#id_parent2_last_name').val('');
+            $('#id_parent2_street').val('');
+            $('#id_parent2_city').val('');
+            $('#id_parent2_postal_code').val('');
+            $('#id_parent2_phone').val('');
+            $('#id_parent2_email').val('');
+        }{% for parent in form.parents %} else if (this.value == {{ parent.id }}) {
+            $('#id_parent2_first_name').val('{{ parent.first_name | escapejs }}');
+            $('#id_parent2_last_name').val('{{ parent.last_name | escapejs }}');
+            $('#id_parent2_street').val('{{ parent.street | escapejs }}');
+            $('#id_parent2_city').val('{{ parent.city | escapejs }}');
+            $('#id_parent2_postal_code').val('{{ parent.postal_code | escapejs }}');
+            $('#id_parent2_phone').val('{{ parent.phone | escapejs }}');
+            $('#id_parent2_email').val('{{ parent.email | escapejs }}');
+        }{% endfor %}
+    });
+
+    /* Select second parent */
+    $('#id_participant_birth_num').change(changedBirthNum);
 });
 
 </script>

@@ -143,18 +143,12 @@ def get_birth_date(birth_num):
         year = int(date.today().year/100)*100 + y
         if y > date.today().year%100:
             year -= 100
-    month = int(birth_num[2:4])
-    if 21 <= month <= 32:
-        month -= 20
-    elif 51 <= month <= 62:
-        month -= 50
-    elif 71 <= month <= 82:
-        month -= 70
+    month = int(birth_num[2:4]) % 50 % 20
     day = int(birth_num[4:6])
     return date(year, month, day)
 
-def get_age(birth_date):
-    today = date.today()
+def get_age(birth_date, today=None):
+    today = today or date.today()
     if date(today.year, birth_date.month, birth_date.day) > today:
         return today.year - birth_date.year - 1
     else:

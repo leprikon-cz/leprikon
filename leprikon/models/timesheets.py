@@ -149,7 +149,7 @@ class TimesheetEntryType(models.Model):
 @python_2_unicode_compatible
 class TimesheetEntry(StartEndMixin, models.Model):
     timesheet   = models.ForeignKey(Timesheet, editable=False,
-                    verbose_name=_('timesheet'), related_name='timesheet_entries')
+                    verbose_name=_('timesheet'), related_name='timesheet_entries', on_delete=models.PROTECT)
     entry_type  = models.ForeignKey(TimesheetEntryType, null=True,
                     verbose_name=_('entry type'), related_name='entries')
     date        = models.DateField(_('date'))

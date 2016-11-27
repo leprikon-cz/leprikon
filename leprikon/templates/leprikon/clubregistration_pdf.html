@@ -19,17 +19,17 @@
     <body>
         <div class="page">
             <h1 align="center">{% trans 'Club registration' %}</h1>
-            <p align="center">{{ object.age_group }}</p>
+            <p align="center">{{ object.participant.age_group }}</p>
             <p>
                 Název kroužku: <b>{{ object.club.name }}</b><br/>
                 Jméno a příjmení: <b>{{ object.participant.full_name }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Rodné číslo <b>{{ object.participant.birth_num }}</b><br/>
                 Bydliště: <b>{{ object.participant.address }}</b><br/>
-                Státní občanství: <b>{{ object.citizenship }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zdravotní pojišťovna: <b>{{ object.insurance }}</b><br/>
-                E-mail účastníka: <b>{{ object.participant.email }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telefon účastníka: <b>{{ object.participant.phone }}</b><br/>
-                {% for parent in object.all_parents %}
+                Státní občanství: <b>{{ object.participant.citizenship }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zdravotní pojišťovna: <b>{{ object.participant.insurance }}</b><br/>
+                Telefon účastníka: <b>{{ object.participant.phone }}</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E-mail účastníka: <b>{{ object.participant.email }}</b><br/>
+                {% for parent in object.parents %}
                 Jméno a příjmení zákonného zástupce: <b>{{ parent.full_name }}</b><br/>
-                E-mail zák. zástupce: <b>{{ parent.email }}</b><br/>
-                Telefon zák. zástupce: <b>{{ parent.phone }}</b><br/>
+                Adresa: <b>{{ parent.address }}</b><br/>
+                Kontakt: <b>{{ parent.contact }}</b><br/>
                 {% endfor %}
                 Údaje o zdravotní způsobilosti účastníka (případná omezení):<br/>
                 <b>{{ object.health }}</b>

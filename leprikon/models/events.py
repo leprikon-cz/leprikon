@@ -12,7 +12,6 @@ from django.utils.functional import cached_property
 from django.utils.encoding import smart_text, force_text
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -25,9 +24,9 @@ from ..utils import currency, comma_separated
 from .fields import ColorField, PriceField
 
 from .agegroup import AgeGroup
-from .insurance import Insurance
 from .place import Place
-from .question import AnswersBaseModel, Question
+from .question import Question
+from .registrations import Registration
 from .roles import Leader, Participant, Parent
 from .school import School
 from .schoolyear import SchoolYear
@@ -244,22 +243,8 @@ class EventAttachment(models.Model):
 
 
 
-@python_2_unicode_compatible
-class EventRegistration(AnswersBaseModel):
-    slug            = models.SlugField(editable=False)
-    created         = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
+class EventRegistration(Registration):
     event           = models.ForeignKey(Event, verbose_name=_('event'), related_name='registrations')
-    participant     = models.ForeignKey(Participant, verbose_name=_('participant'), related_name='event_registrations')
-    parents         = models.ManyToManyField(Parent, verbose_name=_('parents'), related_name='event_registrations', blank=True)
-    age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
-    citizenship     = CountryField(_('citizenship'))
-    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='event_registrations', null=True)
-    school          = models.ForeignKey(School, verbose_name=_('school'), related_name='event_registrations', blank=True, null=True)
-    school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
-    health          = models.TextField(_('health'), blank=True, default='')
-    cancel_request  = models.BooleanField(_('cancel request'), default=False)
-    canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
     discount        = PriceField(_('discount'), default=0)
     explanation     = models.TextField(_('discount explanation'), blank=True, default='')
 
@@ -267,13 +252,7 @@ class EventRegistration(AnswersBaseModel):
         app_label           = 'leprikon'
         verbose_name        = _('event registration')
         verbose_name_plural = _('event registrations')
-        unique_together     = (('event', 'participant'),)
-
-    def __str__(self):
-        return _('{participant} - {subject}').format(
-            participant = self.participant,
-            subject     = self.event,
-        )
+        unique_together     = (('event', 'participant_birth_num'),)
 
     def get_answers(self):
         return loads(self.answers)
@@ -281,44 +260,6 @@ class EventRegistration(AnswersBaseModel):
     @property
     def subject(self):
         return self.event
-
-    @cached_property
-    def all_parents(self):
-        return list(self.parents.all())
-
-    @cached_property
-    def all_payments(self):
-        return list(self.payments.all())
-
-    @cached_property
-    def school_name(self):
-        return self.school and smart_text(self.school) or self.school_other
-
-    @cached_property
-    def school_and_class(self):
-        if self.school_name and self.school_class:
-            return '{}, {}'.format(self.school_name, self.school_class)
-        else:
-            return self.school_name or self.school_class or ''
-
-    @cached_property
-    def all_recipients(self):
-        recipients = set()
-        if self.participant.user.email:
-            recipients.add(self.participant.user.email)
-        for parent in self.all_parents:
-            if parent.email:
-                recipients.add(parent.email)
-        return recipients
-
-    def get_payments(self, d=None):
-        if d:
-            return filter(lambda p: p.date <= d, self.all_payments)
-        else:
-            return self.all_payments
-
-    def get_paid(self, d=None):
-        return sum(p.amount for p in self.get_payments(d))
 
     @cached_property
     def payment_status(self):
@@ -332,18 +273,8 @@ class EventRegistration(AnswersBaseModel):
             paid        = self.get_paid(d),
         )
 
-    def get_absolute_url(self):
-        return reverse('leprikon:event_registration_pdf', kwargs={'slug':self.slug})
-
     def send_mail(self):
         EventRegistrationMailer().send_mail(self)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(smart_text(self))
-        if self.canceled:
-            self.cancel_request = False
-        super(EventRegistration, self).save(*args, **kwargs)
 
 
 

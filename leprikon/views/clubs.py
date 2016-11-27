@@ -11,6 +11,7 @@ from ..forms.registrations import ClubRegistrationForm
 from ..models import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, ClubRegistrationRequest
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView, TemplateView, PdfView
+from .registrations import RegistrationFormView
 
 
 class ClubListView(FilteredListView):
@@ -31,11 +32,11 @@ class ClubListView(FilteredListView):
 
 
 class ClubListMineView(ClubListView):
-    def get_queryset(self):
-        return super(ClubListMineView, self).get_queryset().filter(leaders=self.request.leader)
-
     def get_title(self):
         return _('My clubs in school year {}').format(self.request.school_year)
+
+    def get_queryset(self):
+        return super(ClubListMineView, self).get_queryset().filter(leaders=self.request.leader)
 
 
 
@@ -201,44 +202,6 @@ class ClubJournalLeaderEntryDeleteView(DeleteView):
 
 
 
-class ClubRegistrationFormView(CreateView):
-    back_url        = reverse('leprikon:registrations')
-    model           = ClubRegistration
-    form_class      = ClubRegistrationForm
-    template_name   = 'leprikon/registration_form.html'
-    message         = _('The registration has been accepted.')
-
-    def get_title(self):
-        return _('Registration for club {}').format(self.club.name)
-
-    def dispatch(self, request, pk, *args, **kwargs):
-        club_kwargs = {
-            'id':           int(pk),
-            'reg_active':   True,
-        }
-        if not self.request.user.is_staff:
-            club_kwargs['public'] = True
-        self.club = get_object_or_404(Club, **club_kwargs)
-        self.request.school_year = self.club.school_year
-        if self.club.max_count and self.club.registrations.count() >= self.club.max_count:
-            return ClubRegistrationRequestFormView.as_view()(request, club=self.club)
-        return super(ClubRegistrationFormView, self).dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs  = super(ClubRegistrationFormView, self).get_form_kwargs()
-        kwargs['subject'] = self.club
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        response = super(ClubRegistrationFormView, self).form_valid(form)
-        if self.request.user.is_anonymous() and form.user.is_active:
-            form.user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(self.request, form.user)
-        return response
-
-
-
 class ClubRegistrationRequestFormView(UpdateView):
     back_url        = reverse('leprikon:registrations')
     model           = ClubRegistrationRequest
@@ -250,7 +213,7 @@ class ClubRegistrationRequestFormView(UpdateView):
         return _('Registration request for club {}').format(self.kwargs['club'].name)
 
     def get_object(self, queryset=None):
-        club = self.kwargs['club']
+        club = self.kwargs['subject']
         user = self.request.user if self.request.user.is_authenticated() else None
         req = None
         if user:
@@ -278,6 +241,26 @@ class ClubRegistrationRequestFormView(UpdateView):
                 'Please, leave your contact information in the form below.'
             )
         return '<p>{}</p>'.format(instructions)
+
+
+
+class ClubRegistrationFormView(RegistrationFormView):
+    model           = ClubRegistration
+    form_class      = ClubRegistrationForm
+    request_view    = ClubRegistrationRequestFormView
+
+    def get_title(self):
+        return _('Registration for club {}').format(self.subject.name)
+
+    def dispatch(self, request, pk, *args, **kwargs):
+        lookup_kwargs = {
+            'id':           int(pk),
+            'reg_active':   True,
+        }
+        if not self.request.user.is_staff:
+            lookup_kwargs['public'] = True
+        self.subject = get_object_or_404(Club, **lookup_kwargs)
+        return super(ClubRegistrationFormView, self).dispatch(request, *args, **kwargs)
 
 
 

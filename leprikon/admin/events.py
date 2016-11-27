@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from json import dumps
 
-from ..forms.events import EventRegistrationAdminForm
+from ..forms.registrations import RegistrationAdminForm
 from ..models import *
 from ..utils import currency, comma_separated
 
@@ -213,16 +213,23 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'event_name', 'participant_link', 'parents_link',
+        'id', 'get_download_tag', 'event_name', 'participant',
         'discount', 'get_payments_html', 'created',
         'cancel_request', 'canceled',
     )
     list_export     = (
-        'id', 'created', 'event', 'age_group',
-        'participant__first_name', 'participant__last_name', 'participant__birth_num',
-        'participant__email', 'participant__phone', 'school_name', 'school_class',
-        'participant__street', 'participant__city', 'participant__postal_code', 'citizenship', 'insurance', 'health',
-        'parents_list', 'parent_emails',
+        'id', 'created', 'event', 'birth_num', 'age_group',
+        'participant_first_name', 'participant_last_name',
+        'participant_street', 'participant_city', 'participant_postal_code',
+        'participant_phone', 'participant_email',
+        'citizenship', 'insurance', 'health',
+        'school_name', 'school_class',
+        'parent1_first_name', 'parent1_last_name',
+        'parent1_street', 'parent1_city', 'parent1_postal_code',
+        'parent1_phone', 'parent1_email',
+        'parent2_first_name', 'parent2_last_name',
+        'parent2_street', 'parent2_city', 'parent2_postal_code',
+        'parent2_phone', 'parent2_email',
         'discount', 'get_payments_paid', 'get_payments_balance',
     )
     list_filter     = (
@@ -233,14 +240,13 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
     )
     actions         = ('send_mail',)
     search_fields   = (
-        'participant__first_name', 'participant__last_name',
-        'participant__birth_num', 'participant__email',
-        'parents__first_name', 'parents__last_name', 'parents__email',
-        'school__name', 'event__name',
+        'birth_num',
+        'participant_first_name', 'participant_last_name', 'participant_email',
+        'parent1_first_name', 'parent1_last_name', 'parent1_email',
+        'parent2_first_name', 'parent2_last_name', 'parent2_email',
     )
     ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('event', 'participant')
-    filter_horizontal = ('parents',)
+    raw_id_fields   = ('event',)
 
     def has_add_permission(self, request):
         return False
@@ -248,7 +254,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
     def get_form(self, request, obj, **kwargs):
         questions       = obj.event.all_questions
         answers         = obj.get_answers()
-        kwargs['form']  = type(EventRegistrationAdminForm.__name__, (EventRegistrationAdminForm,), dict(
+        kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
             for q in questions
         ))
@@ -266,17 +272,6 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         return obj.event.name
     event_name.short_description = _('event')
 
-    def parents_list(self, obj):
-        return comma_separated(obj.all_parents)
-    parents_list.short_description = _('parents')
-
-    def parent_emails(self, obj):
-        return ', '.join(
-            '{} <{}>'.format(p.full_name, p.email)
-            for p in obj.all_parents if p.email
-        )
-    parent_emails.short_description = _('parent emails')
-
     def school_name(self, obj):
         return obj.school_name
     school_name.short_description = _('school')
@@ -286,9 +281,9 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
     get_download_tag.short_description = _('download')
     get_download_tag.allow_tags = True
 
-    def get_fullname(self, obj):
-        return '{} {}'.format(obj.participant.first_name, obj.participant.last_name)
-    get_fullname.short_description = _('full name')
+    def full_name(self, obj):
+        return obj.participant.full_name
+    full_name.short_description = _('full name')
 
     @cached_property
     def participants_url(self):

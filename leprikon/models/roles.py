@@ -160,7 +160,7 @@ class Participant(models.Model):
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = CountryField(_('citizenship'))
-    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='participants', null=True)
+    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='+', null=True)
     school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants', blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
