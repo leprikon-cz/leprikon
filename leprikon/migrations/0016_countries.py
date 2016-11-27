@@ -8,30 +8,6 @@ import django.db.models.deletion
 import django_countries.fields
 
 
-citizenship_translations = [
-    ('?' , 'AT'),
-    ('SR' , 'SK'),
-    ('ukrajinsk\xe9' , 'UA'),
-    ('UKR' , 'UA'),
-    ('ukrajina' , 'UA'),
-    ('MDA' , 'MD'),
-    ('Ukrajina' , 'UA'),
-    ('Rus' , 'RU'),
-    ('Ruska' , 'RU'),
-    ('Vietnam' , 'VN'),
-    ('ukr' , 'UA'),
-]
-
-
-def set_citizenship(apps, schema_editor):
-
-    for model_name in ['Participant', 'ClubRegistration', 'EventRegistration']:
-        Model = apps.get_model('leprikon', model_name)
-
-        for old, new in citizenship_translations:
-            Model.objects.filter(citizenship_old=old).update(citizenship=new)
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -41,29 +17,9 @@ class Migration(migrations.Migration):
     operations = []
     for model_name in ['participant', 'clubregistration', 'eventregistration']:
         operations += [
-            migrations.RenameField(
-                model_name=model_name,
-                old_name='citizenship',
-                new_name='citizenship_old',
-            ),
-            migrations.AddField(
-                model_name=model_name,
-                name='citizenship',
-                field=django_countries.fields.CountryField(default='CZ', max_length=2, verbose_name='citizenship'),
-            ),
             migrations.AlterField(
                 model_name=model_name,
                 name='citizenship',
                 field=django_countries.fields.CountryField(max_length=2, verbose_name='citizenship'),
-            ),
-        ]
-    operations += [
-        migrations.RunPython(set_citizenship),
-    ]
-    for model_name in ['participant', 'clubregistration', 'eventregistration']:
-        operations += [
-            migrations.RemoveField(
-                model_name=model_name,
-                name='citizenship_old',
             ),
         ]
