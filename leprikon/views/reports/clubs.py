@@ -116,11 +116,11 @@ class ReportClubStatsView(ReportBaseView):
         context['participants_counts'] = self.ReportItem(
             age_group=None,
             all=registrations.count(),
-            boys=registrations.filter(participant__gender=Participant.MALE).count(),
-            girls=registrations.filter(participant__gender=Participant.FEMALE).count(),
-            local=registrations.filter(participant__citizenship=settings.LEPRIKON_COUNTRY).count(),
-            eu=registrations.filter(participant__citizenship__in=self.EU_countries).count(),
-            noneu=registrations.exclude(participant__citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
+            boys=registrations.filter(participant_gender=Participant.MALE).count(),
+            girls=registrations.filter(participant_gender=Participant.FEMALE).count(),
+            local=registrations.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
+            eu=registrations.filter(participant_citizenship__in=self.EU_countries).count(),
+            noneu=registrations.exclude(participant_citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
         )
         context['participants_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
@@ -128,11 +128,11 @@ class ReportClubStatsView(ReportBaseView):
             context['participants_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
                 all=regs.count(),
-                boys=regs.filter(participant__gender=Participant.MALE).count(),
-                girls=regs.filter(participant__gender=Participant.FEMALE).count(),
-                local=regs.filter(participant__citizenship=settings.LEPRIKON_COUNTRY).count(),
-                eu=regs.filter(participant__citizenship__in=self.EU_countries).count(),
-                noneu=regs.exclude(participant__citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
+                boys=regs.filter(participant_gender=Participant.MALE).count(),
+                girls=regs.filter(participant_gender=Participant.FEMALE).count(),
+                local=regs.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
+                eu=regs.filter(participant_citizenship__in=self.EU_countries).count(),
+                noneu=regs.exclude(participant_citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
             ))
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))

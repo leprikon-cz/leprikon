@@ -42,8 +42,8 @@
             <label class="col-sm-4">{% trans 'Presence' %}:</label>
             <div class="col-sm-8">
                 {% for entry in reg.club.all_journal_entries %}
-                <strong title="{{ entry.date }}">
-                {% if reg.participant in entry.all_participants %}&#x2713;{% else %}&#x2717;{% endif %}
+                <strong title="{{ entry.date }}" class="{% if reg in entry.all_registrations %}green{% else %}red{% endif %}">
+                {% if reg in entry.all_registrations %}&#x2713;{% else %}&#x2717;{% endif %}
                 </strong>
                 {% endfor %}
             </div>

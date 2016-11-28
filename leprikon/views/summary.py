@@ -17,14 +17,14 @@ class SummaryView(TemplateView):
         context['payment_status'] = sum(
             reg.payment_statuses.partial
             for reg in ClubRegistration.objects.filter(
-                club__school_year   = self.request.school_year,
-                participant__user   = self.request.user,
+                club__school_year = self.request.school_year,
+                user = self.request.user,
             )
         ) + sum(
             reg.payment_status
             for reg in EventRegistration.objects.filter(
-                event__school_year  = self.request.school_year,
-                participant__user   = self.request.user,
+                event__school_year = self.request.school_year,
+                user = self.request.user,
             )
         )
         if self.request.leader:

@@ -204,7 +204,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_participants__club_registrations__club__in = queryset
+            leprikon_clubregistrations__club__in = queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
@@ -323,7 +323,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
     )
     actions         = ('send_mail',)
     search_fields   = (
-        'birth_num',
+        'participant_birth_num',
         'participant_first_name', 'participant_last_name', 'participant_email',
         'parent1_first_name', 'parent1_last_name', 'parent1_email',
         'parent2_first_name', 'parent2_last_name', 'parent2_email',
@@ -384,19 +384,6 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
         )
     participant_link.allow_tags = True
     participant_link.short_description = _('participant')
-
-    @cached_property
-    def parents_url(self):
-        return reverse('admin:leprikon_parent_changelist')
-
-    def parents_link(self, obj):
-        return '<a href="{url}?club_registrations__id={participant}">{names}</a>'.format(
-            url         = self.parents_url,
-            participant = obj.id,
-            names       = ', '.join(smart_text(parent) for parent in obj.all_parents),
-        )
-    parents_link.allow_tags = True
-    parents_link.short_description = _('parents')
 
     def get_club_payments(self, obj):
         html = []
@@ -478,7 +465,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_participants__club_registrations__in = queryset
+            leprikon_clubregistrations__in = queryset
         ).distinct()
 
 
@@ -490,8 +477,8 @@ class ClubPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         ('registration__club',              ClubListFilter),
         ('registration__club__leaders',     LeaderListFilter),
     )
-    search_fields   = ('registration__club__name', 'registration__participant__first_name', 'registration__participant__last_name',
-                       'registration__participant__birth_num')
+    search_fields   = ('registration__club__name', 'registration__participant_first_name', 'registration__participant_last_name',
+                       'registration__participant_birth_num')
     date_hierarchy  = 'date'
     ordering        = ('-date',)
     raw_id_fields   = ('registration',)
@@ -560,7 +547,7 @@ class ClubJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         ('club__school_year',   SchoolYearListFilter),
         ('club',                ClubListFilter),
     )
-    filter_horizontal = ('participants',)
+    filter_horizontal = ('registrations',)
     inlines         = (ClubJournalLeaderEntryInlineAdmin,)
     ordering        = ('-date', '-start')
     readonly_fields = ('club_name', 'date',)

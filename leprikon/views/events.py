@@ -202,7 +202,7 @@ class EventRegistrationCancelView(ConfirmUpdateView):
     title = _('Cancellation request')
 
     def get_queryset(self):
-        return super(EventRegistrationCancelView, self).get_queryset().filter(participant__user=self.request.user)
+        return super(EventRegistrationCancelView, self).get_queryset().filter(user=self.request.user)
 
     def get_question(self):
         return _('Are you sure You want to cancel the registration "{}"?').format(self.object)

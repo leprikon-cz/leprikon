@@ -146,18 +146,18 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
 
     class Meta:
         model = ClubJournalEntry
-        fields = ['date', 'start', 'end', 'agenda', 'participants']
+        fields = ['date', 'start', 'end', 'agenda', 'registrations']
 
     def __init__(self, *args, **kwargs):
         self.club = kwargs.pop('club', None) or kwargs['instance'].club
         super(ClubJournalEntryAdminForm, self).__init__(*args, **kwargs)
         self.instance.club = self.club
 
-        self.fields['participants'].widget.choices.queryset = \
-        self.fields['participants'].widget.choices.queryset.filter(
-            club_registrations__club = self.instance.club,
+        self.fields['registrations'].widget.choices.queryset = \
+        self.fields['registrations'].widget.choices.queryset.filter(
+            club = self.instance.club,
         )
-        self.fields['participants'].help_text = None
+        self.fields['registrations'].help_text = None
 
         if self.instance.id:
             self.readonly_fields = [

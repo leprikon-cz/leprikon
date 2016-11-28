@@ -14,11 +14,11 @@ class RegistrationsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RegistrationsView, self).get_context_data(**kwargs)
-        context['club_registrations'] = ClubRegistration.objects.filter(
+        context['clubregistrations'] = ClubRegistration.objects.filter(
             club__school_year   = self.request.school_year,
             user   = self.request.user,
         )
-        context['event_registrations'] = EventRegistration.objects.filter(
+        context['eventregistrations'] = EventRegistration.objects.filter(
             event__school_year  = self.request.school_year,
             user   = self.request.user,
         )

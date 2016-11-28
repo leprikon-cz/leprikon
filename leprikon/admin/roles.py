@@ -129,7 +129,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
 class ParentAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     search_fields   = ('first_name', 'last_name', 'street', 'email', 'phone',
                        'user__first_name', 'user__last_name', 'user__username', 'user__email')
-    list_display    = ('id', 'first_name', 'last_name', 'address', 'email', 'phone', 'user_link', 'registrations_links')
+    list_display    = ('id', 'first_name', 'last_name', 'address', 'email', 'phone', 'user_link')
     raw_id_fields   = ('user',)
 
     def first_name(self, obj):
@@ -163,26 +163,6 @@ class ParentAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         )
     user_link.allow_tags = True
     user_link.short_description = _('user')
-
-    @cached_property
-    def club_regs_url(self):
-        return reverse('admin:leprikon_clubregistration_changelist')
-
-    @cached_property
-    def event_regs_url(self):
-        return reverse('admin:leprikon_eventregistration_changelist')
-
-    def registrations_links(self, obj):
-        return '<a href="{club_regs_url}?parents__id={parent}">{club_regs_name}</a>, '\
-               '<a href="{event_regs_url}?parents__id={parent}">{event_regs_name}</a>'.format(
-            club_regs_url   = self.club_regs_url,
-            event_regs_url  = self.event_regs_url,
-            club_regs_name  = _('clubs'),
-            event_regs_name = _('events'),
-            parent          = obj.id,
-        )
-    registrations_links.allow_tags = True
-    registrations_links.short_description = _('registrations')
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
@@ -225,13 +205,13 @@ class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return reverse('admin:leprikon_eventregistration_changelist')
 
     def registrations_links(self, obj):
-        return '<a href="{club_regs_url}?participant__id={participant}">{club_regs_name}</a>, '\
-               '<a href="{event_regs_url}?participant__id={participant}">{event_regs_name}</a>'.format(
+        return '<a href="{club_regs_url}?participant_birth_num={birth_num}">{club_regs_name}</a>, '\
+               '<a href="{event_regs_url}?participant_birth_num={birth_num}">{event_regs_name}</a>'.format(
             club_regs_url   = self.club_regs_url,
             event_regs_url  = self.event_regs_url,
             club_regs_name  = _('clubs'),
             event_regs_name = _('events'),
-            participant     = obj.id,
+            birth_num       = obj.birth_num,
         )
     registrations_links.allow_tags = True
     registrations_links.short_description = _('registrations')

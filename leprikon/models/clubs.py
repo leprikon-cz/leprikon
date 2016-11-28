@@ -313,7 +313,7 @@ class ClubPeriod(StartEndMixin, models.Model):
             self.PresenceRecord(
                 reg.participant,
                 [
-                    reg.participant in entry.all_participants
+                    reg in entry.all_registrations
                     for entry in self.all_journal_entries
                 ]
             ) for reg in self.all_registrations
@@ -517,7 +517,7 @@ class ClubJournalEntry(StartEndMixin, models.Model):
     end         = models.TimeField(_('end time'), blank=True, null=True,
                     help_text=_('Leave empty, if the club does not take place'))
     agenda      = HTMLField(_('session agenda'), default=get_default_agenda)
-    participants = models.ManyToManyField(Participant, verbose_name=_('participants'),
+    registrations = models.ManyToManyField(ClubRegistration, verbose_name=_('participants'),
                     blank=True, related_name='journal_entries')
 
     class Meta:
@@ -555,8 +555,8 @@ class ClubJournalEntry(StartEndMixin, models.Model):
     duration.short_description = _('duration')
 
     @cached_property
-    def all_participants(self):
-        return list(self.participants.all())
+    def all_registrations(self):
+        return list(self.registrations.all())
 
     @cached_property
     def all_leader_entries(self):

@@ -141,3 +141,10 @@ input.form-control[type="checkbox"] {
     background-color: #277616;
 }
 
+.green {
+    color: #0a0;
+}
+
+.red {
+    color: #e00;
+}

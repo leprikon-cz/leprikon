@@ -152,7 +152,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_participants__event_registrations__event__in = queryset
+            leprikon_eventregistrations__event__in = queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
@@ -240,7 +240,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
     )
     actions         = ('send_mail',)
     search_fields   = (
-        'birth_num',
+        'participant_birth_num',
         'participant_first_name', 'participant_last_name', 'participant_email',
         'parent1_first_name', 'parent1_last_name', 'parent1_email',
         'parent2_first_name', 'parent2_last_name', 'parent2_email',
@@ -297,19 +297,6 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         )
     participant_link.allow_tags = True
     participant_link.short_description = _('participant')
-
-    @cached_property
-    def parents_url(self):
-        return reverse('admin:leprikon_parent_changelist')
-
-    def parents_link(self, obj):
-        return '<a href="{url}?event_registrations__id={participant}">{names}</a>'.format(
-            url         = self.parents_url,
-            participant = obj.id,
-            names       = ', '.join(smart_text(parent) for parent in obj.all_parents),
-        )
-    parents_link.allow_tags = True
-    parents_link.short_description = _('parents')
 
     def get_payments_paid(self, obj):
         return obj.get_payment_status().paid
@@ -368,7 +355,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_participants__event_registrations__in = queryset
+            leprikon_eventregistrations__in = queryset
         ).distinct()
 
 
@@ -381,8 +368,8 @@ class EventPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         ('registration__event',              EventListFilter),
         ('registration__event__leaders',     LeaderListFilter),
     )
-    search_fields   = ('registration__event__name', 'registration__participant__first_name', 'registration__participant__last_name',
-                       'registration__participant__birth_num')
+    search_fields   = ('registration__event__name', 'registration__participant_first_name', 'registration__participant_last_name',
+                       'registration__participant_birth_num')
     date_hierarchy  = 'date'
     ordering        = ('-date',)
     raw_id_fields   = ('registration',)
