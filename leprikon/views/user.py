@@ -76,13 +76,6 @@ def user_login(request):
         template_name='leprikon/login.html',
         authentication_form=UserLoginForm,
         redirect_field_name=settings.LEPRIKON_PARAM_BACK,
-        extra_context={
-            'title': _('Log in'),
-            'submit_label': _('Log in'),
-            'back_label': _('Reset password'),
-            'back_url': reverse('leprikon:password_reset'),
-            'placeholder': 'user_login',
-        },
     )
 
 

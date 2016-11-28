@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 00:22+0100\n"
+"POT-Creation-Date: 2016-11-28 01:41+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -798,16 +798,16 @@ msgstr ""
 "uživatelské jméno nebo heslo ke svému existujícímu účtu, použijte formulář "
 "pro reset hesla."
 
-#: menu.py:23 templates/leprikon/password_reset_complete.html:12
-#: views/user.py:80 views/user.py:81
+#: menu.py:23 templates/leprikon/login.html:19
+#: templates/leprikon/password_reset_complete.html:12
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: menu.py:29 views/user.py:33
+#: menu.py:29 templates/leprikon/login.html:28 views/user.py:33
 msgid "Create account"
 msgstr "Vytvořit účet"
 
-#: menu.py:35 views/user.py:82
+#: menu.py:35
 msgid "Reset password"
 msgstr "Reset hesla"
 
@@ -1791,6 +1791,22 @@ msgstr "zrušit hledání"
 msgid "Contact"
 msgstr "Kontakt"
 
+#: templates/leprikon/login.html:6
+msgid "Login"
+msgstr "Přihlášení"
+
+#: templates/leprikon/login.html:25
+msgid "Other options"
+msgstr "Další možnosti"
+
+#: templates/leprikon/login.html:35
+msgid "Log in with Google+"
+msgstr "Přihlásit se přes Google+"
+
+#: templates/leprikon/login.html:43
+msgid "Log in with Facebook"
+msgstr "Přihlásit se přes Facebook"
+
 #: templates/leprikon/message_mail.html:7 templates/leprikon/message_mail.txt:6
 #, python-format
 msgid "Show this message on site %(name)s:"
@@ -1850,7 +1866,7 @@ msgid "Health"
 msgstr "Ůdaje o zdravotní způsobilosti účastníka (případná omezení)"
 
 #: templates/leprikon/participants.html:7
-#: templates/leprikon/registration_form.html:39
+#: templates/leprikon/registration_form.html:41
 #: templates/leprikon/registration_preview.html:33
 msgid "Parents"
 msgstr "Zástupci"
@@ -1927,7 +1943,7 @@ msgstr "Tým %(site_name)s"
 msgid "Participant"
 msgstr "Účastník"
 
-#: templates/leprikon/registration_form.html:75
+#: templates/leprikon/registration_form.html:77
 msgid "Legal Agreement"
 msgstr "Právní ujednání"
 
@@ -2484,23 +2500,23 @@ msgstr "Aktualizace údajů o uživateli"
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:102
+#: views/user.py:95
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:103
+#: views/user.py:96
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:119
+#: views/user.py:112
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:120
+#: views/user.py:113
 msgid "Set my password"
 msgstr "Nastavit heslo"

@@ -57,6 +57,7 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
     def __init__(self, **kwargs):
         super(UserCreateForm, self).__init__(**kwargs)
         self.fields['username'].help_text = None
+        self.fields['email'].required = True
         self.fields['password1'].help_text = password_validation.password_validators_help_text_html()
 
     def save(self, commit=True):
