@@ -12,20 +12,14 @@ from .form import FormMixin
 class ParticipantForm(FormMixin, forms.ModelForm):
 
     def __init__(self, user, **kwargs):
-        self.user = user
         super(ParticipantForm, self).__init__(**kwargs)
-
-    def validate_unique(self):
-        if self.user.id:
-            self.instance.user = self.user
-        super(ParticipantForm, self).validate_unique()
+        self.instance.user = user
 
     class Meta:
         model = Participant
         fields = [
-            'first_name', 'last_name', 'birth_num',
-            'age_group', 'insurance',
-            'street', 'city', 'postal_code', 'citizenship',
+            'first_name', 'last_name', 'birth_num', 'age_group',
+            'street', 'city', 'postal_code', 'citizenship', 'insurance',
             'email', 'phone',
             'school', 'school_other', 'school_class',
             'health',
