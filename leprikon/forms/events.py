@@ -18,7 +18,7 @@ class EventFilterForm(FormMixin, forms.Form):
     leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
-    past        = forms.BooleanField(label=_('Include past'), required=False)
+    past        = forms.BooleanField(label=_('Include past events'), required=False)
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 

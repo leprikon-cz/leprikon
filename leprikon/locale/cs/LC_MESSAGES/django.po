@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 01:41+0100\n"
+"POT-Creation-Date: 2016-11-28 15:12+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -113,7 +113,7 @@ msgstr "Přihlášek je méně než {}."
 msgid "The number of registrations is greater than {}."
 msgstr "Přihlášek je více než {}."
 
-#: admin/clubs.py:230 admin/events.py:178 admin/roles.py:185 admin/roles.py:237
+#: admin/clubs.py:230 admin/events.py:178 admin/roles.py:217
 msgid "registrations"
 msgstr "přihlášky"
 
@@ -143,7 +143,7 @@ msgstr "deník"
 msgid "photo"
 msgstr "fotka"
 
-#: admin/clubs.py:360 admin/clubs.py:587 models/clubs.py:107
+#: admin/clubs.py:360 admin/clubs.py:574 models/clubs.py:107
 #: models/clubs.py:220 models/clubs.py:271 models/clubs.py:348
 #: models/clubs.py:364 models/clubs.py:470 models/clubs.py:513
 #: models/clubs.py:628 models/clubs.py:656 models/roles.py:244
@@ -151,7 +151,7 @@ msgstr "fotka"
 msgid "club"
 msgstr "kroužek"
 
-#: admin/clubs.py:364 admin/events.py:277 admin/roles.py:241
+#: admin/clubs.py:364 admin/events.py:277 admin/roles.py:221
 #: models/registrations.py:81 models/roles.py:164 models/school.py:18
 msgid "school"
 msgstr "škola"
@@ -170,45 +170,41 @@ msgstr "celé jméno"
 msgid "participant"
 msgstr "účastník"
 
-#: admin/clubs.py:399 admin/events.py:312 admin/user.py:116 models/roles.py:123
-msgid "parents"
-msgstr "zástupci"
-
-#: admin/clubs.py:414 admin/events.py:330
+#: admin/clubs.py:401 admin/events.py:317
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/clubs.py:416 models/clubs.py:498
+#: admin/clubs.py:403 models/clubs.py:498
 msgid "club payments"
 msgstr "platby za kroužky"
 
-#: admin/clubs.py:420 admin/clubs.py:434
+#: admin/clubs.py:407 admin/clubs.py:421
 msgid "actual balance"
 msgstr "aktuální zůstatek"
 
-#: admin/clubs.py:424 admin/clubs.py:444
+#: admin/clubs.py:411 admin/clubs.py:431
 msgid "total balance"
 msgstr "celkový zůstatek"
 
-#: admin/clubs.py:463 admin/events.py:353
+#: admin/clubs.py:450 admin/events.py:340
 #, python-brace-format
 msgid "Registration {registration} ({id}) successfully sent to {recipients}."
 msgstr "Přihláška {registration} ({id}) byla odeslána na {recipients}."
 
-#: admin/clubs.py:472 admin/events.py:362
+#: admin/clubs.py:459 admin/events.py:349
 #, python-brace-format
 msgid "Registration {registration} ({id}) has no recipients."
 msgstr "Přihláška {registration} ({id}) nemá žádné příjemce."
 
-#: admin/clubs.py:477 admin/events.py:367
+#: admin/clubs.py:464 admin/events.py:354
 msgid "Send selected registrations by email"
 msgstr "Odeslat vybrané přihlášky e-mailem"
 
-#: admin/clubs.py:549 admin/timesheets.py:64
+#: admin/clubs.py:536 admin/timesheets.py:64
 msgid "update entry"
 msgstr "upravit záznam"
 
-#: admin/clubs.py:550 admin/timesheets.py:65
+#: admin/clubs.py:537 admin/timesheets.py:65
 #: templates/leprikon/club_journal.html:132
 #: templates/leprikon/club_journal.html:214
 #: templates/leprikon/club_journal.html:243
@@ -222,12 +218,12 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/clubs.py:592
+#: admin/clubs.py:579
 msgid "agenda"
 msgstr "program"
 
-#: admin/clubs.py:614 admin/events.py:408 admin/roles.py:86 admin/roles.py:165
-#: admin/roles.py:213 models/clubs.py:469 models/events.py:283
+#: admin/clubs.py:601 admin/events.py:395 admin/roles.py:86 admin/roles.py:165
+#: admin/roles.py:193 models/clubs.py:469 models/events.py:283
 #: models/registrations.py:56 models/roles.py:26 models/roles.py:110
 #: models/roles.py:151
 msgid "user"
@@ -287,16 +283,16 @@ msgstr "Na tuto akci se nikdo nepřihlásil."
 msgid "event"
 msgstr "akce"
 
-#: admin/events.py:316 models/timesheets.py:74 models/utils.py:32
+#: admin/events.py:303 models/timesheets.py:74 models/utils.py:32
 #: templates/leprikon/summary.html:16
 msgid "paid"
 msgstr "zaplaceno"
 
-#: admin/events.py:320
+#: admin/events.py:307
 msgid "balance"
 msgstr "zůstatek"
 
-#: admin/events.py:334 models/events.py:312
+#: admin/events.py:321 models/events.py:312
 msgid "event payments"
 msgstr "platby za akce"
 
@@ -412,16 +408,15 @@ msgstr "e-mail"
 msgid "contacts"
 msgstr "kontakty"
 
-#: admin/roles.py:103 admin/roles.py:180 admin/roles.py:232 models/clubs.py:108
+#: admin/roles.py:103 admin/roles.py:212 models/clubs.py:108
 msgid "clubs"
 msgstr "kroužky"
 
-#: admin/roles.py:112 admin/roles.py:181 admin/roles.py:233
-#: models/events.py:154
+#: admin/roles.py:112 admin/roles.py:213 models/events.py:154
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:147 admin/roles.py:217
+#: admin/roles.py:147 admin/roles.py:197
 msgid "address"
 msgstr "adresa"
 
@@ -491,6 +486,10 @@ msgstr "Sloučit vybrané uživatele"
 #: admin/user.py:100 admin/user.py:103
 msgid "login"
 msgstr "přihlásit"
+
+#: admin/user.py:116 models/roles.py:123
+msgid "parents"
+msgstr "zástupci"
 
 #: admin/user.py:129 models/clubs.py:520 models/roles.py:176
 #: templates/leprikon/club_preview.html:67
@@ -709,8 +708,8 @@ msgid "Event type"
 msgstr "Druh akce"
 
 #: forms/events.py:21
-msgid "Include past"
-msgstr "Zahrnout minulé"
+msgid "Include past events"
+msgstr "Zobrazit i proběhlé akce"
 
 #: forms/messages.py:32 forms/messages.py:35
 msgid "Recipients"
