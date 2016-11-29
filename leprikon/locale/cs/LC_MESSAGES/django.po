@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 15:12+0100\n"
+"POT-Creation-Date: 2016-11-29 10:23+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -761,7 +761,7 @@ msgstr "Statistiky k datu"
 msgid "School year"
 msgstr "Školní rok"
 
-#: forms/support.py:11 templates/leprikon/base.html:105
+#: forms/support.py:11 templates/leprikon/base.html:127
 msgid "Help needed?"
 msgstr "Potřebujete poradit?"
 
@@ -863,7 +863,7 @@ msgstr "Reporty"
 msgid "Terms and Conditions"
 msgstr "Obchodní podmínky"
 
-#: menu.py:139 templates/leprikon/base.html:58
+#: menu.py:139 templates/leprikon/base.html:64
 msgid "Log out"
 msgstr "Odhlásit se"
 
@@ -1580,21 +1580,25 @@ msgstr "Odeslat"
 msgid "Back"
 msgstr "Zpět"
 
-#: templates/leprikon/base.html:56
+#: templates/leprikon/base.html:62
 msgid "Edit"
 msgstr "Upravit"
 
-#: templates/leprikon/base.html:57 views/user.py:65
+#: templates/leprikon/base.html:63 views/user.py:65
 msgid "Change password"
 msgstr "Změnit heslo"
 
-#: templates/leprikon/base.html:83
+#: templates/leprikon/base.html:105
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:109
+#: templates/leprikon/base.html:131
 msgid "send question or suggestion"
 msgstr "odeslat dotaz nebo podnět"
+
+#: templates/leprikon/base.html:140
+msgid "Powered by Leprikón Information System"
+msgstr "Informační systém Leprikón"
 
 #: templates/leprikon/club_alternating.html:16
 #: templates/leprikon/timesheet_detail.html:21
@@ -1681,7 +1685,7 @@ msgstr "Roční hodnocení činnosti zájmového útvaru"
 #: templates/leprikon/club_list.html:14
 #: templates/leprikon/clubjournalentry_form.html:34
 #: templates/leprikon/event_list.html:14
-#: templates/leprikon/filtered_leader_list.html:34
+#: templates/leprikon/filtered_leader_list.html:38
 #: templates/leprikon/leader_list.html:14
 msgid "Search"
 msgstr "Hledat"
@@ -1691,10 +1695,10 @@ msgstr "Hledat"
 #: templates/leprikon/clubjournalentry_form.html:29
 #: templates/leprikon/clubjournalentry_form.html:39
 #: templates/leprikon/event_list.html:18
-#: templates/leprikon/filtered_club_list.html:36
-#: templates/leprikon/filtered_club_list.html:46
-#: templates/leprikon/filtered_event_list.html:36
-#: templates/leprikon/filtered_leader_list.html:38
+#: templates/leprikon/filtered_club_list.html:40
+#: templates/leprikon/filtered_club_list.html:50
+#: templates/leprikon/filtered_event_list.html:40
+#: templates/leprikon/filtered_leader_list.html:42
 #: templates/leprikon/leader_list.html:18
 msgid "selected"
 msgstr "vybraných"
@@ -1769,17 +1773,17 @@ msgstr "Účastníci akce %(name)s"
 msgid "Event registration"
 msgstr "Přihláška na akci"
 
-#: templates/leprikon/filtered_club_list.html:15
-#: templates/leprikon/filtered_event_list.html:15
-#: templates/leprikon/filtered_leader_list.html:15
-#: templates/leprikon/list.html:25
+#: templates/leprikon/filtered_club_list.html:19
+#: templates/leprikon/filtered_event_list.html:19
+#: templates/leprikon/filtered_leader_list.html:19
+#: templates/leprikon/list.html:29
 msgid "search"
 msgstr "vyhledat"
 
-#: templates/leprikon/filtered_club_list.html:16
-#: templates/leprikon/filtered_event_list.html:16
-#: templates/leprikon/filtered_leader_list.html:16
-#: templates/leprikon/list.html:26
+#: templates/leprikon/filtered_club_list.html:20
+#: templates/leprikon/filtered_event_list.html:20
+#: templates/leprikon/filtered_leader_list.html:20
+#: templates/leprikon/list.html:30
 msgid "cancel search"
 msgstr "zrušit hledání"
 
