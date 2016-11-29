@@ -35,6 +35,12 @@
 
     <!-- Shortcut icon -->
     <link rel="shortcut icon" href="{% static 'leprikon/img/favicon.ico' %}" />
+
+    {% if backends %}
+    <!-- Bootstrap social -->
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'font-awesome/css/font-awesome.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'bootstrap-social/bootstrap-social.css' %}"/>
+    {% endif %}
 </head>
 
 <body>
@@ -56,6 +62,22 @@
                         <li><a href="{% url_with_back 'leprikon:user_update' %}">{% trans 'Edit' %}</a></li>
                         <li><a href="{% url_with_back 'leprikon:user_password' %}">{% trans 'Change password' %}</a></li>
                         <li><a href="{% url_with_back 'leprikon:user_logout' %}">{% trans 'Log out' %}</a></li>
+                        {% if 'google-plus' in backends.not_associated %}
+                        <li>
+                            <a class="btn btn-social btn-google-plus" href="{% url 'social:begin' 'google-plus' %}?next={{ next }}">
+                                &nbsp;&nbsp; <i class="fa fa-google-plus pull-left"></i>
+                                propojit s&nbsp;Google+
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if 'facebook' in backends.not_associated %}
+                        <li>
+                            <a class="btn btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}?next={{ next }}">
+                                &nbsp;&nbsp; <i class="fa fa-facebook pull-left"></i>
+                                propojit s&nbsp;Facebookem
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
                 {% endif %}
