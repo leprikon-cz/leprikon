@@ -47,6 +47,18 @@ class Person:
         else:
             return self.email or self.phone or ''
 
+    # this is participant specific
+    @cached_property
+    def school_name(self):
+        return self.school and smart_text(self.school) or self.school_other
+
+    @cached_property
+    def school_and_class(self):
+        if self.school_name and self.school_class:
+            return '{}, {}'.format(self.school_name, self.school_class)
+        else:
+            return self.school_name or self.school_class or ''
+
 
 
 @python_2_unicode_compatible
@@ -159,17 +171,6 @@ class Registration(models.Model):
         else:
             return None
     parent2.short_description = _('second parent')
-
-    @cached_property
-    def school_name(self):
-        return self.school and smart_text(self.school) or self.school_other
-
-    @cached_property
-    def school_and_class(self):
-        if self.school_name and self.school_class:
-            return '{}, {}'.format(self.school_name, self.school_class)
-        else:
-            return self.school_name or self.school_class or ''
 
     @cached_property
     def all_payments(self):

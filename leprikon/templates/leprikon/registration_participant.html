@@ -8,7 +8,7 @@
         <div class="row">
             <label class="col-sm-4">{% trans 'Age group' %}:</label>
             <div class="col-sm-8">
-                {{ reg.age_group }}
+                {{ reg.participant.age_group }}
             </div>
         </div>
         <div class="row">
@@ -26,22 +26,22 @@
         <div class="row">
             <label class="col-sm-4">{% trans 'School' %}:</label>
             <div class="col-sm-8">
-                {{ reg.school_and_class }}
+                {{ reg.participant.school_and_class }}
             </div>
         </div>
         <div class="row">
             <label class="col-sm-4">{% trans 'Insurance' %}:</label>
             <div class="col-sm-8">
-                {{ reg.insurance }}
+                {{ reg.participant.insurance }}
             </div>
         </div>
         <div class="row">
             <label class="col-sm-4">{% trans 'Health' %}:</label>
             <div class="col-sm-8">
-                {{ reg.health | linebreaks }}
+                {{ reg.participant.health | linebreaks }}
             </div>
         </div>
-        {% for parent in reg.all_parents %}
+        {% for parent in reg.parents %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Parent' %}:</label>
             <div class="col-sm-8">
