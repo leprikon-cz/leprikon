@@ -12,6 +12,8 @@
 
 $(document).ready(function() {
     $('#id_registrations').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
         includeSelectAllOption: true,
         includeSelectAllIfMoreThan: 3,
         selectAllText: '{% trans 'select all' %}',

@@ -120,9 +120,9 @@ class Registration(models.Model):
         unique_together     = (('subject', 'birth_num'),)
 
     def __str__(self):
-        return _('{participant} - {subject}').format(
+        return _('{participant} ({birth_num})').format(
             participant = self.participant,
-            subject     = self.subject,
+            birth_num   = self.participant_birth_num,
         )
 
     def validate_unique(self, exclude=None):
