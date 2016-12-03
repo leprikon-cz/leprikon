@@ -181,6 +181,12 @@ class Club(models.Model):
         except ValueError:
             return None
 
+    def get_registrations(self, d=None):
+        if d:
+            return self.registrations.filter(created__date__lte=d).exclude(canceled__lte=d)
+        else:
+            return self.registrations.all()
+
     def copy_to_school_year(old, school_year):
         new = Club.objects.get(id=old.id)
         new.id = None

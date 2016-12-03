@@ -153,22 +153,16 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
         super(ClubJournalEntryAdminForm, self).__init__(*args, **kwargs)
         self.instance.club = self.club
 
-        self.fields['registrations'].widget.choices.queryset = \
-        self.fields['registrations'].widget.choices.queryset.filter(
-            club = self.instance.club,
-        )
-        self.fields['registrations'].help_text = None
-
         if self.instance.id:
+            d = self.instance.date
             self.readonly_fields = [
-                ReadonlyField(label=_('Date'),  value=self.instance.date),
+                ReadonlyField(label=_('Date'),  value=d),
             ]
             try:
                 del(self.fields['date'])
             except:
                 pass
-
-        if not self.instance.id:
+        else:
             last = self.instance.club.journal_entries.last()
             if last:
                 last_end = last.datetime_end or last.date
@@ -181,6 +175,13 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
                 self.initial['end']   = next_time.end
             else:
                 self.initial['date']  = date.today()
+            try:
+                d = self.fields['date'].clean(kwargs['data']['date'])
+            except:
+                d = self.initial['date']
+
+        self.fields['registrations'].widget.choices.queryset = self.instance.club.get_registrations(d)
+        self.fields['registrations'].help_text = None
 
     def clean(self):
         start   = self.cleaned_data.get('start', None)
