@@ -40,6 +40,13 @@ $(document).ready(function() {
         numberDisplayed: 4,
         nSelectedText: '{% trans 'selected' %}',
     });
+
+    $('#id_date').on('dp.change', function(e) {
+        $.getJSON('{% url 'leprikon:api:club_registrations' form.instance.club.id %}?date='+(e.date/1000), function(result) {
+            $('#id_registrations').multiselect('dataprovider', result['registrations']);
+        });
+    });
+
 });
 
 </script>

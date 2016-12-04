@@ -1,10 +1,11 @@
 from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
 
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
 from . import views
+from .api import urls as api_urls
 from .conf import settings
 
 
@@ -93,5 +94,7 @@ urlpatterns = [
     d_url(r'^{reports}/{debtors}/$',                                'report_debtors'),
 
     d_url(r'^{terms_conditions}/$',                                 'terms_conditions'),
+
+    url(r'^api/', include(api_urls, 'api')),
 ]
 
