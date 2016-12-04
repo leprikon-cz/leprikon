@@ -176,8 +176,23 @@ def merge_users(source, target):
         # both users are leaders
         raise
 
-    source.leprikon_participants.update(user=target)
-    source.leprikon_parents.update(user=target)
+    source.leprikon_clubregistrations.update(user=target)
+    source.leprikon_eventregistrations.update(user=target)
+
+    for p in source.leprikon_participants.all():
+        if not target.leprikon_participants.filter(birth_num=p.birth_num).exists():
+            p.user = target
+            p.save()
+
+    for p in source.leprikon_parents.all():
+        if not target.leprikon_parents.filter(first_name=p.first_name, last_name=p.last_name).exists():
+            p.user = target
+            p.save()
+
+    for mr in source.leprikon_messages.all():
+        if not target.leprikon_messages.filter(message=mr.message).exists():
+            mr.recipient = target
+            mr.save()
 
     try:
         # support social auth
