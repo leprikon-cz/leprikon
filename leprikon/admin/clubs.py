@@ -76,7 +76,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     actions         = (
         'publish', 'unpublish',
         'allow_registration', 'disallow_registration',
-        'merge', 'copy_to_school_year',
+        'copy_to_school_year',
     )
     search_fields   = ('name', 'description')
     save_as         = True
@@ -117,63 +117,6 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         Club.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = False)
         self.message_user(request, _('Registration was disallowed for selected clubs.'))
     disallow_registration.short_description = _('Disallow registration for selected clubs')
-
-    def merge(self, request, queryset):
-        class MergeForm(forms.Form):
-            target = forms.ModelChoiceField(
-                label=_('Target club'),
-                help_text=_('All information will be merged into selected club.'),
-                queryset=queryset,
-            )
-        if request.POST.get('post', 'no') == 'yes':
-            form = MergeForm(request.POST)
-            if form.is_valid():
-                target = form.cleaned_data['target']
-                for club in queryset.all():
-                    if club == target:
-                        continue
-                    # merge groups
-                    for group in club.all_groups:
-                        target.groups.add(group)
-                    # merge age_groups
-                    for age_group in club.all_age_groups:
-                        target.age_groups.add(age_group)
-                    # merge leaders
-                    for leader in club.all_leaders:
-                        target.leaders.add(leader)
-                    # merge times
-                    for time in club.all_times:
-                        time.club = target
-                        time.save()
-                    # merge questions
-                    for question in club.all_questions:
-                        target.questions.add(question)
-                    # merge registrations
-                    for registration in club.all_registrations:
-                        registration.club = target
-                        registration.save()
-                    # merge journal_entries
-                    for entry in club.all_journal_entries:
-                        entry.club = target
-                        entry.save()
-                    club.delete()
-                self.message_user(request, _('Selected clubs were merged into club {}.').format(target))
-                return
-        else:
-            form = MergeForm()
-        return render_to_response('leprikon/admin/merge.html', {
-            'title':    _('Merge selected clubs into one'),
-            'question': _('Are you sure you want to merge selected clubs into one? '
-                          'All leaders, registrations, payments and other related information '
-                          'will be added to the target club and the remaining clubs will be deleted.'),
-            'objects_title':    _('Clubs'),
-            'form_title':       _('Select target club for merge'),
-            'queryset': queryset,
-            'opts': self.model._meta,
-            'form': form,
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
-    merge.short_description = _('Merge selected clubs into one')
 
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):

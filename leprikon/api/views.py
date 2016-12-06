@@ -21,5 +21,5 @@ def club_registrations(request, club_id):
     except:
         d = None
 
-    return JsonResponse({'registrations': list({'value': r.id, 'label': str(r)} for r in club.get_registrations(d))})
+    return JsonResponse({'registrations': list({'value': r.id, 'label': str(r)} for r in club.get_active_registrations(d))})
 

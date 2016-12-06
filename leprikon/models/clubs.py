@@ -8,6 +8,7 @@ from collections import namedtuple
 from datetime import date, datetime, timedelta
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.encoding import smart_text, force_text
@@ -181,11 +182,21 @@ class Club(models.Model):
         except ValueError:
             return None
 
-    def get_registrations(self, d=None):
-        if d:
-            return self.registrations.filter(created__date__lte=d).exclude(canceled__lte=d)
-        else:
-            return self.registrations.all()
+    @property
+    def registrations_history_registrations(self):
+        return ClubRegistration.objects.filter(club_history__club=self).distinct()
+
+    @property
+    def active_registrations(self):
+        return self.registrations.filter(canceled=None)
+
+    @property
+    def inactive_registrations(self):
+        return ClubRegistration.objects.filter(club_history__club=self).exclude(id__in=self.active_registrations.all()).distinct()
+
+    def get_active_registrations(self, d):
+        ids = ClubRegistrationHistory.objects.filter(club=self, start__lte=d).exclude(end__lt=d).values('registration_id', flat=True)
+        return ClubRegistration.objects.filter(id__in=ids).exclude(canceled__lt=d).distinct()
 
     def copy_to_school_year(old, school_year):
         new = Club.objects.get(id=old.id)
@@ -302,7 +313,7 @@ class ClubPeriod(StartEndMixin, models.Model):
 
     @cached_property
     def all_registrations(self):
-        return list(self.club.registrations.filter(created__lt=self.end))
+        return list(self.club.registrations_history_registrations.filter(created__lt=self.end))
 
     @cached_property
     def all_alternates(self):
@@ -467,6 +478,36 @@ class ClubRegistrationDiscount(models.Model):
             period          = self.period,
             discount        = currency(self.discount),
         )
+
+
+
+class ClubRegistrationHistory(models.Model):
+    registration = models.ForeignKey(ClubRegistration, verbose_name=_('club'), related_name='club_history')
+    club = models.ForeignKey(Club, verbose_name=_('club'), related_name='registrations_history')
+    start = models.DateField()
+    end = models.DateField(default=None, null=True)
+
+    class Meta:
+        ordering            = ('start',)
+
+    @property
+    def club_journal_entries(self):
+        qs = ClubJournalEntry.objects.filter(club=self.club, date__gte=self.start)
+        if self.end:
+            return qs.filter(date__lte=self.end)
+        else:
+            return qs
+
+
+
+@receiver(models.signals.post_save, sender=ClubRegistration)
+def update_club_registration_history(sender, instance, created, **kwargs):
+    d = date.today()
+    # if created or changed
+    if (created or ClubRegistrationHistory.objects.filter(registration_id=instance.id, end=None).exclude(club_id=instance.club_id).update(end=d)):
+        # reopen or create entry starting today
+        ClubRegistrationHistory.objects.filter(registration_id=instance.id, club_id=instance.club_id, start=d).update(end=None) or \
+        ClubRegistrationHistory.objects.create(registration_id=instance.id, club_id=instance.club_id, start=d)
 
 
 

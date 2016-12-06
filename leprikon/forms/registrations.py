@@ -31,7 +31,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         setattr(self.instance, self.subject_attr, subject)
         self.instance.user = user
         self.participants = user.leprikon_participants.exclude(
-            birth_num__in=[reg.participant_birth_num for reg in self.instance.subject.all_registrations]
+            birth_num__in=self.instance.subject.active_registrations.values_list('participant_birth_num', flat=True)
         )
         self.parents = user.leprikon_parents.all()
 

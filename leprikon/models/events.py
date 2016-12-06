@@ -197,6 +197,17 @@ class Event(models.Model):
         return comma_separated(self.all_leaders)
     get_leaders_list.short_description = _('leaders list')
 
+    @property
+    def active_registrations(self):
+        return self.registrations.filter(canceled=None)
+
+    @property
+    def inactive_registrations(self):
+        return self.registrations.filter(canceled__isnull=False)
+
+    def get_active_registrations(self, d):
+        return self.registrations.filter(created__lte=d).exclude(canceled__lt=d)
+
     def copy_to_school_year(old, school_year):
         new = Event.objects.get(id=old.id)
         new.id = None

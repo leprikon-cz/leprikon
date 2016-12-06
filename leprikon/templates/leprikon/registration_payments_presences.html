@@ -41,10 +41,12 @@
         <div class="row">
             <label class="col-sm-4">{% trans 'Presence' %}:</label>
             <div class="col-sm-8">
-                {% for entry in reg.club.all_journal_entries %}
-                <strong title="{{ entry.date }}" class="{% if reg in entry.all_registrations %}green{% else %}red{% endif %}">
+                {% for history in reg.club_history.all %}
+                {% for entry in history.club_journal_entries.all %}
+                <strong title="{{ history.club.name }}, {{ entry.date }}" class="{% if reg in entry.all_registrations %}green{% else %}red{% endif %}">
                 {% if reg in entry.all_registrations %}&#x2713;{% else %}&#x2717;{% endif %}
                 </strong>
+                {% endfor %}
                 {% endfor %}
             </div>
         </div>

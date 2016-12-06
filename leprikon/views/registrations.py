@@ -44,22 +44,4 @@ class RegistrationFormView(CreateView):
         kwargs['user'] = self.request.user.is_authenticated() and self.request.user or None
         return kwargs
 
-    def get_context_data(self, **kwargs):
-        if self.request.user.is_authenticated():
-            kwargs['participants'] = self.request.user.leprikon_participants.exclude(
-                birth_num__in=[reg.participant_birth_num for reg in self.subject.all_registrations]
-            )
-            kwargs['parents'] = self.request.user.leprikon_parents.all()
-        else:
-            kwargs['participants'] = []
-            kwargs['parents'] = []
-        return super(RegistrationFormView, self).get_context_data(**kwargs)
-
-    #def form_valid(self, form):
-    #    response = super(ClubRegistrationFormView, self).form_valid(form)
-    #    if self.request.user.is_anonymous() and form.user.is_active:
-    #        form.user.backend = 'django.contrib.auth.backends.ModelBackend'
-    #        login(self.request, form.user)
-    #    return response
-
 

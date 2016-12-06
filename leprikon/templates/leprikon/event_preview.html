@@ -75,8 +75,8 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_participants' object.event_type.slug object.id %}">
-                {% trans 'participants' %}
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_registrations' object.event_type.slug object.id %}">
+                {% trans 'registrations' %}
                 ({{ object.registrations.count }})
             </a>
         </div>

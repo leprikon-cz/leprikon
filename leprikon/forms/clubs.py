@@ -180,7 +180,7 @@ class ClubJournalEntryAdminForm(forms.ModelForm):
             except:
                 d = self.initial['date']
 
-        self.fields['registrations'].widget.choices.queryset = self.instance.club.get_registrations(d)
+        self.fields['registrations'].widget.choices.queryset = self.instance.club.get_active_registrations(d)
         self.fields['registrations'].help_text = None
 
     def clean(self):

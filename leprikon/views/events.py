@@ -94,12 +94,12 @@ class EventDetailRedirectView(RedirectView, SingleObjectMixin):
 
 
 
-class EventParticipantsView(DetailView):
+class EventRegistrationsView(DetailView):
     model = Event
-    template_name_suffix = '_participants'
+    template_name_suffix = '_registrations'
 
     def get_queryset(self):
-        qs = super(EventParticipantsView, self).get_queryset()
+        qs = super(EventRegistrationsView, self).get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs

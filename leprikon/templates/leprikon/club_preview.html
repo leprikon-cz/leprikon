@@ -63,8 +63,8 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_participants' object.id %}">
-                {% trans 'participants' %}
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_registrations' object.id %}">
+                {% trans 'registrations' %}
                 ({{ object.registrations.count }})
             </a>
             <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_journal' object.id %}">

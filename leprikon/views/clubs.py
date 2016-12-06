@@ -64,12 +64,12 @@ class ClubDetailView(DetailView):
 
 
 
-class ClubParticipantsView(DetailView):
+class ClubRegistrationsView(DetailView):
     model = Club
-    template_name_suffix = '_participants'
+    template_name_suffix = '_registrations'
 
     def get_queryset(self):
-        qs = super(ClubParticipantsView, self).get_queryset()
+        qs = super(ClubRegistrationsView, self).get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs
