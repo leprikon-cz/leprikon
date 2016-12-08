@@ -195,7 +195,7 @@ class Club(models.Model):
         return ClubRegistration.objects.filter(club_history__club=self).exclude(id__in=self.active_registrations.all()).distinct()
 
     def get_active_registrations(self, d):
-        ids = ClubRegistrationHistory.objects.filter(club=self, start__lte=d).exclude(end__lt=d).values('registration_id', flat=True)
+        ids = ClubRegistrationHistory.objects.filter(club=self, start__lte=d).exclude(end__lt=d).values_list('registration_id', flat=True)
         return ClubRegistration.objects.filter(id__in=ids).exclude(canceled__lt=d).distinct()
 
     def copy_to_school_year(old, school_year):
