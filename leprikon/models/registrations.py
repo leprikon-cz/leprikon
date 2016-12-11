@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -16,7 +16,6 @@ from ..utils import reverse
 from .agegroup import AgeGroup
 from .insurance import Insurance
 from .fields import BirthNumberField, PostalCodeField
-from .roles import Parent, Participant
 from .school import School
 
 
@@ -188,7 +187,7 @@ class Registration(models.Model):
 
     def get_payments(self, d=None):
         if d:
-            return filter(lambda p: p.date <= d, self.all_payments)
+            return list(filter(lambda p: p.date <= d, self.all_payments))
         else:
             return self.all_payments
 

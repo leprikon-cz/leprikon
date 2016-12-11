@@ -1,16 +1,16 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import *
+from ..models.roles import Contact
+from ..models.schoolyear import SchoolYear
 
 from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
@@ -19,6 +19,8 @@ from .messages import SendMessageAdminMixin
 class ContactInlineAdmin(admin.TabularInline):
     model = Contact
     extra = 0
+
+
 
 class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     filter_horizontal   = ('school_years',)
@@ -224,5 +226,4 @@ class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return get_user_model().objects.filter(
             leprikon_participants__in = queryset
         ).distinct()
-
 

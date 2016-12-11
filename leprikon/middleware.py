@@ -1,8 +1,9 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import warnings
 
-from .models import Leader, SchoolYear
+from .models.roles import Leader
+from .models.schoolyear import SchoolYear
 
 
 class school_year(object):

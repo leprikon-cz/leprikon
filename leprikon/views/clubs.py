@@ -1,6 +1,5 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -8,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.clubs import ClubForm, ClubFilterForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm
 from ..forms.registrations import ClubRegistrationForm
-from ..models import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, ClubRegistrationRequest
+from ..models.clubs import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, ClubRegistrationRequest
 
 from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView, TemplateView, PdfView
 from .registrations import RegistrationFormView
@@ -203,7 +202,7 @@ class ClubJournalLeaderEntryDeleteView(DeleteView):
 
 
 class ClubRegistrationRequestFormView(UpdateView):
-    back_url        = reverse('leprikon:registrations')
+    back_url        = reverse('leprikon:registration_list')
     model           = ClubRegistrationRequest
     template_name   = 'leprikon/registration_request_form.html'
     message         = _('The registration request has been accepted.')

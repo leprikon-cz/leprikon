@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -11,7 +11,7 @@ from ...forms.reports.debtors import DebtorsForm
 from ..generic import FormView, TemplateView
 
 
-class ReportsView(TemplateView):
+class ReportsListView(TemplateView):
     template_name   = 'leprikon/reports/index.html'
 
     Report = namedtuple('Report', ('title', 'instructions', 'form', 'url'))
@@ -20,7 +20,7 @@ class ReportsView(TemplateView):
         return form_class(prefix=form_class.__name__)
 
     def get_context_data(self, *args, **kwargs):
-        return super(ReportsView, self).get_context_data(reports=[
+        return super(ReportsListView, self).get_context_data(reports=[
             self.Report(
                 title           = _('Club payments'),
                 instructions    = '',

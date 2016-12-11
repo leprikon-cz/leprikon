@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.utils.safestring import mark_safe
 
@@ -12,10 +12,12 @@ class BootstrapRenderer:
 
     def render_option(self, value, label, i):
         widget = self.choice_input_class(self.name, self.value, self.attrs.copy(), (value, label), i)
-        row    = '<div class="row select">' \
-                    '<div class="col-md-1 right">{tag}</div>' \
-                    '<div class="col-md-11"><label class="form-control" style="font-weight:normal" for="{id}">{label}</label></div>' \
-                '</div>'
+        row    = (
+            '<div class="row select">'
+                '<div class="col-md-1 right">{tag}</div>'
+                '<div class="col-md-11"><label class="form-control" style="font-weight:normal" for="{id}">{label}</label></div>'
+            '</div>'
+        )
         return row.format(
             tag     = widget.tag(),
             id      = widget.attrs['id'],

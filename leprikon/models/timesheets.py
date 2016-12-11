@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import calendar
 from collections import namedtuple
@@ -108,7 +108,7 @@ class Timesheet(models.Model):
     def all_entries(self):
         return sorted(
             self.all_timesheet_entries + self.all_club_entries,
-            cmp = lambda e1, e2: cmp(e1.datetime_start, e2.datetime_start),
+            cmp = lambda e1, e2: (e1.datetime_start > e2.datetime_start) - (e1.datetime_start < e2.datetime_start),
         )
 
     class EntryGroup(namedtuple('_EntryGroup', ('name', 'entries'))):

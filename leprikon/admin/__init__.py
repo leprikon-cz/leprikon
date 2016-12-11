@@ -1,22 +1,33 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from .insurance import InsuranceAdmin
-from .place import PlaceAdmin
-from .school import SchoolAdmin
-from .schoolyear import SchoolYearAdmin
+from ..models.agegroup import AgeGroup
+from ..models.clubs import Club, ClubGroup, ClubRegistration, ClubRegistrationRequest, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry
+from ..models.events import Event, EventType, EventGroup, EventRegistration, EventRegistrationRequest, EventPayment
+from ..models.insurance import Insurance
+from ..models.messages import Message, MessageRecipient
+from ..models.place import Place
+from ..models.question import Question
+from ..models.roles import Leader, Parent, Participant
+from ..models.school import School
+from ..models.schoolyear import SchoolYear
+from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
+
 from .agegroup import AgeGroupAdmin
-from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
 from .clubs import ClubAdmin, ClubGroupAdmin, ClubRegistrationAdmin, ClubRegistrationRequestAdmin, ClubPaymentAdmin, ClubJournalEntryAdmin, ClubJournalLeaderEntryAdmin
 from .events import EventAdmin, EventTypeAdmin, EventGroupAdmin, EventRegistrationAdmin, EventRegistrationRequestAdmin, EventPaymentAdmin
+from .insurance import InsuranceAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
+from .place import PlaceAdmin
 from .question import QuestionAdmin
-from .user import UserAdmin
+from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
+from .school import SchoolAdmin
+from .schoolyear import SchoolYearAdmin
 from .timesheets import TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin
+from .user import UserAdmin
 
-from ..models import *
 User = get_user_model()
 
 admin.site.register(AgeGroup,           AgeGroupAdmin)

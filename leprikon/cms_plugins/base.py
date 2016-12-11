@@ -1,9 +1,9 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from cms.plugin_base import CMSPluginBase
 from collections import namedtuple
 
-from ..models import SchoolYear
+from ..models.schoolyear import SchoolYear
 
 
 Group = namedtuple('Group', ('group', 'objects'))

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.contrib import admin
@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
-from ..models import *
+from ..models.timesheets import TimesheetEntry
 
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
@@ -67,8 +67,12 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
     edit_link.short_description = ''
     edit_link.allow_tags = True
 
+
+
 class CJLEInlineAdmin(ClubJournalLeaderEntryInlineAdmin):
     readonly_fields = ('date', 'start', 'end', 'club', 'edit_link')
+
+
 
 class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = ('leader', 'period', 'group_durations', 'submitted', 'paid')

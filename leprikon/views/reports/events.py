@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -8,7 +8,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
-from ...models import EventPayment
+from ...models.events import EventPayment
 from ...models.utils import PaymentStatus
 from ...utils import comma_separated
 
@@ -20,7 +20,7 @@ class ReportEventPaymentsView(ReportBaseView):
     template_name   = 'leprikon/reports/event_payments.html'
     title           = _('Event payments')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     def form_valid(self, form):
         context = form.cleaned_data
@@ -39,7 +39,7 @@ class ReportEventPaymentsStatusView(ReportBaseView):
     template_name   = 'leprikon/reports/event_payments_status.html'
     title           = _('Event payments status')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     EventPaymentsStatusSums = namedtuple('EventPaymentsStatusSums', ('registrations', 'status'))
 

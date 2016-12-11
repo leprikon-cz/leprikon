@@ -1,30 +1,31 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse_lazy as reverse
-from django.utils.decorators import available_attrs
 from django.views.decorators.csrf import csrf_exempt
-from functools import wraps
 
 from ..conf import settings
 
-from .summary import *
-from .user import *
-from .participants import *
-from .parents import *
-from .clubs import *
-from .events import *
-from .leaders import *
-from .messages import *
-from .timesheets import *
-from .schoolyear import *
-from .support import *
-from .registrations import *
-from .reports import *
-from .reports.clubs import *
-from .reports.events import *
-from .reports.debtors import *
-from .terms_conditions import *
+from . import (
+    clubs,
+    events,
+    leaders,
+    messages,
+    parents,
+    participants,
+    registrations,
+    schoolyear,
+    summary,
+    support,
+    terms_conditions,
+    timesheets,
+    user,
+)
+from .reports import (
+    clubs as reports_clubs,
+    debtors as reports_debtors,
+    events as reports_events,
+)
 
 login_url = reverse('leprikon:user_login')
 
@@ -60,69 +61,76 @@ staff_required = user_passes_test(
 )
 
 
-summary                         = login_required(SummaryView.as_view())
+summary                         = login_required(summary.SummaryView.as_view())
 
-user_create                     =    UserCreateView.as_view()
-user_update                     = login_required(UserUpdateView.as_view())
+user_create                     =    user.UserCreateView.as_view()
+user_update                     = login_required(user.UserUpdateView.as_view())
+user_login                      = user.user_login
+user_logout                     = user.user_logout
+user_password                   = user.user_password
+password_reset                  = user.password_reset
+password_reset_done             = user.password_reset_done
+password_reset_confirm          = user.password_reset_confirm
+password_reset_complete         = user.password_reset_complete
 
-registrations                   = login_required(RegistrationsView.as_view())
+registration_list               = login_required(registrations.RegistrationsListView.as_view())
 
-participant_list                = login_required(ParticipantListView.as_view())
-participant_create              = login_required(ParticipantCreateView.as_view())
-participant_update              = login_required(ParticipantUpdateView.as_view())
+participant_list                = login_required(participants.ParticipantListView.as_view())
+participant_create              = login_required(participants.ParticipantCreateView.as_view())
+participant_update              = login_required(participants.ParticipantUpdateView.as_view())
 
-parent_create                   = login_required(ParentCreateView.as_view())
-parent_update                   = login_required(ParentUpdateView.as_view())
+parent_create                   = login_required(parents.ParentCreateView.as_view())
+parent_update                   = login_required(parents.ParentUpdateView.as_view())
 
-club_list                       = ClubListView.as_view()
-club_list_mine                  = leader_required(ClubListMineView.as_view())
-club_alternating                = leader_required(ClubAlternatingView.as_view())
-club_detail                     = ClubDetailView.as_view()
-club_registrations              = leader_or_staff_required(ClubRegistrationsView.as_view())
-club_journal                    = leader_or_staff_required(ClubJournalView.as_view())
-club_update                     = leader_or_staff_required(ClubUpdateView.as_view())
-clubjournalentry_create         = leader_or_staff_required(ClubJournalEntryCreateView.as_view())
-clubjournalentry_update         = leader_or_staff_required(ClubJournalEntryUpdateView.as_view())
-clubjournalentry_delete         = leader_or_staff_required(ClubJournalEntryDeleteView.as_view())
-clubjournalleaderentry_update   = leader_or_staff_required(ClubJournalLeaderEntryUpdateView.as_view())
-clubjournalleaderentry_delete   = leader_or_staff_required(ClubJournalLeaderEntryDeleteView.as_view())
-club_registration_form          = login_required(ClubRegistrationFormView.as_view())
-club_registration_confirm       = login_required(ClubRegistrationConfirmView.as_view())
-club_registration_pdf           = login_required(ClubRegistrationPdfView.as_view())
-club_registration_cancel        = login_required(ClubRegistrationCancelView.as_view())
+club_list                       = clubs.ClubListView.as_view()
+club_list_mine                  = leader_required(clubs.ClubListMineView.as_view())
+club_alternating                = leader_required(clubs.ClubAlternatingView.as_view())
+club_detail                     = clubs.ClubDetailView.as_view()
+club_registrations              = leader_or_staff_required(clubs.ClubRegistrationsView.as_view())
+club_journal                    = leader_or_staff_required(clubs.ClubJournalView.as_view())
+club_update                     = leader_or_staff_required(clubs.ClubUpdateView.as_view())
+clubjournalentry_create         = leader_or_staff_required(clubs.ClubJournalEntryCreateView.as_view())
+clubjournalentry_update         = leader_or_staff_required(clubs.ClubJournalEntryUpdateView.as_view())
+clubjournalentry_delete         = leader_or_staff_required(clubs.ClubJournalEntryDeleteView.as_view())
+clubjournalleaderentry_update   = leader_or_staff_required(clubs.ClubJournalLeaderEntryUpdateView.as_view())
+clubjournalleaderentry_delete   = leader_or_staff_required(clubs.ClubJournalLeaderEntryDeleteView.as_view())
+club_registration_form          = login_required(clubs.ClubRegistrationFormView.as_view())
+club_registration_confirm       = login_required(clubs.ClubRegistrationConfirmView.as_view())
+club_registration_pdf           = login_required(clubs.ClubRegistrationPdfView.as_view())
+club_registration_cancel        = login_required(clubs.ClubRegistrationCancelView.as_view())
 
-event_list                      = EventListView.as_view()
-event_list_mine                 = leader_required(EventListMineView.as_view())
-event_detail                    = EventDetailView.as_view()
-event_detail_redirect           = EventDetailRedirectView.as_view()
-event_registrations             = leader_or_staff_required(EventRegistrationsView.as_view())
-event_update                    = leader_or_staff_required(EventUpdateView.as_view())
-event_registration_form         = login_required(EventRegistrationFormView.as_view())
-event_registration_confirm      = login_required(EventRegistrationConfirmView.as_view())
-event_registration_pdf          = login_required(EventRegistrationPdfView.as_view())
-event_registration_cancel       = login_required(EventRegistrationCancelView.as_view())
+event_list                      = events.EventListView.as_view()
+event_list_mine                 = leader_required(events.EventListMineView.as_view())
+event_detail                    = events.EventDetailView.as_view()
+event_detail_redirect           = events.EventDetailRedirectView.as_view()
+event_registrations             = leader_or_staff_required(events.EventRegistrationsView.as_view())
+event_update                    = leader_or_staff_required(events.EventUpdateView.as_view())
+event_registration_form         = login_required(events.EventRegistrationFormView.as_view())
+event_registration_confirm      = login_required(events.EventRegistrationConfirmView.as_view())
+event_registration_pdf          = login_required(events.EventRegistrationPdfView.as_view())
+event_registration_cancel       = login_required(events.EventRegistrationCancelView.as_view())
 
-message_list                    = login_required(MessageListView.as_view())
-message_detail                  = csrf_exempt(MessageDetailView.as_view())
+message_list                    = login_required(messages.MessageListView.as_view())
+message_detail                  = csrf_exempt(messages.MessageDetailView.as_view())
 
-leader_list                     = LeaderListView.as_view()
+leader_list                     = leaders.LeaderListView.as_view()
 
-timesheet_list                  = leader_required(TimesheetListView.as_view())
-timesheet_detail                = leader_required(TimesheetDetailView.as_view())
-timesheet_submit                = leader_required(TimesheetSubmitView.as_view())
-timesheetentry_create           = leader_required(TimesheetEntryCreateView.as_view())
-timesheetentry_update           = leader_required(TimesheetEntryUpdateView.as_view())
-timesheetentry_delete           = leader_required(TimesheetEntryDeleteView.as_view())
+timesheet_list                  = leader_required(timesheets.TimesheetListView.as_view())
+timesheet_detail                = leader_required(timesheets.TimesheetDetailView.as_view())
+timesheet_submit                = leader_required(timesheets.TimesheetSubmitView.as_view())
+timesheetentry_create           = leader_required(timesheets.TimesheetEntryCreateView.as_view())
+timesheetentry_update           = leader_required(timesheets.TimesheetEntryUpdateView.as_view())
+timesheetentry_delete           = leader_required(timesheets.TimesheetEntryDeleteView.as_view())
 
-school_year                     = SchoolYearView.as_view()
-support                         = login_required(SupportView.as_view())
+school_year                     = schoolyear.SchoolYearView.as_view()
+support                         = login_required(support.SupportView.as_view())
 
-reports                         = staff_required(ReportsView.as_view())
-report_club_payments            = staff_required(ReportClubPaymentsView.as_view())
-report_club_payments_status     = staff_required(ReportClubPaymentsStatusView.as_view())
-report_club_stats               = staff_required(ReportClubStatsView.as_view())
-report_event_payments           = staff_required(ReportEventPaymentsView.as_view())
-report_event_payments_status    = staff_required(ReportEventPaymentsStatusView.as_view())
-report_debtors                  = staff_required(ReportDebtorsView.as_view())
+report_list                     = staff_required(reports.ReportsListView.as_view())
+report_club_payments            = staff_required(reports_clubs.ReportClubPaymentsView.as_view())
+report_club_payments_status     = staff_required(reports_clubs.ReportClubPaymentsStatusView.as_view())
+report_club_stats               = staff_required(reports_clubs.ReportClubStatsView.as_view())
+report_event_payments           = staff_required(reports_events.ReportEventPaymentsView.as_view())
+report_event_payments_status    = staff_required(reports_events.ReportEventPaymentsStatusView.as_view())
+report_debtors                  = staff_required(reports_debtors.ReportDebtorsView.as_view())
 
-terms_conditions                = TermsConditionsView.as_view()
+terms_conditions                = terms_conditions.TermsConditionsView.as_view()

@@ -1,6 +1,5 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from django.conf import settings
 from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
@@ -26,7 +25,7 @@ urlpatterns = [
     d_url(r'^{user}/$',                                             'user_update'),
     d_url(r'^{user}/{password}/$',                                  'user_password'),
 
-    d_url(r'^{registrations}/$',                                    'registrations'),
+    d_url(r'^{registrations}/$',                                    'registration_list'),
 
     d_url(r'^{participants}/$',                                     'participant_list'),
     d_url(r'^{participants}/{add}/$',                               'participant_create'),
@@ -85,7 +84,7 @@ urlpatterns = [
     d_url(r'^{school_year}/$',                                      'school_year'),
     d_url(r'^{support}/$',                                          'support'),
 
-    d_url(r'^{reports}/$',                                          'reports'),
+    d_url(r'^{reports}/$',                                          'report_list'),
     d_url(r'^{reports}/{clubs}/{payments}/$',                       'report_club_payments'),
     d_url(r'^{reports}/{clubs}/{payments_status}/$',                'report_club_payments_status'),
     d_url(r'^{reports}/{clubs}/{stats}/$',                          'report_club_stats'),

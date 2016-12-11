@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import uuid
 
@@ -15,7 +15,6 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 
 from ..conf import settings
-from ..mailers import MessageMailer
 
 
 @python_2_unicode_compatible

@@ -1,25 +1,39 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from .place import Place
-from .school import School
-from .schoolyear import SchoolYear
-from .insurance import Insurance
-from .roles import (
-    Leader, Parent, Participant, Contact,
-    LeaderPlugin, LeaderListPlugin, FilteredLeaderListPlugin,
+from . import (
+    agegroup,
+    clubs,
+    events,
+    fields,
+    insurance,
+    messages,
+    place,
+    question,
+    registrations,
+    roles,
+    school,
+    schoolyear,
+    startend,
+    timesheets,
+    utils,
 )
-from .agegroup import AgeGroup
-from .question import Question
-from .clubs import (
-    Club, ClubGroup, ClubTime, ClubPeriod, ClubAttachment,
-    ClubRegistration, ClubRegistrationDiscount, ClubRegistrationRequest, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry,
-    ClubPlugin, ClubListPlugin, FilteredClubListPlugin,
+
+# use imports
+(
+    agegroup,
+    clubs,
+    events,
+    fields,
+    insurance,
+    messages,
+    place,
+    question,
+    registrations,
+    roles,
+    school,
+    schoolyear,
+    startend,
+    timesheets,
+    utils,
 )
-from .events import (
-    Event, EventType, EventTypeAttachment, EventGroup, EventAttachment,
-    EventRegistration, EventRegistrationRequest, EventPayment,
-    EventPlugin, EventListPlugin, FilteredEventListPlugin,
-)
-from .timesheets import Timesheet, TimesheetPeriod, TimesheetEntry, TimesheetEntryType
-from .messages import Message, MessageRecipient, MessageAttachment
 

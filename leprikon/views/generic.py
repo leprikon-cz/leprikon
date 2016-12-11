@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -160,7 +160,6 @@ class ConfirmFormViewMixin(FormViewMixin):
             question    = self.get_question(),
             **kwargs
         )
-        return context
 
     def form_valid(self, form):
         self.confirmed()

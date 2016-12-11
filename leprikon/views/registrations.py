@@ -1,19 +1,20 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import ClubRegistration, EventRegistration
+from ..models.clubs import ClubRegistration
+from ..models.events import EventRegistration
 
 from .generic import CreateView, TemplateView
 
 
-class RegistrationsView(TemplateView):
+class RegistrationsListView(TemplateView):
     registrations = True
     template_name = 'leprikon/registrations.html'
 
     def get_context_data(self, **kwargs):
-        context = super(RegistrationsView, self).get_context_data(**kwargs)
+        context = super(RegistrationsListView, self).get_context_data(**kwargs)
         context['clubregistrations'] = ClubRegistration.objects.filter(
             club__school_year   = self.request.school_year,
             user   = self.request.user,
@@ -27,7 +28,7 @@ class RegistrationsView(TemplateView):
 
 
 class RegistrationFormView(CreateView):
-    back_url        = reverse('leprikon:registrations')
+    back_url        = reverse('leprikon:registration_list')
     submit_label    = _('Submit registration')
     template_name   = 'leprikon/registration_form.html'
     message         = _('The registration has been accepted.')

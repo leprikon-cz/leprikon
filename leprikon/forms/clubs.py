@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from datetime import date
 from django import forms
@@ -7,9 +7,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
 
-from ..models import Leader, Place, AgeGroup, Timesheet, TimesheetPeriod
-from ..models.clubs import ClubGroup, Club, ClubRegistration, ClubJournalEntry, ClubJournalLeaderEntry
+from ..models.agegroup import AgeGroup
+from ..models.clubs import ClubGroup, Club, ClubJournalEntry, ClubJournalLeaderEntry
 from ..models.fields import DAY_OF_WEEK
+from ..models.place import Place
+from ..models.roles import Leader
+from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated
 
 from .fields import ReadonlyField
@@ -25,7 +28,7 @@ class ClubFilterForm(FormMixin, forms.Form):
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
     day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
-                    choices=tuple(sorted(DAY_OF_WEEK.items())),required=False)
+                    choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
@@ -48,7 +51,7 @@ class ClubFilterForm(FormMixin, forms.Form):
         if not request.user.is_staff:
             del self.fields['invisible']
         for f in self.fields:
-            self.fields[f].help_text=None
+            self.fields[f].help_text = None
 
     def get_queryset(self):
         qs = self.clubs
@@ -129,9 +132,9 @@ class ClubJournalLeaderEntryForm(FormMixin, ClubJournalLeaderEntryAdminForm):
     def __init__(self, *args, **kwargs):
         super(ClubJournalLeaderEntryForm, self).__init__(*args, **kwargs)
         self.readonly_fields = [
-            ReadonlyField(label=_('Club'),  value=self.instance.club_entry.club.name),
-            ReadonlyField(label=_('Date'),  value=self.instance.club_entry.date),
-            ReadonlyField(label=_('Leader'),value=self.instance.timesheet.leader),
+            ReadonlyField(label=_('Club'),      value=self.instance.club_entry.club.name),
+            ReadonlyField(label=_('Date'),      value=self.instance.club_entry.date),
+            ReadonlyField(label=_('Leader'),    value=self.instance.timesheet.leader),
         ]
         if self.instance.timesheet.submitted:
             self.readonly_fields += [
@@ -241,7 +244,6 @@ class ClubJournalEntryForm(FormMixin, ClubJournalEntryAdminForm):
         ]
 
         # only allow to select leaders or alterates with not submitted timesheets
-        d           = self.initial['date']
         leaders     = self.instance.club.all_leaders
         alternates  = [ l for l in Leader.objects.all() if l not in leaders ]
 
@@ -300,12 +302,12 @@ class ClubJournalEntryForm(FormMixin, ClubJournalEntryAdminForm):
                         # try to update existing leader entry
                         entry = entries_by_leader[group].pop(leader)
                         if not entry.timesheet.submitted:
-                            if self.cleaned_data['start'] <> self.instance.start:
+                            if self.cleaned_data['start'] != self.instance.start:
                                 if entry.start == self.instance.start:
                                     entry.start = self.cleaned_data['start']
                                 else:
                                     entry.start = max(entry.start, self.cleaned_data['start'])
-                            if self.cleaned_data['end'] <> self.instance.end:
+                            if self.cleaned_data['end'] != self.instance.end:
                                 if entry.end == self.instance.end:
                                     entry.end = self.cleaned_data['end']
                                 else:

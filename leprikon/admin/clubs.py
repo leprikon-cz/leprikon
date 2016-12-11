@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf.urls import url as urls_url
@@ -7,10 +7,8 @@ from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -19,7 +17,12 @@ from json import dumps
 
 from ..forms.clubs import ClubJournalEntryAdminForm, ClubJournalLeaderEntryAdminForm
 from ..forms.registrations import RegistrationAdminForm
-from ..models import *
+from ..models.clubs import (
+    Club, ClubAttachment, ClubJournalLeaderEntry,
+    ClubRegistration, ClubRegistrationDiscount, ClubRegistrationRequest,
+    ClubPeriod, ClubTime
+)
+from ..models.schoolyear import SchoolYear
 from ..utils import currency, comma_separated
 
 from .export import AdminExportMixin
@@ -28,7 +31,7 @@ from .messages import SendMessageAdminMixin
 
 
 class ClubGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'color','order')
+    list_display    = ('name', 'color', 'order')
     list_editable   = ('color', 'order')
 
 
@@ -37,14 +40,20 @@ class ClubTimeInlineAdmin(admin.TabularInline):
     model = ClubTime
     extra = 0
 
+
+
 class ClubPeriodInlineAdmin(admin.TabularInline):
     model       = ClubPeriod
     extra       = 0
     ordering    = ('start',)
 
+
+
 class ClubAttachmentInlineAdmin(admin.TabularInline):
     model   = ClubAttachment
     extra   = 3
+
+
 
 class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
@@ -238,6 +247,8 @@ class ClubRegistrationDiscountInlineAdmin(admin.TabularInline):
             field.queryset = request._leprikon_registration.periods.all()
         return field
 
+
+
 class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
         'id', 'get_download_tag', 'club_name', 'participant',
@@ -330,7 +341,6 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
 
     def get_club_payments(self, obj):
         html = []
-        price = obj.club.price
         for period in obj.get_period_payment_statuses():
             html.append(format_html('{period}: <a target="_blank" style="color: {color}" href="{href}" title="{title}"><b>{amount}</b></a>',
                 period  = period.period.name,
@@ -481,6 +491,8 @@ class ClubJournalLeaderEntryInlineAdmin(admin.TabularInline):
         )
     edit_link.short_description = ''
     edit_link.allow_tags = True
+
+
 
 class ClubJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form            = ClubJournalEntryAdminForm

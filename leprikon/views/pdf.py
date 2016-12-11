@@ -1,6 +1,6 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-import cStringIO
+from io import StringIO
 
 from django.http import HttpResponse
 from os.path import basename
@@ -21,8 +21,8 @@ class PdfViewMixin(object):
     def get(self, request, *args, **kwargs):
         content = super(PdfViewMixin, self).get(request, *args, **kwargs).render().content
 
-        result = cStringIO.StringIO()
-        pdf = pisa.CreatePDF(cStringIO.StringIO(content), result, encoding='UTF-8')
+        result = StringIO()
+        pdf = pisa.CreatePDF(StringIO(content), result, encoding='UTF-8')
         if pdf.err:
             raise Exception(pdf.err)
 

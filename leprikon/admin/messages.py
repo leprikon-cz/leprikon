@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf.urls import url
@@ -33,14 +33,13 @@ class SendMessageAdminMixin(object):
         raise NotImplementedError('{} must implement method get_message_recipients'.format(self.__class__.__name__))
 
     def send_message(self, request, queryset):
-        from ..models import Message
         request.method = 'GET'
         request.leprikon_message_recipients = [r.id for r in self.get_message_recipients(request, queryset)]
         return admin.site._registry[Message].changeform_view(request, form_url=reverse('admin:leprikon_message_add'))
     send_message.short_description = _('Send message')
 
     def add_to_message(self, request, queryset):
-        from ..models import Message, MessageRecipient
+
         class MessageForm(forms.Form):
             message = forms.ModelChoiceField(
                 label=_('Target message'),
@@ -66,9 +65,12 @@ class SendMessageAdminMixin(object):
     add_to_message.short_description = _('Add recipients to existing message')
 
 
+
 class MessageAttachmentInlineAdmin(admin.TabularInline):
     model   = MessageAttachment
     extra   = 0
+
+
 
 class MessageAdmin(admin.ModelAdmin):
     form            = MessageAdminForm
@@ -187,5 +189,4 @@ class MessageRecipientAdmin(admin.ModelAdmin):
         recipient = get_object_or_404(MessageRecipient, id=recipient_id)
         recipient.send_mail()
         return HttpResponse('0', content_type="text/json")
-
 

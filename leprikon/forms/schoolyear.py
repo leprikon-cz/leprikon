@@ -1,10 +1,10 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
-from ..models import SchoolYear
+from ..models.schoolyear import SchoolYear
 
 
 class SchoolYearForm(forms.Form):

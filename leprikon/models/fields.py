@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import re
 
@@ -7,7 +7,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
-from localflavor.cz.forms import CZBirthNumberField, CZPostalCodeField
+from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
 from ..utils import get_birth_date

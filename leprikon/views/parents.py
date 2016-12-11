@@ -1,10 +1,10 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.parent import ParentForm
-from ..models import Parent
+from ..models.roles import Parent
 
 from .generic import CreateView, UpdateView
 

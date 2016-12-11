@@ -1,12 +1,14 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.db.models import Q
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import Leader, Place, AgeGroup
-from ..models.events import EventType, EventGroup, Event, EventRegistration
+from ..models.agegroup import AgeGroup
+from ..models.events import EventType, EventGroup, Event
+from ..models.place import Place
+from ..models.roles import Leader
 
 from .form import FormMixin
 

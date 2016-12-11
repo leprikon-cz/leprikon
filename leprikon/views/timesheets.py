@@ -1,11 +1,10 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryForm
-from ..models import Timesheet, TimesheetEntry
+from ..models.timesheets import Timesheet, TimesheetEntry
 
 from .generic import ListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView
 

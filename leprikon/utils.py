@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import locale
 import os
@@ -6,10 +6,13 @@ import string
 from datetime import date
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils.encoding import iri_to_uri, smart_text
 from django.utils.translation import get_language, ugettext_lazy as _
-from urllib import urlencode
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 from .conf import settings
 
@@ -96,7 +99,7 @@ def currency(val, international=False):
 
 
 def comma_separated(l):
-    l = map(smart_text, l)
+    l = list(map(smart_text, l))
     if len(l) > 2:
         return _(', and ').join([', '.join(l[:-1]), l[-1]])
     else:

@@ -1,13 +1,13 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.template.response import TemplateResponse
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ...forms.reports.debtors import DebtorsForm
-from ...models import ClubRegistration, EventRegistration
+from ...models.clubs import ClubRegistration
+from ...models.events import EventRegistration
 
 from . import ReportBaseView
 
@@ -17,7 +17,7 @@ class ReportDebtorsView(ReportBaseView):
     template_name   = 'leprikon/reports/debtors.html'
     title           = _('Debtors list')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     ReportItem  = namedtuple('ReportItem', ('registration', 'balance'))
 

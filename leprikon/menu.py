@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from cms.menu_bases import CMSAttachMenu
 from django.core.urlresolvers import reverse
@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from menus.base import NavigationNode, Modifier
 from menus.menu_pool import menu_pool
 
-from .models import EventType
+from .models.events import EventType
 from .utils import url_with_back, current_url
 
 
@@ -51,7 +51,7 @@ class LeprikonMenu(CMSAttachMenu):
         ))
         nodes.append(NavigationNode(
             _('Registrations'),
-            reverse('leprikon:registrations'),
+            reverse('leprikon:registration_list'),
             len(nodes),
             attr={'visible_for_anonymous': False},
         ))
@@ -126,7 +126,7 @@ class LeprikonMenu(CMSAttachMenu):
         ))
         nodes.append(NavigationNode(
             _('Reports'),
-            reverse('leprikon:reports'),
+            reverse('leprikon:report_list'),
             len(nodes),
             attr={'require_staff': True},
         ))

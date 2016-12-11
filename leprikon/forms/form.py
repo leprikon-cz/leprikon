@@ -1,6 +1,5 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from django.forms.fields import DateField
 
 class FormMixin(object):
     required_css_class = 'required'
@@ -9,7 +8,7 @@ class FormMixin(object):
         super(FormMixin, self).__init__(*args, **kwargs)
         for f in self.fields:
             # add form-control to classes
-            classes = set(self.fields[f].widget.attrs.get('class','').split())
+            classes = set(self.fields[f].widget.attrs.get('class', '').split())
             classes.add('form-control')
             self.fields[f].widget.attrs['class'] = ' '.join(classes)
             # add data-type

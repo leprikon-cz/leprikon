@@ -1,11 +1,11 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import formats
 from django.utils.translation import ugettext_lazy as _
 
-from ..models import Timesheet, TimesheetEntry
+from ..models.timesheets import Timesheet, TimesheetEntry
 
 from .fields import ReadonlyField
 from .form import FormMixin

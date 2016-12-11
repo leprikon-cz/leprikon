@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import colorsys
 
@@ -12,12 +12,10 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.encoding import smart_text, force_text
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
-from json import loads
 
 from ..conf import settings
 from ..mailers import ClubRegistrationMailer
@@ -30,8 +28,7 @@ from .agegroup import AgeGroup
 from .place import Place
 from .question import Question
 from .registrations import Registration
-from .roles import Leader, Participant, Parent
-from .school import School
+from .roles import Leader
 from .schoolyear import SchoolYear
 from .startend import StartEndMixin
 from .utils import PaymentStatus
@@ -415,7 +412,7 @@ class ClubRegistration(Registration):
         paid        = self.get_paid(d)
         for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
             try:
-                discount_obj = filter(lambda d: d.period == period, self.all_discounts).pop()
+                discount_obj = list(filter(lambda d: d.period == period, self.all_discounts)).pop()
                 discount    = discount_obj.discount
                 explanation = discount_obj.explanation
             except:
@@ -441,7 +438,7 @@ class ClubRegistration(Registration):
         if d is None:
             d = date.today()
         price = self.club.price
-        partial_price   = price * len(filter(lambda p: p.start <= d, self.all_periods))
+        partial_price   = price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
         total_price     = price * len(self.all_periods)
         partial_discount= sum(discount.discount for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
         partial_explanation = comma_separated(discount.explanation for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))

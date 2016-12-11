@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf.urls import url as urls_url
@@ -72,7 +72,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
             + ['parents_link', 'participants_link', 'login_as_link']
 
     def get_search_fields(self, request):
-        return list(super(UserAdmin, self).get_search_fields(request))+[
+        return list(super(UserAdmin, self).get_search_fields(request)) + [
             'leprikon_parents__first_name',
             'leprikon_parents__last_name',
             'leprikon_parents__email',

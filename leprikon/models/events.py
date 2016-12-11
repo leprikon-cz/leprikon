@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 import colorsys
 
@@ -9,8 +9,7 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
-from django.utils.encoding import smart_text, force_text
-from django.utils.text import slugify
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
@@ -27,8 +26,7 @@ from .agegroup import AgeGroup
 from .place import Place
 from .question import Question
 from .registrations import Registration
-from .roles import Leader, Participant, Parent
-from .school import School
+from .roles import Leader
 from .schoolyear import SchoolYear
 from .utils import PaymentStatus
 

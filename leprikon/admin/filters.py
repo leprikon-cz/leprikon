@@ -1,8 +1,11 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from ..models import SchoolYear, Club, Event, Leader
+from ..models.clubs import Club
+from ..models.events import Event
+from ..models.roles import Leader
+from ..models.schoolyear import SchoolYear
 
 
 class SchoolYearListFilter(admin.FieldListFilter):

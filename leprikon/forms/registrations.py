@@ -1,25 +1,23 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
-import uuid
+from __future__ import unicode_literals
 
 from django import forms
-from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import UserCreationForm
 from django.core.urlresolvers import reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _
 from json import dumps
 
-from ..models import ClubRegistration, EventRegistration, Participant, Parent
+from ..models.clubs import ClubRegistration
+from ..models.events import EventRegistration
+from ..models.roles import Participant, Parent
 from ..utils import get_age, get_birth_date
 from .form import FormMixin
-from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap
+from .widgets import RadioSelectBootstrap
 
 
 
 class AgreementForm(FormMixin, forms.Form):
     agreement = forms.BooleanField(label=_('Terms and Conditions agreement'),
-        help_text=SimpleLazyObject(lambda:_('By checking the checkbox above I confirm that I have read, understood and agree with the '
+        help_text=SimpleLazyObject(lambda: _('By checking the checkbox above I confirm that I have read, understood and agree with the '
             '<a href="{}" target="_blank">Terms and Conditions</a>.').format(reverse('leprikon:terms_conditions'))))
 
 
@@ -140,7 +138,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
 class ClubRegistrationForm(RegistrationForm):
     subject_attr    = 'club'
-    
+
     class Meta:
         model = ClubRegistration
         exclude = ('club', 'user', 'cancel_request', 'canceled')

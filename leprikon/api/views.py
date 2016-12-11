@@ -1,12 +1,11 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from datetime import datetime
-from django.http import Http404, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 
-from ..models import Club
-from ..views import login_required, leader_required, leader_or_staff_required, staff_required
+from ..models.clubs import Club
+from ..views import leader_or_staff_required
 
 
 @leader_or_staff_required

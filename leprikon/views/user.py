@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import (

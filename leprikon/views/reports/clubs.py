@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -9,7 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ...conf import settings
 from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm
-from ...models import AgeGroup, Club, ClubRegistration, ClubPayment, Participant
+from ...models.agegroup import AgeGroup
+from ...models.clubs import Club, ClubRegistration, ClubPayment
+from ...models.roles import Participant
 
 from . import ReportBaseView
 
@@ -19,7 +21,7 @@ class ReportClubPaymentsView(ReportBaseView):
     template_name   = 'leprikon/reports/club_payments.html'
     title           = _('Club payments')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     def form_valid(self, form):
         context = form.cleaned_data
@@ -38,7 +40,7 @@ class ReportClubPaymentsStatusView(ReportBaseView):
     template_name   = 'leprikon/reports/club_payments_status.html'
     title           = _('Club payments status')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     ClubPaymentsStatusSums = namedtuple('ClubPaymentsStatusSums', ('registrations', 'status'))
 
@@ -93,7 +95,7 @@ class ReportClubStatsView(ReportBaseView):
     template_name   = 'leprikon/reports/club_stats.html'
     title           = _('Club statistics')
     submit_label    = _('Show')
-    back_url        = reverse('leprikon:reports')
+    back_url        = reverse('leprikon:report_list')
 
     ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'local', 'eu', 'noneu'))
 

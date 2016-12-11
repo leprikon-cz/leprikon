@@ -1,6 +1,5 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -9,9 +8,9 @@ from django.views.generic.detail import SingleObjectMixin
 
 from ..forms.events import EventForm, EventFilterForm
 from ..forms.registrations import EventRegistrationForm
-from ..models import Event, EventType, EventRegistration, EventRegistrationRequest
+from ..models.events import Event, EventType, EventRegistration, EventRegistrationRequest
 
-from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, PdfView
+from .generic import FilteredListView, DetailView, UpdateView, ConfirmUpdateView, PdfView
 from .registrations import RegistrationFormView
 
 
@@ -123,7 +122,7 @@ class EventUpdateView(UpdateView):
 
 
 class EventRegistrationRequestFormView(UpdateView):
-    back_url        = reverse('leprikon:registrations')
+    back_url        = reverse('leprikon:registration_list')
     model           = EventRegistrationRequest
     template_name   = 'leprikon/registration_request_form.html'
     message         = _('The registration request has been accepted.')

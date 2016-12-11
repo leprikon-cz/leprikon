@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf.urls import url as urls_url
@@ -7,17 +7,19 @@ from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from json import dumps
 
 from ..forms.registrations import RegistrationAdminForm
-from ..models import *
+from ..models.events import (
+    Event, EventAttachment, EventTypeAttachment,
+    EventRegistration, EventRegistrationRequest,
+)
+from ..models.schoolyear import SchoolYear
 from ..utils import currency, comma_separated
 
 from .export import AdminExportMixin
@@ -28,6 +30,8 @@ from .messages import SendMessageAdminMixin
 class EventTypeAttachmentInlineAdmin(admin.TabularInline):
     model   = EventTypeAttachment
     extra   = 3
+
+
 
 class EventTypeAdmin(admin.ModelAdmin):
     list_display    = ('name', 'order')
@@ -42,7 +46,7 @@ class EventTypeAdmin(admin.ModelAdmin):
 
 
 class EventGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'color','order')
+    list_display    = ('name', 'color', 'order')
     list_editable   = ('color', 'order')
 
 
@@ -50,6 +54,8 @@ class EventGroupAdmin(admin.ModelAdmin):
 class EventAttachmentInlineAdmin(admin.TabularInline):
     model   = EventAttachment
     extra   = 3
+
+
 
 class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
@@ -308,7 +314,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
 
     def get_payments_html(self, obj):
         status = obj.get_payment_status()
-        return format_html('<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; ' \
+        return format_html('<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
                            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
             color       = status.color,
             href_list   = reverse('admin:leprikon_eventpayment_changelist') + '?registration={}'.format(obj.id),

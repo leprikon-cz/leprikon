@@ -1,12 +1,10 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy as reverse
-from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.participant import ParticipantForm
-from ..models import Participant
+from ..models.roles import Participant
 from ..utils import reverse_with_back
 
 from .generic import ListView, CreateView, UpdateView

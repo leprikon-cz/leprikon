@@ -1,13 +1,11 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from collections import namedtuple
 from django.utils.translation import ugettext as _
 
 from ..forms.clubs import ClubFilterForm
 from ..models.clubs import ClubPlugin, ClubListPlugin, FilteredClubListPlugin, ClubGroup
-from ..models.schoolyear import SchoolYear
 
 from .base import Group, ListPluginBase
 
