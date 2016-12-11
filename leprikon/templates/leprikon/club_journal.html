@@ -206,7 +206,7 @@
                 <td>{% if entry.duration %}{{ entry.start }}{% else %}{% trans 'canceled' %}{% endif %}</td>
                 <td>{% if entry.duration %}{{ entry.duration }}{% else %}{% trans 'canceled' %}{% endif %}</td>
                 <td>{{ entry.all_leader_entries|length }}</td>
-                <td>{{ entry.all_participants|length }}</td>
+                <td>{{ entry.all_registrations|length }}</td>
                 <td>
                     {% if not admin %}
                     <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:clubjournalentry_update' entry.id %}">
