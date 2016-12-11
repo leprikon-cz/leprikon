@@ -26,6 +26,7 @@ setup(
         'django-localflavor',
         'xhtml2pdf',
         'django-ganalytics',
+        'django-countries',
     ],
     classifiers     = [
         'Development Status :: 4 - Beta',
