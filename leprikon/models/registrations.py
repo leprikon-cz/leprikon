@@ -13,7 +13,7 @@ from django_countries.fields import CountryField
 from ..conf import settings
 from ..utils import reverse
 from .agegroup import AgeGroup
-from .fields import BirthNumberField, PostalCodeField, PriceField
+from .fields import BirthNumberField, PostalCodeField
 from .insurance import Insurance
 from .school import School
 
@@ -128,7 +128,7 @@ class Registration(models.Model):
         try:
             # perform the all unique checks, do not exclude anything
             super(Registration, self).validate_unique(None)
-        except ValidationError as e:
+        except ValidationError:
             # The only unique constraint is on birth_num and user.
             # Let's use nice birth_num related message instead of the default one.
             raise ValidationError(

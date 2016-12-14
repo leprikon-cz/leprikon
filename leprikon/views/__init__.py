@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from . import (
     clubs, events, leaders, messages, parents, participants, registrations,
-    schoolyear, summary, support, terms_conditions, timesheets, user,
+    reports, schoolyear, summary, support, terms_conditions, timesheets, user,
 )
 from ..conf import settings
 from .reports import (

@@ -185,7 +185,7 @@ class Participant(models.Model):
         try:
             # perform the all unique checks, do not exclude anything
             super(Participant, self).validate_unique(None)
-        except ValidationError as e:
+        except ValidationError:
             # The only unique constraint is on birth_num and user.
             # Let's use nice birth_num related message instead of the default one.
             raise ValidationError(
