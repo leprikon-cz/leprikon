@@ -4,7 +4,6 @@ from django.core.mail import mail_managers
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.support import SupportForm
-
 from .generic import FormView
 
 

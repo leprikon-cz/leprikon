@@ -5,8 +5,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
-from django.shortcuts import render_to_response, get_object_or_404
+from django.http import (
+    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
+)
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 

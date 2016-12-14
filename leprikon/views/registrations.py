@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.clubs import ClubRegistration
 from ..models.events import EventRegistration
-
 from .generic import CreateView, TemplateView
 
 
@@ -44,5 +43,4 @@ class RegistrationFormView(CreateView):
         kwargs['subject'] = self.subject
         kwargs['user'] = self.request.user.is_authenticated() and self.request.user or None
         return kwargs
-
 

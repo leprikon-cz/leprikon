@@ -2,21 +2,18 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import (
-    password_change, login, logout,
-    password_reset as pr,
-    password_reset_done as pr_done,
-    password_reset_confirm as pr_confirm,
+    login, logout, password_change, password_reset as pr,
     password_reset_complete as pr_complete,
+    password_reset_confirm as pr_confirm, password_reset_done as pr_done,
 )
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
 from ..forms.user import (
-    UserCreateForm, UserUpdateForm, UserPasswordForm,
-    UserLoginForm, PasswordResetForm, SetPasswordForm,
+    PasswordResetForm, SetPasswordForm, UserCreateForm, UserLoginForm,
+    UserPasswordForm, UserUpdateForm,
 )
-
 from .generic import CreateView, UpdateView
 
 __all__ = [

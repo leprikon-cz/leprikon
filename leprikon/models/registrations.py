@@ -1,21 +1,20 @@
 from __future__ import unicode_literals
 
+from json import loads
+
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
-from django.utils.encoding import smart_text
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
-from json import loads
 
 from ..conf import settings
 from ..utils import reverse
-
 from .agegroup import AgeGroup
+from .fields import BirthNumberField, PostalCodeField, PriceField
 from .insurance import Insurance
-from .fields import BirthNumberField, PostalCodeField
 from .school import School
 
 
@@ -66,6 +65,7 @@ class Registration(models.Model):
     created         = models.DateTimeField(_('time of registration'), auto_now_add=True)
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                         related_name='leprikon_%(class)ss', on_delete=models.PROTECT)
+    #price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
     cancel_request  = models.BooleanField(_('cancel request'), default=False)

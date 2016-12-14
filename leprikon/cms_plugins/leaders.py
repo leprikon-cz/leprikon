@@ -5,8 +5,9 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 
 from ..forms.leaders import LeaderFilterForm
-from ..models.roles import Leader, LeaderPlugin, LeaderListPlugin, FilteredLeaderListPlugin
-
+from ..models.roles import (
+    FilteredLeaderListPlugin, Leader, LeaderListPlugin, LeaderPlugin,
+)
 from .base import ListPluginBase
 
 

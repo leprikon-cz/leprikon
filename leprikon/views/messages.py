@@ -4,10 +4,9 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.messages import MessageRecipient
 from ..forms.messages import MessageFilterForm
-
-from .generic import BackViewMixin, FilteredListView, DetailView
+from ..models.messages import MessageRecipient
+from .generic import BackViewMixin, DetailView, FilteredListView
 
 
 class MessageListView(FilteredListView):

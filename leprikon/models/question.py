@@ -1,15 +1,15 @@
 from __future__ import unicode_literals
 
+from json import loads
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
-from json import loads
 
 from ..conf import settings
-
 
 
 @python_2_unicode_compatible

@@ -9,5 +9,3 @@ from ..form import FormMixin
 class DebtorsForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Status for date'))
 
-
-

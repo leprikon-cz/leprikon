@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
 from io import StringIO
+from os.path import basename
 
 from django.http import HttpResponse
-from os.path import basename
 from xhtml2pdf import pisa
 
 
@@ -31,5 +31,4 @@ class PdfViewMixin(object):
         response.write(result.getvalue())
         result.close()
         return response
-
 

@@ -11,7 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.roles import Contact
 from ..models.schoolyear import SchoolYear
-
 from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
 

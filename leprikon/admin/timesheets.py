@@ -7,10 +7,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import TimesheetEntry
-
+from .clubs import ClubJournalLeaderEntryInlineAdmin
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
-from .clubs import ClubJournalLeaderEntryInlineAdmin
 
 
 class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):

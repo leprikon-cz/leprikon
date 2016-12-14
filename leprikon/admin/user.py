@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.user import UserAdminCreateForm
 from ..utils import merge_users
-
 from .messages import SendMessageAdminMixin
 
 
@@ -130,5 +129,4 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def get_message_recipients(self, request, queryset):
         return queryset.all()
-
 

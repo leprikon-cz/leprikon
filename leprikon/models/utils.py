@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from collections import namedtuple
+
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings

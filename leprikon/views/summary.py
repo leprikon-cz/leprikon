@@ -4,7 +4,6 @@ from datetime import date
 
 from ..models.clubs import ClubRegistration
 from ..models.events import EventRegistration
-
 from .generic import TemplateView
 
 
@@ -34,5 +33,4 @@ class SummaryView(TemplateView):
             context['timesheets'] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)
         return context
-
 

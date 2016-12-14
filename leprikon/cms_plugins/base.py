@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 
-from cms.plugin_base import CMSPluginBase
 from collections import namedtuple
 
-from ..models.schoolyear import SchoolYear
+from cms.plugin_base import CMSPluginBase
 
+from ..models.schoolyear import SchoolYear
 
 Group = namedtuple('Group', ('group', 'objects'))
 

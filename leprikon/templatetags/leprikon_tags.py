@@ -5,11 +5,9 @@ from django import template
 from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
 from ..utils import (
-    currency        as _currency,
-    comma_separated as _comma_separated,
-    current_url     as _current_url,
-    url_back        as _url_back,
-    url_with_back   as _url_with_back,
+    comma_separated as _comma_separated, currency as _currency,
+    current_url as _current_url, url_back as _url_back,
+    url_with_back as _url_with_back,
 )
 
 register = template.Library()
@@ -103,5 +101,4 @@ def query_string(context, key, value):
     get = context['request'].GET.copy()
     get[key] = value
     return get.urlencode()
-
 

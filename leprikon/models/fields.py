@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 import re
 
 from django import forms
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
 

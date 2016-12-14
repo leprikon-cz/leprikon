@@ -5,8 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryForm
 from ..models.timesheets import Timesheet, TimesheetEntry
-
-from .generic import ListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView
+from .generic import (
+    ConfirmUpdateView, CreateView, DeleteView, DetailView, ListView,
+    UpdateView,
+)
 
 
 class TimesheetListView(ListView):
@@ -107,5 +109,4 @@ class TimesheetEntryDeleteView(DeleteView):
 
     def get_question(self):
         return _('Do You really want to delete timesheet entry?')
-
 

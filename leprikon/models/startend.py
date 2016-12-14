@@ -20,4 +20,3 @@ class StartEndMixin(object):
         self.validate()
         super(StartEndMixin, self).save(*args, **kwargs)
 
-

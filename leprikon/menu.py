@@ -4,11 +4,11 @@ from cms.menu_bases import CMSAttachMenu
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import ugettext_lazy as _
-from menus.base import NavigationNode, Modifier
+from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
 from .models.events import EventType
-from .utils import url_with_back, current_url
+from .utils import current_url, url_with_back
 
 
 class LeprikonMenu(CMSAttachMenu):

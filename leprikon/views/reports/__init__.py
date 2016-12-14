@@ -1,13 +1,15 @@
 from __future__ import unicode_literals
 
 from collections import namedtuple
+
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
-from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm
-from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
+from ...forms.reports.clubs import (
+    ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm,
+)
 from ...forms.reports.debtors import DebtorsForm
-
+from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ..generic import FormView, TemplateView
 
 

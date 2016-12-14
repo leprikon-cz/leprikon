@@ -1,20 +1,24 @@
 from __future__ import unicode_literals
 
 from datetime import date
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
+from django.utils.translation import (
+    ugettext_lazy as _, ungettext_lazy as ungettext,
+)
 
 from ..models.agegroup import AgeGroup
-from ..models.clubs import ClubGroup, Club, ClubJournalEntry, ClubJournalLeaderEntry
+from ..models.clubs import (
+    Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry,
+)
 from ..models.fields import DAY_OF_WEEK
 from ..models.place import Place
 from ..models.roles import Leader
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated
-
 from .fields import ReadonlyField
 from .form import FormMixin
 

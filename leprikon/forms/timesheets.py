@@ -6,7 +6,6 @@ from django.utils import formats
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.timesheets import Timesheet, TimesheetEntry
-
 from .fields import ReadonlyField
 from .form import FormMixin
 

@@ -5,18 +5,13 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.http import is_safe_url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
-    ListView as _ListView,
-    DetailView as _DetailView,
-    CreateView as _CreateView,
-    UpdateView as _UpdateView,
-    DeleteView as _DeleteView,
-    TemplateView as _TemplateView,
-    FormView as _FormView,
+    CreateView as _CreateView, DeleteView as _DeleteView,
+    DetailView as _DetailView, FormView as _FormView, ListView as _ListView,
+    TemplateView as _TemplateView, UpdateView as _UpdateView,
 )
 
 from ..conf import settings
 from ..forms.confirm import ConfirmForm
-
 from .pdf import PdfViewMixin
 
 
@@ -217,5 +212,4 @@ class PdfView(PdfViewMixin, _DetailView):
 
 class TemplateView(GenericViewMixin, _TemplateView):
     pass
-
 

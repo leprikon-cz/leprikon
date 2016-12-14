@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from json import dumps
+
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
@@ -13,20 +15,19 @@ from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from json import dumps
 
-from ..forms.clubs import ClubJournalEntryAdminForm, ClubJournalLeaderEntryAdminForm
+from ..forms.clubs import (
+    ClubJournalEntryAdminForm, ClubJournalLeaderEntryAdminForm,
+)
 from ..forms.registrations import RegistrationAdminForm
 from ..models.clubs import (
-    Club, ClubAttachment, ClubJournalLeaderEntry,
-    ClubRegistration, ClubRegistrationDiscount, ClubRegistrationRequest,
-    ClubPeriod, ClubTime
+    Club, ClubAttachment, ClubJournalLeaderEntry, ClubPeriod, ClubRegistration,
+    ClubRegistrationDiscount, ClubRegistrationRequest, ClubTime,
 )
 from ..models.schoolyear import SchoolYear
-from ..utils import currency, comma_separated
-
+from ..utils import comma_separated, currency
 from .export import AdminExportMixin
-from .filters import SchoolYearListFilter, ClubListFilter, LeaderListFilter
+from .filters import ClubListFilter, LeaderListFilter, SchoolYearListFilter
 from .messages import SendMessageAdminMixin
 
 

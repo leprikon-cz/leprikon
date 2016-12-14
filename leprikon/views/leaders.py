@@ -2,10 +2,10 @@ from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.roles import Leader
 from ..forms.leaders import LeaderFilterForm
-
+from ..models.roles import Leader
 from .generic import FilteredListView
+
 
 class LeaderListView(FilteredListView):
     model               = Leader

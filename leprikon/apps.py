@@ -8,4 +8,3 @@ class LeprikonConfig(AppConfig):
     name            = 'leprikon'
     verbose_name    = _('Leprikon')
 
-

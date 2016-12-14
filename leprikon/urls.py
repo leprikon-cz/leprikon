@@ -7,7 +7,6 @@ from . import views
 from .api import urls as api_urls
 from .conf import settings
 
-
 # dictionary of all LEPRIKON_URL_* attributes of settings
 LEPRIKON_URL = dict(
     (attr.lower()[len('LEPRIKON_URL_'):], getattr(settings, attr))

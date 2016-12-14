@@ -2,23 +2,21 @@ from __future__ import unicode_literals
 
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
 from django_countries.fields import CountryField
+from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
 from ..conf import settings
-
 from .agegroup import AgeGroup
+from .fields import BirthNumberField, PostalCodeField
 from .insurance import Insurance
 from .school import School
 from .schoolyear import SchoolYear
-from .fields import BirthNumberField, PostalCodeField
-
 
 
 @python_2_unicode_compatible

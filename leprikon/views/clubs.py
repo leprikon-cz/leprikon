@@ -5,11 +5,18 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.clubs import ClubForm, ClubFilterForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm
+from ..forms.clubs import (
+    ClubFilterForm, ClubForm, ClubJournalEntryForm, ClubJournalLeaderEntryForm,
+)
 from ..forms.registrations import ClubRegistrationForm
-from ..models.clubs import Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration, ClubRegistrationRequest
-
-from .generic import FilteredListView, DetailView, CreateView, UpdateView, ConfirmUpdateView, DeleteView, TemplateView, PdfView
+from ..models.clubs import (
+    Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration,
+    ClubRegistrationRequest,
+)
+from .generic import (
+    ConfirmUpdateView, CreateView, DeleteView, DetailView, FilteredListView,
+    PdfView, TemplateView, UpdateView,
+)
 from .registrations import RegistrationFormView
 
 
@@ -291,5 +298,4 @@ class ClubRegistrationCancelView(ConfirmUpdateView):
     def confirmed(self):
         self.object.cancel_request = True
         self.object.save()
-
 

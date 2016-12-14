@@ -6,9 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.participant import ParticipantForm
 from ..models.roles import Participant
 from ..utils import reverse_with_back
-
-from .generic import ListView, CreateView, UpdateView
-
+from .generic import CreateView, ListView, UpdateView
 
 
 class ParticipantListView(ListView):

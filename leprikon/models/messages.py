@@ -106,4 +106,3 @@ class MessageAttachment(models.Model):
     def __str__(self):
         return force_text(self.file)
 
-

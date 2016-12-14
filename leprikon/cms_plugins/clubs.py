@@ -5,8 +5,9 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 
 from ..forms.clubs import ClubFilterForm
-from ..models.clubs import ClubPlugin, ClubListPlugin, FilteredClubListPlugin, ClubGroup
-
+from ..models.clubs import (
+    ClubGroup, ClubListPlugin, ClubPlugin, FilteredClubListPlugin,
+)
 from .base import Group, ListPluginBase
 
 

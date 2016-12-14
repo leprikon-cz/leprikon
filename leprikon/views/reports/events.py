@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
 
 from collections import namedtuple
+
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db.models import Sum
 from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
+from . import ReportBaseView
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...models.events import EventPayment
 from ...models.utils import PaymentStatus
 from ...utils import comma_separated
-
-from . import ReportBaseView
 
 
 class ReportEventPaymentsView(ReportBaseView):

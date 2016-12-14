@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.parent import ParentForm
 from ..models.roles import Parent
-
 from .generic import CreateView, UpdateView
 
 
@@ -45,5 +44,4 @@ class ParentUpdateView(UpdateView):
 
     def get_message(self):
         return _('The parent {} has been updated.').format(self.object)
-
 

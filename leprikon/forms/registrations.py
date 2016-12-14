@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
 
+from json import dumps
+
 from django import forms
 from django.core.urlresolvers import reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _
-from json import dumps
 
 from ..models.clubs import ClubRegistration
 from ..models.events import EventRegistration
-from ..models.roles import Participant, Parent
+from ..models.roles import Parent, Participant
 from ..utils import get_age, get_birth_date
 from .form import FormMixin
 from .widgets import RadioSelectBootstrap
-
 
 
 class AgreementForm(FormMixin, forms.Form):
@@ -147,7 +147,7 @@ class ClubRegistrationForm(RegistrationForm):
 
 class EventRegistrationForm(RegistrationForm):
     subject_attr    = 'event'
-    
+
     class Meta:
         model = EventRegistration
         exclude = ('event', 'user', 'cancel_request', 'canceled', 'discount', 'explanation')

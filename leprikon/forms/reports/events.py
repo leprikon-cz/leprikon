@@ -15,4 +15,3 @@ class EventPaymentsForm(FormMixin, forms.Form):
 class EventPaymentsStatusForm(FormMixin, forms.Form):
     date    = forms.DateField(label=_('Status for date'))
 
-

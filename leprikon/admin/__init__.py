@@ -4,8 +4,14 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 
 from ..models.agegroup import AgeGroup
-from ..models.clubs import Club, ClubGroup, ClubRegistration, ClubRegistrationRequest, ClubPayment, ClubJournalEntry, ClubJournalLeaderEntry
-from ..models.events import Event, EventType, EventGroup, EventRegistration, EventRegistrationRequest, EventPayment
+from ..models.clubs import (
+    Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry, ClubPayment,
+    ClubRegistration, ClubRegistrationRequest,
+)
+from ..models.events import (
+    Event, EventGroup, EventPayment, EventRegistration,
+    EventRegistrationRequest, EventType,
+)
 from ..models.insurance import Insurance
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
@@ -14,10 +20,16 @@ from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYear
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
-
 from .agegroup import AgeGroupAdmin
-from .clubs import ClubAdmin, ClubGroupAdmin, ClubRegistrationAdmin, ClubRegistrationRequestAdmin, ClubPaymentAdmin, ClubJournalEntryAdmin, ClubJournalLeaderEntryAdmin
-from .events import EventAdmin, EventTypeAdmin, EventGroupAdmin, EventRegistrationAdmin, EventRegistrationRequestAdmin, EventPaymentAdmin
+from .clubs import (
+    ClubAdmin, ClubGroupAdmin, ClubJournalEntryAdmin,
+    ClubJournalLeaderEntryAdmin, ClubPaymentAdmin, ClubRegistrationAdmin,
+    ClubRegistrationRequestAdmin,
+)
+from .events import (
+    EventAdmin, EventGroupAdmin, EventPaymentAdmin, EventRegistrationAdmin,
+    EventRegistrationRequestAdmin, EventTypeAdmin,
+)
 from .insurance import InsuranceAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
@@ -25,7 +37,9 @@ from .question import QuestionAdmin
 from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
 from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
-from .timesheets import TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin
+from .timesheets import (
+    TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin,
+)
 from .user import UserAdmin
 
 User = get_user_model()

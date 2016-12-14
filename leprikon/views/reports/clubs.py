@@ -1,19 +1,21 @@
 from __future__ import unicode_literals
 
 from collections import namedtuple
+
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db.models import Sum
 from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ...conf import settings
-from ...forms.reports.clubs import ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm
-from ...models.agegroup import AgeGroup
-from ...models.clubs import Club, ClubRegistration, ClubPayment
-from ...models.roles import Participant
-
 from . import ReportBaseView
+from ...conf import settings
+from ...forms.reports.clubs import (
+    ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm,
+)
+from ...models.agegroup import AgeGroup
+from ...models.clubs import Club, ClubPayment, ClubRegistration
+from ...models.roles import Participant
 
 
 class ReportClubPaymentsView(ReportBaseView):

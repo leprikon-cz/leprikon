@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import calendar
 from collections import namedtuple
 from datetime import date, datetime, timedelta
+
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.utils.dateformat import DateFormat
@@ -115,7 +116,7 @@ class Timesheet(models.Model):
         @property
         def duration(self):
             return sum((e.duration for e in self.entries), timedelta())
-    
+
     @cached_property
     def groups(self):
         gs = {}
@@ -188,5 +189,4 @@ class TimesheetEntry(StartEndMixin, models.Model):
 
     def get_delete_url(self):
         return reverse('leprikon:timesheetentry_delete', args=(self.id,))
-
 

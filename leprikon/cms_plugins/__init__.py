@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-from . import clubs
-from . import events
-from . import leaders
+from . import clubs, events, leaders
 
 clubs, events, leaders

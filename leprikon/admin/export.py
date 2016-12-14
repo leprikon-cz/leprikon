@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
 
 from cgi import escape
+from functools import partial
+
 from django.http import HttpResponse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-from functools import partial
 
 
 def lookup_attr(obj, name):
@@ -93,5 +94,4 @@ class AdminExportMixin:
         response.write('</table></body></html>')
         return response
     export_as_xls.short_description = _('Export selected records as XLS')
-
 

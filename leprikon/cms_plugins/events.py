@@ -5,8 +5,9 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 
 from ..forms.events import EventFilterForm
-from ..models.events import EventPlugin, EventListPlugin, FilteredEventListPlugin, EventGroup
-
+from ..models.events import (
+    EventGroup, EventListPlugin, EventPlugin, FilteredEventListPlugin,
+)
 from .base import Group, ListPluginBase
 
 

@@ -6,10 +6,9 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.agegroup import AgeGroup
-from ..models.events import EventType, EventGroup, Event
+from ..models.events import Event, EventGroup, EventType
 from ..models.place import Place
 from ..models.roles import Leader
-
 from .form import FormMixin
 
 

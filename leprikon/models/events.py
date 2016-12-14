@@ -1,28 +1,25 @@
 from __future__ import unicode_literals
 
 import colorsys
+from datetime import date
+from json import loads
 
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
-from datetime import date
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
-from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
-from json import loads
 
 from ..conf import settings
 from ..mailers import EventRegistrationMailer
-from ..utils import currency, comma_separated
-
-from .fields import ColorField, PriceField
-
+from ..utils import comma_separated, currency
 from .agegroup import AgeGroup
+from .fields import ColorField, PriceField
 from .place import Place
 from .question import Question
 from .registrations import Registration
@@ -378,5 +375,4 @@ class FilteredEventListPlugin(CMSPlugin):
 
     def copy_relations(self, oldinstance):
         self.event_types = oldinstance.event_types.all()
-
 

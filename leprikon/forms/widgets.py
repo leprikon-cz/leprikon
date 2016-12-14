@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
 
-from django.utils.safestring import mark_safe
-
 from django.forms.widgets import (
-    RadioSelect, CheckboxSelectMultiple,
-    CheckboxFieldRenderer, RadioFieldRenderer,
+    CheckboxFieldRenderer, CheckboxSelectMultiple, RadioFieldRenderer,
+    RadioSelect,
 )
+from django.utils.safestring import mark_safe
 
 
 class BootstrapRenderer:
@@ -56,5 +55,4 @@ class RadioSelectBootstrap(RadioSelect):
 
 class CheckboxSelectMultipleBootstrap(CheckboxSelectMultiple):
     renderer = CheckboxFieldRendererBootstrap
-
 

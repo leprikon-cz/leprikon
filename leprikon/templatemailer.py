@@ -1,10 +1,9 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.core.mail import send_mail, get_connection
+from django.core.mail import get_connection, send_mail
 from django.template import Context as _Context
 from django.template.loader import get_template
-
 
 
 # Context for with statement (will be in Django 1.7)

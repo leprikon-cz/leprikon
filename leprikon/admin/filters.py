@@ -72,4 +72,3 @@ class LeaderListFilter(admin.RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         return [(leader.id, leader) for leader in self.leaders]
 
-

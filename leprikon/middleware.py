@@ -71,4 +71,3 @@ class LeprikonMiddleware(object):
         type(request).school_year = school_year()
         type(request).leader = leader()
 
-

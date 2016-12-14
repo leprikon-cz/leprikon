@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import (
-    UserCreationForm as _UserCreationForm,
     AuthenticationForm as _AuthenticationForm,
-    PasswordResetForm as _PasswordResetForm,
-    SetPasswordForm as _SetPasswordForm,
     PasswordChangeForm as _PasswordChangeForm,
+    PasswordResetForm as _PasswordResetForm,
+    SetPasswordForm as _SetPasswordForm, UserCreationForm as _UserCreationForm,
 )
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _

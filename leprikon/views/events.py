@@ -6,11 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 
-from ..forms.events import EventForm, EventFilterForm
+from ..forms.events import EventFilterForm, EventForm
 from ..forms.registrations import EventRegistrationForm
-from ..models.events import Event, EventType, EventRegistration, EventRegistrationRequest
-
-from .generic import FilteredListView, DetailView, UpdateView, ConfirmUpdateView, PdfView
+from ..models.events import (
+    Event, EventRegistration, EventRegistrationRequest, EventType,
+)
+from .generic import (
+    ConfirmUpdateView, DetailView, FilteredListView, PdfView, UpdateView,
+)
 from .registrations import RegistrationFormView
 
 
@@ -212,5 +215,4 @@ class EventRegistrationCancelView(ConfirmUpdateView):
     def confirmed(self):
         self.object.cancel_request = True
         self.object.save()
-
 

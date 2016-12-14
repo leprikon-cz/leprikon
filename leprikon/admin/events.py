@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from json import dumps
+
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
@@ -12,18 +14,19 @@ from django.template import RequestContext
 from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
-from json import dumps
 
 from ..forms.registrations import RegistrationAdminForm
 from ..models.events import (
-    Event, EventAttachment, EventTypeAttachment,
-    EventRegistration, EventRegistrationRequest,
+    Event, EventAttachment, EventRegistration, EventRegistrationRequest,
+    EventTypeAttachment,
 )
 from ..models.schoolyear import SchoolYear
-from ..utils import currency, comma_separated
-
+from ..utils import comma_separated, currency
 from .export import AdminExportMixin
-from .filters import SchoolYearListFilter, EventTypeListFilter, EventListFilter, LeaderListFilter
+from .filters import (
+    EventListFilter, EventTypeListFilter, LeaderListFilter,
+    SchoolYearListFilter,
+)
 from .messages import SendMessageAdminMixin
 
 

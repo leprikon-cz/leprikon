@@ -54,4 +54,3 @@ class SchoolYear(models.Model):
     def all_clubs(self):
         return list(self.clubs.all())
 
-

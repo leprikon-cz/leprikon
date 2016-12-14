@@ -62,4 +62,3 @@ class MessageAdminForm(forms.ModelForm):
             MessageRecipient.objects.get_or_create(recipient_id=user_id, message = self.instance)
         return self.instance
 
-
