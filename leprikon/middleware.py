@@ -56,17 +56,17 @@ class leader(object):
 
 
 
-class SchoolYearMiddleware(object):
-
-    def process_request(self, request):
-        warnings.warn("Using SchoolYearMiddleware is deprecated. Use LeprikonMiddleware instead.")
-        type(request).school_year = school_year()
-        type(request).leader = leader()
-
-
-
 class LeprikonMiddleware(object):
 
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        type(request).school_year = school_year()
+        type(request).leader = leader()
+        return self.get_response(request)
+
+    # django<1.10 method
     def process_request(self, request):
         type(request).school_year = school_year()
         type(request).leader = leader()
