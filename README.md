@@ -3,6 +3,7 @@ Leprikón
 
 Leprikón je informační systém pro střediska volného času,
 domy dětí a mládeže a podobné organizace.
+[www.leprikon.cz](https://www.leprikon.cz/)
 
 Instalace
 ---------
