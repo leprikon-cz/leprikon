@@ -273,7 +273,7 @@ class EventRegistration(Registration):
 
     def get_payment_status(self, d=None):
         return PaymentStatus(
-            price       = self.event.price,
+            price       = self.price,
             discount    = self.discount,
             explanation = self.explanation,
             paid        = self.get_paid(d),

@@ -13,7 +13,7 @@ from django_countries.fields import CountryField
 from ..conf import settings
 from ..utils import reverse
 from .agegroup import AgeGroup
-from .fields import BirthNumberField, PostalCodeField
+from .fields import BirthNumberField, PostalCodeField, PriceField
 from .insurance import Insurance
 from .school import School
 
@@ -65,7 +65,7 @@ class Registration(models.Model):
     created         = models.DateTimeField(_('time of registration'), auto_now_add=True)
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                         related_name='leprikon_%(class)ss', on_delete=models.PROTECT)
-    #price           = PriceField(_('price'), editable=False)
+    price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
@@ -116,7 +116,6 @@ class Registration(models.Model):
     class Meta:
         abstract            = True
         app_label           = 'leprikon'
-        unique_together     = (('subject', 'birth_num'),)
 
     def __str__(self):
         return _('{participant} ({birth_num})').format(

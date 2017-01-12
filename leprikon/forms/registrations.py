@@ -95,6 +95,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             and super(RegistrationForm, self).is_valid())
 
     def save(self, commit=True):
+        self.instance.price = self.instance.subject.price
         self.instance.answers = dumps(self.questions_form.cleaned_data)
         super(RegistrationForm, self).save(commit)
 

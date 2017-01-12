@@ -406,7 +406,6 @@ class ClubRegistration(Registration):
 
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
     def get_period_payment_statuses(self, d=None):
-        price       = self.club.price
         paid        = self.get_paid(d)
         for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
             try:
@@ -419,13 +418,13 @@ class ClubRegistration(Registration):
             yield self.PeriodPaymentStatus(
                 period  = period,
                 status  = PaymentStatus(
-                    price       = price,
+                    price       = self.price,
                     discount    = discount,
                     explanation = explanation,
-                    paid        = min(price - discount, paid) if counter < -1 else paid,
+                    paid        = min(self.price - discount, paid) if counter < -1 else paid,
                 ),
             )
-            paid = max(paid - (price - discount), 0)
+            paid = max(paid - (self.price - discount), 0)
 
     @cached_property
     def payment_statuses(self):
@@ -435,9 +434,8 @@ class ClubRegistration(Registration):
     def get_payment_statuses(self, d=None):
         if d is None:
             d = date.today()
-        price = self.club.price
-        partial_price   = price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
-        total_price     = price * len(self.all_periods)
+        partial_price   = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
+        total_price     = self.price * len(self.all_periods)
         partial_discount= sum(discount.discount for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
         partial_explanation = comma_separated(discount.explanation for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
         total_discount  = sum(discount.discount for discount in self.all_discounts)
