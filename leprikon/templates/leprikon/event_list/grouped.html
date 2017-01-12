@@ -36,7 +36,9 @@
                 {% endif %}
             {% endif %}
             <br />
-            {% trans 'Price' %}: {{ event.price | currency }}
+            {% if event.price %}
+                {% trans 'Price' %}: {{ event.price | currency }}
+            {% endif %}
         </p>
 
         {{ event.description | safe }}

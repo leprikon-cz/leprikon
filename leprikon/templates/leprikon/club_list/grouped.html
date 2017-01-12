@@ -17,8 +17,12 @@
         {{ club.name }}
         {% endif %}
         <br/>
+        {% if club.all_times %}
         <small>{{ club.all_times | comma_separated }}</small>
+        {% endif %}
+        {% if club.price %}
         <small>{{ club.price | currency }} / {{ club.unit }}</small>
+        {% endif %}
     </h3>
 
     <div class="club_description">

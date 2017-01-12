@@ -127,7 +127,7 @@ class Event(models.Model):
     place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='events', blank=True, null=True, on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='events', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='events', blank=True)
-    price       = PriceField(_('price'))
+    price       = PriceField(_('price'), blank=True, null=True)
     public      = models.BooleanField(_('public'), default=False)
     reg_active  = models.BooleanField(_('active registration'), default=False)
     photo       = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
@@ -150,6 +150,11 @@ class Event(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.name)
+
+    def save(self, *args, **kwargs):
+        if self.price is None:
+            self.reg_active = False
+        super(Event, self).save(*args, **kwargs)
 
     @cached_property
     def all_groups(self):

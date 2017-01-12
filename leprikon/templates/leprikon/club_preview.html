@@ -8,7 +8,9 @@
             {{ group.name }}
         </small>
         {% endfor %}
+        {% if object.price %}
         <small>{{ object.price | currency }} / {{ object.unit }}</small>
+        {% endif %}
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:club_update' object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>

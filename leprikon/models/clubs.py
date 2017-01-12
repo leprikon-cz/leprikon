@@ -81,7 +81,7 @@ class Club(models.Model):
     place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='clubs', blank=True, null=True, on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='clubs', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='clubs', blank=True)
-    price       = PriceField(_('price'))
+    price       = PriceField(_('price'), blank=True, null=True)
     unit        = models.CharField(_('unit'), max_length=150)
     public      = models.BooleanField(_('public'), default=False)
     reg_active  = models.BooleanField(_('active registration'), default=False)
@@ -105,6 +105,11 @@ class Club(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.name)
+
+    def save(self, *args, **kwargs):
+        if self.price is None:
+            self.reg_active = False
+        super(Club, self).save(*args, **kwargs)
 
     @cached_property
     def all_groups(self):
