@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.base import RedirectView
-from django.views.generic.detail import SingleObjectMixin
 
 from ..forms.events import EventFilterForm, EventForm
 from ..forms.registrations import EventRegistrationForm
@@ -26,9 +24,9 @@ class EventListView(FilteredListView):
     paginate_by         = 10
 
     def get_title(self):
-        return _('{event_type} in school year {school_year}').format(
-            event_type  = self.event_type,
-            school_year = self.request.school_year,
+        return _('{subject_type} in school year {school_year}').format(
+            subject_type    = self.event_type,
+            school_year     = self.request.school_year,
         )
 
     def dispatch(self, request, event_type, **kwargs):
@@ -74,25 +72,6 @@ class EventDetailView(DetailView):
         if not self.request.user.is_staff:
             qs = qs.filter(public=True)
         return qs.filter(event_type__slug=self.kwargs['event_type'])
-
-
-
-class EventDetailRedirectView(RedirectView, SingleObjectMixin):
-    model = Event
-
-    def get_queryset(self):
-        qs = super(EventDetailRedirectView, self).get_queryset()
-        if not self.request.user.is_staff:
-            qs = qs.filter(public=True)
-        return qs
-
-    def get_redirect_url(self, *args, **kwargs):
-        url = self.get_object().get_absolute_url()
-
-        args = self.request.META.get('QUERY_STRING', '')
-        if args and self.query_string:
-            url = "%s?%s" % (url, args)
-        return url
 
 
 

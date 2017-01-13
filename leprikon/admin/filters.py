@@ -35,9 +35,18 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
 
 
+class ClubTypeListFilter(admin.RelatedFieldListFilter):
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        super(ClubTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        request.club_type_id = self.lookup_val
+
+
+
 class ClubListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.clubs = Club.objects.filter(school_year=request.school_year)
+        if hasattr(request, 'club_type_id') and request.club_type_id:
+            self.clubs = self.clubs.filter(club_type__id=request.club_type_id)
         super(ClubListFilter, self).__init__(field, request, params, model, model_admin, field_path)
 
     def field_choices(self, field, request, model_admin):

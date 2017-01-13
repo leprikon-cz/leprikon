@@ -12,7 +12,7 @@ from django.utils.translation import (
 
 from ..models.agegroup import AgeGroup
 from ..models.clubs import (
-    Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry,
+    Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry, ClubType,
 )
 from ..models.fields import DAY_OF_WEEK
 from ..models.place import Place
@@ -27,6 +27,7 @@ User = get_user_model()
 
 class ClubFilterForm(FormMixin, forms.Form):
     q           = forms.CharField(label=_('Search term'), required=False)
+    club_type   = forms.ModelMultipleChoiceField(queryset=None, label=_('Club type'), required=False)
     group       = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
     leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
@@ -36,11 +37,13 @@ class ClubFilterForm(FormMixin, forms.Form):
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
 
-    def __init__(self, request, school_year=None, **kwargs):
+    def __init__(self, request, school_year=None, club_types=None, **kwargs):
         super(ClubFilterForm, self).__init__(**kwargs)
         self.request = request
 
         school_year = school_year or request.school_year
+        club_types = club_types or ClubType.objects.all()
+        club_types_list = list(club_types)
 
         # filter clubs by plugin settings
         self.clubs  = school_year.clubs.all()
@@ -48,10 +51,13 @@ class ClubFilterForm(FormMixin, forms.Form):
             self.clubs = self.clubs.filter(public=True)
 
         club_ids = [c[0] for c in self.clubs.values_list('id').order_by()]
+        self.fields['club_type' ].queryset = club_types
         self.fields['group'     ].queryset = ClubGroup.objects.filter(clubs__id__in=club_ids).distinct()
         self.fields['leader'    ].queryset = Leader.objects.filter(clubs__id__in=club_ids).distinct().order_by('user__first_name', 'user__last_name')
         self.fields['place'     ].queryset = Place.objects.filter(clubs__id__in=club_ids).distinct()
         self.fields['age_group' ].queryset = AgeGroup.objects.filter(clubs__id__in=club_ids).distinct()
+        if len(club_types_list) == 1:
+            del self.fields['club_type']
         if not request.user.is_staff:
             del self.fields['invisible']
         for f in self.fields:
@@ -66,6 +72,8 @@ class ClubFilterForm(FormMixin, forms.Form):
                 Q(name__icontains = word)
               | Q(description__icontains = word)
             )
+        if 'club_type' in self.cleaned_data and self.cleaned_data['club_type']:
+            qs = qs.filter(club_type__in = self.cleaned_data['club_type'])
         if self.cleaned_data['group']:
             qs = qs.filter(groups__in = self.cleaned_data['group'])
         if self.cleaned_data['place']:

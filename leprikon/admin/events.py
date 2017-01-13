@@ -102,7 +102,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         )
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(EventAdmin, self).get_form(request, obj=None, **kwargs)
+        form = super(EventAdmin, self).get_form(request, obj, **kwargs)
         if obj:
             school_year = obj.school_year
         else:
@@ -389,8 +389,9 @@ class EventRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     date_hierarchy  = 'created'
     list_display    = ('created', 'event', 'user_link', 'contact')
     list_filter     = (
-        ('event__school_year',   SchoolYearListFilter),
-        ('event',                EventListFilter),
+        ('event__school_year',  SchoolYearListFilter),
+        ('event__event_type',   EventTypeListFilter),
+        ('event',               EventListFilter),
     )
     ordering        = ('-created',)
     raw_id_fields   = ('event', 'user')

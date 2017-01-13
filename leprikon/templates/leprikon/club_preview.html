@@ -12,7 +12,7 @@
         <small>{{ object.price | currency }} / {{ object.unit }}</small>
         {% endif %}
         {% if request.user.is_staff or request.leader in object.all_leaders %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:club_update' object.id %}">
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:club_update' object.club_type.slug object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}
         </a>
@@ -43,9 +43,12 @@
         </p>
         {% endif %}
 
-        {% if object.all_attachments %}
+        {% if object.club_type.all_attachments or object.all_attachments %}
         <p>
             {% trans 'Attachments' %}:
+            {% for attachment in object.club_type.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
             {% for attachment in object.all_attachments %}
             <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
             {% endfor %}
@@ -65,11 +68,11 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_registrations' object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_registrations' object.club_type.slug object.id %}">
                 {% trans 'registrations' %}
                 ({{ object.registrations.count }})
             </a>
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_journal' object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:club_journal' object.club_type.slug object.id %}">
                 {% trans 'journal' %}
             </a>
             <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:clubjournalentry_create' object.id %}">

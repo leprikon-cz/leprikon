@@ -47,7 +47,7 @@ class EventFilterForm(FormMixin, forms.Form):
         if not request.user.is_staff:
             del self.fields['invisible']
         for f in self.fields:
-            self.fields[f].help_text=None
+            self.fields[f].help_text = None
 
     def get_queryset(self):
         qs = self.events

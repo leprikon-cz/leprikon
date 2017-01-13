@@ -36,7 +36,7 @@ class LeprikonClubListPlugin(ListPluginBase):
 
     def render(self, context, instance, placeholder):
         school_year = self.get_school_year(context, instance)
-        clubs       = school_year.clubs.filter(public=True).distinct()
+        clubs       = school_year.clubs.filter(club_type=instance.club_type, public=True).distinct()
 
         if instance.age_groups.count():
             clubs = clubs.filter(age_groups__in = instance.age_groups.all())
@@ -78,9 +78,9 @@ class LeprikonFilteredClubListPlugin(ListPluginBase):
         form = ClubFilterForm(
             request     = context['request'],
             school_year = school_year,
+            club_types  = instance.club_types.all(),
             data=context['request'].GET,
         )
-
         context.update({
             'school_year':  school_year,
             'form':         form,

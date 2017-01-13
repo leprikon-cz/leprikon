@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from ..models.agegroup import AgeGroup
 from ..models.clubs import (
     Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry, ClubPayment,
-    ClubRegistration, ClubRegistrationRequest,
+    ClubRegistration, ClubRegistrationRequest, ClubType,
 )
 from ..models.events import (
     Event, EventGroup, EventPayment, EventRegistration,
@@ -24,7 +24,7 @@ from .agegroup import AgeGroupAdmin
 from .clubs import (
     ClubAdmin, ClubGroupAdmin, ClubJournalEntryAdmin,
     ClubJournalLeaderEntryAdmin, ClubPaymentAdmin, ClubRegistrationAdmin,
-    ClubRegistrationRequestAdmin,
+    ClubRegistrationRequestAdmin, ClubTypeAdmin,
 )
 from .events import (
     EventAdmin, EventGroupAdmin, EventPaymentAdmin, EventRegistrationAdmin,
@@ -54,6 +54,7 @@ admin.site.register(Leader,             LeaderAdmin)
 admin.site.register(Parent,             ParentAdmin)
 admin.site.register(Participant,        ParticipantAdmin)
 
+admin.site.register(ClubType,           ClubTypeAdmin)
 admin.site.register(ClubGroup,          ClubGroupAdmin)
 admin.site.register(Club,               ClubAdmin)
 admin.site.register(ClubRegistration,   ClubRegistrationAdmin)

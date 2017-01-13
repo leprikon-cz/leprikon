@@ -40,9 +40,12 @@
         </p>
         {% endif %}
 
-        {% if object.all_attachments %}
+        {% if object.club_type.all_attachments or object.all_attachments %}
         <p>
             {% trans 'Attachments' %}:
+            {% for attachment in object.club_type.all_attachments %}
+            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% endfor %}
             {% for attachment in object.all_attachments %}
             <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
             {% endfor %}

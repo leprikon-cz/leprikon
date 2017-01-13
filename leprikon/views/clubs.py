@@ -11,7 +11,7 @@ from ..forms.clubs import (
 from ..forms.registrations import ClubRegistrationForm
 from ..models.clubs import (
     Club, ClubJournalEntry, ClubJournalLeaderEntry, ClubRegistration,
-    ClubRegistrationRequest,
+    ClubRegistrationRequest, ClubType,
 )
 from .generic import (
     ConfirmUpdateView, CreateView, DeleteView, DetailView, FilteredListView,
@@ -29,7 +29,21 @@ class ClubListView(FilteredListView):
     paginate_by         = 10
 
     def get_title(self):
-        return _('Clubs in school year {}').format(self.request.school_year)
+        return _('{subject_type} in school year {school_year}').format(
+            subject_type    = self.club_type,
+            school_year     = self.request.school_year,
+        )
+
+    def dispatch(self, request, club_type, **kwargs):
+        self.club_type = get_object_or_404(ClubType, slug=club_type)
+        return super(ClubListView, self).dispatch(request, **kwargs)
+
+    def get_form(self):
+        return self.form_class(
+            request     = self.request,
+            club_types = [self.club_type],
+            data        = self.request.GET,
+        )
 
     def get_queryset(self):
         form = self.get_form()
@@ -43,6 +57,15 @@ class ClubListMineView(ClubListView):
 
     def get_queryset(self):
         return super(ClubListMineView, self).get_queryset().filter(leaders=self.request.leader)
+
+    def dispatch(self, request, **kwargs):
+        return super(ClubListView, self).dispatch(request, **kwargs)
+
+    def get_form(self):
+        return self.form_class(
+            request     = self.request,
+            data        = self.request.GET,
+        )
 
 
 
@@ -66,7 +89,7 @@ class ClubDetailView(DetailView):
         qs = super(ClubDetailView, self).get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(public=True)
-        return qs
+        return qs.filter(club_type__slug=self.kwargs['club_type'])
 
 
 
@@ -258,10 +281,11 @@ class ClubRegistrationFormView(RegistrationFormView):
     def get_title(self):
         return _('Registration for club {}').format(self.subject.name)
 
-    def dispatch(self, request, pk, *args, **kwargs):
+    def dispatch(self, request, club_type, pk, *args, **kwargs):
         lookup_kwargs = {
-            'id':           int(pk),
-            'reg_active':   True,
+            'club_type__slug':  club_type,
+            'id':               int(pk),
+            'reg_active':       True,
         }
         if not self.request.user.is_staff:
             lookup_kwargs['public'] = True

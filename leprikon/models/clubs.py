@@ -33,6 +33,51 @@ from .utils import PaymentStatus
 
 
 @python_2_unicode_compatible
+class ClubType(models.Model):
+    name        = models.CharField(_('name'), max_length=150)
+    slug        = models.SlugField()
+    order       = models.IntegerField(_('order'), blank=True, default=0)
+    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
+                    blank=True,
+                    help_text=_('Add additional questions to be asked in the registration form.'))
+
+    class Meta:
+        app_label           = 'leprikon'
+        ordering            = ('order',)
+        verbose_name        = _('club type')
+        verbose_name_plural = _('club types')
+
+    def __str__(self):
+        return self.name
+
+    @cached_property
+    def all_questions(self):
+        return list(self.questions.all())
+
+    @cached_property
+    def all_attachments(self):
+        return list(self.attachments.all())
+
+
+
+@python_2_unicode_compatible
+class ClubTypeAttachment(models.Model):
+    club_type   = models.ForeignKey(ClubType, verbose_name=_('club type'), related_name='attachments')
+    file        = FilerFileField(related_name='+')
+    order       = models.IntegerField(_('order'), blank=True, default=0)
+
+    class Meta:
+        app_label           = 'leprikon'
+        ordering            = ('order',)
+        verbose_name        = _('attachment')
+        verbose_name_plural = _('attachments')
+
+    def __str__(self):
+        return force_text(self.file)
+
+
+
+@python_2_unicode_compatible
 class ClubGroup(models.Model):
     name    = models.CharField(_('name'), max_length=150)
     plural  = models.CharField(_('plural'), max_length=150)
@@ -77,6 +122,7 @@ class Club(models.Model):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='clubs')
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
+    club_type   = models.ForeignKey(ClubType, verbose_name=_('club type'), related_name='clubs')
     groups      = models.ManyToManyField(ClubGroup, verbose_name=_('groups'), related_name='clubs')
     place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='clubs', blank=True, null=True, on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='clubs', blank=True)
@@ -133,7 +179,7 @@ class Club(models.Model):
 
     @cached_property
     def all_questions(self):
-        return list(self.questions.all())
+        return set(self.club_type.all_questions + list(self.questions.all()))
 
     @cached_property
     def all_attachments(self):
@@ -151,10 +197,10 @@ class Club(models.Model):
         return self.periods.filter(end__gte=date.today()).first() or self.periods.last()
 
     def get_absolute_url(self):
-        return reverse('leprikon:club_detail', args=(self.id,))
+        return reverse('leprikon:club_detail', args=(self.club_type.slug, self.id))
 
     def get_registration_url(self):
-        return reverse('leprikon:club_registration_form', args=(self.id,))
+        return reverse('leprikon:club_registration_form', kwargs={'club_type': self.club_type.slug, 'pk': self.id})
 
     def get_edit_url(self):
         return reverse('admin:leprikon_club_change', args=(self.id,))
@@ -712,6 +758,7 @@ class ClubPlugin(CMSPlugin):
 class ClubListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
+    club_type   = models.ForeignKey(ClubType, verbose_name=_('club type'))
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'),
                     blank=True,
                     help_text=_('Keep empty to skip searching by age groups.'))
@@ -739,7 +786,11 @@ class ClubListPlugin(CMSPlugin):
 class FilteredClubListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
+    club_types = models.ManyToManyField(ClubType, verbose_name=_('club type'))
 
     class Meta:
         app_label = 'leprikon'
+
+    def copy_relations(self, oldinstance):
+        self.club_types = oldinstance.club_types.all()
 

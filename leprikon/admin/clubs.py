@@ -22,13 +22,35 @@ from ..forms.clubs import (
 from ..forms.registrations import RegistrationAdminForm
 from ..models.clubs import (
     Club, ClubAttachment, ClubJournalLeaderEntry, ClubPeriod, ClubRegistration,
-    ClubRegistrationDiscount, ClubRegistrationRequest, ClubTime,
+    ClubRegistrationDiscount, ClubRegistrationRequest, ClubTime, ClubType,
+    ClubTypeAttachment,
 )
 from ..models.schoolyear import SchoolYear
 from ..utils import comma_separated, currency
 from .export import AdminExportMixin
-from .filters import ClubListFilter, LeaderListFilter, SchoolYearListFilter
+from .filters import (
+    ClubListFilter, ClubTypeListFilter, LeaderListFilter,
+    SchoolYearListFilter,
+)
 from .messages import SendMessageAdminMixin
+
+
+class ClubTypeAttachmentInlineAdmin(admin.TabularInline):
+    model   = ClubTypeAttachment
+    extra   = 3
+
+
+
+class ClubTypeAdmin(admin.ModelAdmin):
+    list_display    = ('name', 'order')
+    list_editable   = ('order',)
+    fields          = ('name', 'slug', 'questions',)
+    filter_horizontal = ('questions',)
+    prepopulated_fields = {'slug': ('name',)}
+    inlines         = (
+        ClubTypeAttachmentInlineAdmin,
+    )
+
 
 
 class ClubGroupAdmin(admin.ModelAdmin):
@@ -58,14 +80,14 @@ class ClubAttachmentInlineAdmin(admin.TabularInline):
 
 class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'name', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'club_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
         'get_registrations_link', 'get_registration_requests_link',
         'get_journal_link', 'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'club_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
         'get_registrations_count', 'get_registration_requests_count', 'note',
@@ -73,6 +95,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
         ('school_year', SchoolYearListFilter),
+        ('club_type',   ClubTypeListFilter),
         'age_groups',
         'groups',
         ('leaders',     LeaderListFilter),
@@ -208,7 +231,7 @@ class ClubAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url     = reverse('admin:leprikon_club_journal', args=[obj.id]),
+            url     = reverse('admin:leprikon_club_journal', args=[obj.club_type.slug, obj.id]),
             title   = _('printable club journal'),
             journal = _('journal'),
         )
@@ -273,6 +296,7 @@ class ClubRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Model
     )
     list_filter     = (
         ('club__school_year',   SchoolYearListFilter),
+        ('club__club_type',     ClubTypeListFilter),
         ('club',                ClubListFilter),
         ('club__leaders',       LeaderListFilter),
     )
@@ -428,6 +452,7 @@ class ClubPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = ('registration', 'date', 'amount')
     list_filter     = (
         ('registration__club__school_year', SchoolYearListFilter),
+        ('registration__club__club_type',   ClubTypeListFilter),
         ('registration__club',              ClubListFilter),
         ('registration__club__leaders',     LeaderListFilter),
     )
@@ -543,6 +568,7 @@ class ClubRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = ('created', 'club', 'user_link', 'contact')
     list_filter     = (
         ('club__school_year',   SchoolYearListFilter),
+        ('club__club_type',     ClubTypeListFilter),
         ('club',                ClubListFilter),
     )
     ordering        = ('-created',)

@@ -58,9 +58,9 @@ class EventType(models.Model):
 
 @python_2_unicode_compatible
 class EventTypeAttachment(models.Model):
-    event   = models.ForeignKey(EventType, verbose_name=_('event type'), related_name='attachments')
-    file    = FilerFileField(related_name='+')
-    order   = models.IntegerField(_('order'), blank=True, default=0)
+    event_type  = models.ForeignKey(EventType, verbose_name=_('event type'), related_name='attachments')
+    file        = FilerFileField(related_name='+')
+    order       = models.IntegerField(_('order'), blank=True, default=0)
 
     class Meta:
         app_label           = 'leprikon'

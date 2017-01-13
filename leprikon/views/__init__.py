@@ -89,7 +89,6 @@ club_registration_cancel        = login_required(clubs.ClubRegistrationCancelVie
 event_list                      = events.EventListView.as_view()
 event_list_mine                 = leader_required(events.EventListMineView.as_view())
 event_detail                    = events.EventDetailView.as_view()
-event_detail_redirect           = events.EventDetailRedirectView.as_view()
 event_registrations             = leader_or_staff_required(events.EventRegistrationsView.as_view())
 event_update                    = leader_or_staff_required(events.EventUpdateView.as_view())
 event_registration_form         = login_required(events.EventRegistrationFormView.as_view())
