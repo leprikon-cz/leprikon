@@ -4,55 +4,55 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 
-from ..forms.events import EventFilterForm
-from ..models.events import (
-    EventGroup, EventListPlugin, EventPlugin, FilteredEventListPlugin,
+from ..forms.courses import CourseFilterForm
+from ..models.courses import (
+    CourseGroup, CourseListPlugin, CoursePlugin, FilteredCourseListPlugin,
 )
 from .base import Group, ListPluginBase
 
 
 @plugin_pool.register_plugin
-class LeprikonEventPlugin(CMSPluginBase):
+class LeprikonCoursePlugin(CMSPluginBase):
     module  = _('Leprikon')
-    name    = _('Event')
-    model   = EventPlugin
+    name    = _('Course')
+    model   = CoursePlugin
     cache   = False
     text_enabled = True
-    raw_id_fields = ('event',)
+    raw_id_fields = ('course',)
 
     def get_render_template(self, context, instance, placeholder):
-        return 'leprikon/event/%s.html' % instance.template
+        return 'leprikon/course/%s.html' % instance.template
 
 
 
 @plugin_pool.register_plugin
-class LeprikonEventListPlugin(ListPluginBase):
+class LeprikonCourseListPlugin(ListPluginBase):
     module  = _('Leprikon')
-    name    = _('Event list')
-    model   = EventListPlugin
+    name    = _('Course list')
+    model   = CourseListPlugin
     cache   = False
     text_enabled = True
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def render(self, context, instance, placeholder):
         school_year = self.get_school_year(context, instance)
-        events      = school_year.events.filter(event_type=instance.event_type, public=True).distinct()
+        courses     = school_year.courses.filter(course_type=instance.course_type, public=True).distinct()
 
         if instance.age_groups.count():
-            events = events.filter(age_groups__in = instance.age_groups.all())
+            courses = courses.filter(age_groups__in = instance.age_groups.all())
         if instance.leaders.count():
-            events = events.filter(leaders__in    = instance.leaders.all())
+            courses = courses.filter(leaders__in    = instance.leaders.all())
         if instance.groups.count():
-            events = events.filter(groups__in     = instance.groups.all())
+            courses = courses.filter(groups__in     = instance.groups.all())
             groups = instance.groups.all()
         else:
-            groups = EventGroup.objects.all()
+            groups = CourseGroup.objects.all()
 
         context.update({
             'school_year':  school_year,
-            'events':       events,
+            'courses':      courses,
             'groups':       [
-                Group(group = group, objects = events.filter(groups=group))
+                Group(group = group, objects = courses.filter(groups=group))
                 for group in groups
             ],
             'instance':     instance,
@@ -61,30 +61,30 @@ class LeprikonEventListPlugin(ListPluginBase):
         return context
 
     def get_render_template(self, context, instance, placeholder):
-        return 'leprikon/event_list/%s.html' % instance.template
+        return 'leprikon/course_list/%s.html' % instance.template
 
 
 
 @plugin_pool.register_plugin
-class LeprikonFilteredEventListPlugin(ListPluginBase):
+class LeprikonFilteredCourseListPlugin(ListPluginBase):
     module  = _('Leprikon')
-    name    = _('Event list with search form')
-    model   = FilteredEventListPlugin
+    name    = _('Course list with search form')
+    model   = FilteredCourseListPlugin
     cache   = False
-    render_template = 'leprikon/filtered_event_list.html'
+    render_template = 'leprikon/filtered_course_list.html'
 
     def render(self, context, instance, placeholder):
         school_year = self.get_school_year(context, instance)
-        form = EventFilterForm(
+        form = CourseFilterForm(
             request     = context['request'],
             school_year = school_year,
-            event_types = instance.event_types.all(),
+            course_types= instance.course_types.all(),
             data=context['request'].GET,
         )
         context.update({
             'school_year':  school_year,
             'form':         form,
-            'events':       form.get_queryset(),
+            'courses':      form.get_queryset(),
             'instance':     instance,
             'placeholder':  placeholder,
         })

@@ -29,10 +29,10 @@
 {% endfor %}
 {% endif %}
 
-{% if clubs.count %}
-<h2>{% trans 'My clubs' %}</h2>
-{% for object in clubs %}
-{% include 'leprikon/club_preview.html' %}
+{% if courses.count %}
+<h2>{% trans 'My courses' %}</h2>
+{% for object in courses %}
+{% include 'leprikon/course_preview.html' %}
 {% endfor %}
 {% endif %}
 

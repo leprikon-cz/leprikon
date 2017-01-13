@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import TimesheetEntry
-from .clubs import ClubJournalLeaderEntryInlineAdmin
+from .courses import CourseJournalLeaderEntryInlineAdmin
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
 
@@ -68,8 +68,8 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
 
 
 
-class CJLEInlineAdmin(ClubJournalLeaderEntryInlineAdmin):
-    readonly_fields = ('date', 'start', 'end', 'club', 'edit_link')
+class CJLEInlineAdmin(CourseJournalLeaderEntryInlineAdmin):
+    readonly_fields = ('date', 'start', 'end', 'course', 'edit_link')
 
 
 

@@ -10,6 +10,6 @@ def l_url(pattern, name):
 
 
 urlpatterns = [
-    l_url(r'^club-registrations/(?P<club_id>[0-9]+)/$',     'club_registrations'),
+    l_url(r'^course-registrations/(?P<course_id>[0-9]+)/$',     'course_registrations'),
 ]
 

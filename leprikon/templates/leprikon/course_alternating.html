@@ -1,0 +1,40 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+
+{% if placeholder %}
+{% static_placeholder placeholder %}
+{% endif %}
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'date' %}</th>
+        <th>{% trans 'course' %}</th>
+        <th>{% trans 'start' %}</th>
+        <th>{% trans 'end' %}</th>
+        <th></th>
+    </tr>
+    {% for entry in alternate_leader_entries %}
+    <tr>
+        <td>{{ entry.course_entry.date }}</td>
+        <td>{{ entry.course_entry.period.course.name }}</td>
+        <td>{{ entry.start }}</td>
+        <td>{{ entry.end }}</td>
+        <td>
+            <a class="btn btn-primary btn-xs" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                {% trans 'edit timesheet entry' %}
+            </a>
+            <a class="btn btn-primary btn-xs" href="{{ entry.course_entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                {% trans 'edit course journal entry' %}
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

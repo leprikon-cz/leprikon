@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import ReportBaseView
 from ...forms.reports.debtors import DebtorsForm
-from ...models.clubs import ClubRegistration
+from ...models.courses import CourseRegistration
 from ...models.events import EventRegistration
 
 
@@ -32,8 +32,8 @@ class ReportDebtorsView(ReportBaseView):
         context['reports'] = {}
         context['sum'] = 0
 
-        for reg in ClubRegistration.objects.filter(
-            club__school_year = self.request.school_year,
+        for reg in CourseRegistration.objects.filter(
+            course__school_year = self.request.school_year,
             created__date__lte = context['date']):
             balance = reg.get_payment_statuses(context['date']).partial.balance
             if balance < 0:

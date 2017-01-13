@@ -5,8 +5,8 @@ from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
-from ...forms.reports.clubs import (
-    ClubPaymentsForm, ClubPaymentsStatusForm, ClubStatsForm,
+from ...forms.reports.courses import (
+    CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm,
 )
 from ...forms.reports.debtors import DebtorsForm
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
@@ -24,10 +24,10 @@ class ReportsListView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         return super(ReportsListView, self).get_context_data(reports=[
             self.Report(
-                title           = _('Club payments'),
+                title           = _('Course payments'),
                 instructions    = '',
-                form            = self.get_form(ClubPaymentsForm),
-                url             = reverse('leprikon:report_club_payments'),
+                form            = self.get_form(CoursePaymentsForm),
+                url             = reverse('leprikon:report_course_payments'),
             ),
             self.Report(
                 title           = _('Event payments'),
@@ -36,10 +36,10 @@ class ReportsListView(TemplateView):
                 url             = reverse('leprikon:report_event_payments'),
             ),
             self.Report(
-                title           = _('Club payments status'),
+                title           = _('Course payments status'),
                 instructions    = '',
-                form            = self.get_form(ClubPaymentsStatusForm),
-                url             = reverse('leprikon:report_club_payments_status'),
+                form            = self.get_form(CoursePaymentsStatusForm),
+                url             = reverse('leprikon:report_course_payments_status'),
             ),
             self.Report(
                 title           = _('Event payments status'),
@@ -48,10 +48,10 @@ class ReportsListView(TemplateView):
                 url             = reverse('leprikon:report_event_payments_status'),
             ),
             self.Report(
-                title           = _('Club statistics'),
+                title           = _('Course statistics'),
                 instructions    = '',
-                form            = self.get_form(ClubStatsForm),
-                url             = reverse('leprikon:report_club_stats'),
+                form            = self.get_form(CourseStatsForm),
+                url             = reverse('leprikon:report_course_stats'),
             ),
             self.Report(
                 title           = _('Debtors list'),

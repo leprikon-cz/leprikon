@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.utils.functional import SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.clubs import ClubRegistration
+from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from ..models.roles import Parent, Participant
 from ..utils import get_age, get_birth_date
@@ -137,12 +137,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
 
 
-class ClubRegistrationForm(RegistrationForm):
-    subject_attr    = 'club'
+class CourseRegistrationForm(RegistrationForm):
+    subject_attr    = 'course'
 
     class Meta:
-        model = ClubRegistration
-        exclude = ('club', 'user', 'cancel_request', 'canceled')
+        model = CourseRegistration
+        exclude = ('course', 'user', 'cancel_request', 'canceled')
 
 
 

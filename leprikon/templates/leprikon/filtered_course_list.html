@@ -1,0 +1,61 @@
+{% load i18n sekizai_tags staticfiles %}
+
+<form class="form-horizontal" method="get" id="list_filter_form">
+
+    <div class="form-group">
+        {% for item in form %}
+        <label class="control-label col-sm-6 col-md-2" for="{{ item.id_for_label }}">
+            {{ item.label }}
+        </label>
+        <div class="col-sm-6 col-md-4{% if item.errors %} alert alert-danger{% endif %}">
+            {{ item }}
+        </div>
+        {% endfor %}
+        <div class="col-xs-12 right">
+            <button class="btn btn-primary" type="submit">{% trans 'search' %}</button>
+            <a class="btn btn-default" href="{{ request.path }}">{% trans 'cancel search' %}</a>
+        </div>
+    </div>
+</form>
+
+{% for object in courses %}
+{% include 'leprikon/course_preview.html' %}
+{% empty %}
+<p>{{ message_empty }}</p>
+{% endfor %}
+
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#list_filter_form select[data-type=ModelMultipleChoiceField]').multiselect({
+        nonSelectedText: '',
+        allSelectedText: false,
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#list_filter_form select[data-type=MultipleChoiceField]').multiselect({
+        nonSelectedText: '',
+        allSelectedText: false,
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        onDropdownHide: function(element, checked) {
+            $('#list_filter_form').submit();
+        },
+        disableIfEmpty: true,
+    });
+    $('#list_filter_form input[data-type=CharField]').change(function() {
+        $('#list_filter_form').submit();
+    });
+    $('#list_filter_form input[data-type=BooleanField]').change(function() {
+        $('#list_filter_form').submit();
+    });
+});
+</script>
+{% endaddtoblock %}
+

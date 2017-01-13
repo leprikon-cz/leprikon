@@ -57,8 +57,8 @@ class Leader(models.Model):
         return list(self.contacts.filter(public=True))
 
     @cached_property
-    def all_clubs(self):
-        return list(self.clubs.all())
+    def all_courses(self):
+        return list(self.courses.all())
 
     @cached_property
     def all_events(self):
@@ -69,11 +69,11 @@ class Leader(models.Model):
         return list(self.school_years.all())
 
     def get_alternate_leader_entries(self, school_year):
-        from .clubs import ClubJournalLeaderEntry
-        return ClubJournalLeaderEntry.objects.filter(
-            timesheet__leader               = self,
-            club_entry__club__school_year   = school_year,
-        ).exclude(club_entry__club__in = self.clubs.all())
+        from .courses import CourseJournalLeaderEntry
+        return CourseJournalLeaderEntry.objects.filter(
+            timesheet__leader                   = self,
+            course_entry__course__school_year   = school_year,
+        ).exclude(course_entry__course__in      = self.courses.all())
 
 
 
@@ -239,7 +239,7 @@ class LeaderPlugin(CMSPlugin):
 class LeaderListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                     blank=True, null=True)
-    club        = models.ForeignKey('leprikon.Club', verbose_name=_('club'),
+    course      = models.ForeignKey('leprikon.Course', verbose_name=_('course'),
                     blank=True, null=True)
     event       = models.ForeignKey('leprikon.Event', verbose_name=_('event'),
                     blank=True, null=True)

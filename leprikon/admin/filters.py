@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from ..models.clubs import Club
+from ..models.courses import Course
 from ..models.events import Event
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
@@ -35,22 +35,22 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
 
 
-class ClubTypeListFilter(admin.RelatedFieldListFilter):
+class CourseTypeListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        super(ClubTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
-        request.club_type_id = self.lookup_val
+        super(CourseTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        request.course_type_id = self.lookup_val
 
 
 
-class ClubListFilter(admin.RelatedFieldListFilter):
+class CourseListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        self.clubs = Club.objects.filter(school_year=request.school_year)
-        if hasattr(request, 'club_type_id') and request.club_type_id:
-            self.clubs = self.clubs.filter(club_type__id=request.club_type_id)
-        super(ClubListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        self.courses = Course.objects.filter(school_year=request.school_year)
+        if hasattr(request, 'course_type_id') and request.course_type_id:
+            self.courses = self.courses.filter(course_type__id=request.course_type_id)
+        super(CourseListFilter, self).__init__(field, request, params, model, model_admin, field_path)
 
     def field_choices(self, field, request, model_admin):
-        return [(club.id, club.name) for club in self.clubs]
+        return [(course.id, course.name) for course in self.courses]
 
 
 

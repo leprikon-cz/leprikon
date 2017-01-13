@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.clubs import ClubRegistration
+from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from .generic import CreateView, TemplateView
 
@@ -14,8 +14,8 @@ class RegistrationsListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RegistrationsListView, self).get_context_data(**kwargs)
-        context['clubregistrations'] = ClubRegistration.objects.filter(
-            club__school_year   = self.request.school_year,
+        context['courseregistrations'] = CourseRegistration.objects.filter(
+            course__school_year   = self.request.school_year,
             user   = self.request.user,
         )
         context['eventregistrations'] = EventRegistration.objects.filter(

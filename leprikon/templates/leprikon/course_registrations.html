@@ -1,0 +1,24 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% blocktrans with name=course.name %}Registrations for course {{ name }}{% endblocktrans %}{% endblock %}</h1>
+
+<h2>{% trans 'Active Registrations' %}</h2>
+
+{% for reg in course.active_registrations.all %}
+{% include 'leprikon/registration_details.html' %}
+{% empty %}
+<p>{% trans 'There are no active registrations for this course.' %}</p>
+{% endfor %}
+
+<h2>{% trans 'Inactive Registrations' %}</h2>
+
+{% for reg in course.inactive_registrations.all %}
+{% include 'leprikon/registration_details.html' %}
+{% empty %}
+<p>{% trans 'There are no inactive registrations for this course.' %}</p>
+{% endfor %}
+
+{% endblock %}

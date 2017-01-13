@@ -15,8 +15,8 @@ class RegistrationMailer(TemplateMailer):
 
 
 
-class ClubRegistrationMailer(RegistrationMailer):
-    template_name   = 'leprikon/clubregistration_mail.txt'
+class CourseRegistrationMailer(RegistrationMailer):
+    template_name   = 'leprikon/courseregistration_mail.txt'
 
 
 

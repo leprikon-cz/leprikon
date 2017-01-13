@@ -16,7 +16,7 @@ LEPRIKON_CONTACT_TYPES = (
     ('url', _('url')),
 )
 
-LEPRIKON_CLUB_TEMPLATES = (
+LEPRIKON_COURSE_TEMPLATES = (
     ('default', _('Default')),
 )
 
@@ -28,9 +28,9 @@ LEPRIKON_LEADER_TEMPLATES = (
     ('default', _('Default')),
 )
 
-LEPRIKON_CLUBLIST_TEMPLATES = (
+LEPRIKON_COURSELIST_TEMPLATES = (
     ('default', _('Default')),
-    ('grouped', _('Grouped by club groups')),
+    ('grouped', _('Grouped by course groups')),
 )
 
 LEPRIKON_EVENTLIST_TEMPLATES = (
@@ -73,7 +73,7 @@ LEPRIKON_PARAM_BACK = 'zpet'
 
 LEPRIKON_URL_SUMMARY = 'prehled'
 LEPRIKON_URL_CREATE_ACCOUNT = 'novy-uzivatel'
-LEPRIKON_URL_CLUBS = 'krouzky'
+LEPRIKON_URL_COURSES = 'kurzy'
 LEPRIKON_URL_EVENTS = 'akce'
 LEPRIKON_URL_LEADERS = 'vedouci'
 LEPRIKON_URL_MESSAGES = 'zpravy'

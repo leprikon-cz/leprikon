@@ -42,8 +42,8 @@ class SchoolYear(models.Model):
         return self.name
 
     def delete(self):
-        if self.clubs.count() or self.events.count():
-            raise Exception(_('Can not delete sclool year with clubs or events.'))
+        if self.courses.count() or self.events.count():
+            raise Exception(_('Can not delete sclool year with courses or events.'))
         super(SchoolYear, self).delete()
 
     @cached_property
@@ -51,6 +51,6 @@ class SchoolYear(models.Model):
         return '{}/{}'.format(self.year, self.year+1)
 
     @cached_property
-    def all_clubs(self):
-        return list(self.clubs.all())
+    def all_courses(self):
+        return list(self.courses.all())
 

@@ -13,10 +13,10 @@
         {% endif %}
         {{ object.description | safe }}
         <div class="row">
-            <label class="col-sm-4">{% trans 'Clubs' %}:</label>
+            <label class="col-sm-4">{% trans 'Courses' %}:</label>
             <div class="col-sm-8">
-                {% for club in object.clubs|filter_current_school_year:request.school_year %}
-                {{ club.name }}<br />
+                {% for course in object.courses|filter_current_school_year:request.school_year %}
+                {{ course.name }}<br />
                 {% endfor %}
             </div>
         </div>

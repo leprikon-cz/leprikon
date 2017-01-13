@@ -1,0 +1,55 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n sekizai_tags staticfiles %}
+
+{% block content %}
+{{ block.super }}
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('#id_registrations').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_leaders').multiselect({
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_alternates').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_date').on('dp.change', function(e) {
+        $.getJSON('{% url 'leprikon:api:course_registrations' form.instance.course.id %}?date='+(e.date/1000), function(result) {
+            $('#id_registrations').multiselect('dataprovider', result['registrations']);
+        });
+    });
+
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

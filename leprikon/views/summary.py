@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from datetime import date
 
-from ..models.clubs import ClubRegistration
+from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from .generic import TemplateView
 
@@ -16,8 +16,8 @@ class SummaryView(TemplateView):
         context['user'] = self.request.user
         context['payment_status'] = sum(
             reg.payment_statuses.partial
-            for reg in ClubRegistration.objects.filter(
-                club__school_year = self.request.school_year,
+            for reg in CourseRegistration.objects.filter(
+                course__school_year = self.request.school_year,
                 user = self.request.user,
             )
         ) + sum(
@@ -28,7 +28,7 @@ class SummaryView(TemplateView):
             )
         )
         if self.request.leader:
-            context['clubs'] = self.request.leader.clubs.filter(school_year=self.request.school_year)
+            context['courses'] = self.request.leader.courses.filter(school_year=self.request.school_year)
             context['events'] = self.request.leader.events.filter(school_year=self.request.school_year)
             context['timesheets'] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)

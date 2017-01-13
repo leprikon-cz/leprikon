@@ -25,7 +25,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     filter_horizontal   = ('school_years',)
     inlines             = (ContactInlineAdmin,)
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
-    list_display        = ('id', 'first_name', 'last_name', 'email', 'clubs_link', 'events_link', 'contacts', 'user_link', 'icon')
+    list_display        = ('id', 'first_name', 'last_name', 'email', 'courses_link', 'events_link', 'contacts', 'user_link', 'icon')
     ordering            = ('user__first_name', 'user__last_name')
     actions             = ('add_school_year',)
     list_filter         = (('school_years', SchoolYearListFilter),)
@@ -87,21 +87,21 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     user_link.short_description = _('user')
 
     @cached_property
-    def clubs_url(self):
-        return reverse('admin:leprikon_club_changelist')
+    def courses_url(self):
+        return reverse('admin:leprikon_course_changelist')
 
     @cached_property
     def events_url(self):
         return reverse('admin:leprikon_event_changelist')
 
-    def clubs_link(self, obj):
+    def courses_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
-            url     = self.clubs_url,
+            url     = self.courses_url,
             leader  = obj.id,
-            count   = obj.clubs.count(),
+            count   = obj.courses.count(),
         )
-    clubs_link.allow_tags = True
-    clubs_link.short_description = _('clubs')
+    courses_link.allow_tags = True
+    courses_link.short_description = _('courses')
 
     def events_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
@@ -198,19 +198,19 @@ class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     address.short_description = _('address')
 
     @cached_property
-    def club_regs_url(self):
-        return reverse('admin:leprikon_clubregistration_changelist')
+    def course_regs_url(self):
+        return reverse('admin:leprikon_courseregistration_changelist')
 
     @cached_property
     def event_regs_url(self):
         return reverse('admin:leprikon_eventregistration_changelist')
 
     def registrations_links(self, obj):
-        return '<a href="{club_regs_url}?participant_birth_num={birth_num}">{club_regs_name}</a>, '\
+        return '<a href="{course_regs_url}?participant_birth_num={birth_num}">{course_regs_name}</a>, '\
                '<a href="{event_regs_url}?participant_birth_num={birth_num}">{event_regs_name}</a>'.format(
-            club_regs_url   = self.club_regs_url,
+            course_regs_url = self.course_regs_url,
             event_regs_url  = self.event_regs_url,
-            club_regs_name  = _('clubs'),
+            course_regs_name= _('courses'),
             event_regs_name = _('events'),
             birth_num       = obj.birth_num,
         )

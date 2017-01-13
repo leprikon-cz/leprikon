@@ -36,11 +36,11 @@ class LeprikonLeaderListPlugin(ListPluginBase):
 
     def render(self, context, instance, placeholder):
         leaders = Leader.objects.all()
-        if instance.club:
-            leaders = leaders.filter(clubs = instance.club)
+        if instance.course:
+            leaders = leaders.filter(courses=instance.course)
         if instance.event:
-            leaders = leaders.filter(events = instance.event)
-        if instance.club is None and instance.event is None:
+            leaders = leaders.filter(events=instance.event)
+        if instance.course is None and instance.event is None:
             leaders = self.get_school_year(context, instance).leaders.all()
 
         context.update({

@@ -1,53 +1,54 @@
 {% load i18n leprikon_tags %}
-        {% if reg.discount %}{# events #}
-        <div class="row">
-            <label class="col-sm-4">{% trans 'Discount' %}:</label>
-            <div class="col-sm-8">
-                <strong class="clickable" data-toggle="collapse" id="discount-{{ reg.id }}" data-target="#explanation-{{ reg.id }}">
-                    {{ reg.discount | currency }}
-                </strong>
-                <div class="collapse out" id="explanation-{{ reg.id }}">
-                    {{ reg.explanation | linebreaks }}
-                </div>
-            </div>
+
+{% if reg.discount %}{# events #}
+<div class="row">
+    <label class="col-sm-4">{% trans 'Discount' %}:</label>
+    <div class="col-sm-8">
+        <strong class="clickable" data-toggle="collapse" id="discount-{{ reg.id }}" data-target="#explanation-{{ reg.id }}">
+            {{ reg.discount | currency }}
+        </strong>
+        <div class="collapse out" id="explanation-{{ reg.id }}">
+            {{ reg.explanation | linebreaks }}
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="row">
+    <label class="col-sm-4">{% trans 'Payments' %}:</label>
+    <div class="col-sm-8">
+        {% if reg.payment_status %}{# events #}
+        <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
+            {{ reg.payment_status.paid | currency }}
+        </strong>
+        {% else %}{# courses #}
+        <strong class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#period-payments-{{ reg.id }}"
+            style="color: {{ reg.payment_statuses.partial.color }}" title="{{ reg.payment_statuses.total.title }}">
+            {{ reg.payment_statuses.total.paid | currency }}
+        </strong>
+        <div class="collapse out" id="period-payments-{{ reg.id }}">
+            {% for ps in reg.get_period_payment_statuses %}
+            {{ ps.period.name }}:
+            <strong style="color: {{ ps.status.color }}" title="{{ ps.status.title }}">
+                {{ ps.status.paid | currency }}
+            </strong>
+            {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
+            <br />
+            {% endfor %}
         </div>
         {% endif %}
-        <div class="row">
-            <label class="col-sm-4">{% trans 'Payments' %}:</label>
-            <div class="col-sm-8">
-                {% if reg.payment_status %}{# events #}
-                <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
-                    {{ reg.payment_status.paid | currency }}
-                </strong>
-                {% else %}{# clubs #}
-                <strong class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#period-payments-{{ reg.id }}"
-                    style="color: {{ reg.payment_statuses.partial.color }}" title="{{ reg.payment_statuses.total.title }}">
-                    {{ reg.payment_statuses.total.paid | currency }}
-                </strong>
-                <div class="collapse out" id="period-payments-{{ reg.id }}">
-                    {% for ps in reg.get_period_payment_statuses %}
-                    {{ ps.period.name }}:
-                    <strong style="color: {{ ps.status.color }}" title="{{ ps.status.title }}">
-                        {{ ps.status.paid | currency }}
-                    </strong>
-                    {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
-                    <br />
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% if reg.club %}
-        <div class="row">
-            <label class="col-sm-4">{% trans 'Presence' %}:</label>
-            <div class="col-sm-8">
-                {% for history in reg.club_history.all %}
-                {% for entry in history.club_journal_entries.all %}
-                <strong title="{{ history.club.name }}, {{ entry.date }}" class="{% if reg in entry.all_registrations %}green{% else %}red{% endif %}">
-                {% if reg in entry.all_registrations %}&#x2713;{% else %}&#x2717;{% endif %}
-                </strong>
-                {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
+    </div>
+</div>
+{% if reg.course %}
+<div class="row">
+    <label class="col-sm-4">{% trans 'Presence' %}:</label>
+    <div class="col-sm-8">
+        {% for history in reg.course_history.all %}
+        {% for entry in history.course_journal_entries.all %}
+        <strong title="{{ history.course.name }}, {{ entry.date }}" class="{% if reg in entry.all_registrations %}green{% else %}red{% endif %}">
+        {% if reg in entry.all_registrations %}&#x2713;{% else %}&#x2717;{% endif %}
+        </strong>
+        {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

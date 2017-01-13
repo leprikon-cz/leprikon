@@ -4,9 +4,9 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 
 from ..models.agegroup import AgeGroup
-from ..models.clubs import (
-    Club, ClubGroup, ClubJournalEntry, ClubJournalLeaderEntry, ClubPayment,
-    ClubRegistration, ClubRegistrationRequest, ClubType,
+from ..models.courses import (
+    Course, CourseGroup, CourseJournalEntry, CourseJournalLeaderEntry, CoursePayment,
+    CourseRegistration, CourseRegistrationRequest, CourseType,
 )
 from ..models.events import (
     Event, EventGroup, EventPayment, EventRegistration,
@@ -21,10 +21,10 @@ from ..models.school import School
 from ..models.schoolyear import SchoolYear
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .agegroup import AgeGroupAdmin
-from .clubs import (
-    ClubAdmin, ClubGroupAdmin, ClubJournalEntryAdmin,
-    ClubJournalLeaderEntryAdmin, ClubPaymentAdmin, ClubRegistrationAdmin,
-    ClubRegistrationRequestAdmin, ClubTypeAdmin,
+from .courses import (
+    CourseAdmin, CourseGroupAdmin, CourseJournalEntryAdmin,
+    CourseJournalLeaderEntryAdmin, CoursePaymentAdmin, CourseRegistrationAdmin,
+    CourseRegistrationRequestAdmin, CourseTypeAdmin,
 )
 from .events import (
     EventAdmin, EventGroupAdmin, EventPaymentAdmin, EventRegistrationAdmin,
@@ -54,14 +54,14 @@ admin.site.register(Leader,             LeaderAdmin)
 admin.site.register(Parent,             ParentAdmin)
 admin.site.register(Participant,        ParticipantAdmin)
 
-admin.site.register(ClubType,           ClubTypeAdmin)
-admin.site.register(ClubGroup,          ClubGroupAdmin)
-admin.site.register(Club,               ClubAdmin)
-admin.site.register(ClubRegistration,   ClubRegistrationAdmin)
-admin.site.register(ClubRegistrationRequest, ClubRegistrationRequestAdmin)
-admin.site.register(ClubPayment,        ClubPaymentAdmin)
-admin.site.register(ClubJournalEntry,   ClubJournalEntryAdmin)
-admin.site.register(ClubJournalLeaderEntry, ClubJournalLeaderEntryAdmin)
+admin.site.register(CourseType,         CourseTypeAdmin)
+admin.site.register(CourseGroup,        CourseGroupAdmin)
+admin.site.register(Course,             CourseAdmin)
+admin.site.register(CourseRegistration, CourseRegistrationAdmin)
+admin.site.register(CourseRegistrationRequest, CourseRegistrationRequestAdmin)
+admin.site.register(CoursePayment,      CoursePaymentAdmin)
+admin.site.register(CourseJournalEntry, CourseJournalEntryAdmin)
+admin.site.register(CourseJournalLeaderEntry, CourseJournalLeaderEntryAdmin)
 
 admin.site.register(EventType,          EventTypeAdmin)
 admin.site.register(EventGroup,         EventGroupAdmin)

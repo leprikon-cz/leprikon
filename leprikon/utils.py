@@ -182,7 +182,7 @@ def merge_users(source, target):
         # both users are leaders
         raise
 
-    source.leprikon_clubregistrations.update(user=target)
+    source.leprikon_courseregistrations.update(user=target)
     source.leprikon_eventregistrations.update(user=target)
 
     for p in source.leprikon_participants.all():

@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .models.clubs import ClubType
+from .models.courses import CourseType
 from .models.events import EventType
 from .utils import current_url, url_with_back
 
@@ -77,22 +77,22 @@ class LeprikonMenu(CMSAttachMenu):
             attr={'visible_for_anonymous': False, 'add_url_back': True},
         ))
         nodes.append(NavigationNode(
-            _('My Clubs'),
-            reverse('leprikon:club_list_mine'),
+            _('My Courses'),
+            reverse('leprikon:course_list_mine'),
             len(nodes),
             attr={'require_leader': True},
         ))
         nodes.append(NavigationNode(
             _('Alternating'),
-            reverse('leprikon:club_alternating'),
+            reverse('leprikon:course_alternating'),
             len(nodes),
             parent_id=len(nodes)-1,
             attr={'require_leader': True},
         ))
-        for club_type in ClubType.objects.all():
+        for course_type in CourseType.objects.all():
             nodes.append(NavigationNode(
-                club_type.name,
-                reverse('leprikon:club_list', kwargs={'club_type': club_type.slug}),
+                course_type.name,
+                reverse('leprikon:course_list', kwargs={'course_type': course_type.slug}),
                 len(nodes),
             ))
         nodes.append(NavigationNode(
