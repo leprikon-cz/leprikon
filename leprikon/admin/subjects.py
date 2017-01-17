@@ -109,8 +109,10 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         ('registration__subject',               SubjectListFilter),
         ('registration__subject__leaders',      LeaderListFilter),
     )
-    search_fields   = ('registration__subject__name', 'registration__participant_first_name', 'registration__participant_last_name',
-                       'registration__participant_birth_num')
+    search_fields   = (
+        'registration__subject__name', 'registration__participant_first_name', 'registration__participant_last_name',
+        'registration__participant_birth_num',
+    )
     date_hierarchy  = 'date'
     ordering        = ('-date',)
     raw_id_fields   = ('registration',)
@@ -120,9 +122,10 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     subject.short_description = _('subject')
 
     def amount_html(self, obj):
-        return format_html('<b style="color: {color}">{amount}</b>',
-            color       = amount_color(obj.amount),
-            amount      = currency(obj.amount),
+        return format_html(
+            '<b style="color: {color}">{amount}</b>',
+            color   = amount_color(obj.amount),
+            amount  = currency(obj.amount),
         )
     amount_html.short_description = _('amount')
     amount_html.admin_order_field = 'amount'
@@ -150,4 +153,3 @@ class SubjectRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         )
     user_link.allow_tags = True
     user_link.short_description = _('user')
-

@@ -13,8 +13,10 @@ class BootstrapRenderer:
         widget = self.choice_input_class(self.name, self.value, self.attrs.copy(), (value, label), i)
         row    = (
             '<div class="row select">'
-                '<div class="col-md-1 right">{tag}</div>'
-                '<div class="col-md-11"><label class="form-control" style="font-weight:normal" for="{id}">{label}</label></div>'
+            '    <div class="col-md-1 right">{tag}</div>'
+            '    <div class="col-md-11">'
+            '        <label class="form-control" style="font-weight:normal" for="{id}">{label}</label>'
+            '    </div>'
             '</div>'
         )
         return row.format(
@@ -55,4 +57,3 @@ class RadioSelectBootstrap(RadioSelect):
 
 class CheckboxSelectMultipleBootstrap(CheckboxSelectMultiple):
     renderer = CheckboxFieldRendererBootstrap
-

@@ -88,4 +88,3 @@ class ReportEventPaymentsStatusView(ReportBaseView):
                 discount    = sum(rs.status.discount for rs in self.registration_statuses),
                 explanation = comma_separated(rs.status.explanation for rs in self.registration_statuses),
             )
-

@@ -53,6 +53,7 @@ class EventTypeListFilter(SubjectTypeListFilter):
 
 class SubjectGroupListFilter(admin.RelatedFieldListFilter):
     subject_type_type = None
+
     def __init__(self, field, request, params, model, model_admin, field_path):
         if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
             self.groups = SubjectGroup.objects.filter(subject_types__id=request.leprikon_subject_type_id)
@@ -66,8 +67,10 @@ class SubjectGroupListFilter(admin.RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         return [(g.id, g.plural) for g in self.groups.distinct()]
 
+
 class CourseGroupListFilter(SubjectGroupListFilter):
     subject_type_type = SubjectType.COURSE
+
 
 class EventGroupListFilter(SubjectGroupListFilter):
     subject_type_type = SubjectType.EVENT
@@ -76,6 +79,7 @@ class EventGroupListFilter(SubjectGroupListFilter):
 
 class SubjectListFilter(admin.RelatedFieldListFilter):
     subject_type_type = None
+
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.subjects = Subject.objects.filter(school_year=request.school_year)
         if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
@@ -89,8 +93,10 @@ class SubjectListFilter(admin.RelatedFieldListFilter):
     def field_choices(self, field, request, model_admin):
         return [(s.id, s.name) for s in self.subjects]
 
+
 class CourseListFilter(SubjectListFilter):
     subject_type_type = SubjectType.COURSE
+
 
 class EventListFilter(SubjectListFilter):
     subject_type_type = SubjectType.EVENT
@@ -104,4 +110,3 @@ class LeaderListFilter(admin.RelatedFieldListFilter):
 
     def field_choices(self, field, request, model_admin):
         return [(leader.id, leader) for leader in self.leaders]
-

@@ -21,10 +21,12 @@ from .schoolyear import SchoolYear
 
 @python_2_unicode_compatible
 class Leader(models.Model):
-    user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='leprikon_leader', on_delete=models.PROTECT)
+    user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'),
+                                           related_name='leprikon_leader', on_delete=models.PROTECT)
     description     = HTMLField(_('description'), blank=True, default='')
     photo           = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
-    page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+    page            = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True,
+                                on_delete=models.SET_NULL)
     school_years    = models.ManyToManyField(SchoolYear, verbose_name=_('school years'), related_name='leaders')
 
     class Meta:
@@ -81,7 +83,7 @@ class Leader(models.Model):
 class Contact(models.Model):
     leader          = models.ForeignKey(Leader, verbose_name=_('leader'), related_name='contacts')
     contact_type    = models.CharField(_('contact type'), max_length=30,
-                        choices=settings.LEPRIKON_CONTACT_TYPES)
+                                       choices=settings.LEPRIKON_CONTACT_TYPES)
     contact         = models.CharField(_('contact'), max_length=250)
     order           = models.IntegerField(_('order'), blank=True, default=0)
     public          = models.BooleanField(_('public'), default=False)
@@ -106,7 +108,7 @@ class Contact(models.Model):
 @python_2_unicode_compatible
 class Parent(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                        related_name='leprikon_parents')
+                                        related_name='leprikon_parents')
     first_name      = models.CharField(_('first name'),   max_length=30)
     last_name       = models.CharField(_('last name'),    max_length=30)
     street          = models.CharField(_('street'),       max_length=150)
@@ -147,7 +149,7 @@ class Parent(models.Model):
 @python_2_unicode_compatible
 class Participant(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                        related_name='leprikon_participants')
+                                        related_name='leprikon_participants')
     age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
     first_name      = models.CharField(_('first name'),   max_length=30)
     last_name       = models.CharField(_('last name'),    max_length=30)
@@ -159,14 +161,15 @@ class Participant(models.Model):
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = CountryField(_('citizenship'))
     insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='+', null=True)
-    school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants', blank=True, null=True)
+    school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants',
+                                        blank=True, null=True)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
     health          = models.TextField(_('health'), blank=True, default='')
     MALE = 'm'
     FEMALE = 'f'
     gender          = models.CharField(_('gender'), max_length=1, editable=False,
-                        choices=((MALE, _('male')), (FEMALE, _('female'))))
+                                       choices=((MALE, _('male')), (FEMALE, _('female'))))
 
     class Meta:
         app_label           = 'leprikon'
@@ -189,7 +192,7 @@ class Participant(models.Model):
             # The only unique constraint is on birth_num and user.
             # Let's use nice birth_num related message instead of the default one.
             raise ValidationError(
-                message={'birth_num':_('You have already entered participant with this birth number')},
+                message={'birth_num': _('You have already entered participant with this birth number')},
             )
 
     def save(self, *args, **kwargs):
@@ -226,10 +229,12 @@ class Participant(models.Model):
 
 class LeaderPlugin(CMSPlugin):
     leader      = models.ForeignKey(Leader, verbose_name=_('leader'))
-    template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_LEADER_TEMPLATES,
-                    default=settings.LEPRIKON_LEADER_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
+    template    = models.CharField(
+        _('template'), max_length=100,
+        choices=settings.LEPRIKON_LEADER_TEMPLATES,
+        default=settings.LEPRIKON_LEADER_TEMPLATES[0][0],
+        help_text=_('The template used to render plugin.'),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -237,16 +242,15 @@ class LeaderPlugin(CMSPlugin):
 
 
 class LeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
-    course      = models.ForeignKey('leprikon.Course', verbose_name=_('course'),
-                    blank=True, null=True)
-    event       = models.ForeignKey('leprikon.Event', verbose_name=_('event'),
-                    blank=True, null=True)
-    template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,
-                    default=settings.LEPRIKON_LEADERLIST_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
+    course      = models.ForeignKey('leprikon.Course', verbose_name=_('course'), blank=True, null=True)
+    event       = models.ForeignKey('leprikon.Event', verbose_name=_('event'), blank=True, null=True)
+    template    = models.CharField(
+        _('template'), max_length=100,
+        choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,
+        default=settings.LEPRIKON_LEADERLIST_TEMPLATES[0][0],
+        help_text=_('The template used to render plugin.'),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -254,9 +258,7 @@ class LeaderListPlugin(CMSPlugin):
 
 
 class FilteredLeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
 
     class Meta:
         app_label = 'leprikon'
-

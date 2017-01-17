@@ -13,4 +13,3 @@ class SupportForm(forms.Form):
         required=False,
     )
     back = settings.LEPRIKON_PARAM_BACK
-

@@ -126,7 +126,8 @@ class ReportCourseStatsView(ReportBaseView):
             girls=registrations.filter(participant_gender=Participant.FEMALE).count(),
             local=registrations.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
             eu=registrations.filter(participant_citizenship__in=self.EU_countries).count(),
-            noneu=registrations.exclude(participant_citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
+            noneu=registrations.exclude(participant_citizenship__in=self.EU_countries +
+                                        [settings.LEPRIKON_COUNTRY]).count(),
         )
         context['participants_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
@@ -138,8 +139,8 @@ class ReportCourseStatsView(ReportBaseView):
                 girls=regs.filter(participant_gender=Participant.FEMALE).count(),
                 local=regs.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
                 eu=regs.filter(participant_citizenship__in=self.EU_countries).count(),
-                noneu=regs.exclude(participant_citizenship__in=self.EU_countries+[settings.LEPRIKON_COUNTRY]).count(),
+                noneu=regs.exclude(participant_citizenship__in=self.EU_countries +
+                                   [settings.LEPRIKON_COUNTRY]).count(),
             ))
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
-

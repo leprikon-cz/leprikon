@@ -37,8 +37,7 @@ class ParticipantCreateView(CreateView):
         kwargs['user'] = self.request.user
         parent = self.request.user.leprikon_parents.first()
         if parent:
-            kwargs['initial'] = dict((attr, getattr(parent, attr))
-                for attr in ['street', 'city', 'postal_code'])
+            kwargs['initial'] = dict((attr, getattr(parent, attr)) for attr in ['street', 'city', 'postal_code'])
         return kwargs
 
     def get_message(self):
@@ -63,4 +62,3 @@ class ParticipantUpdateView(UpdateView):
 
     def get_message(self):
         return _('The participant {} has been updated.').format(self.object)
-

@@ -19,8 +19,8 @@ class MessageFilterForm(FormMixin, forms.Form):
     def filter_queryset(self, request, qs):
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
-                Q(message__subject__icontains = word)
-              | Q(message__text__icontains = word)
+                Q(message__subject__icontains = word) |
+                Q(message__text__icontains = word)
             )
         return qs.distinct()
 
@@ -44,8 +44,10 @@ class MessageAdminForm(forms.ModelForm):
         instance = kwargs.get('instance', None)
         if instance:
             kwargs['initial'] = kwargs.get('initial', {})
-            kwargs['initial']['recipients'] = set(kwargs['initial'].get('recipients', [])
-                + [r[0] for r in instance.recipients.values_list('recipient_id')])
+            kwargs['initial']['recipients'] = set(
+                kwargs['initial'].get('recipients', []) +
+                [r[0] for r in instance.recipients.values_list('recipient_id')]
+            )
         super(MessageAdminForm, self).__init__(*args, **kwargs)
         self.fields['recipients'].choices = [
             (u.id, '{} ({})'.format(u.get_username(), u.get_full_name()))
@@ -61,4 +63,3 @@ class MessageAdminForm(forms.ModelForm):
         for user_id in recipients:
             MessageRecipient.objects.get_or_create(recipient_id=user_id, message = self.instance)
         return self.instance
-

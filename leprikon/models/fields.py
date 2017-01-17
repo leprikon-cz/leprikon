@@ -16,6 +16,7 @@ from ..utils import get_birth_date
 class ColorInput(forms.TextInput):
     input_type = 'color'
 
+
 class ColorField(models.CharField):
     default_validators = [RegexValidator(
         re.compile('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'),
@@ -51,23 +52,25 @@ DAY_OF_WEEK = {
     7: _('Sunday'),
 }
 
+
 class DayOfWeekField(models.IntegerField):
     def __init__(self, *args, **kwargs):
         defaults = {
-            'choices'   : tuple(sorted(DAY_OF_WEEK.items())),
+            'choices': tuple(sorted(DAY_OF_WEEK.items())),
         }
         defaults.update(kwargs)
-        super(DayOfWeekField,self).__init__(*args, **defaults)
+        super(DayOfWeekField, self).__init__(*args, **defaults)
 
 
 
 birth_num_regex = re.compile('^[0-9]{2}([0257][1-9]|[1368][0-2])[0-3][0-9]/?[0-9]{3,4}$')
 
+
 def validate_birth_num(value):
     try:
         assert birth_num_regex.match(value) is not None
         get_birth_date(value)
-        value = value.replace('/','')
+        value = value.replace('/', '')
         if len(value) > 9:
             assert int(value) % 11 == 0
     except:
@@ -75,6 +78,7 @@ def validate_birth_num(value):
             message=_('Enter a valid birth number.'),
             code='invalid',
         )
+
 
 class BirthNumberField(models.CharField):
     default_validators = [validate_birth_num]
@@ -90,7 +94,7 @@ class BirthNumberField(models.CharField):
 
     def clean(self, value, model_instance):
         return super(BirthNumberField, self).clean(
-            value[6]=='/' and value or '{}/{}'.format(value[:6], value[6:]),
+            value[6] == '/' and value or '{}/{}'.format(value[:6], value[6:]),
             model_instance,
         )
 
@@ -101,6 +105,7 @@ class _PostalCodeField(CZPostalCodeField, forms.CharField):
     CZPostalCodeField derived from CharField instead of just Field
     to support max_length
     '''
+
 
 class PostalCodeField(models.CharField):
     def __init__(self, *args, **kwargs):
@@ -120,7 +125,6 @@ class PostalCodeField(models.CharField):
 
     def clean(self, value, model_instance):
         return super(PostalCodeField, self).clean(
-            value[3]==' ' and value or '{} {}'.format(value[:3], value[3:]),
+            value[3] == ' ' and value or '{} {}'.format(value[:3], value[3:]),
             model_instance,
         )
-

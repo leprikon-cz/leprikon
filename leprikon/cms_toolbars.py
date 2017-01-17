@@ -17,4 +17,3 @@ class LeprikonToolbar(CMSToolbar):
         position = admin_menu.get_alphabetical_insert_position(_('Leprikon'), SubMenu)
         url = reverse('admin:app_list', args=('leprikon',))
         admin_menu.add_sideframe_item(_('Leprikon'), url=url, position=position)
-

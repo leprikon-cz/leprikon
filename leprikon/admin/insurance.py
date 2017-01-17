@@ -5,4 +5,3 @@ from django.contrib import admin
 
 class InsuranceAdmin(admin.ModelAdmin):
     list_display    = ('code', 'name')
-

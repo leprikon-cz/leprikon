@@ -120,4 +120,3 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
 class TimesheetEntryTypeAdmin(admin.ModelAdmin):
     list_display    = ('name', 'order')
     list_editable   = ('order',)
-

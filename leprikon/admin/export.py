@@ -94,4 +94,3 @@ class AdminExportMixin:
         response.write('</table></body></html>')
         return response
     export_as_xls.short_description = _('Export selected records as XLS')
-

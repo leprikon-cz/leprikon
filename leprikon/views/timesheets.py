@@ -109,4 +109,3 @@ class TimesheetEntryDeleteView(DeleteView):
 
     def get_question(self):
         return _('Do You really want to delete timesheet entry?')
-

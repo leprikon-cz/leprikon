@@ -15,4 +15,3 @@ class ParentForm(FormMixin, forms.ModelForm):
     class Meta:
         model = Parent
         exclude = ['user']
-

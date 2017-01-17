@@ -89,4 +89,3 @@ class LeprikonFilteredSubjectListPlugin(ListPluginBase):
             'placeholder':  placeholder,
         })
         return context
-

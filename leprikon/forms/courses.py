@@ -178,7 +178,7 @@ class CourseJournalEntryForm(FormMixin, CourseJournalEntryAdminForm):
 
         # only allow to select leaders or alterates with not submitted timesheets
         leaders     = self.instance.course.all_leaders
-        alternates  = [ l for l in Leader.objects.all() if l not in leaders ]
+        alternates  = [l for l in Leader.objects.all() if l not in leaders]
 
         self.fields['leaders'].widget.choices = tuple((l.id, l) for l in leaders)
         self.fields['leaders'].help_text = None
@@ -186,10 +186,10 @@ class CourseJournalEntryForm(FormMixin, CourseJournalEntryAdminForm):
         self.fields['alternates'].help_text = None
 
         if self.instance.id:
-            self.initial['leaders']     = [ l.id for l in self.instance.all_leaders ]
-            self.initial['alternates']  = [ l.id for l in self.instance.all_alternates ]
+            self.initial['leaders']     = [l.id for l in self.instance.all_leaders]
+            self.initial['alternates']  = [l.id for l in self.instance.all_alternates]
         else:
-            self.initial['leaders'] = [ l.id for l in leaders ]
+            self.initial['leaders']     = [l.id for l in leaders]
 
     def clean(self):
         self.cleaned_data = super(CourseJournalEntryForm, self).clean()
@@ -289,4 +289,3 @@ class CourseJournalEntryForm(FormMixin, CourseJournalEntryAdminForm):
             entry.save()
         for entry in self.deleted_entries:
             entry.delete()
-

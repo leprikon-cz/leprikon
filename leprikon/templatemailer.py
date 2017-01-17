@@ -11,8 +11,10 @@ class Context(_Context):
     def update(self, data):
         super(Context, self).update(data)
         return self
+
     def __exit__(self, *args):
         self.pop()
+
     def __enter__(self):
         pass
 
@@ -79,4 +81,3 @@ class TemplateMailer(object):
             connection      = self.connection,
             html_message    = html_message
         )
-

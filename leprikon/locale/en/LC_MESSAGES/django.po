@@ -1,0 +1,2506 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-13 20:16+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: admin/courses.py:136
+msgid "Selected courses were published."
+msgstr ""
+
+#: admin/courses.py:137
+msgid "Publish selected courses"
+msgstr ""
+
+#: admin/courses.py:141
+msgid "Selected courses were unpublished."
+msgstr ""
+
+#: admin/courses.py:142
+msgid "Unpublish selected courses"
+msgstr ""
+
+#: admin/courses.py:146
+msgid "Registration was allowed for selected courses."
+msgstr ""
+
+#: admin/courses.py:147
+msgid "Allow registration for selected courses"
+msgstr ""
+
+#: admin/courses.py:151
+msgid "Registration was disallowed for selected courses."
+msgstr ""
+
+#: admin/courses.py:152
+msgid "Disallow registration for selected courses"
+msgstr ""
+
+#: admin/courses.py:157 admin/events.py:138 admin/roles.py:38
+msgid "Target school year"
+msgstr ""
+
+#: admin/courses.py:158
+msgid "All selected courses will be copied to selected school year."
+msgstr ""
+
+#: admin/courses.py:167
+msgid "Selected courses were copied to school year {}."
+msgstr ""
+
+#: admin/courses.py:172 admin/events.py:153 admin/roles.py:53
+msgid "Select target school year"
+msgstr ""
+
+#: admin/courses.py:179
+msgid "Copy selected courses to another school year"
+msgstr ""
+
+#: admin/courses.py:189
+msgid "There are no registrations for this course."
+msgstr ""
+
+#: admin/courses.py:191 admin/events.py:172
+msgid "The number of registrations is lower than {}."
+msgstr ""
+
+#: admin/courses.py:193 admin/events.py:174
+msgid "The number of registrations is greater than {}."
+msgstr ""
+
+#: admin/courses.py:206 admin/events.py:187 admin/roles.py:218
+#: templates/leprikon/course_preview.html:72
+#: templates/leprikon/event_preview.html:81
+msgid "registrations"
+msgstr ""
+
+#: admin/courses.py:218 admin/events.py:199
+msgid "registration requests"
+msgstr ""
+
+#: admin/courses.py:224 admin/events.py:205
+msgid "registrations count"
+msgstr ""
+
+#: admin/courses.py:229 admin/events.py:210
+msgid "registration requests count"
+msgstr ""
+
+#: admin/courses.py:235
+msgid "printable course journal"
+msgstr ""
+
+#: admin/courses.py:236 admin/courses.py:238
+#: templates/leprikon/course_preview.html:76
+msgid "journal"
+msgstr ""
+
+#: admin/courses.py:260 admin/events.py:219 admin/roles.py:121
+#: models/courses.py:134 models/events.py:133 models/roles.py:26
+msgid "photo"
+msgstr ""
+
+#: admin/courses.py:339 admin/courses.py:555 models/courses.py:149
+#: models/courses.py:283 models/courses.py:334 models/courses.py:411
+#: models/courses.py:427 models/courses.py:529 models/courses.py:530
+#: models/courses.py:561 models/courses.py:604 models/courses.py:719
+#: models/courses.py:747 models/roles.py:242
+#: templates/leprikon/course_alternating.html:15
+msgid "course"
+msgstr ""
+
+#: admin/courses.py:343 admin/events.py:286 admin/roles.py:222
+#: models/registrations.py:92 models/roles.py:162 models/school.py:18
+msgid "school"
+msgstr ""
+
+#: admin/courses.py:347 admin/events.py:290
+#: templates/leprikon/registration_preview.html:7
+msgid "download"
+msgstr ""
+
+#: admin/courses.py:352 admin/events.py:295
+msgid "full name"
+msgstr ""
+
+#: admin/courses.py:365 admin/events.py:308 models/registrations.py:151
+#: models/roles.py:173
+msgid "participant"
+msgstr ""
+
+#: admin/courses.py:379 admin/events.py:326
+msgid "add payment"
+msgstr ""
+
+#: admin/courses.py:381 models/courses.py:589
+msgid "course payments"
+msgstr ""
+
+#: admin/courses.py:385 admin/courses.py:399
+msgid "actual balance"
+msgstr ""
+
+#: admin/courses.py:389 admin/courses.py:409
+msgid "total balance"
+msgstr ""
+
+#: admin/courses.py:428 admin/events.py:349
+#, python-brace-format
+msgid "Registration {registration} ({id}) successfully sent to {recipients}."
+msgstr ""
+
+#: admin/courses.py:437 admin/events.py:358
+#, python-brace-format
+msgid "Registration {registration} ({id}) has no recipients."
+msgstr ""
+
+#: admin/courses.py:442 admin/events.py:363
+msgid "Send selected registrations by email"
+msgstr ""
+
+#: admin/courses.py:515 admin/timesheets.py:63
+msgid "update entry"
+msgstr ""
+
+#: admin/courses.py:516 admin/timesheets.py:64
+#: templates/leprikon/course_journal.html:132
+#: templates/leprikon/course_journal.html:214
+#: templates/leprikon/course_journal.html:243
+#: templates/leprikon/course_journal.html:262
+#: templates/leprikon/course_journal.html:281
+#: templates/leprikon/course_preview.html:17
+#: templates/leprikon/event_preview.html:17
+#: templates/leprikon/participant_preview.html:8
+#: templates/leprikon/participant_preview.html:18
+#: templates/leprikon/timesheet_detail.html:38
+msgid "edit"
+msgstr ""
+
+#: admin/courses.py:560
+msgid "agenda"
+msgstr ""
+
+#: admin/courses.py:583 admin/events.py:405 admin/roles.py:87
+#: admin/roles.py:166 admin/roles.py:194 models/courses.py:560
+#: models/events.py:294 models/registrations.py:66 models/roles.py:24
+#: models/roles.py:108 models/roles.py:149
+msgid "user"
+msgstr ""
+
+#: admin/events.py:117
+msgid "Selected events were published."
+msgstr ""
+
+#: admin/events.py:118
+msgid "Publish selected events"
+msgstr ""
+
+#: admin/events.py:122
+msgid "Selected events were unpublished."
+msgstr ""
+
+#: admin/events.py:123
+msgid "Unpublish selected events"
+msgstr ""
+
+#: admin/events.py:127
+msgid "Registration was allowed for selected events."
+msgstr ""
+
+#: admin/events.py:128
+msgid "Allow registration for selected events"
+msgstr ""
+
+#: admin/events.py:132
+msgid "Registration was disallowed for selected events."
+msgstr ""
+
+#: admin/events.py:133
+msgid "Disallow registration for selected events"
+msgstr ""
+
+#: admin/events.py:139
+msgid "All selected events will be copied to selected school year."
+msgstr ""
+
+#: admin/events.py:148
+msgid "Selected events were copied to school year {}."
+msgstr ""
+
+#: admin/events.py:160
+msgid "Copy selected events to another school year"
+msgstr ""
+
+#: admin/events.py:170
+msgid "There are no registrations for this event."
+msgstr ""
+
+#: admin/events.py:282 models/events.py:148 models/events.py:242
+#: models/events.py:258 models/events.py:295 models/events.py:334
+#: models/roles.py:244
+msgid "event"
+msgstr ""
+
+#: admin/events.py:312 models/timesheets.py:75 models/utils.py:33
+#: templates/leprikon/summary.html:16
+msgid "paid"
+msgstr ""
+
+#: admin/events.py:316
+msgid "balance"
+msgstr ""
+
+#: admin/events.py:330 models/events.py:323
+msgid "event payments"
+msgstr ""
+
+#: admin/export.py:81
+msgid "Export selected records as CSV"
+msgstr ""
+
+#: admin/export.py:96
+msgid "Export selected records as XLS"
+msgstr ""
+
+#: admin/messages.py:21
+msgid "Sending emails"
+msgstr ""
+
+#: admin/messages.py:41 templates/leprikon/admin/send_message.html:11
+msgid "Send message"
+msgstr ""
+
+#: admin/messages.py:47
+msgid "Target message"
+msgstr ""
+
+#: admin/messages.py:48
+msgid "Recipients will be added to selected message."
+msgstr ""
+
+#: admin/messages.py:61
+msgid "Select target message"
+msgstr ""
+
+#: admin/messages.py:67
+msgid "Add recipients to existing message"
+msgstr ""
+
+#: admin/messages.py:100
+msgid "recipients count"
+msgstr ""
+
+#: admin/messages.py:101
+msgid "sent mail"
+msgstr ""
+
+#: admin/messages.py:102 models/messages.py:51
+msgid "viewed on site"
+msgstr ""
+
+#: admin/messages.py:108 admin/messages.py:116 models/messages.py:57
+msgid "recipients"
+msgstr ""
+
+#: admin/messages.py:117
+msgid "show recipients details"
+msgstr ""
+
+#: admin/messages.py:119
+msgid "send mails"
+msgstr ""
+
+#: admin/messages.py:120
+msgid "send mail to all recipients"
+msgstr ""
+
+#: admin/messages.py:122
+msgid "send unsent"
+msgstr ""
+
+#: admin/messages.py:123
+msgid "send mails to new recipients only"
+msgstr ""
+
+#: admin/messages.py:127
+msgid "actions"
+msgstr ""
+
+#: admin/messages.py:167
+msgid "Send email to selected recipients"
+msgstr ""
+
+#: admin/messages.py:174
+msgid "Recipients of message {}"
+msgstr ""
+
+#: admin/roles.py:39
+msgid "All selected leaders will be added to selected school year."
+msgstr ""
+
+#: admin/roles.py:48
+msgid "Selected leaders were added to school year {}."
+msgstr ""
+
+#: admin/roles.py:60
+msgid "Add selected leaders to another school year"
+msgstr ""
+
+#: admin/roles.py:64 admin/roles.py:138 models/registrations.py:78
+#: models/registrations.py:99 models/registrations.py:108 models/roles.py:110
+#: models/roles.py:152
+msgid "first name"
+msgstr ""
+
+#: admin/roles.py:69 admin/roles.py:143 models/registrations.py:79
+#: models/registrations.py:100 models/registrations.py:109 models/roles.py:111
+#: models/roles.py:153
+msgid "last name"
+msgstr ""
+
+#: admin/roles.py:74 admin/roles.py:152 conf/default_settings.py:14
+msgid "email"
+msgstr ""
+
+#: admin/roles.py:79 models/roles.py:95
+msgid "contacts"
+msgstr ""
+
+#: admin/roles.py:104 admin/roles.py:213 models/courses.py:150
+msgid "courses"
+msgstr ""
+
+#: admin/roles.py:113 admin/roles.py:214 models/events.py:149
+msgid "events"
+msgstr ""
+
+#: admin/roles.py:148 admin/roles.py:198
+msgid "address"
+msgstr ""
+
+#: admin/timesheets.py:56 models/courses.py:124 models/events.py:120
+#: models/roles.py:25 templates/leprikon/timesheet_detail.html:24
+msgid "description"
+msgstr ""
+
+#: admin/timesheets.py:110
+msgid "Selected timesheets where marked as paid."
+msgstr ""
+
+#: admin/timesheets.py:111
+msgid "Mark selected timesheets as paid"
+msgstr ""
+
+#: admin/timesheets.py:115
+msgid "Selected timesheets where submitted."
+msgstr ""
+
+#: admin/timesheets.py:116
+msgid "Submit selected timesheets"
+msgstr ""
+
+#: admin/user.py:36
+msgid "Target user"
+msgstr ""
+
+#: admin/user.py:37
+msgid "All information will be merged into selected account."
+msgstr ""
+
+#: admin/user.py:48
+msgid "User {} was merged into user {}."
+msgstr ""
+
+#: admin/user.py:50
+msgid "Can not merge user {} into user {}."
+msgstr ""
+
+#: admin/user.py:55
+msgid "Select target user for merge"
+msgstr ""
+
+#: admin/user.py:56
+msgid ""
+"Are you sure you want to merge selected users into one? All participants, "
+"parents, registrations and other related information will be added to the "
+"target user account and the remaining users will be deleted."
+msgstr ""
+
+#: admin/user.py:60
+msgid "Users"
+msgstr ""
+
+#: admin/user.py:61
+msgid "Select target account for merge"
+msgstr ""
+
+#: admin/user.py:66
+msgid "Merge selected user accounts"
+msgstr ""
+
+#: admin/user.py:99 admin/user.py:102
+msgid "login"
+msgstr ""
+
+#: admin/user.py:115 models/roles.py:121
+msgid "parents"
+msgstr ""
+
+#: admin/user.py:128 models/courses.py:611 models/roles.py:174
+msgid "participants"
+msgstr ""
+
+#: apps.py:9 cms_apps.py:12 cms_plugins/courses.py:16 cms_plugins/courses.py:30
+#: cms_plugins/courses.py:70 cms_plugins/events.py:16 cms_plugins/events.py:30
+#: cms_plugins/events.py:70 cms_plugins/leaders.py:16 cms_plugins/leaders.py:30
+#: cms_plugins/leaders.py:60 cms_toolbars.py:17 cms_toolbars.py:19 menu.py:16
+msgid "Leprikon"
+msgstr ""
+
+#: cms_plugins/courses.py:17 forms/courses.py:147 forms/courses.py:255
+#: forms/leaders.py:12 templates/leprikon/registration_preview.html:21
+#: templates/leprikon/reports/course_payments_status.html:14
+msgid "Course"
+msgstr ""
+
+#: cms_plugins/courses.py:31
+msgid "Course list"
+msgstr ""
+
+#: cms_plugins/courses.py:71
+msgid "Course list with search form"
+msgstr ""
+
+#: cms_plugins/events.py:17 forms/leaders.py:13
+#: templates/leprikon/registration_preview.html:21
+#: templates/leprikon/reports/event_payments_status.html:14
+msgid "Event"
+msgstr ""
+
+#: cms_plugins/events.py:31
+msgid "Event list"
+msgstr ""
+
+#: cms_plugins/events.py:71
+msgid "Event list with search form"
+msgstr ""
+
+#: cms_plugins/leaders.py:17 forms/courses.py:32 forms/courses.py:149
+#: forms/events.py:19
+msgid "Leader"
+msgstr ""
+
+#: cms_plugins/leaders.py:31
+msgid "Leader list"
+msgstr ""
+
+#: cms_plugins/leaders.py:61
+msgid "Leader list with search form"
+msgstr ""
+
+#: conf/default_settings.py:15 models/registrations.py:89
+#: models/registrations.py:104 models/registrations.py:113 models/roles.py:116
+#: models/roles.py:159
+msgid "phone"
+msgstr ""
+
+#: conf/default_settings.py:16
+msgid "url"
+msgstr ""
+
+#: conf/default_settings.py:20 conf/default_settings.py:24
+#: conf/default_settings.py:28 conf/default_settings.py:32
+#: conf/default_settings.py:37 conf/default_settings.py:42
+msgid "Default"
+msgstr ""
+
+#: conf/default_settings.py:33
+msgid "Grouped by course groups"
+msgstr ""
+
+#: conf/default_settings.py:38
+msgid "Grouped by event groups"
+msgstr ""
+
+#: conf/default_settings.py:51
+msgid "boolean field"
+msgstr ""
+
+#: conf/default_settings.py:55
+msgid "char field"
+msgstr ""
+
+#: conf/default_settings.py:59
+msgid "text field"
+msgstr ""
+
+#: conf/default_settings.py:63
+msgid "choice field"
+msgstr ""
+
+#: conf/default_settings.py:67
+msgid "date field"
+msgstr ""
+
+#: forms/courses.py:29 forms/events.py:16 forms/leaders.py:11
+#: forms/messages.py:14
+msgid "Search term"
+msgstr ""
+
+#: forms/courses.py:30
+msgid "Course type"
+msgstr ""
+
+#: forms/courses.py:31 forms/events.py:18
+msgid "Group"
+msgstr ""
+
+#: forms/courses.py:33 forms/events.py:20
+#: templates/leprikon/course_preview.html:33
+#: templates/leprikon/event_preview.html:42
+msgid "Place"
+msgstr ""
+
+#: forms/courses.py:34 forms/events.py:21
+#: templates/leprikon/participant_preview.html:23
+#: templates/leprikon/registration_details.html:9
+msgid "Age group"
+msgstr ""
+
+#: forms/courses.py:35
+msgid "Day of week"
+msgstr ""
+
+#: forms/courses.py:37 forms/events.py:23
+msgid "Available for registration"
+msgstr ""
+
+#: forms/courses.py:38 forms/events.py:24
+msgid "Show invisible"
+msgstr ""
+
+#: forms/courses.py:128
+#, python-brace-format
+msgid "The course journal entry starts at {start}"
+msgstr ""
+
+#: forms/courses.py:132
+#, python-brace-format
+msgid "The course journal entry ends at {end}"
+msgstr ""
+
+#: forms/courses.py:148 forms/courses.py:174 forms/timesheets.py:31
+#: templates/leprikon/course_journal.html:196
+#: templates/leprikon/messages_table.html:7
+#: templates/leprikon/reports/course_payments.html:14
+#: templates/leprikon/reports/event_payments.html:14
+msgid "Date"
+msgstr ""
+
+#: forms/courses.py:153 forms/timesheets.py:32
+#: templates/leprikon/event_list/default.html:26
+#: templates/leprikon/event_list/grouped.html:28
+#: templates/leprikon/event_preview.html:30
+msgid "Start"
+msgstr ""
+
+#: forms/courses.py:154 forms/timesheets.py:33
+#: templates/leprikon/event_list/default.html:29
+#: templates/leprikon/event_list/grouped.html:31
+#: templates/leprikon/event_preview.html:33
+msgid "End"
+msgstr ""
+
+#: forms/courses.py:207
+msgid "If You fill in start time, You must fill end time too."
+msgstr ""
+
+#: forms/courses.py:209
+msgid "If You fill in end time, You must fill start time too."
+msgstr ""
+
+#: forms/courses.py:222
+msgid "An overlaping entry has already been added in the course journal."
+msgstr ""
+
+#: forms/courses.py:234
+#, python-brace-format
+msgid "Some submitted timesheet entries start at {start}"
+msgstr ""
+
+#: forms/courses.py:238
+#, python-brace-format
+msgid "Some submitted timesheet entries end at {end}"
+msgstr ""
+
+#: forms/courses.py:249 menu.py:111 templates/leprikon/course_journal.html:153
+msgid "Leaders"
+msgstr ""
+
+#: forms/courses.py:250
+msgid "Alternates"
+msgstr ""
+
+#: forms/courses.py:343
+#, python-brace-format
+msgid "Leader {leaders} has already submitted timesheet for {period}."
+msgid_plural "Leaders {leaders} have already submitted timesheet for {period}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: forms/courses.py:352
+#, python-brace-format
+msgid "Alternate {leaders} has already submitted timesheet for {period}."
+msgid_plural ""
+"Alternates {leaders} have already submitted timesheet for {period}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: forms/events.py:17
+msgid "Event type"
+msgstr ""
+
+#: forms/events.py:22
+msgid "Include past events"
+msgstr ""
+
+#: forms/messages.py:32 forms/messages.py:35
+msgid "Recipients"
+msgstr ""
+
+#: forms/registrations.py:19
+msgid "Terms and Conditions agreement"
+msgstr ""
+
+#: forms/registrations.py:20
+msgid ""
+"By checking the checkbox above I confirm that I have read, understood and "
+"agree with the <a href=\"{}\" target=\"_blank\">Terms and Conditions</a>."
+msgstr ""
+
+#: forms/registrations.py:62 forms/registrations.py:71
+msgid "Choose"
+msgstr ""
+
+#: forms/registrations.py:63
+msgid "new participant"
+msgstr ""
+
+#: forms/registrations.py:72
+msgid "new parent"
+msgstr ""
+
+#: forms/reports/courses.py:10 forms/reports/events.py:10
+msgid "Start date"
+msgstr ""
+
+#: forms/reports/courses.py:11 forms/reports/events.py:11
+msgid "End date"
+msgstr ""
+
+#: forms/reports/courses.py:16 forms/reports/debtors.py:10
+#: forms/reports/events.py:16
+msgid "Status for date"
+msgstr ""
+
+#: forms/reports/courses.py:21
+msgid "Statistics for date"
+msgstr ""
+
+#: forms/schoolyear.py:11
+msgid "School year"
+msgstr ""
+
+#: forms/support.py:11 templates/leprikon/base.html:127
+msgid "Help needed?"
+msgstr ""
+
+#: forms/timesheets.py:34
+msgid "Entry type"
+msgstr ""
+
+#: forms/timesheets.py:43
+#, python-brace-format
+msgid "The timesheet period {period} starts {start}"
+msgstr ""
+
+#: forms/timesheets.py:48
+#, python-brace-format
+msgid "The timesheet period {period} ends {end}"
+msgstr ""
+
+#: forms/timesheets.py:55
+#, python-brace-format
+msgid "Your timesheet for period {period} has already been submitted."
+msgstr ""
+
+#: forms/timesheets.py:71
+msgid "An overlaping entry has already been added in the timesheet."
+msgstr ""
+
+#: forms/user.py:27
+msgid ""
+"User with this email already exists. You may use password reset form if You "
+"have forgotten your user name or password."
+msgstr ""
+
+#: menu.py:24 templates/leprikon/login.html:19
+#: templates/leprikon/password_reset_complete.html:12
+msgid "Log in"
+msgstr ""
+
+#: menu.py:30 templates/leprikon/login.html:28 views/user.py:30
+msgid "Create account"
+msgstr ""
+
+#: menu.py:36
+msgid "Reset password"
+msgstr ""
+
+#: menu.py:42 templates/leprikon/summary.html:6
+msgid "Summary"
+msgstr ""
+
+#: menu.py:48 views/messages.py:21
+msgid "Messages"
+msgstr ""
+
+#: menu.py:54
+msgid "Registrations"
+msgstr ""
+
+#: menu.py:60 templates/leprikon/course_journal.html:174
+#: templates/leprikon/reports/course_stats.html:19
+msgid "Participants"
+msgstr ""
+
+#: menu.py:66
+msgid "Add participant"
+msgstr ""
+
+#: menu.py:73
+msgid "Add parent"
+msgstr ""
+
+#: menu.py:80
+msgid "My Courses"
+msgstr ""
+
+#: menu.py:86
+msgid "Alternating"
+msgstr ""
+
+#: menu.py:99
+msgid "My Events"
+msgstr ""
+
+#: menu.py:116 views/timesheets.py:21
+msgid "Timesheets"
+msgstr ""
+
+#: menu.py:122
+msgid "Add new entry"
+msgstr ""
+
+#: menu.py:129 templates/leprikon/reports/index.html:6
+msgid "Reports"
+msgstr ""
+
+#: menu.py:135 templates/leprikon/terms_conditions.html:6
+msgid "Terms and Conditions"
+msgstr ""
+
+#: menu.py:140 templates/leprikon/base.html:64
+msgid "Log out"
+msgstr ""
+
+#: models/agegroup.py:10 models/courses.py:37 models/courses.py:82
+#: models/courses.py:123 models/courses.py:335 models/events.py:33
+#: models/events.py:78 models/events.py:119 models/insurance.py:11
+#: models/place.py:10 models/question.py:17 models/school.py:11
+#: models/timesheets.py:136
+msgid "name"
+msgstr ""
+
+#: models/agegroup.py:11 models/courses.py:39 models/courses.py:67
+#: models/courses.py:85 models/courses.py:413 models/events.py:35
+#: models/events.py:63 models/events.py:81 models/events.py:244
+#: models/roles.py:86 models/timesheets.py:137
+msgid "order"
+msgstr ""
+
+#: models/agegroup.py:16 models/registrations.py:81 models/roles.py:151
+msgid "age group"
+msgstr ""
+
+#: models/agegroup.py:17 models/courses.py:128 models/courses.py:762
+#: models/events.py:128 models/events.py:349
+msgid "age groups"
+msgstr ""
+
+#: models/courses.py:40 models/courses.py:142 models/events.py:36
+#: models/events.py:141 models/question.py:28
+msgid "additional questions"
+msgstr ""
+
+#: models/courses.py:42 models/courses.py:144 models/events.py:38
+#: models/events.py:143
+msgid "Add additional questions to be asked in the registration form."
+msgstr ""
+
+#: models/courses.py:47 models/courses.py:65 models/courses.py:125
+#: models/courses.py:761 models/courses.py:789
+msgid "course type"
+msgstr ""
+
+#: models/courses.py:48
+msgid "course types"
+msgstr ""
+
+#: models/courses.py:72 models/courses.py:418 models/events.py:68
+#: models/events.py:249 models/messages.py:103
+msgid "attachment"
+msgstr ""
+
+#: models/courses.py:73 models/courses.py:419 models/events.py:69
+#: models/events.py:250 models/messages.py:104
+msgid "attachments"
+msgstr ""
+
+#: models/courses.py:83 models/events.py:79
+msgid "plural"
+msgstr ""
+
+#: models/courses.py:84 models/events.py:80
+msgid "color"
+msgstr ""
+
+#: models/courses.py:90
+msgid "course group"
+msgstr ""
+
+#: models/courses.py:91 models/courses.py:765
+msgid "course groups"
+msgstr ""
+
+#: models/courses.py:122 models/courses.py:759 models/courses.py:787
+#: models/events.py:118 models/events.py:346 models/events.py:374
+#: models/roles.py:240 models/roles.py:257 models/schoolyear.py:38
+msgid "school year"
+msgstr ""
+
+#: models/courses.py:126 models/events.py:126
+msgid "groups"
+msgstr ""
+
+#: models/courses.py:127 models/events.py:127 models/place.py:11
+#: models/place.py:16
+msgid "place"
+msgstr ""
+
+#: models/courses.py:129 models/courses.py:768 models/events.py:129
+#: models/events.py:355 models/roles.py:34
+msgid "leaders"
+msgstr ""
+
+#: models/courses.py:130 models/events.py:130 models/registrations.py:68
+msgid "price"
+msgstr ""
+
+#: models/courses.py:131
+msgid "unit"
+msgstr ""
+
+#: models/courses.py:132 models/events.py:131 models/roles.py:87
+msgid "public"
+msgstr ""
+
+#: models/courses.py:133 models/events.py:132
+msgid "active registration"
+msgstr ""
+
+#: models/courses.py:135 models/events.py:134 models/roles.py:27
+msgid "page"
+msgstr ""
+
+#: models/courses.py:136 models/events.py:135
+msgid "minimal count"
+msgstr ""
+
+#: models/courses.py:137 models/events.py:136
+msgid "maximal count"
+msgstr ""
+
+#: models/courses.py:138 models/events.py:137
+msgid "risks"
+msgstr ""
+
+#: models/courses.py:139 models/events.py:138
+msgid "plan"
+msgstr ""
+
+#: models/courses.py:140 models/events.py:139
+msgid "evaluation"
+msgstr ""
+
+#: models/courses.py:141 models/events.py:140
+msgid "note"
+msgstr ""
+
+#: models/courses.py:210 models/events.py:194
+msgid "groups list"
+msgstr ""
+
+#: models/courses.py:214 models/events.py:198
+msgid "leaders list"
+msgstr ""
+
+#: models/courses.py:218 models/courses.py:292
+msgid "times"
+msgstr ""
+
+#: models/courses.py:222 models/courses.py:343
+msgid "periods"
+msgstr ""
+
+#: models/courses.py:284
+msgid "day of week"
+msgstr ""
+
+#: models/courses.py:285 models/courses.py:606 models/courses.py:698
+#: models/events.py:123 models/timesheets.py:157
+msgid "start time"
+msgstr ""
+
+#: models/courses.py:286 models/courses.py:608 models/courses.py:699
+#: models/events.py:124 models/timesheets.py:158
+msgid "end time"
+msgstr ""
+
+#: models/courses.py:291
+msgid "time"
+msgstr ""
+
+#: models/courses.py:296
+msgid "{day}, {start:%H:%M} - {end:%H:%M}"
+msgstr ""
+
+#: models/courses.py:302
+msgid "{day}, {start:%H:%M}"
+msgstr ""
+
+#: models/courses.py:336 models/events.py:121 models/timesheets.py:36
+msgid "start date"
+msgstr ""
+
+#: models/courses.py:337 models/events.py:122 models/timesheets.py:37
+msgid "end date"
+msgstr ""
+
+#: models/courses.py:342 models/courses.py:508 models/timesheets.py:72
+msgid "period"
+msgstr ""
+
+#: models/courses.py:346
+msgid "{name}, {start:%m/%d %y} - {end:%m/%d %y}"
+msgstr ""
+
+#: models/courses.py:431
+msgid "course registration"
+msgstr ""
+
+#: models/courses.py:432
+msgid "course registrations"
+msgstr ""
+
+#: models/courses.py:507 models/courses.py:582 models/events.py:316
+msgid "registration"
+msgstr ""
+
+#: models/courses.py:509 models/events.py:259
+#: templates/leprikon/registration_payments_presences.html:34
+msgid "discount"
+msgstr ""
+
+#: models/courses.py:510 models/events.py:260
+msgid "discount explanation"
+msgstr ""
+
+#: models/courses.py:514
+msgid "course discount"
+msgstr ""
+
+#: models/courses.py:515
+msgid "course discounts"
+msgstr ""
+
+#: models/courses.py:562 models/events.py:296
+msgid "time of request"
+msgstr ""
+
+#: models/courses.py:563 models/events.py:297 models/roles.py:85
+#: models/roles.py:94
+msgid "contact"
+msgstr ""
+
+#: models/courses.py:563 models/events.py:297
+msgid "Enter phone number, e-mail address or other contact."
+msgstr ""
+
+#: models/courses.py:567
+msgid "course registration request"
+msgstr ""
+
+#: models/courses.py:568
+msgid "course registration requests"
+msgstr ""
+
+#: models/courses.py:583 models/events.py:317
+msgid "payment date"
+msgstr ""
+
+#: models/courses.py:584 models/events.py:318
+msgid "amount"
+msgstr ""
+
+#: models/courses.py:588
+msgid "course payment"
+msgstr ""
+
+#: models/courses.py:600
+msgid "instruction on OSH"
+msgstr ""
+
+#: models/courses.py:605 models/courses.py:713 models/timesheets.py:156
+#: templates/leprikon/course_alternating.html:14
+#: templates/leprikon/timesheet_detail.html:20
+msgid "date"
+msgstr ""
+
+#: models/courses.py:607 models/courses.py:609
+msgid "Leave empty, if the course does not take place"
+msgstr ""
+
+#: models/courses.py:610
+msgid "session agenda"
+msgstr ""
+
+#: models/courses.py:617
+msgid "journal entry"
+msgstr ""
+
+#: models/courses.py:618
+msgid "journal entries"
+msgstr ""
+
+#: models/courses.py:646 models/courses.py:732 models/timesheets.py:181
+#: templates/leprikon/timesheet_detail.html:22
+msgid "duration"
+msgstr ""
+
+#: models/courses.py:696
+msgid "course journal entry"
+msgstr ""
+
+#: models/courses.py:697 models/timesheets.py:83 models/timesheets.py:153
+msgid "timesheet"
+msgstr ""
+
+#: models/courses.py:703
+msgid "course journal leader entry"
+msgstr ""
+
+#: models/courses.py:704
+msgid "course journal leader entries"
+msgstr ""
+
+#: models/courses.py:748 models/courses.py:771 models/events.py:335
+#: models/events.py:358 models/roles.py:229 models/roles.py:246
+msgid "template"
+msgstr ""
+
+#: models/courses.py:751 models/courses.py:774 models/events.py:338
+#: models/events.py:361 models/roles.py:232 models/roles.py:249
+msgid "The template used to render plugin."
+msgstr ""
+
+#: models/courses.py:764 models/events.py:351
+msgid "Keep empty to skip searching by age groups."
+msgstr ""
+
+#: models/courses.py:767 models/events.py:354
+msgid "Keep empty to skip searching by groups."
+msgstr ""
+
+#: models/courses.py:770 models/events.py:357
+msgid "Keep empty to skip searching by leaders."
+msgstr ""
+
+#: models/events.py:43 models/events.py:61 models/events.py:125
+#: models/events.py:348 models/events.py:376
+msgid "event type"
+msgstr ""
+
+#: models/events.py:44
+msgid "event types"
+msgstr ""
+
+#: models/events.py:86
+msgid "event group"
+msgstr ""
+
+#: models/events.py:87 models/events.py:352
+msgid "event groups"
+msgstr ""
+
+#: models/events.py:264
+msgid "event registration"
+msgstr ""
+
+#: models/events.py:265
+msgid "event registrations"
+msgstr ""
+
+#: models/events.py:301
+msgid "event registration request"
+msgstr ""
+
+#: models/events.py:302
+msgid "event registration requests"
+msgstr ""
+
+#: models/events.py:322
+msgid "event payment"
+msgstr ""
+
+#: models/fields.py:22
+msgid "Enter a valid hex color."
+msgstr ""
+
+#: models/fields.py:45
+msgid "Monday"
+msgstr ""
+
+#: models/fields.py:46
+msgid "Tuesday"
+msgstr ""
+
+#: models/fields.py:47
+msgid "Wednesday"
+msgstr ""
+
+#: models/fields.py:48
+msgid "Thursday"
+msgstr ""
+
+#: models/fields.py:49
+msgid "Friday"
+msgstr ""
+
+#: models/fields.py:50
+msgid "Saturday"
+msgstr ""
+
+#: models/fields.py:51
+msgid "Sunday"
+msgstr ""
+
+#: models/fields.py:75
+msgid "Enter a valid birth number."
+msgstr ""
+
+#: models/insurance.py:10
+msgid "code"
+msgstr ""
+
+#: models/insurance.py:16
+msgid "insurance company"
+msgstr ""
+
+#: models/insurance.py:17
+msgid "insurance companies"
+msgstr ""
+
+#: models/messages.py:22
+msgid "created"
+msgstr ""
+
+#: models/messages.py:23
+msgid "subject"
+msgstr ""
+
+#: models/messages.py:24
+msgid "text"
+msgstr ""
+
+#: models/messages.py:29 models/messages.py:48 models/messages.py:98
+msgid "message"
+msgstr ""
+
+#: models/messages.py:30
+msgid "messages"
+msgstr ""
+
+#: models/messages.py:49 models/messages.py:56
+msgid "recipient"
+msgstr ""
+
+#: models/messages.py:50
+#: templates/admin/leprikon/messagerecipient/send_mails.html:63
+msgid "sent"
+msgstr ""
+
+#: models/messages.py:52
+msgid "sent by email"
+msgstr ""
+
+#: models/place.py:17
+msgid "places"
+msgstr ""
+
+#: models/question.py:18
+msgid "question"
+msgstr ""
+
+#: models/question.py:19
+msgid "help text"
+msgstr ""
+
+#: models/question.py:20
+msgid "This is help text. The help text is shown next to the form field."
+msgstr ""
+
+#: models/question.py:21
+msgid "field"
+msgstr ""
+
+#: models/question.py:23
+msgid "field_args"
+msgstr ""
+
+#: models/question.py:23
+msgid "Enter valid JSON structure representing field configuration."
+msgstr ""
+
+#: models/question.py:27
+msgid "additional question"
+msgstr ""
+
+#: models/question.py:57
+msgid "Failed to create field with given field args: {}"
+msgstr ""
+
+#: models/registrations.py:65
+msgid "time of registration"
+msgstr ""
+
+#: models/registrations.py:69
+msgid "additional answers"
+msgstr ""
+
+#: models/registrations.py:71
+msgid "cancel request"
+msgstr ""
+
+#: models/registrations.py:72
+msgid "date of cancellation"
+msgstr ""
+
+#: models/registrations.py:76 models/roles.py:168
+msgid "gender"
+msgstr ""
+
+#: models/registrations.py:77 models/roles.py:169
+msgid "male"
+msgstr ""
+
+#: models/registrations.py:77 models/roles.py:169
+msgid "female"
+msgstr ""
+
+#: models/registrations.py:80 models/roles.py:154
+msgid "birth number"
+msgstr ""
+
+#: models/registrations.py:83 models/registrations.py:101
+#: models/registrations.py:110 models/roles.py:112 models/roles.py:155
+#: models/school.py:12
+msgid "street"
+msgstr ""
+
+#: models/registrations.py:84 models/registrations.py:102
+#: models/registrations.py:111 models/roles.py:113 models/roles.py:156
+#: models/school.py:13
+msgid "city"
+msgstr ""
+
+#: models/registrations.py:85 models/registrations.py:103
+#: models/registrations.py:112 models/roles.py:114 models/roles.py:157
+msgid "postal code"
+msgstr ""
+
+#: models/registrations.py:86 models/roles.py:160
+msgid "citizenship"
+msgstr ""
+
+#: models/registrations.py:87 models/roles.py:161
+msgid "insurance"
+msgstr ""
+
+#: models/registrations.py:90 models/registrations.py:105
+#: models/registrations.py:114 models/roles.py:115 models/roles.py:158
+msgid "email address"
+msgstr ""
+
+#: models/registrations.py:94 models/roles.py:163
+msgid "other school"
+msgstr ""
+
+#: models/registrations.py:95 models/roles.py:164
+msgid "class"
+msgstr ""
+
+#: models/registrations.py:96 models/roles.py:165
+msgid "health"
+msgstr ""
+
+#: models/registrations.py:98 models/registrations.py:163
+msgid "first parent"
+msgstr ""
+
+#: models/registrations.py:107 models/registrations.py:171
+msgid "second parent"
+msgstr ""
+
+#: models/registrations.py:121
+#, python-brace-format
+msgid "{participant} ({birth_num})"
+msgstr ""
+
+#: models/registrations.py:134
+msgid "Participant with this birth number has already been registered."
+msgstr ""
+
+#: models/roles.py:28 models/schoolyear.py:39
+msgid "school years"
+msgstr ""
+
+#: models/roles.py:33 models/roles.py:82 models/roles.py:228
+#: models/timesheets.py:73
+msgid "leader"
+msgstr ""
+
+#: models/roles.py:83
+msgid "contact type"
+msgstr ""
+
+#: models/roles.py:120
+msgid "parent"
+msgstr ""
+
+#: models/roles.py:178
+#, python-brace-format
+msgid "{first_name} {last_name} ({birth_num})"
+msgstr ""
+
+#: models/roles.py:192
+msgid "You have already entered participant with this birth number"
+msgstr ""
+
+#: models/school.py:19
+msgid "schools"
+msgstr ""
+
+#: models/schoolyear.py:30
+msgid "year"
+msgstr ""
+
+#: models/schoolyear.py:31
+msgid "active"
+msgstr ""
+
+#: models/schoolyear.py:46
+msgid "Can not delete sclool year with courses or events."
+msgstr ""
+
+#: models/startend.py:11
+msgid "Start must be before end"
+msgstr ""
+
+#: models/startend.py:12
+msgid "End must be later than start"
+msgstr ""
+
+#: models/timesheets.py:44
+msgid "timesheet period"
+msgstr ""
+
+#: models/timesheets.py:45
+msgid "timesheet periods"
+msgstr ""
+
+#: models/timesheets.py:74
+msgid "submitted"
+msgstr ""
+
+#: models/timesheets.py:84
+msgid "timesheets"
+msgstr ""
+
+#: models/timesheets.py:142
+msgid "timesheet entry type"
+msgstr ""
+
+#: models/timesheets.py:143
+msgid "timesheet entry types"
+msgstr ""
+
+#: models/timesheets.py:155
+msgid "entry type"
+msgstr ""
+
+#: models/timesheets.py:159
+msgid "work description"
+msgstr ""
+
+#: models/timesheets.py:164
+msgid "timesheet entry"
+msgstr ""
+
+#: models/timesheets.py:165
+msgid "timesheet entries"
+msgstr ""
+
+#: models/utils.py:35
+msgid "{} let to pay"
+msgstr ""
+
+#: models/utils.py:37
+msgid "{} overpaid"
+msgstr ""
+
+#: templates/admin/leprikon/message/add_recipients.html:12 views/generic.py:38
+msgid "add"
+msgstr ""
+
+#: templates/admin/leprikon/message/add_recipients.html:13
+#: templates/leprikon/course_journal.html:104
+msgid "back"
+msgstr ""
+
+#: templates/admin/leprikon/messagerecipient/change_list.html:6
+#: templates/admin/leprikon/messagerecipient/send_mails.html:32
+#: templates/leprikon/admin/action_form.html:8
+#: templates/leprikon/admin/merge.html:8
+#: templates/leprikon/admin/send_message.html:8
+msgid "Home"
+msgstr ""
+
+#: templates/admin/leprikon/messagerecipient/send_mails.html:42
+msgid "Start sending"
+msgstr ""
+
+#: templates/admin/leprikon/messagerecipient/send_mails.html:46
+msgid "queued"
+msgstr ""
+
+#: templates/admin/leprikon/messagerecipient/send_mails.html:59
+msgid "sending"
+msgstr ""
+
+#: templates/admin/leprikon/messagerecipient/send_mails.html:67
+msgid "failed"
+msgstr ""
+
+#: templates/leprikon/admin/action_form.html:23
+msgid "Continue"
+msgstr ""
+
+#: templates/leprikon/admin/action_form.html:24
+msgid "Cancel"
+msgstr ""
+
+#: templates/leprikon/admin/merge.html:32
+msgid "Yes, I'm sure"
+msgstr ""
+
+#: templates/leprikon/admin/merge.html:33
+msgid "No, take me back"
+msgstr ""
+
+#: templates/leprikon/admin/send_message.html:23
+msgid "Send"
+msgstr ""
+
+#: templates/leprikon/admin/send_message.html:24 views/generic.py:84
+#: views/user.py:63
+msgid "Back"
+msgstr ""
+
+#: templates/leprikon/base.html:62
+msgid "Edit"
+msgstr ""
+
+#: templates/leprikon/base.html:63 views/user.py:62
+msgid "Change password"
+msgstr ""
+
+#: templates/leprikon/base.html:105
+msgid "OK"
+msgstr ""
+
+#: templates/leprikon/base.html:131
+msgid "send question or suggestion"
+msgstr ""
+
+#: templates/leprikon/base.html:140
+msgid "Powered by Leprikón Information System"
+msgstr ""
+
+#: templates/leprikon/course_alternating.html:16
+#: templates/leprikon/timesheet_detail.html:21
+msgid "start"
+msgstr ""
+
+#: templates/leprikon/course_alternating.html:17
+msgid "end"
+msgstr ""
+
+#: templates/leprikon/course_alternating.html:29
+msgid "edit timesheet entry"
+msgstr ""
+
+#: templates/leprikon/course_alternating.html:33
+msgid "edit course journal entry"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:124
+msgid "Attendance"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:127
+msgctxt "person"
+msgid "Name"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:145
+#: templates/leprikon/course_journal.html:226 views/timesheets.py:18
+msgid "add entry"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:193
+msgid "Agenda"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:197
+#: templates/leprikon/course_preview.html:31
+msgid "Time"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:198
+msgid "Number of hours"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:199
+msgid "Number of leaders"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:200
+msgid "Number of participants"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:201
+msgid "Session agenda"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:206
+#: templates/leprikon/course_journal.html:207
+msgid "canceled"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:239
+msgid "Risks"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:250
+msgid "Place / Risk"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:258
+msgid "Plan for the whole year course activity"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:271
+#: templates/leprikon/course_journal.html:290
+msgid "Signature"
+msgstr ""
+
+#: templates/leprikon/course_journal.html:277
+msgid "Evaluation of the whole year course activity"
+msgstr ""
+
+#: templates/leprikon/course_list.html:14
+#: templates/leprikon/coursejournalentry_form.html:16
+#: templates/leprikon/coursejournalentry_form.html:36
+#: templates/leprikon/event_list.html:14
+#: templates/leprikon/filtered_leader_list.html:34
+#: templates/leprikon/leader_list.html:14
+msgid "Search"
+msgstr ""
+
+#: templates/leprikon/course_list.html:18
+#: templates/leprikon/course_list.html:28
+#: templates/leprikon/coursejournalentry_form.html:22
+#: templates/leprikon/coursejournalentry_form.html:31
+#: templates/leprikon/coursejournalentry_form.html:41
+#: templates/leprikon/event_list.html:18
+#: templates/leprikon/filtered_course_list.html:36
+#: templates/leprikon/filtered_course_list.html:46
+#: templates/leprikon/filtered_event_list.html:36
+#: templates/leprikon/filtered_leader_list.html:38
+#: templates/leprikon/leader_list.html:18
+msgid "selected"
+msgstr ""
+
+#: templates/leprikon/course_list/default.html:35
+#: templates/leprikon/course_list/grouped.html:38
+#: templates/leprikon/course_preview.html:41
+#: templates/leprikon/event_list/default.html:46
+#: templates/leprikon/event_list/grouped.html:48
+#: templates/leprikon/event_preview.html:50
+msgid "Led by"
+msgid_plural "Led by"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/leprikon/course_list/default.html:42
+#: templates/leprikon/course_list/grouped.html:45
+#: templates/leprikon/course_preview.html:48
+#: templates/leprikon/event_list/default.html:53
+#: templates/leprikon/event_list/grouped.html:55
+#: templates/leprikon/event_preview.html:57
+#: templates/leprikon/messagerecipient_detail.html:20
+msgid "Attachments"
+msgstr ""
+
+#: templates/leprikon/course_list/default.html:54
+#: templates/leprikon/course_list/grouped.html:57
+#: templates/leprikon/course_preview.html:60
+#: templates/leprikon/event_list/default.html:65
+#: templates/leprikon/event_list/grouped.html:67
+#: templates/leprikon/event_preview.html:69
+#: templates/leprikon/leader_list/default.html:38
+#: templates/leprikon/leader_preview.html:38
+msgid "More information"
+msgstr ""
+
+#: templates/leprikon/course_preview.html:80
+msgid "add journal entry"
+msgstr ""
+
+#: templates/leprikon/course_registrations.html:6
+#, python-format
+msgid "Registrations for course %(name)s"
+msgstr ""
+
+#: templates/leprikon/course_registrations.html:8
+#: templates/leprikon/event_registrations.html:8
+msgid "Active Registrations"
+msgstr ""
+
+#: templates/leprikon/course_registrations.html:13
+msgid "There are no active registrations for this course."
+msgstr ""
+
+#: templates/leprikon/course_registrations.html:16
+#: templates/leprikon/event_registrations.html:16
+msgid "Inactive Registrations"
+msgstr ""
+
+#: templates/leprikon/course_registrations.html:21
+msgid "There are no inactive registrations for this course."
+msgstr ""
+
+#: templates/leprikon/coursejournalentry_form.html:19
+#: templates/leprikon/coursejournalentry_form.html:28
+#: templates/leprikon/coursejournalentry_form.html:38
+msgid "select all"
+msgstr ""
+
+#: templates/leprikon/courseregistration_pdf.html:6
+#: templates/leprikon/courseregistration_pdf.html:21
+msgid "Course registration"
+msgstr ""
+
+#: templates/leprikon/event_list/default.html:38
+#: templates/leprikon/event_list/grouped.html:40
+#: templates/leprikon/reports/course_payments_status.html:15
+#: templates/leprikon/reports/event_payments_status.html:15
+msgid "Price"
+msgstr ""
+
+#: templates/leprikon/event_registrations.html:6
+#, python-format
+msgid "Registrations for event %(name)s"
+msgstr ""
+
+#: templates/leprikon/event_registrations.html:13
+msgid "There are no active registrations for this event."
+msgstr ""
+
+#: templates/leprikon/event_registrations.html:21
+msgid "There are no inactive registrations for this event."
+msgstr ""
+
+#: templates/leprikon/eventregistration_pdf.html:6
+#: templates/leprikon/eventregistration_pdf.html:21
+msgid "Event registration"
+msgstr ""
+
+#: templates/leprikon/filtered_course_list.html:15
+#: templates/leprikon/filtered_event_list.html:15
+#: templates/leprikon/filtered_leader_list.html:15
+#: templates/leprikon/list.html:25
+msgid "search"
+msgstr ""
+
+#: templates/leprikon/filtered_course_list.html:16
+#: templates/leprikon/filtered_event_list.html:16
+#: templates/leprikon/filtered_leader_list.html:16
+#: templates/leprikon/list.html:26
+msgid "cancel search"
+msgstr ""
+
+#: templates/leprikon/leader_list/default.html:25
+#: templates/leprikon/leader_preview.html:25
+#: templates/leprikon/participant_preview.html:35
+#: templates/leprikon/registration_details.html:21
+msgid "Contact"
+msgstr ""
+
+#: templates/leprikon/leader_preview.html:16
+msgid "Courses"
+msgstr ""
+
+#: templates/leprikon/login.html:6
+msgid "Login"
+msgstr ""
+
+#: templates/leprikon/login.html:25
+msgid "Other options"
+msgstr ""
+
+#: templates/leprikon/login.html:35
+msgid "Log in with Google+"
+msgstr ""
+
+#: templates/leprikon/login.html:43
+msgid "Log in with Facebook"
+msgstr ""
+
+#: templates/leprikon/message_mail.html:7 templates/leprikon/message_mail.txt:6
+#, python-format
+msgid "Show this message on site %(name)s:"
+msgstr ""
+
+#: templates/leprikon/messagerecipient_detail.html:11
+msgid "Sent"
+msgstr ""
+
+#: templates/leprikon/messagerecipient_detail.html:12
+msgid "Viewed"
+msgstr ""
+
+#: templates/leprikon/messages_table.html:6
+msgid "Subject"
+msgstr ""
+
+#: templates/leprikon/pagination.html:4
+msgid "previous"
+msgstr ""
+
+#: templates/leprikon/pagination.html:8
+msgid "next"
+msgstr ""
+
+#: templates/leprikon/pagination.html:13
+#, python-format
+msgid "displaying %(from)s – %(until)s of %(count)s"
+msgstr ""
+
+#: templates/leprikon/parent_preview.html:15
+msgid "Parent has not filled all contact information."
+msgstr ""
+
+#: templates/leprikon/participant_preview.html:15
+msgid "Participant has not filled all contact information."
+msgstr ""
+
+#: templates/leprikon/participant_preview.html:29
+#: templates/leprikon/registration_details.html:15
+msgid "Address"
+msgstr ""
+
+#: templates/leprikon/participant_preview.html:41
+#: templates/leprikon/registration_details.html:27
+msgid "School"
+msgstr ""
+
+#: templates/leprikon/participant_preview.html:47
+#: templates/leprikon/registration_details.html:33
+msgid "Insurance"
+msgstr ""
+
+#: templates/leprikon/participant_preview.html:53
+#: templates/leprikon/registration_details.html:39
+msgid "Health"
+msgstr ""
+
+#: templates/leprikon/participants.html:7
+#: templates/leprikon/registration_form.html:41
+#: templates/leprikon/registration_preview.html:33
+msgid "Parents"
+msgstr ""
+
+#: templates/leprikon/participants.html:11
+msgid "add parent"
+msgstr ""
+
+#: templates/leprikon/password_change_done.html:6
+msgid "Password change successful"
+msgstr ""
+
+#: templates/leprikon/password_change_done.html:8
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/leprikon/password_reset_complete.html:4
+#: templates/leprikon/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/leprikon/password_reset_complete.html:10
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+
+#: templates/leprikon/password_reset_done.html:6
+msgid "Email with instructions sent"
+msgstr ""
+
+#: templates/leprikon/password_reset_done.html:8
+msgid ""
+"We've emailed you instructions for setting your password. You should be "
+"receiving them shortly."
+msgstr ""
+
+#: templates/leprikon/password_reset_done.html:10
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+
+#: templates/leprikon/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+
+#: templates/leprikon/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/leprikon/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr ""
+
+#: templates/leprikon/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr ""
+
+#: templates/leprikon/password_reset_email.html:12
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#: templates/leprikon/registration_details.html:46
+msgid "Parent"
+msgstr ""
+
+#: templates/leprikon/registration_form.html:13
+#: templates/leprikon/registration_preview.html:27
+msgid "Participant"
+msgstr ""
+
+#: templates/leprikon/registration_form.html:77
+msgid "Legal Agreement"
+msgstr ""
+
+#: templates/leprikon/registration_links.html:5
+#, python-format
+msgid "%(participant)s already registered"
+msgstr ""
+
+#: templates/leprikon/registration_links.html:11
+msgid "register"
+msgstr ""
+
+#: templates/leprikon/registration_links.html:14
+msgid "The capacity is already full."
+msgstr ""
+
+#: templates/leprikon/registration_links.html:16
+msgid "contact me, if there is some place available"
+msgstr ""
+
+#: templates/leprikon/registration_links.html:19
+msgid "Registering is currently not allowed."
+msgstr ""
+
+#: templates/leprikon/registration_payments_presences.html:5
+#: templates/leprikon/reports/course_payments_status.html:17
+#: templates/leprikon/reports/event_payments_status.html:17
+msgid "Discount"
+msgstr ""
+
+#: templates/leprikon/registration_payments_presences.html:17
+msgid "Payments"
+msgstr ""
+
+#: templates/leprikon/registration_payments_presences.html:43
+msgid "Presence"
+msgstr ""
+
+#: templates/leprikon/registration_preview.html:12
+msgid "cancel registration"
+msgstr ""
+
+#: templates/leprikon/registration_preview.html:14
+msgid "cancel"
+msgstr ""
+
+#: templates/leprikon/registration_preview.html:39
+msgid "Date and time of registration"
+msgstr ""
+
+#: templates/leprikon/registration_preview.html:46
+msgid "Date of cancellation"
+msgstr ""
+
+#: templates/leprikon/registration_preview.html:48
+msgid "cancellation requested"
+msgstr ""
+
+#: templates/leprikon/registrations.html:6
+#, python-format
+msgid "Registrations in school year %(school_year)s"
+msgstr ""
+
+#: templates/leprikon/registrations.html:14
+#, python-format
+msgid "You have no registrations in school year %(school_year)s."
+msgstr ""
+
+#: templates/leprikon/reports/course_payments.html:10
+#, python-format
+msgid "Course payments from %(date_start)s to %(date_end)s"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments.html:15
+#: templates/leprikon/reports/event_payments.html:15
+msgid "Registration"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments.html:16
+#: templates/leprikon/reports/event_payments.html:16
+msgid "Amount"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:10
+#, python-format
+msgid "Course payment status by date %(date)s"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:16
+#: templates/leprikon/reports/event_payments_status.html:16
+msgid "Number of registrations"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:18
+#: templates/leprikon/reports/event_payments_status.html:18
+msgid "Receivables"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:19
+#: templates/leprikon/reports/event_payments_status.html:19
+msgid "Received payments"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:20
+#: templates/leprikon/reports/event_payments_status.html:20
+msgid "Balance"
+msgstr ""
+
+#: templates/leprikon/reports/course_payments_status.html:71
+msgid "All courses"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:10
+#, python-format
+msgid "Course statistics for %(date)s"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:14
+msgid "Courses count"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:18
+msgid "Age Group"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:20
+msgid "Boys"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:21
+msgid "Girls"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:22
+msgid "Locals"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:23
+msgid "Foreigners EU"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:24
+msgid "Foreigners non-EU"
+msgstr ""
+
+#: templates/leprikon/reports/course_stats.html:38
+msgid "Total"
+msgstr ""
+
+#: templates/leprikon/reports/debtors.html:10
+#, python-format
+msgid "Debtors list by date %(date)s"
+msgstr ""
+
+#: templates/leprikon/reports/debtors.html:14
+msgid "Debtor"
+msgstr ""
+
+#: templates/leprikon/reports/debtors.html:15
+msgid "Debt"
+msgstr ""
+
+#: templates/leprikon/reports/debtors.html:34
+msgid "Total debt"
+msgstr ""
+
+#: templates/leprikon/reports/event_payments.html:10
+#, python-format
+msgid "Event payments from %(date_start)s to %(date_end)s"
+msgstr ""
+
+#: templates/leprikon/reports/event_payments_status.html:10
+#, python-format
+msgid "Event payment status by date %(date)s"
+msgstr ""
+
+#: templates/leprikon/reports/event_payments_status.html:71
+msgid "All events"
+msgstr ""
+
+#: templates/leprikon/reports/index.html:36 views/reports/courses.py:25
+#: views/reports/courses.py:44 views/reports/courses.py:99
+#: views/reports/debtors.py:19 views/reports/events.py:22
+#: views/reports/events.py:41
+msgid "Show"
+msgstr ""
+
+#: templates/leprikon/summary.html:11
+#, python-format
+msgid "Payment status for school year %(school_year)s"
+msgstr ""
+
+#: templates/leprikon/summary.html:14
+msgid "total price of all registrations"
+msgstr ""
+
+#: templates/leprikon/summary.html:15
+msgid "discounts"
+msgstr ""
+
+#: templates/leprikon/summary.html:21
+msgid "New messages"
+msgstr ""
+
+#: templates/leprikon/summary.html:26
+msgid "Timesheets to be submitted"
+msgstr ""
+
+#: templates/leprikon/summary.html:33
+msgid "My courses"
+msgstr ""
+
+#: templates/leprikon/summary.html:40
+msgid "My events"
+msgstr ""
+
+#: templates/leprikon/timesheet_detail.html:12
+#: templates/leprikon/timesheet_preview.html:9
+msgid "submit"
+msgstr ""
+
+#: templates/leprikon/timesheet_detail.html:23
+msgid "type"
+msgstr ""
+
+#: templates/leprikon/timesheet_detail.html:43
+msgid "delete"
+msgstr ""
+
+#: utils.py:107 utils.py:109
+msgid ", and "
+msgstr ""
+
+#: views/courses.py:28
+msgid "No courses matching given search parameters."
+msgstr ""
+
+#: views/courses.py:32 views/events.py:27
+#, python-brace-format
+msgid "{subject_type} in school year {school_year}"
+msgstr ""
+
+#: views/courses.py:56
+msgid "My courses in school year {}"
+msgstr ""
+
+#: views/courses.py:67
+msgid "Alternating in school year {}"
+msgstr ""
+
+#: views/courses.py:114
+msgid "Change course"
+msgstr ""
+
+#: views/courses.py:123
+msgid "The course {} has been updated."
+msgstr ""
+
+#: views/courses.py:131
+msgid "New journal entry"
+msgstr ""
+
+#: views/courses.py:132
+msgid "The journal entry has been created."
+msgstr ""
+
+#: views/courses.py:157
+msgid "Change journal entry"
+msgstr ""
+
+#: views/courses.py:158
+msgid "The journal entry has been updated."
+msgstr ""
+
+#: views/courses.py:172
+msgid "Delete journal entry"
+msgstr ""
+
+#: views/courses.py:173
+msgid "The journal entry has been deleted."
+msgstr ""
+
+#: views/courses.py:187
+msgid "Do You really want to delete course journal entry?"
+msgstr ""
+
+#: views/courses.py:195 views/timesheets.py:82
+msgid "Change timesheet entry"
+msgstr ""
+
+#: views/courses.py:196 views/timesheets.py:83
+msgid "The timesheet entry has been updated."
+msgstr ""
+
+#: views/courses.py:211 views/timesheets.py:95
+msgid "Delete timesheet entry"
+msgstr ""
+
+#: views/courses.py:212 views/timesheets.py:96
+msgid "The timesheet entry has been deleted."
+msgstr ""
+
+#: views/courses.py:221 views/timesheets.py:111
+msgid "Do You really want to delete timesheet entry?"
+msgstr ""
+
+#: views/courses.py:229 views/events.py:110
+msgid "The registration request has been accepted."
+msgstr ""
+
+#: views/courses.py:233
+msgid "Registration request for course {}"
+msgstr ""
+
+#: views/courses.py:253 views/events.py:134
+msgid ""
+"Your request was already submitted. We will contact you, if someone cancels "
+"the registration. You may update the contact, if necessary."
+msgstr ""
+
+#: views/courses.py:259
+msgid ""
+"The capacity of this course has already been filled. However, we may contact "
+"you, if someone cancels the registration. Please, leave your contact "
+"information in the form below."
+msgstr ""
+
+#: views/courses.py:273
+msgid "Registration for course {}"
+msgstr ""
+
+#: views/courses.py:302 views/events.py:183
+msgid "Cancellation request"
+msgstr ""
+
+#: views/courses.py:308 views/events.py:189
+msgid "Are you sure You want to cancel the registration \"{}\"?"
+msgstr ""
+
+#: views/courses.py:311 views/events.py:192
+msgid "The cancellation request for {} has been saved."
+msgstr ""
+
+#: views/events.py:23
+msgid "No events matching given search parameters."
+msgstr ""
+
+#: views/events.py:51
+msgid "My events in school year {}"
+msgstr ""
+
+#: views/events.py:93
+msgid "Change event"
+msgstr ""
+
+#: views/events.py:102
+msgid "The event {} has been updated."
+msgstr ""
+
+#: views/events.py:114
+msgid "Registration request for event {}"
+msgstr ""
+
+#: views/events.py:140
+msgid ""
+"The capacity of this event has already been filled. However, we may contact "
+"you, if someone cancels the registration. Please, leave your contact "
+"information in the form below."
+msgstr ""
+
+#: views/events.py:154
+msgid "Registration for event {}"
+msgstr ""
+
+#: views/generic.py:40
+msgid "No items found."
+msgstr ""
+
+#: views/generic.py:69
+msgid "No items found matching given search parameters."
+msgstr ""
+
+#: views/generic.py:109
+msgid "Save"
+msgstr ""
+
+#: views/generic.py:148
+msgid "Yes"
+msgstr ""
+
+#: views/generic.py:189
+msgid "Delete"
+msgstr ""
+
+#: views/leaders.py:15
+msgid "No leaders matching given query."
+msgstr ""
+
+#: views/leaders.py:19
+msgid "Leaders in school year {}"
+msgstr ""
+
+#: views/messages.py:17
+msgid "No messages matching given query."
+msgstr ""
+
+#: views/parents.py:15
+msgid "New parent"
+msgstr ""
+
+#: views/parents.py:26
+msgid "New parent {} has been created."
+msgstr ""
+
+#: views/parents.py:34
+msgid "Change parent"
+msgstr ""
+
+#: views/parents.py:46
+msgid "The parent {} has been updated."
+msgstr ""
+
+#: views/participants.py:13
+msgid "add participant"
+msgstr ""
+
+#: views/participants.py:19
+msgid "Participants and parents"
+msgstr ""
+
+#: views/participants.py:33
+msgid "New participant"
+msgstr ""
+
+#: views/participants.py:45
+msgid "New participant {} has been created."
+msgstr ""
+
+#: views/participants.py:53
+msgid "Change participant"
+msgstr ""
+
+#: views/participants.py:65
+msgid "The participant {} has been updated."
+msgstr ""
+
+#: views/registrations.py:31
+msgid "Submit registration"
+msgstr ""
+
+#: views/registrations.py:33
+msgid "The registration has been accepted."
+msgstr ""
+
+#: views/reports/__init__.py:27 views/reports/courses.py:24
+msgid "Course payments"
+msgstr ""
+
+#: views/reports/__init__.py:33 views/reports/events.py:21
+msgid "Event payments"
+msgstr ""
+
+#: views/reports/__init__.py:39 views/reports/courses.py:43
+msgid "Course payments status"
+msgstr ""
+
+#: views/reports/__init__.py:45 views/reports/events.py:40
+msgid "Event payments status"
+msgstr ""
+
+#: views/reports/__init__.py:51 views/reports/courses.py:98
+msgid "Course statistics"
+msgstr ""
+
+#: views/reports/__init__.py:57 views/reports/debtors.py:18
+msgid "Debtors list"
+msgstr ""
+
+#: views/schoolyear.py:11
+msgid "Switch school year"
+msgstr ""
+
+#: views/schoolyear.py:14
+msgid "You now work with school year {}."
+msgstr ""
+
+#: views/support.py:12
+msgid "Support"
+msgstr ""
+
+#: views/support.py:13
+msgid "Your question has been sent to our support team. Thank You."
+msgstr ""
+
+#: views/support.py:19
+msgid "Question from web"
+msgstr ""
+
+#: views/support.py:20
+#, python-brace-format
+msgid ""
+"User {user} asks:\n"
+"{question}"
+msgstr ""
+
+#: views/timesheets.py:41
+msgid "Submit timesheet"
+msgstr ""
+
+#: views/timesheets.py:51
+msgid ""
+"Are you sure You want to submit the timesheet now? You won't be able to edit "
+"the entries for {} any more."
+msgstr ""
+
+#: views/timesheets.py:56
+msgid "The timesheet for () has been submitted."
+msgstr ""
+
+#: views/timesheets.py:68
+msgid "New timesheet entry"
+msgstr ""
+
+#: views/timesheets.py:69
+msgid "New timesheet entry has been created."
+msgstr ""
+
+#: views/user.py:33
+msgid "User account {} has been created."
+msgstr ""
+
+#: views/user.py:46
+msgid "Change user"
+msgstr ""
+
+#: views/user.py:52
+msgid "User account {} has been updated."
+msgstr ""
+
+#: views/user.py:92
+msgid ""
+"Enter your email address, and we'll email instructions for setting a new one."
+msgstr ""
+
+#: views/user.py:93
+msgid "Reset my password"
+msgstr ""
+
+#: views/user.py:109
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: views/user.py:110
+msgid "Set my password"
+msgstr ""

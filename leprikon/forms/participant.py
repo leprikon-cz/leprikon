@@ -21,4 +21,3 @@ class ParticipantForm(FormMixin, forms.ModelForm):
             'school', 'school_other', 'school_class',
             'health',
         ]
-

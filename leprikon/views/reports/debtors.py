@@ -32,18 +32,16 @@ class ReportDebtorsView(ReportBaseView):
         context['reports'] = {}
         context['sum'] = 0
 
-        for reg in CourseRegistration.objects.filter(
-            course__school_year = self.request.school_year,
-            created__date__lte = context['date']):
+        for reg in CourseRegistration.objects.filter(course__school_year = self.request.school_year,
+                                                     created__date__lte = context['date']):
             balance = reg.get_payment_statuses(context['date']).partial.balance
             if balance < 0:
                 report = context['reports'].setdefault(reg.participant.user, self.Report())
                 report.append(self.ReportItem(registration=reg, balance=balance))
                 context['sum'] += balance
 
-        for reg in EventRegistration.objects.filter(
-            event__school_year = self.request.school_year,
-            created__date__lte = context['date']):
+        for reg in EventRegistration.objects.filter(event__school_year = self.request.school_year,
+                                                    created__date__lte = context['date']):
             balance = reg.get_payment_status(context['date']).balance
             if balance < 0:
                 report = context['reports'].setdefault(reg.participant.user, self.Report())
@@ -51,4 +49,3 @@ class ReportDebtorsView(ReportBaseView):
                 context['sum'] += balance
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
-

@@ -31,6 +31,7 @@ class TimesheetPeriodManager(models.Manager):
     def for_date(self, date):
         return self.get_or_create(**start_end_by_date(date))[0]
 
+
 @python_2_unicode_compatible
 class TimesheetPeriod(StartEndMixin, models.Model):
     start           = models.DateField(_('start date'), editable=False, unique=True)
@@ -67,10 +68,12 @@ class TimesheetManager(models.Manager):
             period  = TimesheetPeriod.objects.for_date(date),
         )[0]
 
+
 @python_2_unicode_compatible
 class Timesheet(models.Model):
-    period          = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), related_name='timesheets', editable=False)
-    leader          = models.ForeignKey(Leader, verbose_name=_('leader'), related_name='timesheets', editable=False)
+    period          = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), editable=False,
+                                        related_name='timesheets')
+    leader          = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False, related_name='timesheets')
     submitted       = models.BooleanField(_('submitted'), default=False)
     paid            = models.BooleanField(_('paid'), default=False)
 
@@ -149,10 +152,10 @@ class TimesheetEntryType(models.Model):
 
 @python_2_unicode_compatible
 class TimesheetEntry(StartEndMixin, models.Model):
-    timesheet   = models.ForeignKey(Timesheet, editable=False,
-                    verbose_name=_('timesheet'), related_name='timesheet_entries', on_delete=models.PROTECT)
-    entry_type  = models.ForeignKey(TimesheetEntryType, null=True,
-                    verbose_name=_('entry type'), related_name='entries')
+    timesheet   = models.ForeignKey(Timesheet, verbose_name=_('timesheet'), editable=False,
+                                    related_name='timesheet_entries', on_delete=models.PROTECT)
+    entry_type  = models.ForeignKey(TimesheetEntryType, verbose_name=_('entry type'), null=True,
+                                    related_name='entries')
     date        = models.DateField(_('date'))
     start       = models.TimeField(_('start time'))
     end         = models.TimeField(_('end time'))
@@ -189,4 +192,3 @@ class TimesheetEntry(StartEndMixin, models.Model):
 
     def get_delete_url(self):
         return reverse('leprikon:timesheetentry_delete', args=(self.id,))
-

@@ -8,8 +8,9 @@ from ..models.schoolyear import SchoolYear
 
 
 class SchoolYearForm(forms.Form):
-    school_year = forms.ModelChoiceField(label=_('School year'),
-        queryset = SchoolYear.objects.all(),
+    school_year = forms.ModelChoiceField(
+        labeli      =_('School year'),
+        queryset    = SchoolYear.objects.all(),
         empty_label = None,
     )
     back = settings.LEPRIKON_PARAM_BACK
@@ -19,4 +20,5 @@ class SchoolYearForm(forms.Form):
         super(SchoolYearForm, self).__init__(*args, **kwargs)
         if not request.user.is_staff:
             self.fields['school_year'].queryset = (
-            self.fields['school_year'].queryset.filter(active=True))
+                self.fields['school_year'].queryset.filter(active=True)
+            )

@@ -79,4 +79,3 @@ class LeprikonFilteredLeaderListPlugin(ListPluginBase):
             'placeholder':  placeholder,
         })
         return context
-

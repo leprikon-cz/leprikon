@@ -18,8 +18,10 @@ class ParentCreateView(CreateView):
         kwargs = super(ParentCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         if self.request.user.leprikon_parents.count() == 0:
-            kwargs['initial'] = dict((attr, getattr(self.request.user, attr))
-                for attr in ['first_name', 'last_name', 'email'])
+            kwargs['initial'] = dict(
+                (attr, getattr(self.request.user, attr))
+                for attr in ['first_name', 'last_name', 'email']
+            )
         return kwargs
 
     def get_message(self):
@@ -44,4 +46,3 @@ class ParentUpdateView(UpdateView):
 
     def get_message(self):
         return _('The parent {} has been updated.').format(self.object)
-

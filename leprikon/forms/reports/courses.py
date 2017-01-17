@@ -19,4 +19,3 @@ class CoursePaymentsStatusForm(FormMixin, forms.Form):
 
 class CourseStatsForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Statistics for date'))
-

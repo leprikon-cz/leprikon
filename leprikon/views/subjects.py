@@ -200,7 +200,9 @@ class SubjectRegistrationFormView(CreateView):
         self.subject = get_object_or_404(Subject, **lookup_kwargs)
         self.request.school_year = self.subject.school_year
         if self.subject.max_count and self.subject.registrations.count() >= self.subject.max_count:
-            return SubjectRegistrationRequestFormView.as_view()(request, subject_type=self.subject_type, subject=self.subject)
+            return SubjectRegistrationRequestFormView.as_view()(
+                request, subject_type=self.subject_type, subject=self.subject
+            )
         self.model = self._models[self.subject.subject_type.subject_type]
         return super(SubjectRegistrationFormView, self).dispatch(request, **kwargs)
 
@@ -222,9 +224,11 @@ class UserRegistrationMixin(object):
         return super(UserRegistrationMixin, self).get_queryset().filter(user=self.request.user)
 
     def get_template_names(self):
-        return [ self.template_name ] if self.template_name else [
-            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.slug, self.template_name_suffix),
-            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.subject_type, self.template_name_suffix),
+        return [self.template_name] if self.template_name else [
+            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.slug,
+                                                     self.template_name_suffix),
+            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.subject_type,
+                                                     self.template_name_suffix),
             'leprikon/subject_registration{}.html'.format(self.template_name_suffix),
         ]
 
@@ -253,4 +257,3 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
     def confirmed(self):
         self.object.cancel_request = True
         self.object.save()
-

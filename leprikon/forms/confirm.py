@@ -14,4 +14,3 @@ class ConfirmForm(FormMixin, forms.Form):
 
     def save(self):
         return self.instance
-

@@ -11,6 +11,7 @@ from .models.subjects import SubjectType
 from .utils import current_url, first_upper, url_with_back
 
 
+@menu_pool.register_menu
 class LeprikonMenu(CMSAttachMenu):
     name = _('Leprikon')
 
@@ -145,21 +146,21 @@ class LeprikonMenu(CMSAttachMenu):
             ))
             return nodes
         except:
-            raise # TODO delete
             return []
 
-menu_pool.register_menu(LeprikonMenu)
 
 
-
+@menu_pool.register_modifier
 class LeprikonModifier(Modifier):
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
         if post_cut or breadcrumb:
             return nodes
         final = []
         for node in nodes:
-            if ((node.attr.get('require_leader', False) and not request.leader)
-            or  (node.attr.get('require_staff', False)  and not request.user.is_staff)):
+            if (
+                (node.attr.get('require_leader', False) and not request.leader) or
+                (node.attr.get('require_staff', False) and not request.user.is_staff)
+            ):
                 if node.parent and node in node.parent.children:
                     node.parent.children.remove(node)
                 continue
@@ -168,8 +169,6 @@ class LeprikonModifier(Modifier):
                     node.url = url_with_back(node.url, current_url(request))
                 final.append(node)
         return final
-
-menu_pool.register_modifier(LeprikonModifier)
 
 
 # clear menu cache with each reload
@@ -185,6 +184,6 @@ except:
 def invalidate_menu_cache(sender, **kwargs):
     menu_pool.clear()
 
+
 post_save.connect(invalidate_menu_cache, sender=SubjectType)
 post_delete.connect(invalidate_menu_cache, sender=SubjectType)
-

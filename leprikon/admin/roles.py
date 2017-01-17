@@ -26,7 +26,8 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     filter_horizontal   = ('school_years',)
     inlines             = (ContactInlineAdmin,)
     search_fields       = ('user__first_name', 'user__last_name', 'contacts__contact')
-    list_display        = ('id', 'first_name', 'last_name', 'email', 'courses_link', 'events_link', 'contacts', 'user_link', 'icon')
+    list_display        = ('id', 'first_name', 'last_name', 'email', 'courses_link',
+                           'events_link', 'contacts', 'user_link', 'icon')
     ordering            = ('user__first_name', 'user__last_name')
     actions             = ('add_school_year',)
     list_filter         = (('school_years', SchoolYearListFilter),)
@@ -207,13 +208,15 @@ class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return reverse('admin:leprikon_eventregistration_changelist')
 
     def registrations_links(self, obj):
-        return '<a href="{course_regs_url}?participant_birth_num={birth_num}">{course_regs_name}</a>, '\
-               '<a href="{event_regs_url}?participant_birth_num={birth_num}">{event_regs_name}</a>'.format(
-            course_regs_url = self.course_regs_url,
-            event_regs_url  = self.event_regs_url,
-            course_regs_name= _('courses'),
-            event_regs_name = _('events'),
-            birth_num       = obj.birth_num,
+        return (
+            '<a href="{course_regs_url}?participant_birth_num={birth_num}">{course_regs_name}</a>, '
+            '<a href="{event_regs_url}?participant_birth_num={birth_num}">{event_regs_name}</a>'.format(
+                course_regs_url = self.course_regs_url,
+                event_regs_url  = self.event_regs_url,
+                course_regs_name= _('courses'),
+                event_regs_name = _('events'),
+                birth_num       = obj.birth_num,
+            )
         )
     registrations_links.allow_tags = True
     registrations_links.short_description = _('registrations')
@@ -226,4 +229,3 @@ class ParticipantAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return get_user_model().objects.filter(
             leprikon_participants__in = queryset
         ).distinct()
-

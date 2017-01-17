@@ -28,7 +28,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
     day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
-                    choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
+                                            choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
     past        = forms.BooleanField(label=_('Include past subjects'), required=False)
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
@@ -43,7 +43,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
         self.request = request
         self.subject_type = subject_type
         school_year = school_year or request.school_year
-    
+
         # pre filter subjects by initial params
         model = self._models[subject_type.subject_type]
         self.subjects = model.objects.filter(school_year=school_year, subject_type=subject_type)
@@ -52,10 +52,13 @@ class SubjectFilterForm(FormMixin, forms.Form):
 
         subject_ids = set(self.subjects.order_by().values_list('id', flat=True))
 
-        self.fields['group'     ].queryset = SubjectGroup.objects.filter(subject_types__subject_type=subject_type.subject_type, subjects__id__in=subject_ids).distinct()
-        self.fields['leader'    ].queryset = Leader.objects.filter(subjects__id__in=subject_ids).distinct().order_by('user__first_name', 'user__last_name')
-        self.fields['place'     ].queryset = Place.objects.filter(subjects__id__in=subject_ids).distinct()
-        self.fields['age_group' ].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['group'].queryset       = SubjectGroup.objects.filter(
+            subject_types__subject_type = subject_type.subject_type,
+            subjects__id__in            = subject_ids).distinct()
+        self.fields['leader'].queryset      = (Leader.objects.filter(subjects__id__in=subject_ids).distinct()
+                                               .order_by('user__first_name', 'user__last_name'))
+        self.fields['place'].queryset       = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['age_group'].queryset   = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
         if subject_type.subject_type != SubjectType.COURSE:
             del self.fields['day_of_week']
         if subject_type.subject_type != SubjectType.EVENT:
@@ -72,8 +75,8 @@ class SubjectFilterForm(FormMixin, forms.Form):
             return qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
-                Q(name__icontains = word)
-              | Q(description__icontains = word)
+                Q(name__icontains = word) |
+                Q(description__icontains = word)
             )
         if self.cleaned_data['group']:
             qs = qs.filter(groups__in = self.cleaned_data['group'])
@@ -131,26 +134,28 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         for n in range(2):
             if has_parent[n]:
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                    self.fields['parent{}_{}'.format(n+1, field)].required = True
+                    self.fields['parent{}_{}'.format(n + 1, field)].required = True
 
         # sub forms
 
         del kwargs['instance']
 
         class ParticipantSelectForm(FormMixin, forms.Form):
-            participant = forms.ChoiceField(label=_('Choose'),
+            participant = forms.ChoiceField(
+                label   = _('Choose'),
                 choices = [('new', _('new participant'))] + list((p.id, p) for p in self.participants),
                 initial = 'new',
-                widget = RadioSelectBootstrap()
+                widget  = RadioSelectBootstrap(),
             )
         kwargs['prefix'] = 'participant_select'
         self.participant_select_form = ParticipantSelectForm(**kwargs)
 
         class ParentSelectForm(FormMixin, forms.Form):
-            parent = forms.ChoiceField(label=_('Choose'),
+            parent = forms.ChoiceField(
+                label   = _('Choose'),
                 choices = [('new', _('new parent'))] + list((p.id, p) for p in self.parents),
                 initial = 'new',
-                widget = RadioSelectBootstrap()
+                widget  = RadioSelectBootstrap(),
             )
         kwargs['prefix'] = 'parent1_select'
         self.parent1_select_form = ParentSelectForm(**kwargs)
@@ -166,12 +171,14 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         self.agreement_form = self.AgreementForm(**kwargs)
 
     def is_valid(self):
-        return (self.participant_select_form.is_valid()
-            and self.questions_form.is_valid()
-            and self.parent1_select_form.is_valid()
-            and self.parent2_select_form.is_valid()
-            and self.agreement_form.is_valid()
-            and super(RegistrationForm, self).is_valid())
+        return (
+            self.participant_select_form.is_valid() and
+            self.questions_form.is_valid() and
+            self.parent1_select_form.is_valid() and
+            self.parent2_select_form.is_valid() and
+            self.agreement_form.is_valid() and
+            super(RegistrationForm, self).is_valid()
+        )
 
     def save(self, commit=True):
         self.instance.price = self.instance.subject.price
@@ -181,7 +188,10 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         # save / update participant
         if self.participant_select_form.cleaned_data['participant'] == 'new':
             try:
-                participant = Participant.objects.get(user=self.instance.user, birth_num=self.instance.participant.birth_num)
+                participant = Participant.objects.get(
+                    user        = self.instance.user,
+                    birth_num   = self.instance.participant.birth_num,
+                )
             except Participant.DoesNotExist:
                 participant = Participant()
                 participant.user = self.instance.user
@@ -215,9 +225,13 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             parent.save()
 
     class AgreementForm(FormMixin, forms.Form):
-        agreement = forms.BooleanField(label=_('Terms and Conditions agreement'),
-            help_text=SimpleLazyObject(lambda: _('By checking the checkbox above I confirm that I have read, understood and agree with the '
-                '<a href="{}" target="_blank">Terms and Conditions</a>.').format(reverse('leprikon:terms_conditions'))))
+        agreement = forms.BooleanField(
+            label       = _('Terms and Conditions agreement'),
+            help_text   = SimpleLazyObject(lambda: _(
+                'By checking the checkbox above I confirm that I have read, understood and agree with the '
+                '<a href="{}" target="_blank">Terms and Conditions</a>.'
+            ).format(reverse('leprikon:terms_conditions')))
+        )
 
 
 
@@ -260,5 +274,4 @@ class RegistrationAdminForm(forms.ModelForm):
         for n in range(2):
             if has_parent[n]:
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                    self.fields['parent{}_{}'.format(n+1, field)].required = True
-
+                    self.fields['parent{}_{}'.format(n + 1, field)].required = True

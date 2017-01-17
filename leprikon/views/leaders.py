@@ -21,4 +21,3 @@ class LeaderListView(FilteredListView):
     def get_queryset(self):
         form = self.get_form()
         return form.get_queryset()
-

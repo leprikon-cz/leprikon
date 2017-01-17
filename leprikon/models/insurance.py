@@ -18,4 +18,3 @@ class Insurance(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.name)
-

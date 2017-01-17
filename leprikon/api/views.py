@@ -21,5 +21,6 @@ def course_registrations(request, course_id):
     except:
         d = None
 
-    return JsonResponse({'registrations': list({'value': r.id, 'label': str(r)} for r in course.get_active_registrations(d))})
-
+    return JsonResponse({
+        'registrations': list({'value': r.id, 'label': str(r)} for r in course.get_active_registrations(d)),
+    })

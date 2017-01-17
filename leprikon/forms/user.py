@@ -21,8 +21,7 @@ User = get_user_model()
 class UserFormMixin(FormMixin):
 
     def clean_email(self):
-        if self.cleaned_data['email'] and \
-            User.objects.filter(email=self.cleaned_data['email']).first():
+        if self.cleaned_data['email'] and User.objects.filter(email=self.cleaned_data['email']).first():
             raise ValidationError(
                 _('User with this email already exists. '
                   'You may use password reset form if You have forgotten your user name or password.'),

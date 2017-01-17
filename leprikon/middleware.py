@@ -68,4 +68,3 @@ class LeprikonMiddleware(object):
     def process_request(self, request):
         type(request).school_year = school_year()
         type(request).leader = leader()
-

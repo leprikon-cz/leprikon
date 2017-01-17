@@ -22,4 +22,3 @@ class LazySettings(object):
 
 
 settings = LazySettings()
-

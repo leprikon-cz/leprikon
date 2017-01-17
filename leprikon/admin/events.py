@@ -45,11 +45,11 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     )
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
-        ('school_year', SchoolYearListFilter),
-        ('subject_type',EventTypeListFilter),
+        ('school_year',     SchoolYearListFilter),
+        ('subject_type',    EventTypeListFilter),
         'age_groups',
-        ('groups',      EventGroupListFilter),
-        ('leaders',     LeaderListFilter),
+        ('groups',          EventGroupListFilter),
+        ('leaders',         LeaderListFilter),
     )
     inlines         = (
         SubjectAttachmentInlineAdmin,
@@ -121,14 +121,15 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render_to_response('leprikon/admin/action_form.html', {
-            'title': _('Select target school year'),
-            'queryset': queryset,
-            'opts': self.model._meta,
-            'form': form,
-            'action': 'copy_to_school_year',
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
+        return render_to_response(
+            'leprikon/admin/action_form.html', {
+                'title': _('Select target school year'),
+                'queryset': queryset,
+                'opts': self.model._meta,
+                'form': form,
+                'action': 'copy_to_school_year',
+                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+            }, context_instance=RequestContext(request))
     copy_to_school_year.short_description = _('Copy selected events to another school year')
 
     def get_message_recipients(self, request, queryset):
@@ -149,9 +150,9 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             title = ''
         return '<a href="{url}" title="{title}">{icon} {count}</a>'.format(
             url     = reverse('admin:{}_{}_changelist'.format(
-                        EventRegistration._meta.app_label,
-                        EventRegistration._meta.model_name,
-                    )) + '?subject={}'.format(obj.id),
+                EventRegistration._meta.app_label,
+                EventRegistration._meta.model_name,
+            )) + '?subject={}'.format(obj.id),
             title   = title,
             icon    = _boolean_icon(icon),
             count   = obj.registrations_count,
@@ -163,9 +164,9 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def get_registration_requests_link(self, obj):
         return '<a href="{url}">{count}</a>'.format(
             url     = reverse('admin:{}_{}_changelist'.format(
-                        SubjectRegistrationRequest._meta.app_label,
-                        SubjectRegistrationRequest._meta.model_name,
-                    )) + '?subject={}'.format(obj.id),
+                SubjectRegistrationRequest._meta.app_label,
+                SubjectRegistrationRequest._meta.model_name,
+            )) + '?subject={}'.format(obj.id),
             count   = obj.registration_requests_count,
         )
     get_registration_requests_link.short_description = _('registration requests')
@@ -236,7 +237,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         questions       = obj.subject.all_questions
         answers         = obj.get_answers()
         kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
-            ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
+            ('q_' + q.name, q.get_field(initial=answers.get(q.name, None)))
             for q in questions
         ))
         return super(EventRegistrationAdmin, self).get_form(request, obj, **kwargs)
@@ -245,7 +246,7 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         questions   = form.instance.subject.all_questions
         answers     = {}
         for q in questions:
-            answers[q.name] = form.cleaned_data['q_'+q.name]
+            answers[q.name] = form.cleaned_data['q_' + q.name]
         form.instance.answers = dumps(answers)
         return super(EventRegistrationAdmin, self).save_form(request, form, change)
 
@@ -289,8 +290,9 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
 
     def get_payments_html(self, obj):
         status = obj.get_payment_status()
-        return format_html('<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
-                           '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
+        return format_html(
+            '<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
+            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
             color       = status.color,
             href_list   = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
             href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
@@ -303,9 +305,11 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
 
     def get_urls(self):
         urls = super(EventRegistrationAdmin, self).get_urls()
-        return [
-            urls_url(r'(?P<reg_id>\d+).pdf$', self.admin_site.admin_view(self.pdf), name='leprikon_subjectregistration_pdf'),
-        ] + urls
+        return [urls_url(
+            r'(?P<reg_id>\d+).pdf$',
+            self.admin_site.admin_view(self.pdf),
+            name='leprikon_subjectregistration_pdf',
+        )] + urls
 
     def pdf(self, request, reg_id):
         from ..views.subjects import SubjectRegistrationPdfView
@@ -338,4 +342,3 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         return get_user_model().objects.filter(
             leprikon_subjectregistrations__in = queryset
         ).distinct()
-

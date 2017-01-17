@@ -23,8 +23,8 @@ class MessageMailer(TemplateMailer):
 
     def send_mail(self, message_recipient):
         super(MessageMailer, self).send_mail(
-            recipient_list      = ['{} <{}>'.format(message_recipient.recipient.get_full_name(), message_recipient.recipient.email)],
+            recipient_list      = ['{} <{}>'.format(message_recipient.recipient.get_full_name(),
+                                                    message_recipient.recipient.email)],
             message_recipient   = message_recipient,
             site                = Site.objects.get_current(),
         )
-

@@ -47,7 +47,10 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
                             merge_users(user, target)
                             self.message_user(request, _('User {} was merged into user {}.').format(user, target))
                         except:
-                            self.message_user(request, _('Can not merge user {} into user {}.').format(user, target), level=ERROR)
+                            self.message_user(
+                                request, _('Can not merge user {} into user {}.').format(user, target),
+                                level=ERROR
+                            )
                 return
         else:
             form = MergeForm()
@@ -129,4 +132,3 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def get_message_recipients(self, request, queryset):
         return queryset.all()
-

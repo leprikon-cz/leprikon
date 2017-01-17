@@ -53,7 +53,8 @@ class ListView(GenericViewMixin, _ListView):
         return self.message_empty
 
     def get_context_data(self, *args, **kwargs):
-        return super(ListView, self).get_context_data(*args,
+        return super(ListView, self).get_context_data(
+            *args,
             preview_template = self.preview_template,
             add_url = self.get_add_url(),
             add_label = self.get_add_label(),
@@ -72,10 +73,7 @@ class FilteredListView(ListView):
         return self.form_class(self.request, data=self.request.GET)
 
     def get_context_data(self, *args, **kwargs):
-        return super(FilteredListView, self).get_context_data(*args,
-            form = self.get_form(),
-            **kwargs
-        )
+        return super(FilteredListView, self).get_context_data(*args, form=self.get_form(), **kwargs)
 
 
 
@@ -84,7 +82,8 @@ class BackViewMixin(object):
     back_label  = _('Back')
 
     def get_context_data(self, *args, **kwargs):
-        return super(BackViewMixin, self).get_context_data(*args,
+        return super(BackViewMixin, self).get_context_data(
+            *args,
             back_url        = self.get_back_url(),
             back_label      = self.get_back_label(),
             **kwargs
@@ -95,7 +94,7 @@ class BackViewMixin(object):
 
     def get_back_url(self):
         url = self.request.POST.get(settings.LEPRIKON_PARAM_BACK,
-              self.request.GET.get(settings.LEPRIKON_PARAM_BACK, ''))
+                                    self.request.GET.get(settings.LEPRIKON_PARAM_BACK, ''))
         if is_safe_url(url=url, host=self.request.get_host()):
             return url
         else:
@@ -111,7 +110,8 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
     message         = None
 
     def get_context_data(self, *args, **kwargs):
-        return super(FormViewMixin, self).get_context_data(*args,
+        return super(FormViewMixin, self).get_context_data(
+            *args,
             instructions    = self.get_instructions(),
             submit_label    = self.get_submit_label(),
             **kwargs
@@ -151,10 +151,7 @@ class ConfirmFormViewMixin(FormViewMixin):
         return self.question
 
     def get_context_data(self, *args, **kwargs):
-        return super(ConfirmFormViewMixin, self).get_context_data(*args,
-            question    = self.get_question(),
-            **kwargs
-        )
+        return super(ConfirmFormViewMixin, self).get_context_data(*args, question=self.get_question(), **kwargs)
 
     def form_valid(self, form):
         self.confirmed()
@@ -217,4 +214,3 @@ class PdfView(PdfViewMixin, _DetailView):
 
 class TemplateView(GenericViewMixin, _TemplateView):
     pass
-

@@ -65,7 +65,8 @@ def registration_links(context, subject):
     if context['request'].user.is_authenticated():
         context['registrations'] = subject.registrations.filter(user=context['request'].user)
         try:
-            context['registration_request'] = context['request'].user.leprikon_registration_requests.get(subject=subject)
+            context['registration_request'] = (context['request'].user.leprikon_registration_requests
+                                               .get(subject=subject))
         except:
             pass
     else:
@@ -112,4 +113,3 @@ def query_string(context, key, value):
     get = context['request'].GET.copy()
     get[key] = value
     return get.urlencode()
-

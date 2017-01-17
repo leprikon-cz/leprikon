@@ -23,4 +23,3 @@ class AgeGroup(models.Model):
 
     def title(self):
         return first_upper(self.name)
-

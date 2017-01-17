@@ -38,4 +38,3 @@ class MessageDetailView(BackViewMixin, DetailView):
             obj.viewed = now()
             obj.save()
         return obj
-

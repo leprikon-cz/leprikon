@@ -54,7 +54,8 @@ class UserUpdateView(UpdateView):
 
 
 def user_password(request):
-    return password_change(request,
+    return password_change(
+        request,
         template_name='leprikon/password.html',
         password_change_form=UserPasswordForm,
         post_change_redirect=reverse('leprikon:summary'),
@@ -67,54 +68,52 @@ def user_password(request):
     )
 
 
-
 def user_login(request):
-    return login(request,
-        template_name='leprikon/login.html',
-        authentication_form=UserLoginForm,
-        redirect_field_name=settings.LEPRIKON_PARAM_BACK,
-    )
-
+    return login(request, template_name='leprikon/login.html', authentication_form=UserLoginForm,
+                 redirect_field_name=settings.LEPRIKON_PARAM_BACK)
 
 
 def user_logout(request):
-    return logout(request, next_page='/',
-        redirect_field_name=settings.LEPRIKON_PARAM_BACK,
-    )
+    return logout(request, next_page='/', redirect_field_name=settings.LEPRIKON_PARAM_BACK)
+
 
 def password_reset(request):
-    return pr(request,
+    return pr(
+        request,
         template_name='leprikon/password_reset.html',
         password_reset_form=PasswordResetForm,
         email_template_name='leprikon/password_reset_email.html',
         from_email=settings.SERVER_EMAIL,
         extra_context={
-            'instructions': '<p>{}<p>'.format(_('Enter your email address, and we\'ll email instructions for setting a new one.')),
+            'instructions': '<p>{}<p>'.format(
+                _('Enter your email address, and we\'ll email instructions for setting a new one.')
+            ),
             'submit_label': _('Reset my password'),
             'placeholder': 'password_reset',
         },
         post_reset_redirect=reverse('leprikon:password_reset_done'),
     )
 
+
 def password_reset_done(request):
-    return pr_done(request,
-        template_name='leprikon/password_reset_done.html',
-    )
+    return pr_done(request, template_name='leprikon/password_reset_done.html')
+
 
 def password_reset_confirm(request, uidb64=None, token=None):
-    return pr_confirm(request, uidb64, token,
+    return pr_confirm(
+        request, uidb64, token,
         template_name='leprikon/password_reset_confirm.html',
         set_password_form=SetPasswordForm,
         extra_context={
-            'instructions': '<p>{}<p>'.format(_('Please enter your new password twice so we can verify you typed it in correctly.')),
+            'instructions': '<p>{}<p>'.format(
+                _('Please enter your new password twice so we can verify you typed it in correctly.')
+            ),
             'submit_label': _('Set my password'),
             'placeholder': 'password_set',
         },
         post_reset_redirect=reverse('leprikon:password_reset_complete'),
     )
 
-def password_reset_complete(request):
-    return pr_complete(request,
-        template_name='leprikon/password_reset_complete.html',
-    )
 
+def password_reset_complete(request):
+    return pr_complete(request, template_name='leprikon/password_reset_complete.html')

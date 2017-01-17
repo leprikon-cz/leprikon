@@ -36,15 +36,18 @@ from .schoolyear import SchoolYear
 class SubjectType(models.Model):
     COURSE = 'course'
     EVENT = 'event'
-    subject_type    = models.CharField(_('subjects'), choices=((COURSE, _('course')), (EVENT, _('event'))), max_length=10)
+    subject_type    = models.CharField(_('subjects'), max_length=10,
+                                       choices=((COURSE, _('course')), (EVENT, _('event'))))
     name            = models.CharField(_('name'), max_length=150)
     name_genitiv    = models.CharField(_('name (genitiv)'), max_length=150, blank=True)
     name_akuzativ   = models.CharField(_('name (akuzativ)'), max_length=150, blank=True)
     plural          = models.CharField(_('name (plural)'), max_length=150)
     slug            = models.SlugField()
     order           = models.IntegerField(_('order'), blank=True, default=0)
-    questions       = models.ManyToManyField(Question, verbose_name=_('additional questions'), blank=True,
-                        help_text=_('Add additional questions to be asked in the registration form.'))
+    questions       = models.ManyToManyField(
+        Question, verbose_name=_('additional questions'), blank=True,
+        help_text=_('Add additional questions to be asked in the registration form.'),
+    )
 
     class Meta:
         app_label           = 'leprikon'
@@ -123,9 +126,9 @@ class SubjectGroup(models.Model):
             s = 1
         (r, g, b) = colorsys.hsv_to_rgb(h, s, v)
         return '#{:02x}{:02x}{:02x}'.format(
-            int(r*255),
-            int(g*255),
-            int(b*255),
+            int(r * 255),
+            int(g * 255),
+            int(b * 255),
         )
 
 
@@ -137,7 +140,8 @@ class Subject(models.Model):
     description = HTMLField(_('description'), blank=True, default='')
     subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), related_name='subjects')
     groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects')
-    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='subjects', blank=True, null=True, on_delete=models.SET_NULL)
+    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='subjects', blank=True, null=True,
+                                    on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price       = PriceField(_('price'), blank=True, null=True)
@@ -151,9 +155,8 @@ class Subject(models.Model):
     plan        = HTMLField(_('plan'), blank=True)
     evaluation  = HTMLField(_('evaluation'), blank=True)
     note        = models.CharField(_('note'), max_length=300, blank=True, default='')
-    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
-                    blank=True,
-                    help_text=_('Add additional questions to be asked in the registration form.'))
+    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'), blank=True,
+                                         help_text=_('Add additional questions to be asked in the registration form.'))
 
     class Meta:
         app_label           = 'leprikon'
@@ -197,7 +200,8 @@ class Subject(models.Model):
         return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
 
     def get_registration_url(self):
-        return reverse('leprikon:subject_registration_form', kwargs={'subject_type': self.subject_type.slug, 'pk': self.id})
+        return reverse('leprikon:subject_registration_form',
+                       kwargs={'subject_type': self.subject_type.slug, 'pk': self.id})
 
     def get_edit_url(self):
         return reverse('admin:leprikon_subject_change', args=(self.subject_type.slug, self.id))
@@ -238,7 +242,7 @@ class SubjectRegistration(models.Model):
     slug            = models.SlugField(editable=False)
     created         = models.DateTimeField(_('time of registration'), auto_now_add=True)
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                        related_name='leprikon_registrations', on_delete=models.PROTECT)
+                                        related_name='leprikon_registrations', on_delete=models.PROTECT)
     subject         = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='registrations')
     price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
@@ -249,23 +253,23 @@ class SubjectRegistration(models.Model):
     MALE = 'm'
     FEMALE = 'f'
     participant_gender      = models.CharField(_('gender'), max_length=1, editable=False,
-                                choices=((MALE, _('male')), (FEMALE, _('female'))))
+                                               choices=((MALE, _('male')), (FEMALE, _('female'))))
     participant_first_name  = models.CharField(_('first name'),   max_length=30)
     participant_last_name   = models.CharField(_('last name'),    max_length=30)
     participant_birth_num   = BirthNumberField(_('birth number'))
     participant_age_group   = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
-                                related_name='+', on_delete=models.PROTECT)
+                                                related_name='+', on_delete=models.PROTECT)
     participant_street      = models.CharField(_('street'),       max_length=150)
     participant_city        = models.CharField(_('city'),         max_length=150)
     participant_postal_code = PostalCodeField(_('postal code'))
     participant_citizenship = CountryField(_('citizenship'))
     participant_insurance   = models.ForeignKey(Insurance, verbose_name=_('insurance'), null=True,
-                                related_name='+', on_delete=models.PROTECT)
+                                                related_name='+', on_delete=models.PROTECT)
     participant_phone       = models.CharField(_('phone'),        max_length=30, blank=True, default='')
     participant_email       = models.EmailField(_('email address'),              blank=True, default='')
 
     participant_school          = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                                    related_name='+', on_delete=models.PROTECT)
+                                                    related_name='+', on_delete=models.PROTECT)
     participant_school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     participant_school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
     participant_health          = models.TextField(_('health'), blank=True, default='')
@@ -371,7 +375,7 @@ class SubjectRegistration(models.Model):
         return sum(p.amount for p in self.get_payments(d))
 
     def get_absolute_url(self):
-        return reverse('leprikon:registration_pdf', kwargs={'slug':self.slug})
+        return reverse('leprikon:registration_pdf', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -449,9 +453,12 @@ class SubjectRegistration(models.Model):
             else:
                 return self.school_name or self.school_class or ''
 
+
+
 @python_2_unicode_compatible
 class SubjectRegistrationRequest(models.Model):
-    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='leprikon_registration_requests')
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
+                                related_name='leprikon_registration_requests')
     subject = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='registration_requests')
     created = models.DateTimeField(_('time of request'), editable=False, auto_now_add=True)
 
@@ -472,7 +479,8 @@ class SubjectRegistrationRequest(models.Model):
 
 @python_2_unicode_compatible
 class SubjectPayment(models.Model):
-    registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'), related_name='payments', on_delete=models.PROTECT)
+    registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
+                                        related_name='payments', on_delete=models.PROTECT)
     date            = models.DateField(_('payment date'))
     amount          = PriceField(_('amount'))
 
@@ -492,9 +500,9 @@ class SubjectPayment(models.Model):
 class SubjectPlugin(CMSPlugin):
     subject     = models.ForeignKey(Subject, verbose_name=_('subject'))
     template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_COURSE_TEMPLATES,
-                    default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
+                                   choices=settings.LEPRIKON_COURSE_TEMPLATES,
+                                   default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
 
     class Meta:
         app_label = 'leprikon'
@@ -502,22 +510,18 @@ class SubjectPlugin(CMSPlugin):
 
 
 class SubjectListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
-    subject_type= models.ForeignKey(SubjectType, verbose_name=_('subject type'))
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by age groups.'))
-    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('subject groups'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by groups.'))
-    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by leaders.'))
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'))
+    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True,
+                                         help_text=_('Keep empty to skip searching by age groups.'))
+    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('subject groups'), blank=True,
+                                         help_text=_('Keep empty to skip searching by groups.'))
+    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True,
+                                         help_text=_('Keep empty to skip searching by leaders.'))
     template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
-                    default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
+                                   choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
+                                   default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
 
     class Meta:
         app_label = 'leprikon'
@@ -530,13 +534,11 @@ class SubjectListPlugin(CMSPlugin):
 
 
 class FilteredSubjectListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
-    subject_type= models.ForeignKey(SubjectType, verbose_name=_('subject type'))
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'))
 
     class Meta:
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
         self.subject_types = oldinstance.subject_types.all()
-

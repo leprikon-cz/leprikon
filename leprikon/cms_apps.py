@@ -8,11 +8,9 @@ from .menu import LeprikonMenu
 from .urls import urlpatterns
 
 
+@apphook_pool.register
 class LeprikonApp(CMSApp):
     name = _('Leprikon')
     urls = [urlpatterns]
     app_name = 'leprikon'
     menus = [LeprikonMenu]
-
-apphook_pool.register(LeprikonApp)
-

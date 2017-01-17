@@ -69,4 +69,3 @@ class ReportBaseView(FormView):
         kwargs = super(ReportBaseView, self).get_form_kwargs()
         kwargs['prefix'] = self.form_class.__name__
         return kwargs
-

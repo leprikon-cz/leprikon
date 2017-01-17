@@ -30,7 +30,7 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'explana
     @property
     def title(self):
         if self.balance == 0:
-            return  _('paid')
+            return _('paid')
         elif self.balance < 0:
             return _('{} let to pay').format(currency(-self.balance))
         else:
@@ -55,4 +55,3 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'explana
         )
 
     __radd__ = __add__
-

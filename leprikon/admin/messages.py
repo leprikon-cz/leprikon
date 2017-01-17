@@ -54,7 +54,9 @@ class SendMessageAdminMixin(object):
                 message = form.cleaned_data['message']
                 for recipient in self.get_message_recipients(request, queryset):
                     MessageRecipient.objects.get_or_create(message=message, recipient=recipient)
-                return HttpResponseRedirect(reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(message.id))
+                return HttpResponseRedirect(
+                    reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(message.id)
+                )
         else:
             form = MessageForm()
         return render_to_response('admin/leprikon/message/add_recipients.html', {
@@ -115,7 +117,8 @@ class MessageAdmin(admin.ModelAdmin):
         ).format(
             recipients              = _('recipients'),
             recipients_title        = _('show recipients details'),
-            recipients_url          = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
+            recipients_url          = (reverse('admin:leprikon_messagerecipient_changelist') +
+                                       '?message={}'.format(obj.id)),
             send_mails_all          = _('send mails'),
             send_mails_all_title    = _('send mail to all recipients'),
             send_mails_all_url      = reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
@@ -159,7 +162,8 @@ class MessageRecipientAdmin(admin.ModelAdmin):
         return False
 
     def send_mails(self, request, queryset):
-        return messagerecipient_send_mails(request,
+        return messagerecipient_send_mails(
+            request,
             message     = get_object_or_404(Message, id=request.GET.get('message', 0)),
             recipients  = queryset,
             media       = self.media,
@@ -178,9 +182,11 @@ class MessageRecipientAdmin(admin.ModelAdmin):
         return super(MessageRecipientAdmin, self).changelist_view(request, extra_context)
 
     def get_urls(self):
-        return [
-            url(r'^send-mail/$', self.admin_site.admin_view(self.send_mail), name='leprikon_messagerecipient_send_mail'),
-        ] + super(MessageRecipientAdmin, self).get_urls()
+        return [url(
+            r'^send-mail/$',
+            self.admin_site.admin_view(self.send_mail),
+            name='leprikon_messagerecipient_send_mail',
+        )] + super(MessageRecipientAdmin, self).get_urls()
 
     @transaction.atomic
     def send_mail(self, request):
@@ -191,4 +197,3 @@ class MessageRecipientAdmin(admin.ModelAdmin):
         recipient = get_object_or_404(MessageRecipient, id=recipient_id)
         recipient.send_mail()
         return HttpResponse('0', content_type="text/json")
-

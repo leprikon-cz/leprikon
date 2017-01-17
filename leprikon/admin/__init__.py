@@ -81,4 +81,3 @@ admin.site.register(TimesheetEntryType,         TimesheetEntryTypeAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User,                       UserAdmin)
-

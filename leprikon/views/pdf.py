@@ -21,7 +21,6 @@ class PdfViewMixin(object):
     def get(self, request, *args, **kwargs):
         content = super(PdfViewMixin, self).get(request, *args, **kwargs).render().content
         content = content.decode('UTF-8')
-        #raise Exception(content.__class__)
 
         result = StringIO()
         pdf = pisa.CreatePDF(content, result, encoding='UTF-8')
@@ -33,4 +32,3 @@ class PdfViewMixin(object):
         response.write(result.getvalue())
         result.close()
         return response
-

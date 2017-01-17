@@ -19,4 +19,3 @@ class StartEndMixin(object):
     def save(self, *args, **kwargs):
         self.validate()
         super(StartEndMixin, self).save(*args, **kwargs)
-

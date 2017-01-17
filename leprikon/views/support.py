@@ -23,4 +23,3 @@ class SupportView(FormView):
                 ),
             )
         return super(SupportView, self).form_valid(form)
-

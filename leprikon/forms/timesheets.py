@@ -28,10 +28,10 @@ class TimesheetEntryAdminForm(forms.ModelForm):
         if self.instance.id and self.instance.timesheet.submitted:
             self.readonly = True
             self.readonly_fields = [
-                ReadonlyField(label=_('Date'),      value=self.instance.date),
-                ReadonlyField(label=_('Start'),     value=self.instance.start),
-                ReadonlyField(label=_('End'),       value=self.instance.end),
-                ReadonlyField(label=_('Entry type'),value=self.instance.entry_type),
+                ReadonlyField(label=_('Date'),          value=self.instance.date),
+                ReadonlyField(label=_('Start'),         value=self.instance.start),
+                ReadonlyField(label=_('End'),           value=self.instance.end),
+                ReadonlyField(label=_('Entry type'),    value=self.instance.entry_type),
             ]
             self.fields = {'description': self.fields['description']}
         else:
@@ -50,7 +50,8 @@ class TimesheetEntryAdminForm(forms.ModelForm):
                     end   = formats.date_format(self.instance.timesheet.period.end, "SHORT_DATE_FORMAT"),
                 ))
         else:
-            self.instance.timesheet = Timesheet.objects.for_leader_and_date(leader=self.leader, date=self.cleaned_data['date'])
+            self.instance.timesheet = Timesheet.objects.for_leader_and_date(leader=self.leader,
+                                                                            date=self.cleaned_data['date'])
             if self.instance.timesheet.submitted:
                 raise ValidationError(_('Your timesheet for period {period} has already been submitted.').format(
                     period  = self.instance.timesheet.period.name,
@@ -75,4 +76,3 @@ class TimesheetEntryAdminForm(forms.ModelForm):
 
 class TimesheetEntryForm(FormMixin, TimesheetEntryAdminForm):
     pass
-

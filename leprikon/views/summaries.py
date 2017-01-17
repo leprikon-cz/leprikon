@@ -41,4 +41,3 @@ class LeaderSummaryView(TemplateView):
         context['subjects'] = self.request.leader.subjects.filter(school_year=self.request.school_year)
         context['timesheets'] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
         return context
-

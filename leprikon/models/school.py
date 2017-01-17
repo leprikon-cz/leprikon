@@ -30,4 +30,3 @@ class School(models.Model):
             return '{}, {}'.format(self.street, self.city)
         else:
             return self.street or self.city
-

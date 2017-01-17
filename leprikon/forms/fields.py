@@ -8,5 +8,5 @@ from django import forms
 class TextField(forms.CharField):
     widget = forms.Textarea
 
-ReadonlyField = namedtuple('ReadonlyField', ('label', 'value'))
 
+ReadonlyField = namedtuple('ReadonlyField', ('label', 'value'))

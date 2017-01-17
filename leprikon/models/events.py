@@ -79,4 +79,3 @@ class EventRegistration(SubjectRegistration):
             explanation = self.explanation,
             paid        = self.get_paid(d),
         )
-

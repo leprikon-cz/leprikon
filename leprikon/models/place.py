@@ -21,4 +21,3 @@ class Place(models.Model):
             return '{name}, {place}'.format(name=self.name, place=self.place)
         else:
             return '{name}'.format(name=self.name)
-

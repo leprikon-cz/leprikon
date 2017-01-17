@@ -65,10 +65,12 @@ class Course(Subject):
 
     @property
     def inactive_registrations(self):
-        return CourseRegistration.objects.filter(course_history__course=self).exclude(id__in=self.active_registrations.all()).distinct()
+        return (CourseRegistration.objects.filter(course_history__course=self)
+                .exclude(id__in=self.active_registrations.all()).distinct())
 
     def get_active_registrations(self, d):
-        ids = CourseRegistrationHistory.objects.filter(course=self, start__lte=d).exclude(end__lt=d).values_list('registration_id', flat=True)
+        ids = (CourseRegistrationHistory.objects.filter(course=self, start__lte=d)
+               .exclude(end__lt=d).values_list('registration_id', flat=True))
         return CourseRegistration.objects.filter(id__in=ids).exclude(canceled__lt=d).distinct()
 
     def copy_to_school_year(old, school_year):
@@ -260,6 +262,7 @@ class CourseRegistration(SubjectRegistration):
         return self.get_payment_statuses()
 
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
+
     def get_period_payment_statuses(self, d=None):
         paid        = self.get_paid(d)
         for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
@@ -286,19 +289,28 @@ class CourseRegistration(SubjectRegistration):
         return self.get_payment_statuses()
 
     PaymentStatuses = namedtuple('PaymentStatuses', ('partial', 'total'))
+
     def get_payment_statuses(self, d=None):
         if d is None:
             d = date.today()
-        partial_price   = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
-        total_price     = self.price * len(self.all_periods)
-        partial_discount= sum(discount.discount for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
-        partial_explanation = comma_separated(discount.explanation for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts))
+        partial_price       = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
+        total_price         = self.price * len(self.all_periods)
+        partial_discount    = sum(
+            discount.discount
+            for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
+        )
+        partial_explanation = comma_separated(
+            discount.explanation
+            for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
+        )
         total_discount  = sum(discount.discount for discount in self.all_discounts)
         total_explanation   = comma_separated(discount.explanation for discount in self.all_discounts)
         paid            = self.get_paid(d)
         return self.PaymentStatuses(
-            partial = PaymentStatus(price=partial_price, discount=partial_discount, explanation=partial_explanation, paid=paid),
-            total   = PaymentStatus(price=total_price,   discount=total_discount,   explanation=total_explanation,   paid=paid),
+            partial = PaymentStatus(price=partial_price,                discount=partial_discount,
+                                    explanation=partial_explanation,    paid=paid),
+            total   = PaymentStatus(price=total_price,                  discount=total_discount,
+                                    explanation=total_explanation,      paid=paid),
         )
 
 
@@ -349,27 +361,37 @@ class CourseRegistrationHistory(models.Model):
 def update_course_registration_history(sender, instance, created, **kwargs):
     d = date.today()
     # if created or changed
-    if (created or CourseRegistrationHistory.objects.filter(registration_id=instance.id, end=None).exclude(course_id=instance.subject_id).update(end=d)):
+    if (created or
+        CourseRegistrationHistory.objects.filter(registration_id=instance.id, end=None)
+                                 .exclude(course_id=instance.subject_id).update(end=d)):
         # reopen or create entry starting today
-        CourseRegistrationHistory.objects.filter(registration_id=instance.id, course_id=instance.subject_id, start=d).update(end=None) or \
-        CourseRegistrationHistory.objects.create(registration_id=instance.id, course_id=instance.subject_id, start=d)
+        (
+            CourseRegistrationHistory.objects.filter(
+                registration_id=instance.id, course_id=instance.subject_id, start=d,
+            ).update(end=None) or
+            CourseRegistrationHistory.objects.create(
+                registration_id=instance.id, course_id=instance.subject_id, start=d,
+            )
+        )
 
 
 
 def get_default_agenda():
     return '<p>{}</p>'.format(_('instruction on OSH'))
 
+
+
 @python_2_unicode_compatible
 class CourseJournalEntry(StartEndMixin, models.Model):
     course      = models.ForeignKey(Course, verbose_name=_('course'), related_name='journal_entries', editable=False)
     date        = models.DateField(_('date'))
     start       = models.TimeField(_('start time'), blank=True, null=True,
-                    help_text=_('Leave empty, if the course does not take place'))
+                                   help_text=_('Leave empty, if the course does not take place'))
     end         = models.TimeField(_('end time'), blank=True, null=True,
-                    help_text=_('Leave empty, if the course does not take place'))
+                                   help_text=_('Leave empty, if the course does not take place'))
     agenda      = HTMLField(_('session agenda'), default=get_default_agenda)
-    registrations = models.ManyToManyField(CourseRegistration, verbose_name=_('participants'),
-                    blank=True, related_name='journal_entries')
+    registrations = models.ManyToManyField(CourseRegistration, verbose_name=_('participants'), blank=True,
+                                           related_name='journal_entries')
 
     class Meta:
         app_label           = 'leprikon'
@@ -453,13 +475,15 @@ class CourseJournalEntry(StartEndMixin, models.Model):
 
 @python_2_unicode_compatible
 class CourseJournalLeaderEntry(StartEndMixin, models.Model):
-    course_entry= models.ForeignKey(CourseJournalEntry, verbose_name=_('course journal entry'), related_name='leader_entries', editable=False)
-    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='course_entries', editable=False, on_delete=models.PROTECT)
+    course_entry = models.ForeignKey(CourseJournalEntry, verbose_name=_('course journal entry'),
+                                     related_name='leader_entries', editable=False)
+    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='course_entries',
+                                    editable=False, on_delete=models.PROTECT)
     start       = models.TimeField(_('start time'))
     end         = models.TimeField(_('end time'))
 
     class Meta:
-        app_label   = 'leprikon'
+        app_label           = 'leprikon'
         verbose_name        = _('course journal leader entry')
         verbose_name_plural = _('course journal leader entries')
         unique_together     = (('course_entry', 'timesheet'),)
@@ -500,4 +524,3 @@ class CourseJournalLeaderEntry(StartEndMixin, models.Model):
 
     def get_delete_url(self):
         return reverse('leprikon:coursejournalleaderentry_delete', args=(self.id,))
-

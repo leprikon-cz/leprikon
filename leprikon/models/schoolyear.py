@@ -48,9 +48,8 @@ class SchoolYear(models.Model):
 
     @cached_property
     def name(self):
-        return '{}/{}'.format(self.year, self.year+1)
+        return '{}/{}'.format(self.year, self.year + 1)
 
     @cached_property
     def all_courses(self):
         return list(self.courses.all())
-

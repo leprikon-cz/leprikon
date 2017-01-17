@@ -61,14 +61,9 @@ class CourseJournalEntryCreateView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if self.request.user.is_staff:
-            self.course = get_object_or_404(Course,
-                id = int(kwargs.pop('course')),
-            )
+            self.course = get_object_or_404(Course, id=int(kwargs.pop('course')))
         else:
-            self.course = get_object_or_404(Course,
-                id = int(kwargs.pop('course')),
-                leaders = self.request.leader,
-            )
+            self.course = get_object_or_404(Course, id=int(kwargs.pop('course')), leaders=self.request.leader)
         return super(CourseJournalEntryCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -87,8 +82,7 @@ class CourseJournalEntryUpdateView(UpdateView):
 
     def get_object(self):
         obj = super(CourseJournalEntryUpdateView, self).get_object()
-        if (self.request.user.is_staff
-            or self.request.leader in obj.course.all_leaders + obj.all_alternates):
+        if (self.request.user.is_staff or self.request.leader in obj.course.all_leaders + obj.all_alternates):
             return obj
         else:
             raise Http404()
@@ -125,9 +119,10 @@ class CourseJournalLeaderEntryUpdateView(UpdateView):
 
     def get_object(self):
         obj = super(CourseJournalLeaderEntryUpdateView, self).get_object()
-        if self.request.user.is_staff \
-        or obj.timesheet.leader == self.request.leader \
-        or self.request.leader in obj.course_entry.course.all_leaders:
+        if (
+            self.request.user.is_staff or obj.timesheet.leader == self.request.leader or
+            self.request.leader in obj.course_entry.course.all_leaders
+        ):
             return obj
         else:
             raise Http404()
@@ -147,4 +142,3 @@ class CourseJournalLeaderEntryDeleteView(DeleteView):
 
     def get_question(self):
         return _('Do You really want to delete timesheet entry?')
-

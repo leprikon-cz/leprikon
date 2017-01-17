@@ -17,12 +17,14 @@ from .reports import (
 
 login_url = reverse('leprikon:user_login')
 
+
 def _user_is_leader(u):
     try:
         u.leprikon_leader
         return True
     except:
         return False
+
 
 login_required = user_passes_test(
     lambda u: u.is_authenticated(),
@@ -51,7 +53,7 @@ staff_required = user_passes_test(
 
 summary                         = login_required(summaries.SummaryView.as_view())
 
-user_create                     =    user.UserCreateView.as_view()
+user_create                     = user.UserCreateView.as_view()
 user_update                     = login_required(user.UserUpdateView.as_view())
 user_login                      = user.user_login
 user_logout                     = user.user_logout

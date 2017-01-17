@@ -21,4 +21,3 @@ class SchoolYearView(FormView):
     def form_valid(self, form):
         self.request.school_year = form.cleaned_data['school_year']
         return super(SchoolYearView, self).form_valid(form)
-

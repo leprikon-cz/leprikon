@@ -46,7 +46,8 @@ class Message(models.Model):
 class MessageRecipient(models.Model):
     slug        = models.SlugField(editable=False)
     message     = models.ForeignKey(Message, verbose_name=_('message'), related_name='recipients', editable=False)
-    recipient   = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('recipient'), related_name='leprikon_messages', editable=False)
+    recipient   = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('recipient'), editable=False,
+                                    related_name='leprikon_messages')
     sent        = models.DateTimeField(_('sent'), editable=False, auto_now_add=True)
     viewed      = models.DateTimeField(_('viewed on site'), editable=False, null=True, default=None)
     sent_mail   = models.DateTimeField(_('sent by email'), editable=False, null=True, default=None)
@@ -105,4 +106,3 @@ class MessageAttachment(models.Model):
 
     def __str__(self):
         return force_text(self.file)
-
