@@ -6,6 +6,7 @@ from cms.plugin_base import CMSPluginBase
 
 from ..models.schoolyear import SchoolYear
 
+
 Group = namedtuple('Group', ('group', 'objects'))
 
 

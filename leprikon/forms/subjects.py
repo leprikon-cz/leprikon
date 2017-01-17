@@ -4,21 +4,100 @@ from json import dumps
 
 from django import forms
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.utils.functional import SimpleLazyObject
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.courses import CourseRegistration
-from ..models.events import EventRegistration
-from ..models.roles import Parent, Participant
+from ..models.agegroup import AgeGroup
+from ..models.courses import Course, CourseRegistration
+from ..models.events import Event, EventRegistration
+from ..models.fields import DAY_OF_WEEK
+from ..models.place import Place
+from ..models.roles import Leader, Parent, Participant
+from ..models.subjects import Subject, SubjectGroup, SubjectType
 from ..utils import get_age, get_birth_date
 from .form import FormMixin
 from .widgets import RadioSelectBootstrap
 
 
-class AgreementForm(FormMixin, forms.Form):
-    agreement = forms.BooleanField(label=_('Terms and Conditions agreement'),
-        help_text=SimpleLazyObject(lambda: _('By checking the checkbox above I confirm that I have read, understood and agree with the '
-            '<a href="{}" target="_blank">Terms and Conditions</a>.').format(reverse('leprikon:terms_conditions'))))
+class SubjectFilterForm(FormMixin, forms.Form):
+    q           = forms.CharField(label=_('Search term'), required=False)
+    group       = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
+    leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
+    place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
+    age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
+                    choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
+    past        = forms.BooleanField(label=_('Include past subjects'), required=False)
+    reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
+    invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
+
+    _models = {
+        SubjectType.COURSE: Course,
+        SubjectType.EVENT:  Event,
+    }
+
+    def __init__(self, request, subject_type, school_year=None, **kwargs):
+        super(SubjectFilterForm, self).__init__(**kwargs)
+        self.request = request
+        self.subject_type = subject_type
+        school_year = school_year or request.school_year
+    
+        # pre filter subjects by initial params
+        model = self._models[subject_type.subject_type]
+        self.subjects = model.objects.filter(school_year=school_year, subject_type=subject_type)
+        if not request.user.is_staff or 'invisible' not in request.GET:
+            self.subjects = self.subjects.filter(public=True)
+
+        subject_ids = set(self.subjects.order_by().values_list('id', flat=True))
+
+        self.fields['group'     ].queryset = SubjectGroup.objects.filter(subject_types__subject_type=subject_type.subject_type, subjects__id__in=subject_ids).distinct()
+        self.fields['leader'    ].queryset = Leader.objects.filter(subjects__id__in=subject_ids).distinct().order_by('user__first_name', 'user__last_name')
+        self.fields['place'     ].queryset = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['age_group' ].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        if subject_type.subject_type != SubjectType.COURSE:
+            del self.fields['day_of_week']
+        if subject_type.subject_type != SubjectType.EVENT:
+            del self.fields['past']
+        if not request.user.is_staff:
+            del self.fields['invisible']
+
+        for f in self.fields:
+            self.fields[f].help_text = None
+
+    def get_queryset(self):
+        qs = self.subjects
+        if not self.is_valid():
+            return qs
+        for word in self.cleaned_data['q'].split():
+            qs = qs.filter(
+                Q(name__icontains = word)
+              | Q(description__icontains = word)
+            )
+        if self.cleaned_data['group']:
+            qs = qs.filter(groups__in = self.cleaned_data['group'])
+        if self.cleaned_data['place']:
+            qs = qs.filter(place__in = self.cleaned_data['place'])
+        if self.cleaned_data['leader']:
+            qs = qs.filter(leaders__in = self.cleaned_data['leader'])
+        if self.cleaned_data['age_group']:
+            qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
+        if self.subject_type.subject_type == SubjectType.COURSE and self.cleaned_data['day_of_week']:
+            qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
+        if self.subject_type.subject_type == SubjectType.EVENT and not self.cleaned_data['past']:
+            qs = qs.filter(end_date__gte = now())
+        if self.cleaned_data['reg_active']:
+            qs = qs.filter(reg_active=True)
+        return qs.distinct()
+
+
+
+class SubjectForm(FormMixin, forms.ModelForm):
+
+    class Meta:
+        model = Subject
+        fields = ['description', 'risks', 'plan', 'evaluation']
 
 
 
@@ -26,7 +105,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def __init__(self, subject, user, **kwargs):
         super(RegistrationForm, self).__init__(**kwargs)
-        setattr(self.instance, self.subject_attr, subject)
+        self.instance.subject = subject
         self.instance.user = user
         self.participants = user.leprikon_participants.exclude(
             birth_num__in=self.instance.subject.active_registrations.values_list('participant_birth_num', flat=True)
@@ -84,7 +163,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         ))(**kwargs)
 
         kwargs['prefix'] = 'agreement'
-        self.agreement_form = AgreementForm(**kwargs)
+        self.agreement_form = self.AgreementForm(**kwargs)
 
     def is_valid(self):
         return (self.participant_select_form.is_valid()
@@ -135,23 +214,26 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 setattr(parent, attr, getattr(self.instance.parent2, attr))
             parent.save()
 
+    class AgreementForm(FormMixin, forms.Form):
+        agreement = forms.BooleanField(label=_('Terms and Conditions agreement'),
+            help_text=SimpleLazyObject(lambda: _('By checking the checkbox above I confirm that I have read, understood and agree with the '
+                '<a href="{}" target="_blank">Terms and Conditions</a>.').format(reverse('leprikon:terms_conditions'))))
+
 
 
 class CourseRegistrationForm(RegistrationForm):
-    subject_attr    = 'course'
 
     class Meta:
         model = CourseRegistration
-        exclude = ('course', 'user', 'cancel_request', 'canceled')
+        exclude = ('subject', 'user', 'cancel_request', 'canceled')
 
 
 
 class EventRegistrationForm(RegistrationForm):
-    subject_attr    = 'event'
 
     class Meta:
         model = EventRegistration
-        exclude = ('event', 'user', 'cancel_request', 'canceled', 'discount', 'explanation')
+        exclude = ('subject', 'user', 'cancel_request', 'canceled', 'discount', 'explanation')
 
 
 

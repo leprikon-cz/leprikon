@@ -15,61 +15,30 @@ from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.registrations import RegistrationAdminForm
-from ..models.events import (
-    Event, EventAttachment, EventRegistration, EventRegistrationRequest,
-    EventTypeAttachment,
-)
+from ..forms.subjects import RegistrationAdminForm
+from ..models.events import Event, EventRegistration
 from ..models.schoolyear import SchoolYear
+from ..models.subjects import SubjectRegistrationRequest, SubjectType
 from ..utils import comma_separated, currency
 from .export import AdminExportMixin
 from .filters import (
-    EventListFilter, EventTypeListFilter, LeaderListFilter,
-    SchoolYearListFilter,
+    EventGroupListFilter, EventListFilter, EventTypeListFilter,
+    LeaderListFilter, SchoolYearListFilter,
 )
 from .messages import SendMessageAdminMixin
-
-
-class EventTypeAttachmentInlineAdmin(admin.TabularInline):
-    model   = EventTypeAttachment
-    extra   = 3
-
-
-
-class EventTypeAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'order')
-    list_editable   = ('order',)
-    fields          = ('name', 'slug', 'questions',)
-    filter_horizontal = ('questions',)
-    prepopulated_fields = {'slug': ('name',)}
-    inlines         = (
-        EventTypeAttachmentInlineAdmin,
-    )
-
-
-
-class EventGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'color', 'order')
-    list_editable   = ('color', 'order')
-
-
-
-class EventAttachmentInlineAdmin(admin.TabularInline):
-    model   = EventAttachment
-    extra   = 3
-
+from .subjects import SubjectAttachmentInlineAdmin
 
 
 class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'name', 'event_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public', 'reg_active',
         'get_registrations_link', 'get_registration_requests_link',
         'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'event_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public', 'reg_active',
         'get_registrations_count', 'get_registration_requests_count', 'note',
@@ -77,13 +46,13 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
         ('school_year', SchoolYearListFilter),
-        ('event_type',  EventTypeListFilter),
+        ('subject_type',EventTypeListFilter),
         'age_groups',
-        'groups',
+        ('groups',      EventGroupListFilter),
         ('leaders',     LeaderListFilter),
     )
     inlines         = (
-        EventAttachmentInlineAdmin,
+        SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     date_hierarchy  = 'start_date'
@@ -107,6 +76,9 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             school_year = obj.school_year
         else:
             school_year = request.school_year
+        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
+        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=SubjectType.EVENT)
+        form.base_fields['subject_type'].choices = subject_type_choices
         leaders_choices = form.base_fields['leaders'].widget.widget.choices
         leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
         form.base_fields['leaders'].choices = leaders_choices
@@ -161,7 +133,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_eventregistrations__event__in = queryset
+            leprikon_subjectregistrations__subject__in = queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
@@ -179,7 +151,7 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             url     = reverse('admin:{}_{}_changelist'.format(
                         EventRegistration._meta.app_label,
                         EventRegistration._meta.model_name,
-                    )) + '?event={}'.format(obj.id),
+                    )) + '?subject={}'.format(obj.id),
             title   = title,
             icon    = _boolean_icon(icon),
             count   = obj.registrations_count,
@@ -191,9 +163,9 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def get_registration_requests_link(self, obj):
         return '<a href="{url}">{count}</a>'.format(
             url     = reverse('admin:{}_{}_changelist'.format(
-                        EventRegistrationRequest._meta.app_label,
-                        EventRegistrationRequest._meta.model_name,
-                    )) + '?event={}'.format(obj.id),
+                        SubjectRegistrationRequest._meta.app_label,
+                        SubjectRegistrationRequest._meta.model_name,
+                    )) + '?subject={}'.format(obj.id),
             count   = obj.registration_requests_count,
         )
     get_registration_requests_link.short_description = _('registration requests')
@@ -222,12 +194,12 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'event_name', 'participant',
+        'id', 'get_download_tag', 'subject_name', 'participant',
         'discount', 'get_payments_html', 'created',
         'cancel_request', 'canceled',
     )
     list_export     = (
-        'id', 'created', 'event', 'birth_num', 'age_group',
+        'id', 'created', 'subject', 'birth_num', 'age_group',
         'participant_first_name', 'participant_last_name',
         'participant_street', 'participant_city', 'participant_postal_code',
         'participant_phone', 'participant_email',
@@ -242,10 +214,10 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         'discount', 'get_payments_paid', 'get_payments_balance',
     )
     list_filter     = (
-        ('event__school_year',  SchoolYearListFilter),
-        ('event__event_type',   EventTypeListFilter),
-        ('event',               EventListFilter),
-        ('event__leaders',      LeaderListFilter),
+        ('subject__school_year',    SchoolYearListFilter),
+        ('subject__subject_type',   EventTypeListFilter),
+        ('subject',                 EventListFilter),
+        ('subject__leaders',        LeaderListFilter),
     )
     actions         = ('send_mail',)
     search_fields   = (
@@ -255,13 +227,13 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         'parent2_first_name', 'parent2_last_name', 'parent2_email',
     )
     ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('event',)
+    raw_id_fields   = ('subject',)
 
     def has_add_permission(self, request):
         return False
 
     def get_form(self, request, obj, **kwargs):
-        questions       = obj.event.all_questions
+        questions       = obj.subject.all_questions
         answers         = obj.get_answers()
         kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
@@ -270,23 +242,23 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         return super(EventRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
     def save_form(self, request, form, change):
-        questions   = form.instance.event.all_questions
+        questions   = form.instance.subject.all_questions
         answers     = {}
         for q in questions:
             answers[q.name] = form.cleaned_data['q_'+q.name]
         form.instance.answers = dumps(answers)
         return super(EventRegistrationAdmin, self).save_form(request, form, change)
 
-    def event_name(self, obj):
-        return obj.event.name
-    event_name.short_description = _('event')
+    def subject_name(self, obj):
+        return obj.subject.name
+    subject_name.short_description = _('event')
 
     def school_name(self, obj):
         return obj.school_name
     school_name.short_description = _('school')
 
     def get_download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_eventregistration_pdf', args=(obj.id,)))
+        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectregistration_pdf', args=(obj.id,)))
     get_download_tag.short_description = _('download')
     get_download_tag.allow_tags = True
 
@@ -320,8 +292,8 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
         return format_html('<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
                            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
             color       = status.color,
-            href_list   = reverse('admin:leprikon_eventpayment_changelist') + '?registration={}'.format(obj.id),
-            href_add    = reverse('admin:leprikon_eventpayment_add') + '?registration={}'.format(obj.id),
+            href_list   = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
+            href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
             title       = status.title,
             add         = _('add payment'),
             amount      = currency(status.paid),
@@ -332,12 +304,12 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
     def get_urls(self):
         urls = super(EventRegistrationAdmin, self).get_urls()
         return [
-            urls_url(r'(?P<reg_id>\d+).pdf$', self.admin_site.admin_view(self.pdf), name='leprikon_eventregistration_pdf'),
+            urls_url(r'(?P<reg_id>\d+).pdf$', self.admin_site.admin_view(self.pdf), name='leprikon_subjectregistration_pdf'),
         ] + urls
 
     def pdf(self, request, reg_id):
-        from ..views.events import EventRegistrationPdfView
-        return EventRegistrationPdfView.as_view()(request, pk=reg_id)
+        from ..views.subjects import SubjectRegistrationPdfView
+        return SubjectRegistrationPdfView.as_view()(request, pk=reg_id)
 
     def send_mail(self, request, queryset):
         for registration in queryset.all():
@@ -364,43 +336,6 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_eventregistrations__in = queryset
+            leprikon_subjectregistrations__in = queryset
         ).distinct()
-
-
-
-class EventPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('registration', 'date', 'amount')
-    list_filter     = (
-        ('registration__event__school_year', SchoolYearListFilter),
-        ('registration__event__event_type',  EventTypeListFilter),
-        ('registration__event',              EventListFilter),
-        ('registration__event__leaders',     LeaderListFilter),
-    )
-    search_fields   = ('registration__event__name', 'registration__participant_first_name', 'registration__participant_last_name',
-                       'registration__participant_birth_num')
-    date_hierarchy  = 'date'
-    ordering        = ('-date',)
-    raw_id_fields   = ('registration',)
-
-
-
-class EventRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
-    date_hierarchy  = 'created'
-    list_display    = ('created', 'event', 'user_link', 'contact')
-    list_filter     = (
-        ('event__school_year',  SchoolYearListFilter),
-        ('event__event_type',   EventTypeListFilter),
-        ('event',               EventListFilter),
-    )
-    ordering        = ('-created',)
-    raw_id_fields   = ('event', 'user')
-
-    def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
-            user    = obj.user,
-        ) if obj.user else '-'
-    user_link.allow_tags = True
-    user_link.short_description = _('user')
 

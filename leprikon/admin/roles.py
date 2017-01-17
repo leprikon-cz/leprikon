@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.roles import Contact
 from ..models.schoolyear import SchoolYear
+from ..models.subjects import SubjectType
 from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
 
@@ -98,7 +99,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url     = self.courses_url,
             leader  = obj.id,
-            count   = obj.courses.count(),
+            count   = obj.subjects.filter(subject_type__subject_type=SubjectType.COURSE).count(),
         )
     courses_link.allow_tags = True
     courses_link.short_description = _('courses')
@@ -107,7 +108,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url     = self.events_url,
             leader  = obj.id,
-            count   = obj.events.count(),
+            count   = obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
         )
     events_link.allow_tags = True
     events_link.short_description = _('events')

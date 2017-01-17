@@ -7,9 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .models.courses import CourseType
-from .models.events import EventType
-from .utils import current_url, url_with_back
+from .models.subjects import SubjectType
+from .utils import current_url, first_upper, url_with_back
 
 
 class LeprikonMenu(CMSAttachMenu):
@@ -19,130 +18,135 @@ class LeprikonMenu(CMSAttachMenu):
         """
         This method is used to build the menu tree.
         """
-        nodes = []
-        nodes.append(NavigationNode(
-            _('Log in'),
-            reverse('leprikon:user_login'),
-            len(nodes),
-            attr={'visible_for_authenticated': False, 'add_url_back': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Create account'),
-            reverse('leprikon:user_create'),
-            len(nodes),
-            attr={'visible_for_authenticated': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Reset password'),
-            reverse('leprikon:password_reset'),
-            len(nodes),
-            attr={'visible_for_authenticated': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Summary'),
-            reverse('leprikon:summary'),
-            len(nodes),
-            attr={'visible_for_anonymous': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Messages'),
-            reverse('leprikon:message_list'),
-            len(nodes),
-            attr={'visible_for_anonymous': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Registrations'),
-            reverse('leprikon:registration_list'),
-            len(nodes),
-            attr={'visible_for_anonymous': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Participants'),
-            reverse('leprikon:participant_list'),
-            len(nodes),
-            attr={'visible_for_anonymous': False},
-        ))
-        nodes.append(NavigationNode(
-            _('Add participant'),
-            reverse('leprikon:participant_create'),
-            len(nodes),
-            parent_id=len(nodes)-1,
-            attr={'visible_for_anonymous': False, 'add_url_back': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Add parent'),
-            reverse('leprikon:parent_create'),
-            len(nodes),
-            parent_id=len(nodes)-2,
-            attr={'visible_for_anonymous': False, 'add_url_back': True},
-        ))
-        nodes.append(NavigationNode(
-            _('My Courses'),
-            reverse('leprikon:course_list_mine'),
-            len(nodes),
-            attr={'require_leader': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Alternating'),
-            reverse('leprikon:course_alternating'),
-            len(nodes),
-            parent_id=len(nodes)-1,
-            attr={'require_leader': True},
-        ))
-        for course_type in CourseType.objects.all():
+        try:
+            nodes = []
             nodes.append(NavigationNode(
-                course_type.name,
-                reverse('leprikon:course_list', kwargs={'course_type': course_type.slug}),
+                _('Log in'),
+                reverse('leprikon:user_login'),
+                len(nodes),
+                attr={'visible_for_authenticated': False, 'add_url_back': True},
+            ))
+            nodes.append(NavigationNode(
+                _('Create account'),
+                reverse('leprikon:user_create'),
+                len(nodes),
+                attr={'visible_for_authenticated': False},
+            ))
+            nodes.append(NavigationNode(
+                _('Reset password'),
+                reverse('leprikon:password_reset'),
+                len(nodes),
+                attr={'visible_for_authenticated': False},
+            ))
+            nodes.append(NavigationNode(
+                _('Summary'),
+                reverse('leprikon:summary'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
+            leader = len(nodes)
+            nodes.append(NavigationNode(
+                _('Leader'),
+                reverse('leprikon:leader_summary'),
+                len(nodes),
+                attr={'require_leader': True},
+            ))
+            for subject_type in SubjectType.objects.all():
+                nodes.append(NavigationNode(
+                    first_upper(_('My {subject_type}').format(subject_type=subject_type.plural)),
+                    reverse('leprikon:subject_list_mine', kwargs={'subject_type': subject_type.slug}),
+                    len(nodes),
+                    parent_id=leader,
+                    attr={'require_leader': True},
+                ))
+            nodes.append(NavigationNode(
+                _('Alternating'),
+                reverse('leprikon:course_alternating'),
+                len(nodes),
+                parent_id=leader,
+                attr={'require_leader': True},
+            ))
+            timesheets = len(nodes)
+            nodes.append(NavigationNode(
+                _('Timesheets'),
+                reverse('leprikon:timesheet_list'),
+                len(nodes),
+                parent_id=leader,
+                attr={'require_leader': True},
+            ))
+            nodes.append(NavigationNode(
+                _('Add new entry'),
+                reverse('leprikon:timesheetentry_create'),
+                len(nodes),
+                parent_id=timesheets,
+                attr={'require_leader': True, 'add_url_back': True},
+            ))
+            nodes.append(NavigationNode(
+                _('Reports'),
+                reverse('leprikon:report_list'),
+                len(nodes),
+                parent_id=leader,
+                attr={'require_staff': True},
+            ))
+            nodes.append(NavigationNode(
+                _('Messages'),
+                reverse('leprikon:message_list'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
+            nodes.append(NavigationNode(
+                _('Registrations'),
+                reverse('leprikon:registration_list'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
+            participants = len(nodes)
+            nodes.append(NavigationNode(
+                _('Participants'),
+                reverse('leprikon:participant_list'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
+            nodes.append(NavigationNode(
+                _('Add participant'),
+                reverse('leprikon:participant_create'),
+                len(nodes),
+                parent_id=participants,
+                attr={'visible_for_anonymous': False, 'add_url_back': True},
+            ))
+            nodes.append(NavigationNode(
+                _('Add parent'),
+                reverse('leprikon:parent_create'),
+                len(nodes),
+                parent_id=participants,
+                attr={'visible_for_anonymous': False, 'add_url_back': True},
+            ))
+            for subject_type in SubjectType.objects.all():
+                nodes.append(NavigationNode(
+                    first_upper(subject_type.plural),
+                    reverse('leprikon:subject_list', kwargs={'subject_type': subject_type.slug}),
+                    len(nodes),
+                ))
+            nodes.append(NavigationNode(
+                _('Leaders'),
+                reverse('leprikon:leader_list'),
                 len(nodes),
             ))
-        nodes.append(NavigationNode(
-            _('My Events'),
-            reverse('leprikon:event_list_mine'),
-            len(nodes),
-            attr={'require_leader': True},
-        ))
-        for event_type in EventType.objects.all():
             nodes.append(NavigationNode(
-                event_type.name,
-                reverse('leprikon:event_list', kwargs={'event_type': event_type.slug}),
+                _('Terms and Conditions'),
+                reverse('leprikon:terms_conditions'),
                 len(nodes),
             ))
-        nodes.append(NavigationNode(
-            _('Leaders'),
-            reverse('leprikon:leader_list'),
-            len(nodes),
-        ))
-        nodes.append(NavigationNode(
-            _('Timesheets'),
-            reverse('leprikon:timesheet_list'),
-            len(nodes),
-            attr={'require_leader': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Add new entry'),
-            reverse('leprikon:timesheetentry_create'),
-            len(nodes),
-            parent_id=len(nodes)-1,
-            attr={'require_leader': True, 'add_url_back': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Reports'),
-            reverse('leprikon:report_list'),
-            len(nodes),
-            attr={'require_staff': True},
-        ))
-        nodes.append(NavigationNode(
-            _('Terms and Conditions'),
-            reverse('leprikon:terms_conditions'),
-            len(nodes),
-        ))
-        nodes.append(NavigationNode(
-            _('Log out'),
-            reverse('leprikon:user_logout'),
-            len(nodes),
-            attr={'visible_for_anonymous': False},
-        ))
-        return nodes
+            nodes.append(NavigationNode(
+                _('Log out'),
+                reverse('leprikon:user_logout'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
+            return nodes
+        except:
+            raise # TODO delete
+            return []
 
 menu_pool.register_menu(LeprikonMenu)
 
@@ -181,6 +185,6 @@ except:
 def invalidate_menu_cache(sender, **kwargs):
     menu_pool.clear()
 
-post_save.connect(invalidate_menu_cache, sender=EventType)
-post_delete.connect(invalidate_menu_cache, sender=EventType)
+post_save.connect(invalidate_menu_cache, sender=SubjectType)
+post_delete.connect(invalidate_menu_cache, sender=SubjectType)
 

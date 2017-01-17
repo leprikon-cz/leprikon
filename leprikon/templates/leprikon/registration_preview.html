@@ -8,7 +8,7 @@
         </a>
         {% if not reg.canceled and not reg.cancel_request %}
         <a class="btn btn-primary btn-xs"
-            href="{% if reg.course %}{% url_with_back 'leprikon:course_registration_cancel' reg.id %}{% else %}{% url_with_back 'leprikon:event_registration_cancel' reg.id %}{% endif %}"
+            href="{% url_with_back 'leprikon:registration_cancel' reg.slug %}"
             title="{% trans 'cancel registration' %}">
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
             {% trans 'cancel' %}
@@ -18,7 +18,7 @@
 
     <div class="box-content">
         <div class="row">
-            <label class="col-sm-4">{% if reg.course  %}{% trans 'Course' %}{% else %}{% trans 'Event' %}{% endif %}:</label>
+            <label class="col-sm-4">{{ reg.subject.subject_type.name | first_upper }}:</label>
             <div class="col-sm-8">
                 <a href="{{ reg.subject.get_absolute_url }}">{{ reg.subject.name }}</a>
             </div>

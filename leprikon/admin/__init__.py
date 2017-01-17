@@ -5,13 +5,9 @@ from django.contrib.auth import get_user_model
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import (
-    Course, CourseGroup, CourseJournalEntry, CourseJournalLeaderEntry, CoursePayment,
-    CourseRegistration, CourseRegistrationRequest, CourseType,
+    Course, CourseJournalEntry, CourseJournalLeaderEntry, CourseRegistration,
 )
-from ..models.events import (
-    Event, EventGroup, EventPayment, EventRegistration,
-    EventRegistrationRequest, EventType,
-)
+from ..models.events import Event, EventRegistration
 from ..models.insurance import Insurance
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
@@ -19,17 +15,17 @@ from ..models.question import Question
 from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYear
+from ..models.subjects import (
+    Subject, SubjectGroup, SubjectPayment, SubjectRegistration,
+    SubjectRegistrationRequest, SubjectType,
+)
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .agegroup import AgeGroupAdmin
 from .courses import (
-    CourseAdmin, CourseGroupAdmin, CourseJournalEntryAdmin,
-    CourseJournalLeaderEntryAdmin, CoursePaymentAdmin, CourseRegistrationAdmin,
-    CourseRegistrationRequestAdmin, CourseTypeAdmin,
+    CourseAdmin, CourseJournalEntryAdmin, CourseJournalLeaderEntryAdmin,
+    CourseRegistrationAdmin,
 )
-from .events import (
-    EventAdmin, EventGroupAdmin, EventPaymentAdmin, EventRegistrationAdmin,
-    EventRegistrationRequestAdmin, EventTypeAdmin,
-)
+from .events import EventAdmin, EventRegistrationAdmin
 from .insurance import InsuranceAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
@@ -37,6 +33,11 @@ from .question import QuestionAdmin
 from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
 from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
+from .subjects import (
+    SubjectAdmin, SubjectGroupAdmin, SubjectPaymentAdmin,
+    SubjectRegistrationAdmin, SubjectRegistrationRequestAdmin,
+    SubjectTypeAdmin,
+)
 from .timesheets import (
     TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin,
 )
@@ -44,41 +45,40 @@ from .user import UserAdmin
 
 User = get_user_model()
 
-admin.site.register(AgeGroup,           AgeGroupAdmin)
-admin.site.register(Insurance,          InsuranceAdmin)
-admin.site.register(Place,              PlaceAdmin)
-admin.site.register(School,             SchoolAdmin)
-admin.site.register(SchoolYear,         SchoolYearAdmin)
+admin.site.register(AgeGroup,                   AgeGroupAdmin)
+admin.site.register(Insurance,                  InsuranceAdmin)
+admin.site.register(Place,                      PlaceAdmin)
+admin.site.register(School,                     SchoolAdmin)
+admin.site.register(SchoolYear,                 SchoolYearAdmin)
 
-admin.site.register(Leader,             LeaderAdmin)
-admin.site.register(Parent,             ParentAdmin)
-admin.site.register(Participant,        ParticipantAdmin)
+admin.site.register(Leader,                     LeaderAdmin)
+admin.site.register(Parent,                     ParentAdmin)
+admin.site.register(Participant,                ParticipantAdmin)
 
-admin.site.register(CourseType,         CourseTypeAdmin)
-admin.site.register(CourseGroup,        CourseGroupAdmin)
-admin.site.register(Course,             CourseAdmin)
-admin.site.register(CourseRegistration, CourseRegistrationAdmin)
-admin.site.register(CourseRegistrationRequest, CourseRegistrationRequestAdmin)
-admin.site.register(CoursePayment,      CoursePaymentAdmin)
-admin.site.register(CourseJournalEntry, CourseJournalEntryAdmin)
-admin.site.register(CourseJournalLeaderEntry, CourseJournalLeaderEntryAdmin)
+admin.site.register(Subject,                    SubjectAdmin)
+admin.site.register(SubjectType,                SubjectTypeAdmin)
+admin.site.register(SubjectGroup,               SubjectGroupAdmin)
+admin.site.register(SubjectRegistration,        SubjectRegistrationAdmin)
+admin.site.register(SubjectRegistrationRequest, SubjectRegistrationRequestAdmin)
+admin.site.register(SubjectPayment,             SubjectPaymentAdmin)
 
-admin.site.register(EventType,          EventTypeAdmin)
-admin.site.register(EventGroup,         EventGroupAdmin)
-admin.site.register(Event,              EventAdmin)
-admin.site.register(EventRegistration,  EventRegistrationAdmin)
-admin.site.register(EventRegistrationRequest, EventRegistrationRequestAdmin)
-admin.site.register(EventPayment,       EventPaymentAdmin)
+admin.site.register(Course,                     CourseAdmin)
+admin.site.register(CourseRegistration,         CourseRegistrationAdmin)
+admin.site.register(CourseJournalEntry,         CourseJournalEntryAdmin)
+admin.site.register(CourseJournalLeaderEntry,   CourseJournalLeaderEntryAdmin)
 
-admin.site.register(Message,            MessageAdmin)
-admin.site.register(MessageRecipient,   MessageRecipientAdmin)
+admin.site.register(Event,                      EventAdmin)
+admin.site.register(EventRegistration,          EventRegistrationAdmin)
 
-admin.site.register(Question,           QuestionAdmin)
+admin.site.register(Message,                    MessageAdmin)
+admin.site.register(MessageRecipient,           MessageRecipientAdmin)
 
-admin.site.register(Timesheet,          TimesheetAdmin)
-admin.site.register(TimesheetEntry,     TimesheetEntryAdmin)
-admin.site.register(TimesheetEntryType, TimesheetEntryTypeAdmin)
+admin.site.register(Question,                   QuestionAdmin)
+
+admin.site.register(Timesheet,                  TimesheetAdmin)
+admin.site.register(TimesheetEntry,             TimesheetEntryAdmin)
+admin.site.register(TimesheetEntryType,         TimesheetEntryTypeAdmin)
 
 admin.site.unregister(User)
-admin.site.register(User,               UserAdmin)
+admin.site.register(User,                       UserAdmin)
 

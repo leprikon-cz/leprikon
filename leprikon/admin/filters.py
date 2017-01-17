@@ -2,10 +2,9 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from ..models.courses import Course
-from ..models.events import Event
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
+from ..models.subjects import Subject, SubjectGroup, SubjectType
 
 
 class SchoolYearListFilter(admin.FieldListFilter):
@@ -35,41 +34,66 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
 
 
-class CourseTypeListFilter(admin.RelatedFieldListFilter):
+class SubjectTypeListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        super(CourseTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
-        request.course_type_id = self.lookup_val
+        super(SubjectTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        request.leprikon_subject_type_id = self.lookup_val
+
+
+class CourseTypeListFilter(SubjectTypeListFilter):
+    def field_choices(self, field, request, model_admin):
+        return [(t.id, t.plural) for t in SubjectType.objects.filter(subject_type=SubjectType.COURSE)]
+
+
+class EventTypeListFilter(SubjectTypeListFilter):
+    def field_choices(self, field, request, model_admin):
+        return [(t.id, t.plural) for t in SubjectType.objects.filter(subject_type=SubjectType.EVENT)]
 
 
 
-class CourseListFilter(admin.RelatedFieldListFilter):
+class SubjectGroupListFilter(admin.RelatedFieldListFilter):
+    subject_type_type = None
     def __init__(self, field, request, params, model, model_admin, field_path):
-        self.courses = Course.objects.filter(school_year=request.school_year)
-        if hasattr(request, 'course_type_id') and request.course_type_id:
-            self.courses = self.courses.filter(course_type__id=request.course_type_id)
-        super(CourseListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
+            self.groups = SubjectGroup.objects.filter(subject_types__id=request.leprikon_subject_type_id)
+        elif self.subject_type_type:
+            self.groups = SubjectGroup.objects.filter(subject_types__subject_type=self.subject_type_type)
+        else:
+            self.groups = SubjectGroup.objects.all()
+        super(SubjectGroupListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        request.leprikon_subject_group_id = self.lookup_val
 
     def field_choices(self, field, request, model_admin):
-        return [(course.id, course.name) for course in self.courses]
+        return [(g.id, g.plural) for g in self.groups.distinct()]
+
+class CourseGroupListFilter(SubjectGroupListFilter):
+    subject_type_type = SubjectType.COURSE
+
+class EventGroupListFilter(SubjectGroupListFilter):
+    subject_type_type = SubjectType.EVENT
 
 
 
-class EventTypeListFilter(admin.RelatedFieldListFilter):
+class SubjectListFilter(admin.RelatedFieldListFilter):
+    subject_type_type = None
     def __init__(self, field, request, params, model, model_admin, field_path):
-        super(EventTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
-        request.event_type_id = self.lookup_val
-
-
-
-class EventListFilter(admin.RelatedFieldListFilter):
-    def __init__(self, field, request, params, model, model_admin, field_path):
-        self.events = Event.objects.filter(school_year=request.school_year)
-        if hasattr(request, 'event_type_id') and request.event_type_id:
-            self.events = self.events.filter(event_type__id=request.event_type_id)
-        super(EventListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        self.subjects = Subject.objects.filter(school_year=request.school_year)
+        if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
+            self.subjects = self.subjects.filter(subject_type__id=request.leprikon_subject_type_id)
+        elif self.subject_type_type:
+            self.subjects = self.subjects.filter(subject_type__subject_type=self.subject_type_type)
+        if hasattr(request, 'leprikon_subject_group_id') and request.leprikon_subject_group_id:
+            self.subjects = self.subjects.filter(subject_group__id=request.leprikon_subject_group_id)
+        super(SubjectListFilter, self).__init__(field, request, params, model, model_admin, field_path)
 
     def field_choices(self, field, request, model_admin):
-        return [(event.id, event.name) for event in self.events]
+        return [(s.id, s.name) for s in self.subjects]
+
+class CourseListFilter(SubjectListFilter):
+    subject_type_type = SubjectType.COURSE
+
+class EventListFilter(SubjectListFilter):
+    subject_type_type = SubjectType.EVENT
 
 
 

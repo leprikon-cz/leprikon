@@ -19,50 +19,26 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.courses import (
     CourseJournalEntryAdminForm, CourseJournalLeaderEntryAdminForm,
 )
-from ..forms.registrations import RegistrationAdminForm
+from ..forms.subjects import RegistrationAdminForm
 from ..models.courses import (
-    Course, CourseAttachment, CourseJournalLeaderEntry, CoursePeriod, CourseRegistration,
-    CourseRegistrationDiscount, CourseRegistrationRequest, CourseTime, CourseType,
-    CourseTypeAttachment,
+    Course, CourseJournalLeaderEntry, CoursePeriod, CourseRegistration,
+    CourseRegistrationDiscount, CourseTime,
 )
 from ..models.schoolyear import SchoolYear
+from ..models.subjects import SubjectRegistrationRequest, SubjectType
 from ..utils import comma_separated, currency
 from .export import AdminExportMixin
 from .filters import (
-    CourseListFilter, CourseTypeListFilter, LeaderListFilter,
-    SchoolYearListFilter,
+    CourseGroupListFilter, CourseListFilter, CourseTypeListFilter,
+    LeaderListFilter, SchoolYearListFilter,
 )
 from .messages import SendMessageAdminMixin
-
-
-class CourseTypeAttachmentInlineAdmin(admin.TabularInline):
-    model   = CourseTypeAttachment
-    extra   = 3
-
-
-
-class CourseTypeAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'order')
-    list_editable   = ('order',)
-    fields          = ('name', 'slug', 'questions',)
-    filter_horizontal = ('questions',)
-    prepopulated_fields = {'slug': ('name',)}
-    inlines         = (
-        CourseTypeAttachmentInlineAdmin,
-    )
-
-
-
-class CourseGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'color', 'order')
-    list_editable   = ('color', 'order')
-
+from .subjects import SubjectAttachmentInlineAdmin
 
 
 class CourseTimeInlineAdmin(admin.TabularInline):
     model = CourseTime
     extra = 0
-
 
 
 class CoursePeriodInlineAdmin(admin.TabularInline):
@@ -71,23 +47,16 @@ class CoursePeriodInlineAdmin(admin.TabularInline):
     ordering    = ('start',)
 
 
-
-class CourseAttachmentInlineAdmin(admin.TabularInline):
-    model   = CourseAttachment
-    extra   = 3
-
-
-
 class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'name', 'course_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
         'get_registrations_link', 'get_registration_requests_link',
         'get_journal_link', 'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'course_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'reg_active',
         'get_registrations_count', 'get_registration_requests_count', 'note',
@@ -95,15 +64,15 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_editable   = ('public', 'reg_active', 'note')
     list_filter     = (
         ('school_year', SchoolYearListFilter),
-        ('course_type',   CourseTypeListFilter),
+        ('subject_type',CourseTypeListFilter),
         'age_groups',
-        'groups',
+        ('groups',      CourseGroupListFilter),
         ('leaders',     LeaderListFilter),
     )
     inlines         = (
         CourseTimeInlineAdmin,
         CoursePeriodInlineAdmin,
-        CourseAttachmentInlineAdmin,
+        SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     actions         = (
@@ -126,6 +95,9 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             school_year = obj.school_year
         else:
             school_year = request.school_year
+        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
+        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=SubjectType.COURSE)
+        form.base_fields['subject_type'].choices = subject_type_choices
         leaders_choices = form.base_fields['leaders'].widget.widget.choices
         leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
         form.base_fields['leaders'].choices = leaders_choices
@@ -180,7 +152,7 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_courseregistrations__course__in = queryset
+            leprikon_subjectregistrations__subject__in = queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
@@ -198,7 +170,7 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             url     = reverse('admin:{}_{}_changelist'.format(
                         CourseRegistration._meta.app_label,
                         CourseRegistration._meta.model_name,
-                    )) + '?course={}'.format(obj.id),
+                    )) + '?subject={}'.format(obj.id),
             title   = title,
             icon    = _boolean_icon(icon),
             count   = obj.registrations_count,
@@ -210,9 +182,9 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def get_registration_requests_link(self, obj):
         return '<a href="{url}">{count}</a>'.format(
             url     = reverse('admin:{}_{}_changelist'.format(
-                        CourseRegistrationRequest._meta.app_label,
-                        CourseRegistrationRequest._meta.model_name,
-                    )) + '?course={}'.format(obj.id),
+                        SubjectRegistrationRequest._meta.app_label,
+                        SubjectRegistrationRequest._meta.model_name,
+                    )) + '?subject={}'.format(obj.id),
             count   = obj.registration_requests_count,
         )
     get_registration_requests_link.short_description = _('registration requests')
@@ -231,7 +203,7 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url     = reverse('admin:leprikon_course_journal', args=[obj.course_type.slug, obj.id]),
+            url     = reverse('admin:leprikon_course_journal', args=[obj.id]),
             title   = _('printable course journal'),
             journal = _('journal'),
         )
@@ -275,12 +247,12 @@ class CourseRegistrationDiscountInlineAdmin(admin.TabularInline):
 
 class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'course_name', 'participant',
+        'id', 'get_download_tag', 'subject_name', 'participant',
         'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_course_payments', 'created',
         'cancel_request', 'canceled',
     )
     list_export     = (
-        'id', 'created', 'course', 'birth_num', 'age_group',
+        'id', 'created', 'subject', 'birth_num', 'age_group',
         'participant_first_name', 'participant_last_name',
         'participant_street', 'participant_city', 'participant_postal_code',
         'participant_phone', 'participant_email',
@@ -295,10 +267,10 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
         'get_payments_partial_balance', 'get_payments_total_balance',
     )
     list_filter     = (
-        ('course__school_year',   SchoolYearListFilter),
-        ('course__course_type',     CourseTypeListFilter),
-        ('course',                CourseListFilter),
-        ('course__leaders',       LeaderListFilter),
+        ('subject__school_year',    SchoolYearListFilter),
+        ('subject__subject_type',   CourseTypeListFilter),
+        ('subject__course',         CourseListFilter),
+        ('subject__leaders',        LeaderListFilter),
     )
     actions         = ('send_mail',)
     search_fields   = (
@@ -311,13 +283,13 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
         CourseRegistrationDiscountInlineAdmin,
     )
     ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('course',)
+    raw_id_fields   = ('subject',)
 
     def has_add_permission(self, request):
         return False
 
     def get_form(self, request, obj, **kwargs):
-        questions       = obj.course.all_questions
+        questions       = obj.subject.all_questions
         answers         = obj.get_answers()
         kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
             ('q_'+q.name, q.get_field(initial=answers.get(q.name, None)))
@@ -327,23 +299,23 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
         return super(CourseRegistrationAdmin, self).get_form(request, obj, **kwargs)
 
     def save_form(self, request, form, change):
-        questions   = form.instance.course.all_questions
+        questions   = form.instance.subject.all_questions
         answers     = {}
         for q in questions:
             answers[q.name] = form.cleaned_data['q_'+q.name]
         form.instance.answers = dumps(answers)
         return super(CourseRegistrationAdmin, self).save_form(request, form, change)
 
-    def course_name(self, obj):
-        return obj.course.name
-    course_name.short_description = _('course')
+    def subject_name(self, obj):
+        return obj.subject.name
+    subject_name.short_description = _('course')
 
     def school_name(self, obj):
         return obj.school_name
     school_name.short_description = _('school')
 
     def get_download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_courseregistration_pdf', args=(obj.id,)))
+        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectregistration_pdf', args=(obj.id,)))
     get_download_tag.short_description = _('download')
     get_download_tag.allow_tags = True
 
@@ -370,12 +342,12 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
             html.append(format_html('{period}: <a target="_blank" style="color: {color}" href="{href}" title="{title}"><b>{amount}</b></a>',
                 period  = period.period.name,
                 color   = period.status.color,
-                href    = reverse('admin:leprikon_coursepayment_changelist') + '?registration={}'.format(obj.id),
+                href    = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
                 title   = period.status.title,
                 amount  = currency(period.status.paid),
             ))
         return mark_safe('<br/>'.join(html) + format_html(' &nbsp; <a target="_blank" class="addlink" href="{href}" style="background-position: 0 0" title="{title}"></a>',
-            href    = reverse('admin:leprikon_coursepayment_add') + '?registration={}'.format(obj.id),
+            href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
             title   = _('add payment'),
         ))
     get_course_payments.short_description = _('course payments')
@@ -411,12 +383,12 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
     def get_urls(self):
         urls = super(CourseRegistrationAdmin, self).get_urls()
         return [
-            urls_url(r'(?P<reg_id>\d+).pdf$', self.admin_site.admin_view(self.pdf), name='leprikon_courseregistration_pdf'),
+            urls_url(r'(?P<reg_id>\d+).pdf$', self.admin_site.admin_view(self.pdf), name='leprikon_subjectregistration_pdf'),
         ] + urls
 
     def pdf(self, request, reg_id):
-        from ..views.courses import CourseRegistrationPdfView
-        return CourseRegistrationPdfView.as_view()(request, pk=reg_id)
+        from ..views.subjects import SubjectRegistrationPdfView
+        return SubjectRegistrationPdfView.as_view()(request, pk=reg_id)
 
     def send_mail(self, request, queryset):
         for registration in queryset.all():
@@ -443,24 +415,8 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_courseregistrations__in = queryset
+            leprikon_subjectregistrations__in = queryset
         ).distinct()
-
-
-
-class CoursePaymentAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('registration', 'date', 'amount')
-    list_filter     = (
-        ('registration__course__school_year', SchoolYearListFilter),
-        ('registration__course__course_type',   CourseTypeListFilter),
-        ('registration__course',              CourseListFilter),
-        ('registration__course__leaders',     LeaderListFilter),
-    )
-    search_fields   = ('registration__course__name', 'registration__participant_first_name', 'registration__participant_last_name',
-                       'registration__participant_birth_num')
-    date_hierarchy  = 'date'
-    ordering        = ('-date',)
-    raw_id_fields   = ('registration',)
 
 
 
@@ -525,8 +481,8 @@ class CourseJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     date_hierarchy  = 'date'
     list_display    = ('id', 'course_name', 'date', 'start', 'end', 'duration', 'agenda_html')
     list_filter     = (
-        ('course__school_year',   SchoolYearListFilter),
-        ('course',                CourseListFilter),
+        ('course__school_year', SchoolYearListFilter),
+        ('course',              CourseListFilter),
     )
     filter_horizontal = ('registrations',)
     inlines         = (CourseJournalLeaderEntryInlineAdmin,)
@@ -551,34 +507,13 @@ class CourseJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         return actions
 
     def course_name(self, obj):
-        return obj.course.name
+        return obj.subject.name
     course_name.short_description = _('course')
-    course_name.admin_order_field = 'course__name'
+    course_name.admin_order_field = 'subject__name'
 
     def agenda_html(self, obj):
         return obj.agenda
     agenda_html.short_description = _('agenda')
     agenda_html.admin_order_field = 'agenda'
     agenda_html.allow_tags = True
-
-
-
-class CourseRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
-    date_hierarchy  = 'created'
-    list_display    = ('created', 'course', 'user_link', 'contact')
-    list_filter     = (
-        ('course__school_year',   SchoolYearListFilter),
-        ('course__course_type',     CourseTypeListFilter),
-        ('course',                CourseListFilter),
-    )
-    ordering        = ('-created',)
-    raw_id_fields   = ('course', 'user')
-
-    def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
-            user    = obj.user,
-        ) if obj.user else '-'
-    user_link.allow_tags = True
-    user_link.short_description = _('user')
 

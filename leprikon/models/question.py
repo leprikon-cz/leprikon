@@ -10,6 +10,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
+from ..utils import first_upper
 
 
 @python_2_unicode_compatible
@@ -40,7 +41,7 @@ class Question(models.Model):
 
     @cached_property
     def field_label(self):
-        return self.question[0].upper() + self.question[1:]
+        return first_upper(self.question)
 
     def get_field(self, initial=None):
         return self.field_class(

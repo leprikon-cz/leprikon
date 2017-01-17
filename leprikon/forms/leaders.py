@@ -9,21 +9,14 @@ from .form import FormMixin
 
 class LeaderFilterForm(FormMixin, forms.Form):
     q           = forms.CharField(label=_('Search term'), required=False)
-    course      = forms.ModelMultipleChoiceField(queryset=None, label=_('Course'), required=False)
-    event       = forms.ModelMultipleChoiceField(queryset=None, label=_('Event'), required=False)
 
     def __init__(self, request, school_year=None, *args, **kwargs):
         super(LeaderFilterForm, self).__init__(*args, **kwargs)
         self.request = request
-
         school_year = school_year or request.school_year
 
-        # filter lieaders by plugin settings
+        # pre filter leaders by initial params
         self.leaders = school_year.leaders.all()
-
-        leader_ids = [l[0] for l in self.leaders.values_list('id').order_by()]
-        self.fields['course'].queryset = school_year.courses.filter(leaders__id__in=leader_ids).distinct()
-        self.fields['event' ].queryset = school_year.events.filter(leaders__id__in=leader_ids).distinct()
 
     def get_queryset(self):
         qs = self.leaders
@@ -35,9 +28,5 @@ class LeaderFilterForm(FormMixin, forms.Form):
               | Q(user__last_name__icontains = word)
               | Q(description__icontains = word)
             )
-        if self.cleaned_data['course']:
-            qs = qs.filter(courses__in = self.cleaned_data['course'])
-        if self.cleaned_data['event']:
-            qs = qs.filter(events__in = self.cleaned_data['event'])
         return qs.distinct()
 

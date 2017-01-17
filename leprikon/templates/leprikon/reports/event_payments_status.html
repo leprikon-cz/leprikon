@@ -55,7 +55,7 @@
         </td>
         <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">
-            <a href="{% url 'admin:leprikon_eventpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+            <a href="{% url 'admin:leprikon_subjectpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
                 {{ rs.status.paid | currency }}
             </a>
         </td>

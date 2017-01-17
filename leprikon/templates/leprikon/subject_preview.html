@@ -1,6 +1,6 @@
 {% load i18n leprikon_tags sekizai_tags thumbnail %}
 
-<div class="box box-event">
+<div class="box box-{{ object.subject_type.subject_type }} box-{{ object.subject_type.slug }}">
     <div class="box-header">
         <strong>{{ object.name }}</strong>
         {% for group in object.all_groups %}
@@ -9,10 +9,10 @@
         </small>
         {% endfor %}
         {% if object.price %}
-        <small>{{ object.price | currency }}</small>
+        <small>{{ object.price | currency }}{% if object.unit %} / {{ object.unit }}{% endif %}</small>
         {% endif %}
         {% if request.user.is_staff or request.leader in object.all_leaders %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:event_update' object.event_type.slug object.id %}">
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' object.subject_type.slug object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}
         </a>
@@ -26,6 +26,7 @@
         </a>
         {% endif %}
 
+        {% if object.start_date %}{# event #}
         <p>
             {% trans 'Start' %}: {{ object.start_date }}{% if objec.start_time %}, {{ objec.start_time }}{% endif %}
             {% if object.start_date != object.end_date or objec.end_time %}
@@ -42,6 +43,13 @@
                 {% trans 'Place' %}: {{ object.place }}
             {% endif %}
         </p>
+        {% elif object.all_times or object.place %}{# course #}
+        <p>
+            {% if object.all_times %}{% trans 'Time' %}: {{ object.all_times | comma_separated }}{% endif %}
+            {% if object.all_times and object.place %}<br/>{% endif %}
+            {% if object.place %}{% trans 'Place' %}: {{ object.place }}{% endif %}
+        </p>
+        {% endif %}
 
         {{ object.description | safe }}
 
@@ -52,10 +60,10 @@
         </p>
         {% endif %}
 
-        {% if object.event_type.all_attachments or object.all_attachments %}
+        {% if object.subject_type.all_attachments or object.all_attachments %}
         <p>
             {% trans 'Attachments' %}:
-            {% for attachment in object.event_type.all_attachments %}
+            {% for attachment in object.subject_type.all_attachments %}
             <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
             {% endfor %}
             {% for attachment in object.all_attachments %}
@@ -77,10 +85,19 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:event_registrations' object.event_type.slug object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:subject_registrations' object.subject_type.slug object.id %}">
                 {% trans 'registrations' %}
                 ({{ object.registrations.count }})
             </a>
+            {% if object.all_periods %}{# course #}
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:course_journal' object.id %}">
+                {% trans 'journal' %}
+            </a>
+            <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:coursejournalentry_create' object.id %}">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                {% trans 'add journal entry' %}
+            </a>
+            {% endif %}
         </div>
         {% endif %}
     </div>

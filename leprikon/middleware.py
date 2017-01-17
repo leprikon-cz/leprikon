@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import warnings
-
 from .models.roles import Leader
 from .models.schoolyear import SchoolYear
 

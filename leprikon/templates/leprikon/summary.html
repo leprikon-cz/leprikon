@@ -22,25 +22,4 @@
 {% include 'leprikon/messages_table.html' with object_list=new_messages %}
 {% endif %}
 
-{% if timesheets.count %}
-<h2>{% trans 'Timesheets to be submitted' %}</h2>
-{% for object in timesheets %}
-{% include 'leprikon/timesheet_preview.html' %}
-{% endfor %}
-{% endif %}
-
-{% if courses.count %}
-<h2>{% trans 'My courses' %}</h2>
-{% for object in courses %}
-{% include 'leprikon/course_preview.html' %}
-{% endfor %}
-{% endif %}
-
-{% if events.count %}
-<h2>{% trans 'My events' %}</h2>
-{% for object in events %}
-{% include 'leprikon/event_preview.html' %}
-{% endfor %}
-{% endif %}
-
 {% endblock %}

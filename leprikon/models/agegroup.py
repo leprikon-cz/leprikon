@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from ..utils import first_upper
+
 
 @python_2_unicode_compatible
 class AgeGroup(models.Model):
@@ -20,5 +22,5 @@ class AgeGroup(models.Model):
         return self.name
 
     def title(self):
-        return len(self.name) and self.name[0].upper() + self.name[1:] or ''
+        return first_upper(self.name)
 

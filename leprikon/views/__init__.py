@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from . import (
-    courses, events, leaders, messages, parents, participants, registrations,
-    reports, schoolyear, summary, support, terms_conditions, timesheets, user,
+    courses, leaders, messages, parents, participants, registrations, reports,
+    schoolyear, subjects, summaries, support, terms_conditions, timesheets,
+    user,
 )
 from ..conf import settings
 from .reports import (
@@ -48,7 +49,7 @@ staff_required = user_passes_test(
 )
 
 
-summary                         = login_required(summary.SummaryView.as_view())
+summary                         = login_required(summaries.SummaryView.as_view())
 
 user_create                     =    user.UserCreateView.as_view()
 user_update                     = login_required(user.UserUpdateView.as_view())
@@ -61,6 +62,8 @@ password_reset_confirm          = user.password_reset_confirm
 password_reset_complete         = user.password_reset_complete
 
 registration_list               = login_required(registrations.RegistrationsListView.as_view())
+registration_pdf                = login_required(subjects.SubjectRegistrationPdfView.as_view())
+registration_cancel             = login_required(subjects.SubjectRegistrationCancelView.as_view())
 
 participant_list                = login_required(participants.ParticipantListView.as_view())
 participant_create              = login_required(participants.ParticipantCreateView.as_view())
@@ -69,32 +72,22 @@ participant_update              = login_required(participants.ParticipantUpdateV
 parent_create                   = login_required(parents.ParentCreateView.as_view())
 parent_update                   = login_required(parents.ParentUpdateView.as_view())
 
-course_list                     = courses.CourseListView.as_view()
-course_list_mine                = leader_required(courses.CourseListMineView.as_view())
+leader_summary                  = leader_required(summaries.LeaderSummaryView.as_view())
 course_alternating              = leader_required(courses.CourseAlternatingView.as_view())
-course_detail                   = courses.CourseDetailView.as_view()
-course_registrations            = leader_or_staff_required(courses.CourseRegistrationsView.as_view())
 course_journal                  = leader_or_staff_required(courses.CourseJournalView.as_view())
-course_update                   = leader_or_staff_required(courses.CourseUpdateView.as_view())
 coursejournalentry_create       = leader_or_staff_required(courses.CourseJournalEntryCreateView.as_view())
 coursejournalentry_update       = leader_or_staff_required(courses.CourseJournalEntryUpdateView.as_view())
 coursejournalentry_delete       = leader_or_staff_required(courses.CourseJournalEntryDeleteView.as_view())
 coursejournalleaderentry_update = leader_or_staff_required(courses.CourseJournalLeaderEntryUpdateView.as_view())
 coursejournalleaderentry_delete = leader_or_staff_required(courses.CourseJournalLeaderEntryDeleteView.as_view())
-course_registration_form        = login_required(courses.CourseRegistrationFormView.as_view())
-course_registration_confirm     = login_required(courses.CourseRegistrationConfirmView.as_view())
-course_registration_pdf         = login_required(courses.CourseRegistrationPdfView.as_view())
-course_registration_cancel      = login_required(courses.CourseRegistrationCancelView.as_view())
 
-event_list                      = events.EventListView.as_view()
-event_list_mine                 = leader_required(events.EventListMineView.as_view())
-event_detail                    = events.EventDetailView.as_view()
-event_registrations             = leader_or_staff_required(events.EventRegistrationsView.as_view())
-event_update                    = leader_or_staff_required(events.EventUpdateView.as_view())
-event_registration_form         = login_required(events.EventRegistrationFormView.as_view())
-event_registration_confirm      = login_required(events.EventRegistrationConfirmView.as_view())
-event_registration_pdf          = login_required(events.EventRegistrationPdfView.as_view())
-event_registration_cancel       = login_required(events.EventRegistrationCancelView.as_view())
+subject_list                    = subjects.SubjectListView.as_view()
+subject_list_mine               = leader_required(subjects.SubjectListMineView.as_view())
+subject_detail                  = subjects.SubjectDetailView.as_view()
+subject_registration_form       = login_required(subjects.SubjectRegistrationFormView.as_view())
+subject_registration_confirm    = login_required(subjects.SubjectRegistrationConfirmView.as_view())
+subject_update                  = leader_or_staff_required(subjects.SubjectUpdateView.as_view())
+subject_registrations           = leader_or_staff_required(subjects.SubjectRegistrationsView.as_view())
 
 message_list                    = login_required(messages.MessageListView.as_view())
 message_detail                  = csrf_exempt(messages.MessageDetailView.as_view())

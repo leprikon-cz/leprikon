@@ -6,8 +6,8 @@ from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
 from ..utils import (
     comma_separated as _comma_separated, currency as _currency,
-    current_url as _current_url, url_back as _url_back,
-    url_with_back as _url_with_back,
+    current_url as _current_url, first_upper as _first_upper,
+    url_back as _url_back, url_with_back as _url_with_back,
 )
 
 register = template.Library()
@@ -25,6 +25,12 @@ def currency(value):
 @register.filter
 def comma_separated(value):
     return _comma_separated(value)
+
+
+
+@register.filter
+def first_upper(value):
+    return _first_upper(value)
 
 
 
@@ -55,8 +61,13 @@ def current_url(context):
 @register.inclusion_tag('leprikon/registration_links.html', takes_context=True)
 def registration_links(context, subject):
     context = context.__copy__()
+    context['subject'] = subject
     if context['request'].user.is_authenticated():
         context['registrations'] = subject.registrations.filter(user=context['request'].user)
+        try:
+            context['registration_request'] = context['request'].user.leprikon_registration_requests.get(subject=subject)
+        except:
+            pass
     else:
         context['registrations'] = []
     context['exceeded'] = subject.max_count and (subject.registrations.count() >= subject.max_count)

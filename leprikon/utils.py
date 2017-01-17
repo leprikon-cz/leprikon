@@ -101,6 +101,15 @@ def currency(val, international=False):
     return s.replace('<', '').replace('>', '').replace(' ', '\u00A0')
 
 
+def amount_color(amount):
+    if amount > 0:
+        return settings.LEPRIKON_COLOR_POSITIVE
+    elif amount < 0:
+        return settings.LEPRIKON_COLOR_NEGATIVE
+    else:
+        return settings.LEPRIKON_COLOR_ZERO
+
+
 def comma_separated(l):
     l = list(map(smart_text, l))
     if len(l) > 2:
@@ -159,6 +168,11 @@ def get_age(birth_date, today=None):
         return today.year - birth_date.year - 1
     else:
         return today.year - birth_date.year
+
+
+
+def first_upper(s):
+    return s[0].upper() + s[1:] if s else ''
 
 
 

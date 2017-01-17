@@ -6,22 +6,14 @@ from .templatemailer import TemplateMailer
 
 
 class RegistrationMailer(TemplateMailer):
+    template_name   = 'leprikon/registration_mail.txt'
+
     def send_mail(self, registration):
         super(RegistrationMailer, self).send_mail(
             recipient_list  = registration.all_recipients,
             object          = registration,
             site            = Site.objects.get_current(),
         )
-
-
-
-class CourseRegistrationMailer(RegistrationMailer):
-    template_name   = 'leprikon/courseregistration_mail.txt'
-
-
-
-class EventRegistrationMailer(RegistrationMailer):
-    template_name   = 'leprikon/eventregistration_mail.txt'
 
 
 

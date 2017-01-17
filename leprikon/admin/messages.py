@@ -148,8 +148,8 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     list_display    = ('recipient', 'sent', 'viewed', 'sent_mail')
     actions         = ('send_mails',)
 
+    # hide the model from admin index
     def get_model_perms(self, request):
-        # hide the model from admin index
         return {}
 
     def has_add_permission(self, request):

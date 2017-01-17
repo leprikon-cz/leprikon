@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import ReportBaseView
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
-from ...models.events import EventPayment
+from ...models.subjects import SubjectPayment, SubjectType
 from ...models.utils import PaymentStatus
 from ...utils import comma_separated
 
@@ -25,7 +25,8 @@ class ReportEventPaymentsView(ReportBaseView):
     def form_valid(self, form):
         context = form.cleaned_data
         context['form'] = form
-        context['payments'] = EventPayment.objects.filter(
+        context['payments'] = SubjectPayment.objects.filter(
+            registration__subject__subject_type__subject_type=SubjectType.EVENT,
             date__gte=context['date_start'],
             date__lte=context['date_end'],
         )

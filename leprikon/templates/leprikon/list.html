@@ -1,9 +1,9 @@
 {% extends 'leprikon/base.html' %}
-{% load cms_tags i18n %}
+{% load cms_tags i18n leprikon_tags %}
 
 {% block content %}
 
-<h1>{% block title %}{{ title }}{% endblock %}</h1>
+<h1>{% block title %}{{ title|first_upper }}{% endblock %}</h1>
 
 {% if placeholder %}
 {% static_placeholder placeholder %}

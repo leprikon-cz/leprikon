@@ -175,6 +175,11 @@ class CreateView(FormViewMixin, _CreateView):
 
 
 
+class ConfirmCreateView(ConfirmFormViewMixin, _CreateView):
+    pass
+
+
+
 class UpdateView(FormViewMixin, _UpdateView):
     pass
 

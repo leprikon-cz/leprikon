@@ -1,0 +1,23 @@
+{% extends 'leprikon/base.html' %}
+{% load i18n cms_tags leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% trans 'Summary' %}{% endblock %}</h2>
+
+{% static_placeholder "leader_summary" %}
+
+{% if timesheets.count %}
+<h2>{% trans 'Timesheets to be submitted' %}</h2>
+{% for object in timesheets %}
+{% include 'leprikon/timesheet_preview.html' %}
+{% endfor %}
+{% endif %}
+
+{% if subjects.count %}
+{% for object in subjects %}
+{% include 'leprikon/subject_preview.html' %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

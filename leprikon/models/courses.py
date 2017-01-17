@@ -1,11 +1,8 @@
 from __future__ import unicode_literals
 
-import colorsys
 from collections import namedtuple
 from datetime import date, datetime, timedelta
 
-from cms.models import CMSPlugin
-from cms.models.fields import PageField
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
@@ -15,159 +12,22 @@ from django.utils.encoding import (
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
-from filer.fields.file import FilerFileField
-from filer.fields.image import FilerImageField
 
-from ..conf import settings
-from ..mailers import CourseRegistrationMailer
 from ..utils import comma_separated, currency
-from .agegroup import AgeGroup
-from .fields import DAY_OF_WEEK, ColorField, DayOfWeekField, PriceField
-from .place import Place
-from .question import Question
-from .registrations import Registration
-from .roles import Leader
-from .schoolyear import SchoolYear
+from .fields import DAY_OF_WEEK, DayOfWeekField, PriceField
 from .startend import StartEndMixin
+from .subjects import Subject, SubjectRegistration
 from .utils import PaymentStatus
 
 
-@python_2_unicode_compatible
-class CourseType(models.Model):
-    name        = models.CharField(_('name'), max_length=150)
-    slug        = models.SlugField()
-    order       = models.IntegerField(_('order'), blank=True, default=0)
-    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
-                    blank=True,
-                    help_text=_('Add additional questions to be asked in the registration form.'))
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('order',)
-        verbose_name        = _('course type')
-        verbose_name_plural = _('course types')
-
-    def __str__(self):
-        return self.name
-
-    @cached_property
-    def all_questions(self):
-        return list(self.questions.all())
-
-    @cached_property
-    def all_attachments(self):
-        return list(self.attachments.all())
-
-
-
-@python_2_unicode_compatible
-class CourseTypeAttachment(models.Model):
-    course_type = models.ForeignKey(CourseType, verbose_name=_('course type'), related_name='attachments')
-    file        = FilerFileField(related_name='+')
-    order       = models.IntegerField(_('order'), blank=True, default=0)
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('order',)
-        verbose_name        = _('attachment')
-        verbose_name_plural = _('attachments')
-
-    def __str__(self):
-        return force_text(self.file)
-
-
-
-@python_2_unicode_compatible
-class CourseGroup(models.Model):
-    name    = models.CharField(_('name'), max_length=150)
-    plural  = models.CharField(_('plural'), max_length=150)
-    color   = ColorField(_('color'))
-    order   = models.IntegerField(_('order'), blank=True, default=0)
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('order',)
-        verbose_name        = _('course group')
-        verbose_name_plural = _('course groups')
-
-    def __str__(self):
-        return self.name
-
-    @cached_property
-    def font_color(self):
-        (h, s, v) = colorsys.rgb_to_hsv(
-            int(self.color[1:3], 16) / 255.0,
-            int(self.color[3:5], 16) / 255.0,
-            int(self.color[5:6], 16) / 255.0,
-        )
-        if v > .5:
-            v = 0
-        else:
-            v = 1
-        if s > .5:
-            s = 0
-        else:
-            s = 1
-        (r, g, b) = colorsys.hsv_to_rgb(h, s, v)
-        return '#{:02x}{:02x}{:02x}'.format(
-            int(r*255),
-            int(g*255),
-            int(b*255),
-        )
-
-
-
-@python_2_unicode_compatible
-class Course(models.Model):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='courses')
-    name        = models.CharField(_('name'), max_length=150)
-    description = HTMLField(_('description'), blank=True, default='')
-    course_type = models.ForeignKey(CourseType, verbose_name=_('course type'), related_name='courses')
-    groups      = models.ManyToManyField(CourseGroup, verbose_name=_('groups'), related_name='courses')
-    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='courses', blank=True, null=True, on_delete=models.SET_NULL)
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='courses', blank=True)
-    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='courses', blank=True)
-    price       = PriceField(_('price'), blank=True, null=True)
+class Course(Subject):
     unit        = models.CharField(_('unit'), max_length=150)
-    public      = models.BooleanField(_('public'), default=False)
-    reg_active  = models.BooleanField(_('active registration'), default=False)
-    photo       = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
-    page        = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
-    min_count   = models.IntegerField(_('minimal count'), blank=True, null=True)
-    max_count   = models.IntegerField(_('maximal count'), blank=True, null=True)
-    risks       = HTMLField(_('risks'), blank=True)
-    plan        = HTMLField(_('plan'), blank=True)
-    evaluation  = HTMLField(_('evaluation'), blank=True)
-    note        = models.CharField(_('note'), max_length=300, blank=True, default='')
-    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
-                    blank=True,
-                    help_text=_('Add additional questions to be asked in the registration form.'))
 
     class Meta:
         app_label           = 'leprikon'
         ordering            = ('name',)
         verbose_name        = _('course')
         verbose_name_plural = _('courses')
-
-    def __str__(self):
-        return '{} {}'.format(self.school_year, self.name)
-
-    def save(self, *args, **kwargs):
-        if self.price is None:
-            self.reg_active = False
-        super(Course, self).save(*args, **kwargs)
-
-    @cached_property
-    def all_groups(self):
-        return list(self.groups.all())
-
-    @cached_property
-    def all_age_groups(self):
-        return list(self.age_groups.all())
-
-    @cached_property
-    def all_leaders(self):
-        return list(self.leaders.all())
 
     @cached_property
     def all_times(self):
@@ -178,40 +38,11 @@ class Course(models.Model):
         return list(self.periods.all())
 
     @cached_property
-    def all_questions(self):
-        return set(self.course_type.all_questions + list(self.questions.all()))
-
-    @cached_property
-    def all_attachments(self):
-        return list(self.attachments.all())
-
-    @cached_property
-    def all_registrations(self):
-        return list(self.registrations.all())
-
-    @cached_property
     def all_journal_entries(self):
         return list(self.journal_entries.all())
 
     def get_current_period(self):
         return self.periods.filter(end__gte=date.today()).first() or self.periods.last()
-
-    def get_absolute_url(self):
-        return reverse('leprikon:course_detail', args=(self.course_type.slug, self.id))
-
-    def get_registration_url(self):
-        return reverse('leprikon:course_registration_form', kwargs={'course_type': self.course_type.slug, 'pk': self.id})
-
-    def get_edit_url(self):
-        return reverse('admin:leprikon_course_change', args=(self.id,))
-
-    def get_groups_list(self):
-        return comma_separated(self.all_groups)
-    get_groups_list.short_description = _('groups list')
-
-    def get_leaders_list(self):
-        return comma_separated(self.all_leaders)
-    get_leaders_list.short_description = _('leaders list')
 
     def get_times_list(self):
         return comma_separated(self.all_times)
@@ -231,10 +62,6 @@ class Course(models.Model):
     @property
     def registrations_history_registrations(self):
         return CourseRegistration.objects.filter(course_history__course=self).distinct()
-
-    @property
-    def active_registrations(self):
-        return self.registrations.filter(canceled=None)
 
     @property
     def inactive_registrations(self):
@@ -406,42 +233,19 @@ class CoursePeriod(StartEndMixin, models.Model):
 
 
 
-@python_2_unicode_compatible
-class CourseAttachment(models.Model):
-    course  = models.ForeignKey(Course, verbose_name=_('course'), related_name='attachments')
-    file    = FilerFileField(related_name='+')
-    order   = models.IntegerField(_('order'), blank=True, default=0)
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('order',)
-        verbose_name        = _('attachment')
-        verbose_name_plural = _('attachments')
-
-    def __str__(self):
-        return force_text(self.file)
-
-
-
-class CourseRegistration(Registration):
-    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='registrations')
+class CourseRegistration(SubjectRegistration):
 
     class Meta:
         app_label           = 'leprikon'
         verbose_name        = _('course registration')
         verbose_name_plural = _('course registrations')
-        unique_together     = (('course', 'participant_birth_num'),)
-
-    @property
-    def subject(self):
-        return self.course
 
     @property
     def periods(self):
         if self.canceled:
-            return self.course.periods.filter(end__gt=self.created, start__lt=self.canceled)
+            return self.subject.course.periods.filter(end__gt=self.created, start__lt=self.canceled)
         else:
-            return self.course.periods.filter(end__gt=self.created)
+            return self.subject.course.periods.filter(end__gt=self.created)
 
     @cached_property
     def all_periods(self):
@@ -497,9 +301,6 @@ class CourseRegistration(Registration):
             total   = PaymentStatus(price=total_price,   discount=total_discount,   explanation=total_explanation,   paid=paid),
         )
 
-    def send_mail(self):
-        CourseRegistrationMailer().send_mail(self)
-
 
 
 @python_2_unicode_compatible
@@ -548,51 +349,10 @@ class CourseRegistrationHistory(models.Model):
 def update_course_registration_history(sender, instance, created, **kwargs):
     d = date.today()
     # if created or changed
-    if (created or CourseRegistrationHistory.objects.filter(registration_id=instance.id, end=None).exclude(course_id=instance.course_id).update(end=d)):
+    if (created or CourseRegistrationHistory.objects.filter(registration_id=instance.id, end=None).exclude(course_id=instance.subject_id).update(end=d)):
         # reopen or create entry starting today
-        CourseRegistrationHistory.objects.filter(registration_id=instance.id, course_id=instance.course_id, start=d).update(end=None) or \
-        CourseRegistrationHistory.objects.create(registration_id=instance.id, course_id=instance.course_id, start=d)
-
-
-
-@python_2_unicode_compatible
-class CourseRegistrationRequest(models.Model):
-    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), related_name='course_registration_requests', blank=True, null=True)
-    course  = models.ForeignKey(Course, verbose_name=_('course'), related_name='registration_requests')
-    created = models.DateTimeField(_('time of request'), editable=False, auto_now_add=True)
-    contact = models.CharField(_('contact'), max_length=150, help_text=_('Enter phone number, e-mail address or other contact.'))
-
-    class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('course registration request')
-        verbose_name_plural = _('course registration requests')
-        ordering            = ('created',)
-        unique_together     = (('user', 'course'),)
-
-    def __str__(self):
-        return '{user}, {course}'.format(
-            user    = self.user,
-            course  = self.course,
-        )
-
-
-
-@python_2_unicode_compatible
-class CoursePayment(models.Model):
-    registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'), related_name='payments', on_delete=models.PROTECT)
-    date            = models.DateField(_('payment date'))
-    amount          = PriceField(_('amount'))
-
-    class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('course payment')
-        verbose_name_plural = _('course payments')
-
-    def __str__(self):
-        return '{registration}, {amount}'.format(
-            registration    = self.registration,
-            amount          = currency(self.amount),
-        )
+        CourseRegistrationHistory.objects.filter(registration_id=instance.id, course_id=instance.subject_id, start=d).update(end=None) or \
+        CourseRegistrationHistory.objects.create(registration_id=instance.id, course_id=instance.subject_id, start=d)
 
 
 
@@ -740,57 +500,4 @@ class CourseJournalLeaderEntry(StartEndMixin, models.Model):
 
     def get_delete_url(self):
         return reverse('leprikon:coursejournalleaderentry_delete', args=(self.id,))
-
-
-
-class CoursePlugin(CMSPlugin):
-    course      = models.ForeignKey(Course, verbose_name=_('course'))
-    template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_COURSE_TEMPLATES,
-                    default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
-
-    class Meta:
-        app_label = 'leprikon'
-
-
-
-class CourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
-    course_type = models.ForeignKey(CourseType, verbose_name=_('course type'))
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by age groups.'))
-    groups      = models.ManyToManyField(CourseGroup, verbose_name=_('course groups'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by groups.'))
-    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'),
-                    blank=True,
-                    help_text=_('Keep empty to skip searching by leaders.'))
-    template    = models.CharField(_('template'), max_length=100,
-                    choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
-                    default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
-                    help_text=_('The template used to render plugin.'))
-
-    class Meta:
-        app_label = 'leprikon'
-
-    def copy_relations(self, oldinstance):
-        self.groups     = oldinstance.groups.all()
-        self.age_groups = oldinstance.age_groups.all()
-        self.leaders    = oldinstance.leaders.all()
-
-
-
-class FilteredCourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                    blank=True, null=True)
-    course_types= models.ManyToManyField(CourseType, verbose_name=_('course type'))
-
-    class Meta:
-        app_label = 'leprikon'
-
-    def copy_relations(self, oldinstance):
-        self.course_types = oldinstance.course_types.all()
 

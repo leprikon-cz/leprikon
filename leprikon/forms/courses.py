@@ -5,17 +5,11 @@ from datetime import date
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.utils.translation import (
     ugettext_lazy as _, ungettext_lazy as ungettext,
 )
 
-from ..models.agegroup import AgeGroup
-from ..models.courses import (
-    Course, CourseGroup, CourseJournalEntry, CourseJournalLeaderEntry, CourseType,
-)
-from ..models.fields import DAY_OF_WEEK
-from ..models.place import Place
+from ..models.courses import CourseJournalEntry, CourseJournalLeaderEntry
 from ..models.roles import Leader
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated
@@ -23,79 +17,6 @@ from .fields import ReadonlyField
 from .form import FormMixin
 
 User = get_user_model()
-
-
-class CourseFilterForm(FormMixin, forms.Form):
-    q           = forms.CharField(label=_('Search term'), required=False)
-    course_type = forms.ModelMultipleChoiceField(queryset=None, label=_('Course type'), required=False)
-    group       = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
-    leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
-    place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
-    age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
-    day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
-                    choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
-    reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
-    invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
-
-    def __init__(self, request, school_year=None, course_types=None, **kwargs):
-        super(CourseFilterForm, self).__init__(**kwargs)
-        self.request = request
-
-        school_year = school_year or request.school_year
-        course_types = course_types or CourseType.objects.all()
-        course_types_list = list(course_types)
-
-        # filter courses by plugin settings
-        self.courses = school_year.courses.all()
-        if not request.user.is_staff or 'invisible' not in request.GET:
-            self.courses = self.courses.filter(public=True)
-
-        course_ids = [c[0] for c in self.courses.values_list('id').order_by()]
-        self.fields['course_type'].queryset = course_types
-        self.fields['group'     ].queryset = CourseGroup.objects.filter(courses__id__in=course_ids).distinct()
-        self.fields['leader'    ].queryset = Leader.objects.filter(courses__id__in=course_ids).distinct().order_by('user__first_name', 'user__last_name')
-        self.fields['place'     ].queryset = Place.objects.filter(courses__id__in=course_ids).distinct()
-        self.fields['age_group' ].queryset = AgeGroup.objects.filter(courses__id__in=course_ids).distinct()
-        if len(course_types_list) == 1:
-            del self.fields['course_type']
-        if not request.user.is_staff:
-            del self.fields['invisible']
-        for f in self.fields:
-            self.fields[f].help_text = None
-
-    def get_queryset(self):
-        qs = self.courses
-        if not self.is_valid():
-            return qs
-        for word in self.cleaned_data['q'].split():
-            qs = qs.filter(
-                Q(name__icontains = word)
-              | Q(description__icontains = word)
-            )
-        if 'course_type' in self.cleaned_data and self.cleaned_data['course_type']:
-            qs = qs.filter(course_type__in = self.cleaned_data['course_type'])
-        if self.cleaned_data['group']:
-            qs = qs.filter(groups__in = self.cleaned_data['group'])
-        if self.cleaned_data['place']:
-            qs = qs.filter(place__in = self.cleaned_data['place'])
-        if self.cleaned_data['leader']:
-            qs = qs.filter(leaders__in = self.cleaned_data['leader'])
-        if self.cleaned_data['age_group']:
-            qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
-        if self.cleaned_data['day_of_week']:
-            qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
-        if self.cleaned_data['reg_active']:
-            qs = qs.filter(reg_active=True)
-        return qs.distinct()
-
-
-
-class CourseForm(FormMixin, forms.ModelForm):
-
-    class Meta:
-        model = Course
-        fields = ['description', 'risks', 'plan', 'evaluation']
-
 
 
 class CourseJournalLeaderEntryAdminForm(forms.ModelForm):

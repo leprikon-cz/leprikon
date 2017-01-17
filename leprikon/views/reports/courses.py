@@ -14,8 +14,9 @@ from ...forms.reports.courses import (
     CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm,
 )
 from ...models.agegroup import AgeGroup
-from ...models.courses import Course, CoursePayment, CourseRegistration
+from ...models.courses import Course, CourseRegistration
 from ...models.roles import Participant
+from ...models.subjects import SubjectPayment, SubjectType
 
 
 class ReportCoursePaymentsView(ReportBaseView):
@@ -28,7 +29,8 @@ class ReportCoursePaymentsView(ReportBaseView):
     def form_valid(self, form):
         context = form.cleaned_data
         context['form'] = form
-        context['payments'] = CoursePayment.objects.filter(
+        context['payments'] = SubjectPayment.objects.filter(
+            registration__subject__subject_type__subject_type=SubjectType.COURSE,
             date__gte=context['date_start'],
             date__lte=context['date_end'],
         )
