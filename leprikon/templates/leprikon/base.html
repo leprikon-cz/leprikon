@@ -117,7 +117,7 @@
                 </div>
                 <div class="col-sm-3" id="sidebar">
                     <nav class="list-group">
-                        {% show_menu_below_id 'leprikon' 0 100 0 100 'leprikon/menu.html' %}
+                        {% show_menu_below_id 'leprikon' 0 100 0 1 'leprikon/menu.html' %}
                     </nav>
                     {% if request.user.is_authenticated %}
                     <form action="{% url 'leprikon:support' %}" method="post" class="form-horizontal">{% csrf_token %}
