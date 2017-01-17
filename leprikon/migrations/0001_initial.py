@@ -15,6 +15,21 @@ import leprikon.models.fields
 import leprikon.models.startend
 
 
+insurances = [
+    ('111', 'Všeobecná zdravotní pojišťovna ČR'),
+    ('201', 'Vojenská zdravotní pojišťovna ČR'),
+    ('205', 'Česká průmyslová zdravotní pojišťovna'),
+    ('207', 'Oborová zdravotní poj. zam. bank, poj. a stav.'),
+    ('209', 'Zaměstnanecká pojišťovna Škoda'),
+    ('211', 'Zdravotní pojišťovna ministerstva vnitra ČR'),
+    ('213', 'Revírní bratrská pokladna, zdrav. pojišťovna'),
+]
+
+def initial_data(apps, schema_editor):
+    Insurance = apps.get_model('leprikon', 'insurance')
+    [Insurance.objects.create(code=i[0], name=i[1]) for i in insurances]
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -863,4 +878,5 @@ class Migration(migrations.Migration):
             name='courseregistrationdiscount',
             unique_together=set([('registration', 'period')]),
         ),
+        migrations.RunPython(initial_data),
     ]
