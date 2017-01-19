@@ -247,7 +247,7 @@ class EventRegistrationForm(RegistrationForm):
 
     class Meta:
         model = EventRegistration
-        exclude = ('subject', 'user', 'cancel_request', 'canceled', 'discount', 'explanation')
+        exclude = ('subject', 'user', 'cancel_request', 'canceled')
 
 
 

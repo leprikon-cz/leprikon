@@ -45,13 +45,7 @@
             </a>
         </th>
         <td class="right">
-            {% if rs.status.explanation %}
-            <span data-toggle="tooltip" data-html="true" title="{{ rs.status.explanation | linebreaks }}">
-                {{ rs.status.discount | currency }}
-            </span>
-            {% else %}
             {{ rs.status.discount | currency }}
-            {% endif %}
         </td>
         <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">

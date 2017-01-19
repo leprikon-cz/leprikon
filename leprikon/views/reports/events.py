@@ -12,7 +12,6 @@ from . import ReportBaseView
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
 from ...models.subjects import SubjectPayment, SubjectType
 from ...models.utils import PaymentStatus
-from ...utils import comma_separated
 
 
 class ReportEventPaymentsView(ReportBaseView):
@@ -27,8 +26,8 @@ class ReportEventPaymentsView(ReportBaseView):
         context['form'] = form
         context['payments'] = SubjectPayment.objects.filter(
             registration__subject__subject_type__subject_type=SubjectType.EVENT,
-            date__gte=context['date_start'],
-            date__lte=context['date_end'],
+            created__gte=context['date_start'],
+            created__lte=context['date_end'],
         )
         context['sum'] = context['payments'].aggregate(Sum('amount'))['amount__sum']
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
@@ -86,5 +85,4 @@ class ReportEventPaymentsStatusView(ReportBaseView):
                 price       = sum(rs.status.price    for rs in self.registration_statuses),
                 paid        = sum(rs.status.paid     for rs in self.registration_statuses),
                 discount    = sum(rs.status.discount for rs in self.registration_statuses),
-                explanation = comma_separated(rs.status.explanation for rs in self.registration_statuses),
             )

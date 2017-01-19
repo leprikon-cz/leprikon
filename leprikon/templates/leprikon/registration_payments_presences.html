@@ -1,6 +1,6 @@
 {% load i18n leprikon_tags %}
 
-{% if reg.discount %}{# events #}
+{% if reg.subject.subject_type.subject_type == 'event' %}{# events #}
 <div class="row">
     <label class="col-sm-4">{% trans 'Discount' %}:</label>
     <div class="col-sm-8">
@@ -8,7 +8,9 @@
             {{ reg.discount | currency }}
         </strong>
         <div class="collapse out" id="explanation-{{ reg.id }}">
-            {{ reg.explanation | linebreaks }}
+            {% for discount in reg.all_discounts %}
+            {{ discount.explanation | linebreaks }}
+            {% endfor %}
         </div>
     </div>
 </div>

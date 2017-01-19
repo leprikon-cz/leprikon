@@ -8,7 +8,7 @@ from ..conf import settings
 from ..utils import currency
 
 
-class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'explanation', 'paid'))):
+class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))):
 
     @property
     def receivable(self):
@@ -50,7 +50,6 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'explana
         return PaymentStatus(
             price       = self.price    + other.price,
             discount    = self.discount + other.discount,
-            explanation = '{}, {}'.format(other.explanation, self.explanation),
             paid        = self.paid     + other.paid,
         )
 

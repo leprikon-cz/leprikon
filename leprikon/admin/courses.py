@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-from json import dumps
-
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
@@ -11,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -19,21 +16,23 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.courses import (
     CourseJournalEntryAdminForm, CourseJournalLeaderEntryAdminForm,
 )
-from ..forms.subjects import RegistrationAdminForm
 from ..models.courses import (
     Course, CourseJournalLeaderEntry, CoursePeriod, CourseRegistration,
-    CourseRegistrationDiscount, CourseTime,
+    CourseTime,
 )
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectRegistrationRequest, SubjectType
-from ..utils import comma_separated, currency
+from ..utils import currency
 from .export import AdminExportMixin
 from .filters import (
     CourseGroupListFilter, CourseListFilter, CourseTypeListFilter,
     LeaderListFilter, SchoolYearListFilter,
 )
 from .messages import SendMessageAdminMixin
-from .subjects import SubjectAttachmentInlineAdmin
+from .subjects import (
+    SubjectAttachmentInlineAdmin, SubjectPaymentAdmin,
+    SubjectRegistrationBaseAdmin,
+)
 
 
 class CourseTimeInlineAdmin(admin.TabularInline):
@@ -235,110 +234,32 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 
 
-class CourseRegistrationDiscountInlineAdmin(admin.TabularInline):
-    model = CourseRegistrationDiscount
-    extra = 0
-
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(CourseRegistrationDiscountInlineAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == 'period':
-            field.queryset = request._leprikon_registration.periods.all()
-        return field
-
-
-
-class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'subject_name', 'participant',
-        'get_payments_partial_balance_html', 'get_payments_total_balance_html', 'get_course_payments', 'created',
-        'cancel_request', 'canceled',
+        'id', 'download_tag', 'subject_name', 'participant', 'price',
+        'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
+        'created', 'cancel_request', 'canceled',
     )
-    list_export     = (
-        'id', 'created', 'subject', 'birth_num', 'age_group',
-        'participant_first_name', 'participant_last_name',
-        'participant_street', 'participant_city', 'participant_postal_code',
-        'participant_phone', 'participant_email',
-        'citizenship', 'insurance', 'health',
-        'school_name', 'school_class',
-        'parent1_first_name', 'parent1_last_name',
-        'parent1_street', 'parent1_city', 'parent1_postal_code',
-        'parent1_phone', 'parent1_email',
-        'parent2_first_name', 'parent2_last_name',
-        'parent2_street', 'parent2_city', 'parent2_postal_code',
-        'parent2_phone', 'parent2_email',
-        'get_payments_partial_balance', 'get_payments_total_balance',
-    )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
-        ('subject__subject_type',   CourseTypeListFilter),
-        ('subject',                 CourseListFilter),
-        ('subject__leaders',        LeaderListFilter),
-    )
-    actions         = ('send_mail',)
-    search_fields   = (
-        'participant_birth_num',
-        'participant_first_name', 'participant_last_name', 'participant_email',
-        'parent1_first_name', 'parent1_last_name', 'parent1_email',
-        'parent2_first_name', 'parent2_last_name', 'parent2_email',
-    )
-    inlines         = (
-        CourseRegistrationDiscountInlineAdmin,
-    )
-    ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('subject',)
 
-    def has_add_permission(self, request):
-        return False
-
-    def get_form(self, request, obj, **kwargs):
-        questions       = obj.subject.all_questions
-        answers         = obj.get_answers()
-        kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
-            ('q_' + q.name, q.get_field(initial=answers.get(q.name, None)))
-            for q in questions
+    def course_discounts(self, obj):
+        html = []
+        for period in obj.get_period_payment_statuses():
+            html.append(format_html(
+                '{period}: <a target="_blank" href="{href}"><b>{amount}</b></a>',
+                period  = period.period.name,
+                href    = (reverse('admin:leprikon_coursediscount_changelist') +
+                           '?registration={}&period={}'.format(obj.id, period.period.id)),
+                amount  = currency(period.status.discount),
+            ))
+        return mark_safe('<br/>'.join(html) + format_html(
+            ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
+            ' style="background-position: 0 0" title="{title}"></a>',
+            href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
+            title   = _('add discount'),
         ))
-        request._leprikon_registration = obj
-        return super(CourseRegistrationAdmin, self).get_form(request, obj, **kwargs)
+    course_discounts.short_description = _('course discounts')
 
-    def save_form(self, request, form, change):
-        questions   = form.instance.subject.all_questions
-        answers     = {}
-        for q in questions:
-            answers[q.name] = form.cleaned_data['q_' + q.name]
-        form.instance.answers = dumps(answers)
-        return super(CourseRegistrationAdmin, self).save_form(request, form, change)
-
-    def subject_name(self, obj):
-        return obj.subject.name
-    subject_name.short_description = _('course')
-
-    def school_name(self, obj):
-        return obj.school_name
-    school_name.short_description = _('school')
-
-    def get_download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectregistration_pdf', args=(obj.id,)))
-    get_download_tag.short_description = _('download')
-    get_download_tag.allow_tags = True
-
-    def full_name(self, obj):
-        return obj.participant.full_name
-    full_name.short_description = _('full name')
-
-    @cached_property
-    def participants_url(self):
-        return reverse('admin:leprikon_participant_changelist')
-
-    def participant_link(self, obj):
-        return '<a href="{url}?id={id}">{name}</a>'.format(
-            url     = self.participants_url,
-            id      = obj.participant.id,
-            name    = obj.participant,
-        )
-    participant_link.allow_tags = True
-    participant_link.short_description = _('participant')
-
-    def get_course_payments(self, obj):
+    def course_payments(self, obj):
         html = []
         for period in obj.get_period_payment_statuses():
             html.append(format_html(
@@ -355,75 +276,46 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
             href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
             title   = _('add payment'),
         ))
-    get_course_payments.short_description = _('course payments')
+    course_payments.short_description = _('course payments')
 
-    def get_payments_partial_balance(self, obj):
+    def payments_partial_balance(self, obj):
         return obj.get_payment_statuses().partial.balance
-    get_payments_partial_balance.short_description = _('actual balance')
+    payments_partial_balance.short_description = _('actual balance')
 
-    def get_payments_total_balance(self, obj):
+    def payments_total_balance(self, obj):
         return obj.get_payment_statuses().total.balance
-    get_payments_total_balance.short_description = _('total balance')
+    payments_total_balance.short_description = _('total balance')
 
-    def get_payments_partial_balance_html(self, obj):
+    def payments_partial_balance(self, obj):
         status = obj.get_payment_statuses().partial
         return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
             color   = status.color,
             balance = currency(status.balance),
             title   = status.title,
         )
-    get_payments_partial_balance_html.allow_tags = True
-    get_payments_partial_balance_html.short_description = _('actual balance')
+    payments_partial_balance.allow_tags = True
+    payments_partial_balance.short_description = _('actual balance')
 
-    def get_payments_total_balance_html(self, obj):
+    def payments_total_balance(self, obj):
         status = obj.get_payment_statuses().total
         return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
             color   = status.color,
             balance = currency(status.balance),
             title   = status.title,
         )
-    get_payments_total_balance_html.allow_tags = True
-    get_payments_total_balance_html.short_description = _('total balance')
+    payments_total_balance.allow_tags = True
+    payments_total_balance.short_description = _('total balance')
 
-    def get_urls(self):
-        urls = super(CourseRegistrationAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<reg_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='leprikon_subjectregistration_pdf',
-        )] + urls
 
-    def pdf(self, request, reg_id):
-        from ..views.subjects import SubjectRegistrationPdfView
-        return SubjectRegistrationPdfView.as_view()(request, pk=reg_id)
 
-    def send_mail(self, request, queryset):
-        for registration in queryset.all():
-            recipients = registration.all_recipients
-            if recipients:
-                registration.send_mail()
-                self.message_user(
-                    request,
-                    _('Registration {registration} ({id}) successfully sent to {recipients}.').format(
-                        registration = registration,
-                        id           = registration.id,
-                        recipients   = comma_separated(recipients),
-                    ),
-                )
-            else:
-                self.message_user(
-                    request,
-                    _('Registration {registration} ({id}) has no recipients.').format(
-                        registration = registration,
-                        id           = registration.id,
-                    ),
-                )
-    send_mail.short_description = _('Send selected registrations by email')
+class CourseDiscountAdmin(SubjectPaymentAdmin):
+    list_display    = ('created', 'registration', 'subject', 'period', 'amount_html', 'explanation')
 
-    def get_message_recipients(self, request, queryset):
-        return get_user_model().objects.filter(
-            leprikon_subjectregistrations__in = queryset
-        ).distinct()
+    def get_model_perms(self, request):
+        return {}
+
+    def get_readonly_fields(self, request, obj=None):
+        return obj and ('registration', 'period', 'amount') or ()
 
 
 

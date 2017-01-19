@@ -5,9 +5,10 @@ from django.contrib.auth import get_user_model
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import (
-    Course, CourseJournalEntry, CourseJournalLeaderEntry, CourseRegistration,
+    Course, CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
+    CourseRegistration,
 )
-from ..models.events import Event, EventRegistration
+from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.insurance import Insurance
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
@@ -22,10 +23,10 @@ from ..models.subjects import (
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .agegroup import AgeGroupAdmin
 from .courses import (
-    CourseAdmin, CourseJournalEntryAdmin, CourseJournalLeaderEntryAdmin,
-    CourseRegistrationAdmin,
+    CourseAdmin, CourseDiscountAdmin, CourseJournalEntryAdmin,
+    CourseJournalLeaderEntryAdmin, CourseRegistrationAdmin,
 )
-from .events import EventAdmin, EventRegistrationAdmin
+from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
 from .insurance import InsuranceAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
@@ -64,11 +65,13 @@ admin.site.register(SubjectPayment,             SubjectPaymentAdmin)
 
 admin.site.register(Course,                     CourseAdmin)
 admin.site.register(CourseRegistration,         CourseRegistrationAdmin)
+admin.site.register(CourseDiscount,             CourseDiscountAdmin)
 admin.site.register(CourseJournalEntry,         CourseJournalEntryAdmin)
 admin.site.register(CourseJournalLeaderEntry,   CourseJournalLeaderEntryAdmin)
 
 admin.site.register(Event,                      EventAdmin)
 admin.site.register(EventRegistration,          EventRegistrationAdmin)
+admin.site.register(EventDiscount,              EventDiscountAdmin)
 
 admin.site.register(Message,                    MessageAdmin)
 admin.site.register(MessageRecipient,           MessageRecipientAdmin)

@@ -352,10 +352,6 @@ class SubjectRegistration(models.Model):
     parent2.short_description = _('second parent')
 
     @cached_property
-    def all_payments(self):
-        return list(self.payments.all())
-
-    @cached_property
     def all_recipients(self):
         recipients = set()
         if self.user.email:
@@ -365,11 +361,28 @@ class SubjectRegistration(models.Model):
                 recipients.add(parent.email)
         return recipients
 
-    def get_payments(self, d=None):
+    @cached_property
+    def all_discounts(self):
+        return list(self.discounts.all())
+
+    @cached_property
+    def all_payments(self):
+        return list(self.payments.all())
+
+    def get_discounts(self, d):
         if d:
-            return list(filter(lambda p: p.date <= d, self.all_payments))
+            return list(filter(lambda p: p.created.date() <= d, self.all_discounts))
+        else:
+            return self.all_discounts
+
+    def get_payments(self, d):
+        if d:
+            return list(filter(lambda p: p.created.date() <= d, self.all_payments))
         else:
             return self.all_payments
+
+    def get_discounted(self, d=None):
+        return sum(p.amount for p in self.get_discounts(d))
 
     def get_paid(self, d=None):
         return sum(p.amount for p in self.get_payments(d))
@@ -456,6 +469,24 @@ class SubjectRegistration(models.Model):
 
 
 @python_2_unicode_compatible
+class SubjectDiscount(models.Model):
+    created     = models.DateTimeField(_('time of discount'), editable=False, auto_now_add=True)
+    amount      = PriceField(_('discount'), default=0)
+    explanation = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
+
+    class Meta:
+        abstract            = True
+        app_label           = 'leprikon'
+        verbose_name        = _('discount')
+        verbose_name_plural = _('discounts')
+        ordering            = ('created',)
+
+    def __str__(self):
+        return currency(self.amount)
+
+
+
+@python_2_unicode_compatible
 class SubjectRegistrationRequest(models.Model):
     user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                                 related_name='leprikon_registration_requests')
@@ -479,15 +510,16 @@ class SubjectRegistrationRequest(models.Model):
 
 @python_2_unicode_compatible
 class SubjectPayment(models.Model):
+    created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
-    date            = models.DateField(_('payment date'))
     amount          = PriceField(_('amount'))
 
     class Meta:
         app_label           = 'leprikon'
         verbose_name        = _('payment')
         verbose_name_plural = _('payments')
+        ordering            = ('created',)
 
     def __str__(self):
         return '{registration}, {amount}'.format(

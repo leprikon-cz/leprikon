@@ -13,10 +13,10 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
-from ..utils import comma_separated, currency
-from .fields import DAY_OF_WEEK, DayOfWeekField, PriceField
+from ..utils import comma_separated
+from .fields import DAY_OF_WEEK, DayOfWeekField
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectRegistration
+from .subjects import Subject, SubjectDiscount, SubjectRegistration
 from .utils import PaymentStatus
 
 
@@ -264,21 +264,20 @@ class CourseRegistration(SubjectRegistration):
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
 
     def get_period_payment_statuses(self, d=None):
-        paid        = self.get_paid(d)
+        paid = self.get_paid(d)
         for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
-            try:
-                discount_obj = list(filter(lambda d: d.period == period, self.all_discounts)).pop()
-                discount    = discount_obj.discount
-                explanation = discount_obj.explanation
-            except:
-                discount    = 0
-                explanation = ''
+            discount = sum(
+                discount.amount
+                for discount in filter(
+                    lambda discount: discount.period == period and (d is None or discount.created <= d),
+                    self.all_discounts
+                )
+            )
             yield self.PeriodPaymentStatus(
                 period  = period,
                 status  = PaymentStatus(
                     price       = self.price,
                     discount    = discount,
-                    explanation = explanation,
                     paid        = min(self.price - discount, paid) if counter < -1 else paid,
                 ),
             )
@@ -296,45 +295,23 @@ class CourseRegistration(SubjectRegistration):
         partial_price       = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
         total_price         = self.price * len(self.all_periods)
         partial_discount    = sum(
-            discount.discount
+            discount.amount
             for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
         )
-        partial_explanation = comma_separated(
-            discount.explanation
-            for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
-        )
-        total_discount  = sum(discount.discount for discount in self.all_discounts)
-        total_explanation   = comma_separated(discount.explanation for discount in self.all_discounts)
+        total_discount  = sum(discount.amount for discount in self.all_discounts)
         paid            = self.get_paid(d)
         return self.PaymentStatuses(
-            partial = PaymentStatus(price=partial_price,                discount=partial_discount,
-                                    explanation=partial_explanation,    paid=paid),
-            total   = PaymentStatus(price=total_price,                  discount=total_discount,
-                                    explanation=total_explanation,      paid=paid),
+            partial = PaymentStatus(price=partial_price, discount=partial_discount, paid=paid),
+            total   = PaymentStatus(price=total_price, discount=total_discount, paid=paid),
         )
 
 
 
-@python_2_unicode_compatible
-class CourseRegistrationDiscount(models.Model):
-    registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'), related_name='discounts')
-    period          = models.ForeignKey(CoursePeriod, verbose_name=_('period'), related_name='discounts')
-    discount        = PriceField(_('discount'), default=0)
-    explanation     = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
-
-    class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('course discount')
-        verbose_name_plural = _('course discounts')
-        ordering            = ('period',)
-        unique_together     = (('registration', 'period'),)
-
-    def __str__(self):
-        return '{registration}, {period}, {discount}'.format(
-            registration    = self.registration,
-            period          = self.period,
-            discount        = currency(self.discount),
-        )
+class CourseDiscount(SubjectDiscount):
+    registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
+                                        related_name='discounts', on_delete=models.PROTECT)
+    period          = models.ForeignKey(CoursePeriod, verbose_name=_('period'),
+                                        related_name='discounts', on_delete=models.PROTECT)
 
 
 

@@ -6,8 +6,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from .fields import PriceField
-from .subjects import Subject, SubjectRegistration
+from .subjects import Subject, SubjectDiscount, SubjectRegistration
 from .utils import PaymentStatus
 
 
@@ -60,8 +59,6 @@ class Event(Subject):
 
 
 class EventRegistration(SubjectRegistration):
-    discount        = PriceField(_('discount'), default=0)
-    explanation     = models.TextField(_('discount explanation'), blank=True, default='')
 
     class Meta:
         app_label           = 'leprikon'
@@ -75,7 +72,12 @@ class EventRegistration(SubjectRegistration):
     def get_payment_status(self, d=None):
         return PaymentStatus(
             price       = self.price,
-            discount    = self.discount,
-            explanation = self.explanation,
+            discount    = self.get_discounted(d),
             paid        = self.get_paid(d),
         )
+
+
+
+class EventDiscount(SubjectDiscount):
+    registration    = models.ForeignKey(EventRegistration, verbose_name=_('registration'),
+                                        related_name='discounts', on_delete=models.PROTECT)

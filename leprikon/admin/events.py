@@ -1,9 +1,6 @@
 from __future__ import unicode_literals
 
-from json import dumps
-
 from django import forms
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
@@ -11,22 +8,23 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.subjects import RegistrationAdminForm
 from ..models.events import Event, EventRegistration
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectRegistrationRequest, SubjectType
-from ..utils import comma_separated, currency
+from ..utils import currency
 from .export import AdminExportMixin
 from .filters import (
-    EventGroupListFilter, EventListFilter, EventTypeListFilter,
-    LeaderListFilter, SchoolYearListFilter,
+    EventGroupListFilter, EventTypeListFilter, LeaderListFilter,
+    SchoolYearListFilter,
 )
 from .messages import SendMessageAdminMixin
-from .subjects import SubjectAttachmentInlineAdmin
+from .subjects import (
+    SubjectAttachmentInlineAdmin, SubjectPaymentAdmin,
+    SubjectRegistrationBaseAdmin,
+)
 
 
 class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
@@ -193,102 +191,26 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 
 
-class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
-        'id', 'get_download_tag', 'subject_name', 'participant',
-        'discount', 'get_payments_html', 'created',
-        'cancel_request', 'canceled',
+        'id', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
+        'created', 'cancel_request', 'canceled',
     )
-    list_export     = (
-        'id', 'created', 'subject', 'birth_num', 'age_group',
-        'participant_first_name', 'participant_last_name',
-        'participant_street', 'participant_city', 'participant_postal_code',
-        'participant_phone', 'participant_email',
-        'citizenship', 'insurance', 'health',
-        'school_name', 'school_class',
-        'parent1_first_name', 'parent1_last_name',
-        'parent1_street', 'parent1_city', 'parent1_postal_code',
-        'parent1_phone', 'parent1_email',
-        'parent2_first_name', 'parent2_last_name',
-        'parent2_street', 'parent2_city', 'parent2_postal_code',
-        'parent2_phone', 'parent2_email',
-        'discount', 'get_payments_paid', 'get_payments_balance',
-    )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
-        ('subject__subject_type',   EventTypeListFilter),
-        ('subject',                 EventListFilter),
-        ('subject__leaders',        LeaderListFilter),
-    )
-    actions         = ('send_mail',)
-    search_fields   = (
-        'participant_birth_num',
-        'participant_first_name', 'participant_last_name', 'participant_email',
-        'parent1_first_name', 'parent1_last_name', 'parent1_email',
-        'parent2_first_name', 'parent2_last_name', 'parent2_email',
-    )
-    ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('subject',)
 
-    def has_add_permission(self, request):
-        return False
-
-    def get_form(self, request, obj, **kwargs):
-        questions       = obj.subject.all_questions
-        answers         = obj.get_answers()
-        kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
-            ('q_' + q.name, q.get_field(initial=answers.get(q.name, None)))
-            for q in questions
-        ))
-        return super(EventRegistrationAdmin, self).get_form(request, obj, **kwargs)
-
-    def save_form(self, request, form, change):
-        questions   = form.instance.subject.all_questions
-        answers     = {}
-        for q in questions:
-            answers[q.name] = form.cleaned_data['q_' + q.name]
-        form.instance.answers = dumps(answers)
-        return super(EventRegistrationAdmin, self).save_form(request, form, change)
-
-    def subject_name(self, obj):
-        return obj.subject.name
-    subject_name.short_description = _('event')
-
-    def school_name(self, obj):
-        return obj.school_name
-    school_name.short_description = _('school')
-
-    def get_download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectregistration_pdf', args=(obj.id,)))
-    get_download_tag.short_description = _('download')
-    get_download_tag.allow_tags = True
-
-    def full_name(self, obj):
-        return obj.participant.full_name
-    full_name.short_description = _('full name')
-
-    @cached_property
-    def participants_url(self):
-        return reverse('admin:leprikon_participant_changelist')
-
-    def participant_link(self, obj):
-        return '<a href="{url}?id={id}">{name}</a>'.format(
-            url     = self.participants_url,
-            id      = obj.participant.id,
-            name    = obj.participant,
+    def event_discounts(self, obj):
+        status = obj.get_payment_status()
+        return format_html(
+            '<a target="_blank" href="{href_list}"><b>{amount}</b></a> &nbsp; '
+            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
+            href_list   = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
+            href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
+            add         = _('add discount'),
+            amount      = currency(status.discount),
         )
-    participant_link.allow_tags = True
-    participant_link.short_description = _('participant')
+    event_discounts.allow_tags = True
+    event_discounts.short_description = _('event discounts')
 
-    def get_payments_paid(self, obj):
-        return obj.get_payment_status().paid
-    get_payments_paid.short_description = _('paid')
-
-    def get_payments_balance(self, obj):
-        return obj.get_payment_status().balance
-    get_payments_balance.short_description = _('balance')
-
-    def get_payments_html(self, obj):
+    def event_payments(self, obj):
         status = obj.get_payment_status()
         return format_html(
             '<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
@@ -300,45 +222,13 @@ class EventRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mode
             add         = _('add payment'),
             amount      = currency(status.paid),
         )
-    get_payments_html.allow_tags = True
-    get_payments_html.short_description = _('event payments')
+    event_payments.allow_tags = True
+    event_payments.short_description = _('event payments')
 
-    def get_urls(self):
-        urls = super(EventRegistrationAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<reg_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='leprikon_subjectregistration_pdf',
-        )] + urls
 
-    def pdf(self, request, reg_id):
-        from ..views.subjects import SubjectRegistrationPdfView
-        return SubjectRegistrationPdfView.as_view()(request, pk=reg_id)
 
-    def send_mail(self, request, queryset):
-        for registration in queryset.all():
-            recipients = registration.all_recipients
-            if recipients:
-                registration.send_mail()
-                self.message_user(
-                    request,
-                    _('Registration {registration} ({id}) successfully sent to {recipients}.').format(
-                        registration = registration,
-                        id           = registration.id,
-                        recipients   = comma_separated(recipients),
-                    ),
-                )
-            else:
-                self.message_user(
-                    request,
-                    _('Registration {registration} ({id}) has no recipients.').format(
-                        registration = registration,
-                        id           = registration.id,
-                    ),
-                )
-    send_mail.short_description = _('Send selected registrations by email')
+class EventDiscountAdmin(SubjectPaymentAdmin):
+    list_display    = ('created', 'registration', 'subject', 'amount_html', 'explanation')
 
-    def get_message_recipients(self, request, queryset):
-        return get_user_model().objects.filter(
-            leprikon_subjectregistrations__in = queryset
-        ).distinct()
+    def get_model_perms(self, request):
+        return {}
