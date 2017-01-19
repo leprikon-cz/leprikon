@@ -5,6 +5,8 @@ Leprikón je informační systém pro střediska volného času,
 domy dětí a mládeže a podobné organizace.
 [www.leprikon.cz](https://www.leprikon.cz/)
 
+[![Build Status](https://travis-ci.org/leprikon-cz/leprikon.svg?branch=master)](https://travis-ci.org/leprikon-cz/leprikon)
+
 Instalace
 ---------
 
