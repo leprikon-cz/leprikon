@@ -1,0 +1,13 @@
+language: python
+sudo: false
+python: 3.5
+cache: pip
+env:
+  - TOXENV="flake8"
+  - TOXENV="isort"
+install:
+  - pip install tox codecov
+script:
+  - tox -v
+after_success:
+  - codecov
