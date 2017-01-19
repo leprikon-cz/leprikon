@@ -9,7 +9,7 @@ from ..models.schoolyear import SchoolYear
 
 class SchoolYearForm(forms.Form):
     school_year = forms.ModelChoiceField(
-        labeli      =_('School year'),
+        label       = _('School year'),
         queryset    = SchoolYear.objects.all(),
         empty_label = None,
     )

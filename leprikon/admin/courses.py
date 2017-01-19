@@ -271,7 +271,7 @@ class CourseRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mod
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
         ('subject__subject_type',   CourseTypeListFilter),
-        ('subject__course',         CourseListFilter),
+        ('subject',                 CourseListFilter),
         ('subject__leaders',        LeaderListFilter),
     )
     actions         = ('send_mail',)
