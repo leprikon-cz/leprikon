@@ -109,6 +109,15 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def has_add_permission(self, request):
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_actions(self, request):
+        actions = super(SubjectRegistrationBaseAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del(actions['delete_selected'])
+        return actions
+
     def get_form(self, request, obj, **kwargs):
         questions       = obj.subject.all_questions
         answers         = obj.get_answers()
@@ -173,12 +182,19 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
         'parent2_first_name', 'parent2_last_name',
     )
     ordering        = ('-created',)
+    fieldsets       = ((None, {'fields': ()}),)
 
     def get_model_perms(self, request):
         return {}
 
     def has_add_permission(self, request):
         return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_actions(self, request):
+        return {}
 
 
 
