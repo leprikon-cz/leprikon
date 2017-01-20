@@ -136,12 +136,13 @@ class SubjectGroup(models.Model):
 @python_2_unicode_compatible
 class Subject(models.Model):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects')
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
+                                     related_name='subjects', on_delete=models.PROTECT)
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), related_name='subjects')
-    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects')
-    place       = models.ForeignKey(Place, verbose_name=_('place'), related_name='subjects', blank=True, null=True,
-                                    on_delete=models.SET_NULL)
+    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
+    place       = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
+                                    related_name='subjects', on_delete=models.SET_NULL)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects', blank=True)
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price       = PriceField(_('price'), blank=True, null=True)
@@ -240,10 +241,11 @@ class SubjectAttachment(models.Model):
 @python_2_unicode_compatible
 class SubjectRegistration(models.Model):
     slug            = models.SlugField(editable=False)
-    created         = models.DateTimeField(_('time of registration'), auto_now_add=True)
+    created         = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                                         related_name='leprikon_registrations', on_delete=models.PROTECT)
-    subject         = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='registrations')
+    subject         = models.ForeignKey(Subject, verbose_name=_('subject'),
+                                        related_name='registrations', on_delete=models.PROTECT)
     price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
@@ -543,7 +545,7 @@ class SubjectPlugin(CMSPlugin):
 
 class SubjectListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'))
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), on_delete=models.PROTECT)
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True,
                                          help_text=_('Keep empty to skip searching by age groups.'))
     groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('subject groups'), blank=True,
@@ -567,7 +569,7 @@ class SubjectListPlugin(CMSPlugin):
 
 class FilteredSubjectListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'))
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), on_delete=models.PROTECT)
 
     class Meta:
         app_label = 'leprikon'

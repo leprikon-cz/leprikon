@@ -150,7 +150,8 @@ class Parent(models.Model):
 class Participant(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                                         related_name='leprikon_participants')
-    age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'), related_name='+')
+    age_group       = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
+                                        related_name='+', on_delete=models.PROTECT)
     first_name      = models.CharField(_('first name'),   max_length=30)
     last_name       = models.CharField(_('last name'),    max_length=30)
     birth_num       = BirthNumberField(_('birth number'))
@@ -160,9 +161,10 @@ class Participant(models.Model):
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = CountryField(_('citizenship'))
-    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), related_name='+', null=True)
-    school          = models.ForeignKey(School, verbose_name=_('school'), related_name='participants',
-                                        blank=True, null=True)
+    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), null=True,
+                                        related_name='+', on_delete=models.PROTECT)
+    school          = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
+                                        related_name='participants', on_delete=models.PROTECT)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class    = models.CharField(_('class'),        max_length=30,  blank=True, default='')
     health          = models.TextField(_('health'), blank=True, default='')
@@ -243,8 +245,7 @@ class LeaderPlugin(CMSPlugin):
 
 class LeaderListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    course      = models.ForeignKey('leprikon.Course', verbose_name=_('course'), blank=True, null=True)
-    event       = models.ForeignKey('leprikon.Event', verbose_name=_('event'), blank=True, null=True)
+    subject     = models.ForeignKey('leprikon.Subject', verbose_name=_('subject'), blank=True, null=True)
     template    = models.CharField(
         _('template'), max_length=100,
         choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,

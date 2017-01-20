@@ -72,8 +72,9 @@ class TimesheetManager(models.Manager):
 @python_2_unicode_compatible
 class Timesheet(models.Model):
     period          = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), editable=False,
-                                        related_name='timesheets')
-    leader          = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False, related_name='timesheets')
+                                        related_name='timesheets', on_delete=models.PROTECT)
+    leader          = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False,
+                                        related_name='timesheets', on_delete=models.PROTECT)
     submitted       = models.BooleanField(_('submitted'), default=False)
     paid            = models.BooleanField(_('paid'), default=False)
 
@@ -155,7 +156,7 @@ class TimesheetEntry(StartEndMixin, models.Model):
     timesheet   = models.ForeignKey(Timesheet, verbose_name=_('timesheet'), editable=False,
                                     related_name='timesheet_entries', on_delete=models.PROTECT)
     entry_type  = models.ForeignKey(TimesheetEntryType, verbose_name=_('entry type'), null=True,
-                                    related_name='entries')
+                                    related_name='entries', on_delete=models.PROTECT)
     date        = models.DateField(_('date'))
     start       = models.TimeField(_('start time'))
     end         = models.TimeField(_('end time'))

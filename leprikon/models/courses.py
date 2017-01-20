@@ -316,8 +316,10 @@ class CourseDiscount(SubjectDiscount):
 
 
 class CourseRegistrationHistory(models.Model):
-    registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'), related_name='course_history')
-    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='registrations_history')
+    registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'),
+                                     related_name='course_history', on_delete=models.PROTECT)
+    course = models.ForeignKey(Course, verbose_name=_('course'),
+                               related_name='registrations_history', on_delete=models.PROTECT)
     start = models.DateField()
     end = models.DateField(default=None, null=True)
 
@@ -360,7 +362,8 @@ def get_default_agenda():
 
 @python_2_unicode_compatible
 class CourseJournalEntry(StartEndMixin, models.Model):
-    course      = models.ForeignKey(Course, verbose_name=_('course'), related_name='journal_entries', editable=False)
+    course      = models.ForeignKey(Course, verbose_name=_('course'), editable=False,
+                                    related_name='journal_entries', on_delete=models.PROTECT)
     date        = models.DateField(_('date'))
     start       = models.TimeField(_('start time'), blank=True, null=True,
                                    help_text=_('Leave empty, if the course does not take place'))
