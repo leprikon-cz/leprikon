@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from cms.menu_bases import CMSAttachMenu
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import ugettext_lazy as _
 from menus.base import Modifier, NavigationNode
@@ -145,7 +145,7 @@ class LeprikonMenu(CMSAttachMenu):
                 attr={'visible_for_anonymous': False},
             ))
             return nodes
-        except:
+        except NoReverseMatch:
             return []
 
 
