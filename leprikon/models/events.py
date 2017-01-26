@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, datetime
 
 from django.db import models
+from django.utils.formats import date_format, time_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -29,15 +30,66 @@ class Event(Subject):
     def get_active_registrations(self, d):
         return self.registrations.filter(created__lte=d).exclude(canceled__lt=d)
 
+    def get_times_list(self):
+        return '{start}{separator}{end}'.format(
+            start = (date_format(datetime.combine(self.start_date, self.start_time), 'SHORT_DATETIME_FORMAT')
+                     if self.start_time else date_format(self.start_date, 'SHORT_DATE_FORMAT')),
+            separator = ' - ' if self.start_date != self.end_date or self.end_time is not None else '',
+            end = ((time_format(self.end_time, 'TIME_FORMAT') if self.end_time else '')
+                   if self.start_date == self.end_date
+                   else (date_format(datetime.combine(self.end_date, self.end_time), 'SHORT_DATETIME_FORMAT')
+                         if self.end_time else date_format(self.end_date, 'SHORT_DATE_FORMAT'))),
+        )
+    get_times_list.short_description = _('times')
+
     def copy_to_school_year(old, school_year):
         new = Event.objects.get(id=old.id)
         new.id = None
         new.school_year = school_year
         new.public      = False
-        new.reg_active  = False
         new.evaluation  = ''
         new.note        = ''
         year_offset = school_year.year - old.school_year.year
+        if new.reg_from:
+            try:
+                new.reg_from = datetime(
+                    new.reg_from.year + year_offset,
+                    new.reg_from.month,
+                    new.reg_from.day,
+                    new.reg_from.hour,
+                    new.reg_from.minute,
+                    new.reg_from.second,
+                )
+            except ValueError:
+                # handle leap-year
+                new.reg_from = datetime(
+                    new.reg_from.year + year_offset,
+                    new.reg_from.month,
+                    new.reg_from.day - 1,
+                    new.reg_from.hour,
+                    new.reg_from.minute,
+                    new.reg_from.second,
+                )
+        if new.reg_to:
+            try:
+                new.reg_to = datetime(
+                    new.reg_to.year + year_offset,
+                    new.reg_to.month,
+                    new.reg_to.day,
+                    new.reg_to.hour,
+                    new.reg_to.minute,
+                    new.reg_to.second,
+                )
+            except ValueError:
+                # handle leap-year
+                new.reg_to = datetime(
+                    new.reg_to.year + year_offset,
+                    new.reg_to.month,
+                    new.reg_to.day - 1,
+                    new.reg_to.hour,
+                    new.reg_to.minute,
+                    new.reg_to.second,
+                )
         try:
             new.start_date = date(new.start_date.year + year_offset, new.start_date.month, new.start_date.day)
         except ValueError:

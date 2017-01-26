@@ -193,13 +193,12 @@ class SubjectRegistrationFormView(CreateView):
         lookup_kwargs = {
             'subject_type': self.subject_type,
             'id':           int(pk),
-            'reg_active':   True,
         }
         if not self.request.user.is_staff:
             lookup_kwargs['public'] = True
         self.subject = get_object_or_404(Subject, **lookup_kwargs)
         self.request.school_year = self.subject.school_year
-        if self.subject.max_count and self.subject.registrations.count() >= self.subject.max_count:
+        if not self.subject.registration_allowed:
             return SubjectRegistrationRequestFormView.as_view()(
                 request, subject_type=self.subject_type, subject=self.subject
             )

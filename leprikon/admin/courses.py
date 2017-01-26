@@ -6,7 +6,6 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.html import format_html
@@ -21,17 +20,12 @@ from ..models.courses import (
     CourseTime,
 )
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectRegistrationRequest, SubjectType
+from ..models.subjects import SubjectType
 from ..utils import currency
 from .export import AdminExportMixin
-from .filters import (
-    CourseGroupListFilter, CourseListFilter, CourseTypeListFilter,
-    LeaderListFilter, SchoolYearListFilter,
-)
-from .messages import SendMessageAdminMixin
+from .filters import CourseListFilter, LeaderListFilter, SchoolYearListFilter
 from .subjects import (
-    SubjectAttachmentInlineAdmin, SubjectPaymentAdmin,
-    SubjectRegistrationBaseAdmin,
+    SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
 )
 
 
@@ -46,47 +40,29 @@ class CoursePeriodInlineAdmin(admin.TabularInline):
     ordering    = ('start',)
 
 
-class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class CourseAdmin(SubjectBaseAdmin):
+    subject_type = SubjectType.COURSE
     list_display    = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
-        'place', 'public', 'reg_active',
+        'place', 'public', 'registration_allowed_icon',
         'get_registrations_link', 'get_registration_requests_link',
         'get_journal_link', 'icon', 'note',
     )
     list_export     = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
-        'place', 'public', 'reg_active',
+        'place', 'public',
         'get_registrations_count', 'get_registration_requests_count', 'note',
-    )
-    list_editable   = ('public', 'reg_active', 'note')
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
-        ('subject_type',    CourseTypeListFilter),
-        'age_groups',
-        ('groups',          CourseGroupListFilter),
-        ('leaders',         LeaderListFilter),
     )
     inlines         = (
         CourseTimeInlineAdmin,
         CoursePeriodInlineAdmin,
-        SubjectAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     actions         = (
         'publish', 'unpublish',
-        'allow_registration', 'disallow_registration',
         'copy_to_school_year',
     )
-    search_fields   = ('name', 'description')
-    save_as         = True
-
-    def get_queryset(self, request):
-        return super(CourseAdmin, self).get_queryset(request).annotate(
-            registrations_count=Count('registrations', distinct=True),
-            registration_requests_count=Count('registration_requests', distinct=True),
-        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
@@ -112,16 +88,6 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         self.message_user(request, _('Selected courses were unpublished.'))
     unpublish.short_description = _('Unpublish selected courses')
 
-    def allow_registration(self, request, queryset):
-        Course.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = True)
-        self.message_user(request, _('Registration was allowed for selected courses.'))
-    allow_registration.short_description = _('Allow registration for selected courses')
-
-    def disallow_registration(self, request, queryset):
-        Course.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = False)
-        self.message_user(request, _('Registration was disallowed for selected courses.'))
-    disallow_registration.short_description = _('Disallow registration for selected courses')
-
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
             school_year = forms.ModelChoiceField(
@@ -139,14 +105,15 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render_to_response('leprikon/admin/action_form.html', {
-            'title': _('Select target school year'),
-            'queryset': queryset,
-            'opts': self.model._meta,
-            'form': form,
-            'action': 'copy_to_school_year',
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
+        return render_to_response(
+            'leprikon/admin/action_form.html', {
+                'title': _('Select target school year'),
+                'queryset': queryset,
+                'opts': self.model._meta,
+                'form': form,
+                'action': 'copy_to_school_year',
+                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+            }, context_instance=RequestContext(request))
     copy_to_school_year.short_description = _('Copy selected courses to another school year')
 
     def get_message_recipients(self, request, queryset):
@@ -178,28 +145,6 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
-    def get_registration_requests_link(self, obj):
-        return '<a href="{url}">{count}</a>'.format(
-            url     = reverse('admin:{}_{}_changelist'.format(
-                SubjectRegistrationRequest._meta.app_label,
-                SubjectRegistrationRequest._meta.model_name,
-            )) + '?subject={}'.format(obj.id),
-            count   = obj.registration_requests_count,
-        )
-    get_registration_requests_link.short_description = _('registration requests')
-    get_registration_requests_link.admin_order_field = 'registration_requests_count'
-    get_registration_requests_link.allow_tags = True
-
-    def get_registrations_count(self, obj):
-        return obj.registrations_count
-    get_registrations_count.short_description = _('registrations count')
-    get_registrations_count.admin_order_field = 'registrations_count'
-
-    def get_registration_requests_count(self, obj):
-        return obj.registration_requests_count
-    get_registration_requests_count.short_description = _('registration requests count')
-    get_registration_requests_count.admin_order_field = 'registration_requests_count'
-
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
             url     = reverse('admin:leprikon_course_journal', args=[obj.id]),
@@ -223,14 +168,6 @@ class CourseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             'course': course,
             'admin': True,
         }, context_instance=RequestContext(request))
-
-    def icon(self, obj):
-        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
-            src = obj.photo.icons['48'],
-            alt = obj.photo.label,
-        ) or ''
-    icon.allow_tags = True
-    icon.short_description = _('photo')
 
 
 

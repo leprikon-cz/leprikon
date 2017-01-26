@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.html import format_html
@@ -13,60 +12,33 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.events import Event, EventRegistration
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectRegistrationRequest, SubjectType
+from ..models.subjects import SubjectType
 from ..utils import currency
-from .export import AdminExportMixin
-from .filters import (
-    EventGroupListFilter, EventTypeListFilter, LeaderListFilter,
-    SchoolYearListFilter,
-)
-from .messages import SendMessageAdminMixin
 from .subjects import (
-    SubjectAttachmentInlineAdmin, SubjectPaymentAdmin,
-    SubjectRegistrationBaseAdmin,
+    SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
 )
 
 
-class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class EventAdmin(SubjectBaseAdmin):
+    subject_type = SubjectType.EVENT
     list_display    = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
-        'start_date', 'start_time', 'end_date', 'end_time',
-        'place', 'public', 'reg_active',
+        'get_times_list',
+        'place', 'public', 'registration_allowed_icon',
         'get_registrations_link', 'get_registration_requests_link',
         'icon', 'note',
     )
     list_export     = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
-        'place', 'public', 'reg_active',
+        'place', 'public',
         'get_registrations_count', 'get_registration_requests_count', 'note',
     )
-    list_editable   = ('public', 'reg_active', 'note')
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
-        ('subject_type',    EventTypeListFilter),
-        'age_groups',
-        ('groups',          EventGroupListFilter),
-        ('leaders',         LeaderListFilter),
-    )
-    inlines         = (
-        SubjectAttachmentInlineAdmin,
-    )
-    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     date_hierarchy  = 'start_date'
     actions         = (
         'publish', 'unpublish',
-        'allow_registration', 'disallow_registration',
         'copy_to_school_year',
     )
-    search_fields   = ('name', 'description')
-    save_as         = True
-
-    def get_queryset(self, request):
-        return super(EventAdmin, self).get_queryset(request).annotate(
-            registrations_count=Count('registrations', distinct=True),
-            registration_requests_count=Count('registration_requests', distinct=True),
-        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(EventAdmin, self).get_form(request, obj, **kwargs)
@@ -91,16 +63,6 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public = False)
         self.message_user(request, _('Selected events were unpublished.'))
     unpublish.short_description = _('Unpublish selected events')
-
-    def allow_registration(self, request, queryset):
-        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = True)
-        self.message_user(request, _('Registration was allowed for selected events.'))
-    allow_registration.short_description = _('Allow registration for selected events')
-
-    def disallow_registration(self, request, queryset):
-        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(reg_active = False)
-        self.message_user(request, _('Registration was disallowed for selected events.'))
-    disallow_registration.short_description = _('Disallow registration for selected events')
 
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
@@ -158,36 +120,6 @@ class EventAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     get_registrations_link.short_description = _('registrations')
     get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
-
-    def get_registration_requests_link(self, obj):
-        return '<a href="{url}">{count}</a>'.format(
-            url     = reverse('admin:{}_{}_changelist'.format(
-                SubjectRegistrationRequest._meta.app_label,
-                SubjectRegistrationRequest._meta.model_name,
-            )) + '?subject={}'.format(obj.id),
-            count   = obj.registration_requests_count,
-        )
-    get_registration_requests_link.short_description = _('registration requests')
-    get_registration_requests_link.admin_order_field = 'registration_requests_count'
-    get_registration_requests_link.allow_tags = True
-
-    def get_registrations_count(self, obj):
-        return obj.registrations_count
-    get_registrations_count.short_description = _('registrations count')
-    get_registrations_count.admin_order_field = 'registrations_count'
-
-    def get_registration_requests_count(self, obj):
-        return obj.registration_requests_count
-    get_registration_requests_count.short_description = _('registration requests count')
-    get_registration_requests_count.admin_order_field = 'registration_requests_count'
-
-    def icon(self, obj):
-        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
-            src = obj.photo.icons['48'],
-            alt = obj.photo.label,
-        ) or ''
-    icon.allow_tags = True
-    icon.short_description = _('photo')
 
 
 

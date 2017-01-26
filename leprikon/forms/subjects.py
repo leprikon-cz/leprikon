@@ -91,7 +91,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
         if self.subject_type.subject_type == SubjectType.EVENT and not self.cleaned_data['past']:
             qs = qs.filter(end_date__gte = now())
         if self.cleaned_data['reg_active']:
-            qs = qs.filter(reg_active=True)
+            qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now()).exclude(price=None)
         return qs.distinct()
 
 

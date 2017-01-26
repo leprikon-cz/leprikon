@@ -2,15 +2,23 @@ from __future__ import unicode_literals
 
 from json import dumps
 
+from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
+from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.db.models import Count
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import RegistrationAdminForm
-from ..models.subjects import SubjectAttachment, SubjectTypeAttachment
+from ..models.subjects import (
+    Subject, SubjectAttachment, SubjectRegistration,
+    SubjectRegistrationRequest, SubjectTypeAttachment,
+)
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -47,6 +55,133 @@ class SubjectGroupAdmin(admin.ModelAdmin):
 class SubjectAttachmentInlineAdmin(admin.TabularInline):
     model   = SubjectAttachment
     extra   = 3
+
+
+
+class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    subject_type    = None
+    list_editable   = ('public', 'note')
+    list_filter     = (
+        ('school_year',     SchoolYearListFilter),
+        ('subject_type',    SubjectTypeListFilter),
+        ('groups',          SubjectGroupListFilter),
+        ('leaders',         LeaderListFilter),
+    )
+    inlines         = (
+        SubjectAttachmentInlineAdmin,
+    )
+    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
+    actions         = ('set_registration_dates',)
+    search_fields   = ('name', 'description')
+    save_as         = True
+
+    def get_queryset(self, request):
+        return super(SubjectBaseAdmin, self).get_queryset(request).annotate(
+            registrations_count=Count('registrations', distinct=True),
+            registration_requests_count=Count('registration_requests', distinct=True),
+        )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
+        if obj:
+            school_year = obj.school_year
+        else:
+            school_year = request.school_year
+        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
+        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=self.subject_type)
+        form.base_fields['subject_type'].choices = subject_type_choices
+        leaders_choices = form.base_fields['leaders'].widget.widget.choices
+        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
+        form.base_fields['leaders'].choices = leaders_choices
+        return form
+
+    def get_message_recipients(self, request, queryset):
+        return get_user_model().objects.filter(
+            leprikon_subjectregistrations__subject__in = queryset
+        ).distinct()
+
+    def get_registrations_link(self, obj):
+        icon = False
+        if obj.registrations_count == 0:
+            title = _('There are no registrations for this subject.')
+        elif obj.min_count is not None and obj.registrations_count < obj.min_count:
+            title = _('The number of registrations is lower than {}.').format(obj.min_count)
+        elif obj.max_count is not None and obj.registrations_count > obj.max_count:
+            title = _('The number of registrations is greater than {}.').format(obj.max_count)
+        else:
+            icon = True
+            title = ''
+        return '<a href="{url}" title="{title}">{icon} {count}</a>'.format(
+            url     = reverse('admin:{}_{}_changelist'.format(
+                SubjectRegistration._meta.app_label,
+                SubjectRegistration._meta.model_name,
+            )) + '?subject={}'.format(obj.id),
+            title   = title,
+            icon    = _boolean_icon(icon),
+            count   = obj.registrations_count,
+        )
+    get_registrations_link.short_description = _('registrations')
+    get_registrations_link.admin_order_field = 'registrations_count'
+    get_registrations_link.allow_tags = True
+
+    def registration_allowed_icon(self, obj):
+        return _boolean_icon(obj.registration_allowed)
+    registration_allowed_icon.short_description = _('registration allowed')
+
+    def get_registration_requests_link(self, obj):
+        return '<a href="{url}">{count}</a>'.format(
+            url     = reverse('admin:{}_{}_changelist'.format(
+                SubjectRegistrationRequest._meta.app_label,
+                SubjectRegistrationRequest._meta.model_name,
+            )) + '?subject={}'.format(obj.id),
+            count   = obj.registration_requests_count,
+        )
+    get_registration_requests_link.short_description = _('registration requests')
+    get_registration_requests_link.admin_order_field = 'registration_requests_count'
+    get_registration_requests_link.allow_tags = True
+
+    def get_registrations_count(self, obj):
+        return obj.registrations_count
+    get_registrations_count.short_description = _('registrations count')
+    get_registrations_count.admin_order_field = 'registrations_count'
+
+    def get_registration_requests_count(self, obj):
+        return obj.registration_requests_count
+    get_registration_requests_count.short_description = _('registration requests count')
+    get_registration_requests_count.admin_order_field = 'registration_requests_count'
+
+    def icon(self, obj):
+        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
+            src = obj.photo.icons['48'],
+            alt = obj.photo.label,
+        ) or ''
+    icon.allow_tags = True
+    icon.short_description = _('photo')
+
+    def set_registration_dates(self, request, queryset):
+        class RegistrationDatesForm(forms.Form):
+            reg_from = Subject._meta.get_field('reg_from').formfield()
+            reg_to = Subject._meta.get_field('reg_to').formfield()
+        if request.POST.get('post', 'no') == 'yes':
+            form = RegistrationDatesForm(request.POST)
+            if form.is_valid():
+                Subject.objects.filter(id__in=queryset.values_list('id', flat=True)).update(
+                    reg_from = form.cleaned_data['reg_from'],
+                    reg_to = form.cleaned_data['reg_to'],
+                )
+                self.message_user(request, _('Registration dates were updated.'))
+                return
+        else:
+            form = RegistrationDatesForm()
+        return render_to_response('leprikon/admin/action_form.html', {
+            'title': _('Select registration dates'),
+            'queryset': queryset,
+            'opts': self.model._meta,
+            'form': form,
+            'action': 'set_registration_dates',
+            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+        }, context_instance=RequestContext(request))
+    set_registration_dates.short_description = _('Set registration dates')
 
 
 

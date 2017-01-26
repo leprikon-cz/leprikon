@@ -71,8 +71,6 @@ def registration_links(context, subject):
             pass
     else:
         context['registrations'] = []
-    context['exceeded'] = subject.max_count and (subject.registrations.count() >= subject.max_count)
-    context['reg_active'] = subject.reg_active and not context['exceeded']
     context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
     return context
 

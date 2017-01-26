@@ -6,12 +6,12 @@
 </a>
 {% endfor %}
 
-{% if reg_active %}
+{% if subject.registration_allowed %}
     <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
         {% trans 'register' %}
     </a>
-{% elif exceeded %}
-    {% trans 'The capacity is already full.' %}
+{% else %}
+    {% trans 'Registering is currently not allowed.' %}
     {% if registration_request %}
     <strong>{% blocktrans with created=registration_request.created %}Your registration request was recorded {{ created }}.{% endblocktrans %}
     {% else %}
@@ -19,6 +19,4 @@
         {% trans 'contact me, if there is some place available' %}
     </a>
     {% endif %}
-{% else %}
-    {% trans 'Registering is currently not allowed.' %}
 {% endif %}

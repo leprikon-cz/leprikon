@@ -78,7 +78,6 @@ class Course(Subject):
         new.id = None
         new.school_year = school_year
         new.public      = False
-        new.reg_active  = False
         new.evaluation  = ''
         new.note        = ''
         new.save()
@@ -89,6 +88,46 @@ class Course(Subject):
         new.times       = old.times.all()
         new.attachments = old.attachments.all()
         year_offset = school_year.year - old.school_year.year
+        if new.reg_from:
+            try:
+                new.reg_from = datetime(
+                    new.reg_from.year + year_offset,
+                    new.reg_from.month,
+                    new.reg_from.day,
+                    new.reg_from.hour,
+                    new.reg_from.minute,
+                    new.reg_from.second,
+                )
+            except ValueError:
+                # handle leap-year
+                new.reg_from = datetime(
+                    new.reg_from.year + year_offset,
+                    new.reg_from.month,
+                    new.reg_from.day - 1,
+                    new.reg_from.hour,
+                    new.reg_from.minute,
+                    new.reg_from.second,
+                )
+        if new.reg_to:
+            try:
+                new.reg_to = datetime(
+                    new.reg_to.year + year_offset,
+                    new.reg_to.month,
+                    new.reg_to.day,
+                    new.reg_to.hour,
+                    new.reg_to.minute,
+                    new.reg_to.second,
+                )
+            except ValueError:
+                # handle leap-year
+                new.reg_to = datetime(
+                    new.reg_to.year + year_offset,
+                    new.reg_to.month,
+                    new.reg_to.day - 1,
+                    new.reg_to.hour,
+                    new.reg_to.minute,
+                    new.reg_to.second,
+                )
         for period in old.all_periods:
             period.id = None
             period.course = new

@@ -8,6 +8,7 @@ from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.utils import timezone
 from django.utils.encoding import (
     force_text, python_2_unicode_compatible, smart_text,
 )
@@ -147,7 +148,8 @@ class Subject(models.Model):
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price       = PriceField(_('price'), blank=True, null=True)
     public      = models.BooleanField(_('public'), default=False)
-    reg_active  = models.BooleanField(_('active registration'), default=False)
+    reg_from    = models.DateTimeField(_('registration active from'), blank=True, null=True)
+    reg_to      = models.DateTimeField(_('registration active to'), blank=True, null=True)
     photo       = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
     page        = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
     min_count   = models.IntegerField(_('minimal count'), blank=True, null=True)
@@ -167,11 +169,6 @@ class Subject(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.name)
-
-    def save(self, *args, **kwargs):
-        if self.price is None:
-            self.reg_active = False
-        super(Subject, self).save(*args, **kwargs)
 
     @cached_property
     def all_groups(self):
@@ -196,6 +193,17 @@ class Subject(models.Model):
     @cached_property
     def all_registrations(self):
         return list(self.registrations.all())
+
+    @property
+    def registration_allowed(self):
+        now = timezone.now()
+        return (
+            self.price is not None and
+            self.reg_from is not None and
+            self.reg_from <= now and
+            (self.reg_to is None or self.reg_to > now) and
+            (self.max_count is None or self.registrations.count() < self.max_count)
+        )
 
     def get_absolute_url(self):
         return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
