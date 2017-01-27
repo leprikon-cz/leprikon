@@ -44,7 +44,7 @@ class ClubTypeAttachmentInlineAdmin(admin.TabularInline):
 class ClubTypeAdmin(admin.ModelAdmin):
     list_display    = ('name', 'order')
     list_editable   = ('order',)
-    fields          = ('name', 'slug', 'questions',)
+    fields          = ('name', 'slug', 'questions', 'reg_printsetup')
     filter_horizontal = ('questions',)
     prepopulated_fields = {'slug': ('name',)}
     inlines         = (

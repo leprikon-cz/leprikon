@@ -21,6 +21,7 @@ from ..utils import comma_separated, currency
 from .agegroup import AgeGroup
 from .fields import ColorField, PriceField
 from .place import Place
+from .printsetup import PrintSetup
 from .question import Question
 from .registrations import Registration
 from .roles import Leader
@@ -36,6 +37,8 @@ class EventType(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                     blank=True,
                     help_text=_('Add additional questions to be asked in the registration form.'))
+    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True,
+                                        verbose_name=_('registration print setup'), related_name='+')
 
     class Meta:
         app_label           = 'leprikon'
@@ -141,6 +144,8 @@ class Event(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                     blank=True,
                     help_text=_('Add additional questions to be asked in the registration form.'))
+    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True,
+                                        verbose_name=_('registration print setup'), related_name='+')
 
     class Meta:
         app_label           = 'leprikon'

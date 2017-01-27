@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.utils.http import is_safe_url
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
     CreateView as _CreateView, DeleteView as _DeleteView,
@@ -206,7 +208,10 @@ class FormView(FormViewMixin, _FormView):
 
 
 class PdfView(PdfViewMixin, _DetailView):
-    pass
+
+    @cached_property
+    def current_site(self):
+        return Site.objects.get_current()
 
 
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-13 19:42+0100\n"
+"POT-Creation-Date: 2017-01-28 04:27+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -107,15 +107,15 @@ msgid "journal"
 msgstr "deník"
 
 #: admin/clubs.py:260 admin/events.py:219 admin/roles.py:121
-#: models/clubs.py:134 models/events.py:133 models/roles.py:26
+#: models/clubs.py:137 models/events.py:136 models/roles.py:26
 msgid "photo"
 msgstr "fotka"
 
-#: admin/clubs.py:339 admin/clubs.py:555 models/clubs.py:149
-#: models/clubs.py:283 models/clubs.py:334 models/clubs.py:411
-#: models/clubs.py:427 models/clubs.py:529 models/clubs.py:530
-#: models/clubs.py:561 models/clubs.py:604 models/clubs.py:719
-#: models/clubs.py:747 models/roles.py:242
+#: admin/clubs.py:339 admin/clubs.py:555 models/clubs.py:154
+#: models/clubs.py:288 models/clubs.py:339 models/clubs.py:416
+#: models/clubs.py:432 models/clubs.py:534 models/clubs.py:535
+#: models/clubs.py:566 models/clubs.py:609 models/clubs.py:724
+#: models/clubs.py:752 models/roles.py:242
 #: templates/leprikon/club_alternating.html:15
 msgid "club"
 msgstr "kroužek"
@@ -143,7 +143,7 @@ msgstr "účastník"
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/clubs.py:381 models/clubs.py:589
+#: admin/clubs.py:381 models/clubs.py:594
 msgid "club payments"
 msgstr "platby za kroužky"
 
@@ -192,7 +192,7 @@ msgid "agenda"
 msgstr "program"
 
 #: admin/clubs.py:583 admin/events.py:405 admin/roles.py:87 admin/roles.py:166
-#: admin/roles.py:194 models/clubs.py:560 models/events.py:294
+#: admin/roles.py:194 models/clubs.py:565 models/events.py:299
 #: models/registrations.py:66 models/roles.py:24 models/roles.py:108
 #: models/roles.py:149
 msgid "user"
@@ -246,8 +246,8 @@ msgstr "Kopírovat vybrané akce do jiného školního roku"
 msgid "There are no registrations for this event."
 msgstr "Na tuto akci se nikdo nepřihlásil."
 
-#: admin/events.py:282 models/events.py:148 models/events.py:242
-#: models/events.py:258 models/events.py:295 models/events.py:334
+#: admin/events.py:282 models/events.py:153 models/events.py:247
+#: models/events.py:263 models/events.py:300 models/events.py:339
 #: models/roles.py:244
 msgid "event"
 msgstr "akce"
@@ -261,7 +261,7 @@ msgstr "zaplaceno"
 msgid "balance"
 msgstr "zůstatek"
 
-#: admin/events.py:330 models/events.py:323
+#: admin/events.py:330 models/events.py:328
 msgid "event payments"
 msgstr "platby za akce"
 
@@ -377,11 +377,11 @@ msgstr "e-mail"
 msgid "contacts"
 msgstr "kontakty"
 
-#: admin/roles.py:104 admin/roles.py:213 models/clubs.py:150
+#: admin/roles.py:104 admin/roles.py:213 models/clubs.py:155
 msgid "clubs"
 msgstr "kroužky"
 
-#: admin/roles.py:113 admin/roles.py:214 models/events.py:149
+#: admin/roles.py:113 admin/roles.py:214 models/events.py:154
 msgid "events"
 msgstr "akce"
 
@@ -389,7 +389,7 @@ msgstr "akce"
 msgid "address"
 msgstr "adresa"
 
-#: admin/timesheets.py:56 models/clubs.py:124 models/events.py:120
+#: admin/timesheets.py:56 models/clubs.py:127 models/events.py:123
 #: models/roles.py:25 templates/leprikon/timesheet_detail.html:24
 msgid "description"
 msgstr "popis"
@@ -460,7 +460,7 @@ msgstr "přihlásit"
 msgid "parents"
 msgstr "zástupci"
 
-#: admin/user.py:128 models/clubs.py:611 models/roles.py:174
+#: admin/user.py:128 models/clubs.py:616 models/roles.py:174
 msgid "participants"
 msgstr "účastníci"
 
@@ -575,6 +575,8 @@ msgid "Place"
 msgstr "Místo"
 
 #: forms/clubs.py:34 forms/events.py:21
+#: templates/leprikon/clubregistration_rml.html:64
+#: templates/leprikon/eventregistration_rml.html:64
 #: templates/leprikon/participant_preview.html:23
 #: templates/leprikon/registration_details.html:9
 msgid "Age group"
@@ -838,17 +840,17 @@ msgstr "Obchodní podmínky"
 msgid "Log out"
 msgstr "Odhlásit se"
 
-#: models/agegroup.py:10 models/clubs.py:37 models/clubs.py:82
-#: models/clubs.py:123 models/clubs.py:335 models/events.py:33
-#: models/events.py:78 models/events.py:119 models/insurance.py:11
-#: models/place.py:10 models/question.py:17 models/school.py:11
-#: models/timesheets.py:136
+#: models/agegroup.py:10 models/clubs.py:38 models/clubs.py:85
+#: models/clubs.py:126 models/clubs.py:340 models/events.py:34
+#: models/events.py:81 models/events.py:122 models/insurance.py:11
+#: models/place.py:10 models/printsetup.py:11 models/question.py:17
+#: models/school.py:11 models/timesheets.py:136
 msgid "name"
 msgstr "název"
 
-#: models/agegroup.py:11 models/clubs.py:39 models/clubs.py:67
-#: models/clubs.py:85 models/clubs.py:413 models/events.py:35
-#: models/events.py:63 models/events.py:81 models/events.py:244
+#: models/agegroup.py:11 models/clubs.py:40 models/clubs.py:70
+#: models/clubs.py:88 models/clubs.py:418 models/events.py:36
+#: models/events.py:66 models/events.py:84 models/events.py:249
 #: models/roles.py:86 models/timesheets.py:137
 msgid "order"
 msgstr "pořadí"
@@ -857,343 +859,350 @@ msgstr "pořadí"
 msgid "age group"
 msgstr "věková skupina"
 
-#: models/agegroup.py:17 models/clubs.py:128 models/clubs.py:762
-#: models/events.py:128 models/events.py:349
+#: models/agegroup.py:17 models/clubs.py:131 models/clubs.py:767
+#: models/events.py:131 models/events.py:354
 msgid "age groups"
 msgstr "věkové skupiny"
 
-#: models/clubs.py:40 models/clubs.py:142 models/events.py:36
-#: models/events.py:141 models/question.py:28
+#: models/clubs.py:41 models/clubs.py:145 models/events.py:37
+#: models/events.py:144 models/question.py:28
 msgid "additional questions"
 msgstr "doplňující otázky"
 
-#: models/clubs.py:42 models/clubs.py:144 models/events.py:38
-#: models/events.py:143
+#: models/clubs.py:43 models/clubs.py:147 models/events.py:39
+#: models/events.py:146
 msgid "Add additional questions to be asked in the registration form."
 msgstr "Pridejte doplňující otázky, které mají být v registračním formuláři."
 
-#: models/clubs.py:47 models/clubs.py:65 models/clubs.py:125
-#: models/clubs.py:761 models/clubs.py:789
+#: models/clubs.py:45 models/clubs.py:149 models/events.py:41
+#: models/events.py:148
+msgid "registration print setup"
+msgstr "nastavení tisku přihlášek"
+
+#: models/clubs.py:50 models/clubs.py:68 models/clubs.py:128
+#: models/clubs.py:766 models/clubs.py:794
 msgid "club type"
 msgstr "druh kroužku"
 
-#: models/clubs.py:48
+#: models/clubs.py:51
 msgid "club types"
 msgstr "druhy kroužků"
 
-#: models/clubs.py:72 models/clubs.py:418 models/events.py:68
-#: models/events.py:249 models/messages.py:103
+#: models/clubs.py:75 models/clubs.py:423 models/events.py:71
+#: models/events.py:254 models/messages.py:103
 msgid "attachment"
 msgstr "příloha"
 
-#: models/clubs.py:73 models/clubs.py:419 models/events.py:69
-#: models/events.py:250 models/messages.py:104
+#: models/clubs.py:76 models/clubs.py:424 models/events.py:72
+#: models/events.py:255 models/messages.py:104
 msgid "attachments"
 msgstr "přílohy"
 
-#: models/clubs.py:83 models/events.py:79
+#: models/clubs.py:86 models/events.py:82
 msgid "plural"
 msgstr "množné číslo"
 
-#: models/clubs.py:84 models/events.py:80
+#: models/clubs.py:87 models/events.py:83
 msgid "color"
 msgstr "barva"
 
-#: models/clubs.py:90
+#: models/clubs.py:93
 msgid "club group"
 msgstr "skupina kroužků"
 
-#: models/clubs.py:91 models/clubs.py:765
+#: models/clubs.py:94 models/clubs.py:770
 msgid "club groups"
 msgstr "skupiny kroužků"
 
-#: models/clubs.py:122 models/clubs.py:759 models/clubs.py:787
-#: models/events.py:118 models/events.py:346 models/events.py:374
+#: models/clubs.py:125 models/clubs.py:764 models/clubs.py:792
+#: models/events.py:121 models/events.py:351 models/events.py:379
 #: models/roles.py:240 models/roles.py:257 models/schoolyear.py:38
 msgid "school year"
 msgstr "školní rok"
 
-#: models/clubs.py:126 models/events.py:126
+#: models/clubs.py:129 models/events.py:129
 msgid "groups"
 msgstr "skupiny"
 
-#: models/clubs.py:127 models/events.py:127 models/place.py:11
+#: models/clubs.py:130 models/events.py:130 models/place.py:11
 #: models/place.py:16
 msgid "place"
 msgstr "místo"
 
-#: models/clubs.py:129 models/clubs.py:768 models/events.py:129
-#: models/events.py:355 models/roles.py:34
+#: models/clubs.py:132 models/clubs.py:773 models/events.py:132
+#: models/events.py:360 models/roles.py:34
 msgid "leaders"
 msgstr "vedoucí"
 
-#: models/clubs.py:130 models/events.py:130 models/registrations.py:68
+#: models/clubs.py:133 models/events.py:133 models/registrations.py:68
 msgid "price"
 msgstr "cena"
 
-#: models/clubs.py:131
+#: models/clubs.py:134
 msgid "unit"
 msgstr "jednotka"
 
-#: models/clubs.py:132 models/events.py:131 models/roles.py:87
+#: models/clubs.py:135 models/events.py:134 models/roles.py:87
 msgid "public"
 msgstr "veřejný"
 
-#: models/clubs.py:133 models/events.py:132
+#: models/clubs.py:136 models/events.py:135
 msgid "active registration"
 msgstr "povoleno přihlašování"
 
-#: models/clubs.py:135 models/events.py:134 models/roles.py:27
+#: models/clubs.py:138 models/events.py:137 models/roles.py:27
 msgid "page"
 msgstr "stránka"
 
-#: models/clubs.py:136 models/events.py:135
+#: models/clubs.py:139 models/events.py:138
 msgid "minimal count"
 msgstr "minimální počet"
 
-#: models/clubs.py:137 models/events.py:136
+#: models/clubs.py:140 models/events.py:139
 msgid "maximal count"
 msgstr "maximální počet"
 
-#: models/clubs.py:138 models/events.py:137
+#: models/clubs.py:141 models/events.py:140
 msgid "risks"
 msgstr "rizika"
 
-#: models/clubs.py:139 models/events.py:138
+#: models/clubs.py:142 models/events.py:141
 msgid "plan"
 msgstr "plán"
 
-#: models/clubs.py:140 models/events.py:139
+#: models/clubs.py:143 models/events.py:142
 msgid "evaluation"
 msgstr "evaluace"
 
-#: models/clubs.py:141 models/events.py:140
+#: models/clubs.py:144 models/events.py:143
 msgid "note"
 msgstr "poznámka"
 
-#: models/clubs.py:210 models/events.py:194
+#: models/clubs.py:215 models/events.py:199
 msgid "groups list"
 msgstr "seznam skupin"
 
-#: models/clubs.py:214 models/events.py:198
+#: models/clubs.py:219 models/events.py:203
 msgid "leaders list"
 msgstr "seznam vedoucích"
 
-#: models/clubs.py:218 models/clubs.py:292
+#: models/clubs.py:223 models/clubs.py:297
 msgid "times"
 msgstr "časy"
 
-#: models/clubs.py:222 models/clubs.py:343
+#: models/clubs.py:227 models/clubs.py:348
 msgid "periods"
 msgstr "období"
 
-#: models/clubs.py:284
+#: models/clubs.py:289
 msgid "day of week"
 msgstr "den v týdnu"
 
-#: models/clubs.py:285 models/clubs.py:606 models/clubs.py:698
-#: models/events.py:123 models/timesheets.py:157
+#: models/clubs.py:290 models/clubs.py:611 models/clubs.py:703
+#: models/events.py:126 models/timesheets.py:157
 msgid "start time"
 msgstr "čas začátku"
 
-#: models/clubs.py:286 models/clubs.py:608 models/clubs.py:699
-#: models/events.py:124 models/timesheets.py:158
+#: models/clubs.py:291 models/clubs.py:613 models/clubs.py:704
+#: models/events.py:127 models/timesheets.py:158
 msgid "end time"
 msgstr "čas konce"
 
-#: models/clubs.py:291
+#: models/clubs.py:296
 msgid "time"
 msgstr "čas"
 
-#: models/clubs.py:296
+#: models/clubs.py:301
 msgid "{day}, {start:%H:%M} - {end:%H:%M}"
 msgstr "{day} od {start:%H:%M} do {end:%H:%M}"
 
-#: models/clubs.py:302
+#: models/clubs.py:307
 msgid "{day}, {start:%H:%M}"
 msgstr "{day} od {start:%H:%M}"
 
-#: models/clubs.py:336 models/events.py:121 models/timesheets.py:36
+#: models/clubs.py:341 models/events.py:124 models/timesheets.py:36
 msgid "start date"
 msgstr "datum začátku"
 
-#: models/clubs.py:337 models/events.py:122 models/timesheets.py:37
+#: models/clubs.py:342 models/events.py:125 models/timesheets.py:37
 msgid "end date"
 msgstr "datum konce"
 
-#: models/clubs.py:342 models/clubs.py:508 models/timesheets.py:72
+#: models/clubs.py:347 models/clubs.py:513 models/timesheets.py:72
 msgid "period"
 msgstr "období"
 
-#: models/clubs.py:346
+#: models/clubs.py:351
 msgid "{name}, {start:%m/%d %y} - {end:%m/%d %y}"
 msgstr "{name}, {start:%d. %m. %y} až {end:%d. %m. %y}"
 
-#: models/clubs.py:431
+#: models/clubs.py:436
 msgid "club registration"
 msgstr "přihláška na kroužek"
 
-#: models/clubs.py:432
+#: models/clubs.py:437
 msgid "club registrations"
 msgstr "přihlášky na kroužky"
 
-#: models/clubs.py:507 models/clubs.py:582 models/events.py:316
+#: models/clubs.py:512 models/clubs.py:587 models/events.py:321
 msgid "registration"
 msgstr "přihláška"
 
-#: models/clubs.py:509 models/events.py:259
+#: models/clubs.py:514 models/events.py:264
 #: templates/leprikon/registration_payments_presences.html:33
 msgid "discount"
 msgstr "sleva"
 
-#: models/clubs.py:510 models/events.py:260
+#: models/clubs.py:515 models/events.py:265
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/clubs.py:514
+#: models/clubs.py:519
 msgid "club discount"
 msgstr "sleva na kroužek"
 
-#: models/clubs.py:515
+#: models/clubs.py:520
 msgid "club discounts"
 msgstr "slevy na kroužek"
 
-#: models/clubs.py:562 models/events.py:296
+#: models/clubs.py:567 models/events.py:301
 msgid "time of request"
 msgstr "čas požadavku"
 
-#: models/clubs.py:563 models/events.py:297 models/roles.py:85
+#: models/clubs.py:568 models/events.py:302 models/roles.py:85
 #: models/roles.py:94
 msgid "contact"
 msgstr "kontakt"
 
-#: models/clubs.py:563 models/events.py:297
+#: models/clubs.py:568 models/events.py:302
 msgid "Enter phone number, e-mail address or other contact."
 msgstr "Zadejte telefonní číslo, e-mail nebo jiný kontakt."
 
-#: models/clubs.py:567
+#: models/clubs.py:572
 msgid "club registration request"
 msgstr "žádost o přihlášení na kroužek"
 
-#: models/clubs.py:568
+#: models/clubs.py:573
 msgid "club registration requests"
 msgstr "žádosti o přihlášení na kroužek"
 
-#: models/clubs.py:583 models/events.py:317
+#: models/clubs.py:588 models/events.py:322
 msgid "payment date"
 msgstr "datum platby"
 
-#: models/clubs.py:584 models/events.py:318
+#: models/clubs.py:589 models/events.py:323
 msgid "amount"
 msgstr "částka"
 
-#: models/clubs.py:588
+#: models/clubs.py:593
 msgid "club payment"
 msgstr "platba za kroužek"
 
-#: models/clubs.py:600
+#: models/clubs.py:605
 msgid "instruction on OSH"
 msgstr "poučení o BOZP"
 
-#: models/clubs.py:605 models/clubs.py:713 models/timesheets.py:156
+#: models/clubs.py:610 models/clubs.py:718 models/timesheets.py:156
 #: templates/leprikon/club_alternating.html:14
+#: templates/leprikon/clubregistration_rml.html:153
+#: templates/leprikon/eventregistration_rml.html:153
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
 
-#: models/clubs.py:607 models/clubs.py:609
+#: models/clubs.py:612 models/clubs.py:614
 msgid "Leave empty, if the club does not take place"
 msgstr "Nevyplňujte, pokud se kroužek nekonal"
 
-#: models/clubs.py:610
+#: models/clubs.py:615
 msgid "session agenda"
 msgstr "program schůzky"
 
-#: models/clubs.py:617
+#: models/clubs.py:622
 msgid "journal entry"
 msgstr "záznam deníku"
 
-#: models/clubs.py:618
+#: models/clubs.py:623
 msgid "journal entries"
 msgstr "záznamy deníku"
 
-#: models/clubs.py:646 models/clubs.py:732 models/timesheets.py:181
+#: models/clubs.py:651 models/clubs.py:737 models/timesheets.py:181
 #: templates/leprikon/timesheet_detail.html:22
 msgid "duration"
 msgstr "doba trvání"
 
-#: models/clubs.py:696
+#: models/clubs.py:701
 msgid "club journal entry"
 msgstr "záznam deníku kroužku"
 
-#: models/clubs.py:697 models/timesheets.py:83 models/timesheets.py:153
+#: models/clubs.py:702 models/timesheets.py:83 models/timesheets.py:153
 msgid "timesheet"
 msgstr "výkaz práce"
 
-#: models/clubs.py:703
+#: models/clubs.py:708
 msgid "club journal leader entry"
 msgstr "záznam vedoucího v deníku kroužku"
 
-#: models/clubs.py:704
+#: models/clubs.py:709
 msgid "club journal leader entries"
 msgstr "záznamy vedoucích v deníku kroužku"
 
-#: models/clubs.py:748 models/clubs.py:771 models/events.py:335
-#: models/events.py:358 models/roles.py:229 models/roles.py:246
+#: models/clubs.py:753 models/clubs.py:776 models/events.py:340
+#: models/events.py:363 models/roles.py:229 models/roles.py:246
 msgid "template"
 msgstr "šablona"
 
-#: models/clubs.py:751 models/clubs.py:774 models/events.py:338
-#: models/events.py:361 models/roles.py:232 models/roles.py:249
+#: models/clubs.py:756 models/clubs.py:779 models/events.py:343
+#: models/events.py:366 models/roles.py:232 models/roles.py:249
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
-#: models/clubs.py:764 models/events.py:351
+#: models/clubs.py:769 models/events.py:356
 msgid "Keep empty to skip searching by age groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle věkových skupin."
 
-#: models/clubs.py:767 models/events.py:354
+#: models/clubs.py:772 models/events.py:359
 msgid "Keep empty to skip searching by groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin."
 
-#: models/clubs.py:770 models/events.py:357
+#: models/clubs.py:775 models/events.py:362
 msgid "Keep empty to skip searching by leaders."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle vedoucích."
 
-#: models/events.py:43 models/events.py:61 models/events.py:125
-#: models/events.py:348 models/events.py:376
+#: models/events.py:46 models/events.py:64 models/events.py:128
+#: models/events.py:353 models/events.py:381
 msgid "event type"
 msgstr "druh akce"
 
-#: models/events.py:44
+#: models/events.py:47
 msgid "event types"
 msgstr "druhy akcí"
 
-#: models/events.py:86
+#: models/events.py:89
 msgid "event group"
 msgstr "skupina akcí"
 
-#: models/events.py:87 models/events.py:352
+#: models/events.py:90 models/events.py:357
 msgid "event groups"
 msgstr "skupiny akcí"
 
-#: models/events.py:264
+#: models/events.py:269
 msgid "event registration"
 msgstr "přihláška na akci"
 
-#: models/events.py:265
+#: models/events.py:270
 msgid "event registrations"
 msgstr "přihlášky na akce"
 
-#: models/events.py:301
+#: models/events.py:306
 msgid "event registration request"
 msgstr "žádost o přihlášení na akci"
 
-#: models/events.py:302
+#: models/events.py:307
 msgid "event registration requests"
 msgstr "žádosti o přihlášení na akci"
 
-#: models/events.py:322
+#: models/events.py:327
 msgid "event payment"
 msgstr "platba za akci"
 
@@ -1281,6 +1290,34 @@ msgstr "odesláno e-mailem"
 #: models/place.py:17
 msgid "places"
 msgstr "místa"
+
+#: models/printsetup.py:12
+msgid "margin top"
+msgstr "horní okraj"
+
+#: models/printsetup.py:13
+msgid "margin left"
+msgstr "levý okraj"
+
+#: models/printsetup.py:14
+msgid "margin right"
+msgstr "pravý okraj"
+
+#: models/printsetup.py:15
+msgid "margin bottom"
+msgstr "spodní okraj"
+
+#: models/printsetup.py:16
+msgid "pdf template"
+msgstr "pdf šablona"
+
+#: models/printsetup.py:21
+msgid "print setup"
+msgstr "nastavení tisku"
+
+#: models/printsetup.py:22
+msgid "print setups"
+msgstr "nastavení tisku"
 
 #: models/question.py:18
 msgid "question"
@@ -1505,7 +1542,7 @@ msgstr "zbývá doplatit {}"
 msgid "{} overpaid"
 msgstr "přeplaceno {}"
 
-#: templates/admin/leprikon/message/add_recipients.html:12 views/generic.py:38
+#: templates/admin/leprikon/message/add_recipients.html:12 views/generic.py:40
 msgid "add"
 msgstr "přidat"
 
@@ -1558,7 +1595,7 @@ msgstr "Ne, beru zpět"
 msgid "Send"
 msgstr "Odeslat"
 
-#: templates/leprikon/admin/send_message.html:24 views/generic.py:84
+#: templates/leprikon/admin/send_message.html:24 views/generic.py:86
 #: views/user.py:63
 msgid "Back"
 msgstr "Zpět"
@@ -1658,6 +1695,8 @@ msgstr "Celoroční plán činnosti zájmového útvaru"
 
 #: templates/leprikon/club_journal.html:271
 #: templates/leprikon/club_journal.html:290
+#: templates/leprikon/clubregistration_rml.html:154
+#: templates/leprikon/eventregistration_rml.html:154
 msgid "Signature"
 msgstr "Podpis"
 
@@ -1755,8 +1794,117 @@ msgstr "vybrat všechny"
 
 #: templates/leprikon/clubregistration_pdf.html:6
 #: templates/leprikon/clubregistration_pdf.html:21
+#: templates/leprikon/clubregistration_rml.html:30
 msgid "Club registration"
 msgstr "Přihláška na kroužek"
+
+#: templates/leprikon/clubregistration_rml.html:36
+msgid "Club name"
+msgstr "Název kroužku"
+
+#: templates/leprikon/clubregistration_rml.html:41
+#: templates/leprikon/eventregistration_rml.html:41
+msgid "Dates of event"
+msgstr "Termín konání"
+
+#: templates/leprikon/clubregistration_rml.html:46
+#: templates/leprikon/eventregistration_rml.html:46
+msgid "Times"
+msgstr "Čas"
+
+#: templates/leprikon/clubregistration_rml.html:54
+#: templates/leprikon/eventregistration_rml.html:54
+#: templates/leprikon/registration_form.html:13
+#: templates/leprikon/registration_preview.html:27
+msgid "Participant"
+msgstr "Účastník"
+
+#: templates/leprikon/clubregistration_rml.html:60
+#: templates/leprikon/clubregistration_rml.html:125
+#: templates/leprikon/eventregistration_rml.html:60
+#: templates/leprikon/eventregistration_rml.html:125
+msgid "Full name"
+msgstr "Jméno a příjmení"
+
+#: templates/leprikon/clubregistration_rml.html:68
+#: templates/leprikon/eventregistration_rml.html:68
+msgid "Birth number"
+msgstr "Rodné číslo"
+
+#: templates/leprikon/clubregistration_rml.html:72
+#: templates/leprikon/clubregistration_rml.html:129
+#: templates/leprikon/eventregistration_rml.html:72
+#: templates/leprikon/eventregistration_rml.html:129
+#: templates/leprikon/participant_preview.html:29
+#: templates/leprikon/registration_details.html:15
+msgid "Address"
+msgstr "Adresa"
+
+#: templates/leprikon/clubregistration_rml.html:76
+#: templates/leprikon/eventregistration_rml.html:76
+msgid "Citizenship"
+msgstr "Státní občanství"
+
+#: templates/leprikon/clubregistration_rml.html:80
+#: templates/leprikon/eventregistration_rml.html:80
+#: templates/leprikon/participant_preview.html:47
+#: templates/leprikon/registration_details.html:33
+msgid "Insurance"
+msgstr "Zdravotní pojišťovna"
+
+#: templates/leprikon/clubregistration_rml.html:84
+#: templates/leprikon/eventregistration_rml.html:84
+msgid "Phone"
+msgstr "Telefon"
+
+#: templates/leprikon/clubregistration_rml.html:88
+#: templates/leprikon/eventregistration_rml.html:88
+msgid "E-mail"
+msgstr "E-mail"
+
+#: templates/leprikon/clubregistration_rml.html:101
+#: templates/leprikon/eventregistration_rml.html:101
+#: templates/leprikon/participant_preview.html:53
+#: templates/leprikon/registration_details.html:39
+msgid "Health"
+msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
+
+#: templates/leprikon/clubregistration_rml.html:115
+#: templates/leprikon/eventregistration_rml.html:115
+#: templates/leprikon/participants.html:7
+#: templates/leprikon/registration_form.html:41
+#: templates/leprikon/registration_preview.html:33
+msgid "Parents"
+msgstr "Zástupci"
+
+#: templates/leprikon/clubregistration_rml.html:133
+#: templates/leprikon/eventregistration_rml.html:133
+#: templates/leprikon/leader_list/default.html:25
+#: templates/leprikon/leader_preview.html:25
+#: templates/leprikon/participant_preview.html:35
+#: templates/leprikon/registration_details.html:21
+msgid "Contact"
+msgstr "Kontakt"
+
+#: templates/leprikon/clubregistration_rml.html:145
+#: templates/leprikon/eventregistration_rml.html:145
+#, python-format
+msgid ""
+"I confirm that I have read, understood and agree with the <a href=\"https://"
+"%(domain)s%(term_conditions)s\">Terms and Conditions</a>."
+msgstr ""
+"Potvrzuji, že jsem si přečetl(a), porozuměl(a) a souhlasím s <a href="
+"\"https://%(domain)s%(term_conditions)s\">Obchodními podmínkami</a>."
+
+#: templates/leprikon/clubregistration_rml.html:152
+#: templates/leprikon/eventregistration_rml.html:152
+msgid "In"
+msgstr "V"
+
+#: templates/leprikon/clubregistration_rml.html:154
+#: templates/leprikon/eventregistration_rml.html:154
+msgid "Parent's signature"
+msgstr "Podpis zákonného zástupce"
 
 #: templates/leprikon/event_list/default.html:38
 #: templates/leprikon/event_list/grouped.html:40
@@ -1780,8 +1928,13 @@ msgstr "Na tuto akci nejsou žádné neaktivní přihlášky."
 
 #: templates/leprikon/eventregistration_pdf.html:6
 #: templates/leprikon/eventregistration_pdf.html:21
+#: templates/leprikon/eventregistration_rml.html:30
 msgid "Event registration"
 msgstr "Přihláška na akci"
+
+#: templates/leprikon/eventregistration_rml.html:36
+msgid "Event name"
+msgstr "Název akce"
 
 #: templates/leprikon/filtered_club_list.html:15
 #: templates/leprikon/filtered_event_list.html:15
@@ -1796,13 +1949,6 @@ msgstr "vyhledat"
 #: templates/leprikon/list.html:26
 msgid "cancel search"
 msgstr "zrušit hledání"
-
-#: templates/leprikon/leader_list/default.html:25
-#: templates/leprikon/leader_preview.html:25
-#: templates/leprikon/participant_preview.html:35
-#: templates/leprikon/registration_details.html:21
-msgid "Contact"
-msgstr "Kontakt"
 
 #: templates/leprikon/leader_preview.html:16
 msgid "Clubs"
@@ -1862,31 +2008,10 @@ msgstr "Zástupce nemá vyplněny některé kontaktní informace."
 msgid "Participant has not filled all contact information."
 msgstr "Účastník nemá vyplněny nekteré kontaktní informace."
 
-#: templates/leprikon/participant_preview.html:29
-#: templates/leprikon/registration_details.html:15
-msgid "Address"
-msgstr "Adresa"
-
 #: templates/leprikon/participant_preview.html:41
 #: templates/leprikon/registration_details.html:27
 msgid "School"
 msgstr "Škola"
-
-#: templates/leprikon/participant_preview.html:47
-#: templates/leprikon/registration_details.html:33
-msgid "Insurance"
-msgstr "Zdravotní pojišťovna"
-
-#: templates/leprikon/participant_preview.html:53
-#: templates/leprikon/registration_details.html:39
-msgid "Health"
-msgstr "Ůdaje o zdravotní způsobilosti účastníka (případná omezení)"
-
-#: templates/leprikon/participants.html:7
-#: templates/leprikon/registration_form.html:41
-#: templates/leprikon/registration_preview.html:33
-msgid "Parents"
-msgstr "Zástupci"
 
 #: templates/leprikon/participants.html:11
 msgid "add parent"
@@ -1958,11 +2083,6 @@ msgstr "Tým %(site_name)s"
 #: templates/leprikon/registration_details.html:46
 msgid "Parent"
 msgstr "Zástupce"
-
-#: templates/leprikon/registration_form.html:13
-#: templates/leprikon/registration_preview.html:27
-msgid "Participant"
-msgstr "Účastník"
 
 #: templates/leprikon/registration_form.html:77
 msgid "Legal Agreement"
@@ -2198,88 +2318,88 @@ msgstr "smazat"
 msgid ", and "
 msgstr " a "
 
-#: views/clubs.py:28
+#: views/clubs.py:29
 msgid "No clubs matching given search parameters."
 msgstr "Žádné kroužky neodpovídají zadaným parametrům hledání."
 
-#: views/clubs.py:32 views/events.py:27
+#: views/clubs.py:33 views/events.py:28
 #, python-brace-format
 msgid "{subject_type} in school year {school_year}"
 msgstr "{subject_type} ve školním roce {school_year}"
 
-#: views/clubs.py:56
+#: views/clubs.py:57
 msgid "My clubs in school year {}"
 msgstr "Moje kroužky ve školním roce {}"
 
-#: views/clubs.py:67
+#: views/clubs.py:77
 msgid "Alternating in school year {}"
 msgstr "Suplování ve školním roce {}"
 
-#: views/clubs.py:114
+#: views/clubs.py:124
 msgid "Change club"
 msgstr "Aktualizace údajů o kroužku"
 
-#: views/clubs.py:123
+#: views/clubs.py:133
 msgid "The club {} has been updated."
 msgstr "Kroužek {} byl upraven."
 
-#: views/clubs.py:131
+#: views/clubs.py:141
 msgid "New journal entry"
 msgstr "Nový záznam deníku"
 
-#: views/clubs.py:132
+#: views/clubs.py:142
 msgid "The journal entry has been created."
 msgstr "Záznam deníku byl vytvořen."
 
-#: views/clubs.py:157
+#: views/clubs.py:167
 msgid "Change journal entry"
 msgstr "Změnit záznam deníku"
 
-#: views/clubs.py:158
+#: views/clubs.py:168
 msgid "The journal entry has been updated."
 msgstr "Záznam deníku byl upraven."
 
-#: views/clubs.py:172
+#: views/clubs.py:182
 msgid "Delete journal entry"
 msgstr "Smazat záznam deníku"
 
-#: views/clubs.py:173
+#: views/clubs.py:183
 msgid "The journal entry has been deleted."
 msgstr "Záznam deníku byl smazán."
 
-#: views/clubs.py:187
+#: views/clubs.py:197
 msgid "Do You really want to delete club journal entry?"
 msgstr "Opravdu chcete smazat záznam deníku kroužku?"
 
-#: views/clubs.py:195 views/timesheets.py:82
+#: views/clubs.py:205 views/timesheets.py:82
 msgid "Change timesheet entry"
 msgstr "Aktualizace záznamu výkazu práce"
 
-#: views/clubs.py:196 views/timesheets.py:83
+#: views/clubs.py:206 views/timesheets.py:83
 msgid "The timesheet entry has been updated."
 msgstr "Záznam výkazu práce byl upraven."
 
-#: views/clubs.py:211 views/timesheets.py:95
+#: views/clubs.py:221 views/timesheets.py:95
 msgid "Delete timesheet entry"
 msgstr "Smazat záznam výkazu práce"
 
-#: views/clubs.py:212 views/timesheets.py:96
+#: views/clubs.py:222 views/timesheets.py:96
 msgid "The timesheet entry has been deleted."
 msgstr "Záznam výkazu práce byl smazán."
 
-#: views/clubs.py:221 views/timesheets.py:111
+#: views/clubs.py:231 views/timesheets.py:111
 msgid "Do You really want to delete timesheet entry?"
 msgstr "Opravdu chcete smazat záznam výkazu práce?"
 
-#: views/clubs.py:229 views/events.py:110
+#: views/clubs.py:239 views/events.py:111
 msgid "The registration request has been accepted."
 msgstr "Požadavek na přihlášení byl přijat."
 
-#: views/clubs.py:233
+#: views/clubs.py:243
 msgid "Registration request for club {}"
 msgstr "Žádost o přihlášení na kroužek {}"
 
-#: views/clubs.py:253 views/events.py:134
+#: views/clubs.py:263 views/events.py:135
 msgid ""
 "Your request was already submitted. We will contact you, if someone cancels "
 "the registration. You may update the contact, if necessary."
@@ -2287,7 +2407,7 @@ msgstr ""
 "Váš požadavek již evidujeme. Budeme Vás kontaktovat, pokud se někdo odhlásí. "
 "Níže můžete upravit kontaktní informace."
 
-#: views/clubs.py:259
+#: views/clubs.py:269
 msgid ""
 "The capacity of this club has already been filled. However, we may contact "
 "you, if someone cancels the registration. Please, leave your contact "
@@ -2296,43 +2416,43 @@ msgstr ""
 "Kapacita tohoto kroužku již byla naplněna. Můžeme Vás ale kontaktovat, pokud "
 "se někdo odhlásí."
 
-#: views/clubs.py:273
+#: views/clubs.py:283
 msgid "Registration for club {}"
 msgstr "Přihláška na kroužek {}"
 
-#: views/clubs.py:302 views/events.py:183
+#: views/clubs.py:315 views/events.py:187
 msgid "Cancellation request"
 msgstr "Požadavek na zrušení"
 
-#: views/clubs.py:308 views/events.py:189
+#: views/clubs.py:321 views/events.py:193
 msgid "Are you sure You want to cancel the registration \"{}\"?"
 msgstr "Opravdu chcete stornovat přihlášku \"{}\"?"
 
-#: views/clubs.py:311 views/events.py:192
+#: views/clubs.py:324 views/events.py:196
 msgid "The cancellation request for {} has been saved."
 msgstr "Požadavek o stornování přihlášky {} byl uložen."
 
-#: views/events.py:23
+#: views/events.py:24
 msgid "No events matching given search parameters."
 msgstr "Žádné akce neodpovídají zadaným parametrům hledání."
 
-#: views/events.py:51
+#: views/events.py:52
 msgid "My events in school year {}"
 msgstr "Moje akce ve školním roce {}"
 
-#: views/events.py:93
+#: views/events.py:94
 msgid "Change event"
 msgstr "Aktualizace údajů o akci"
 
-#: views/events.py:102
+#: views/events.py:103
 msgid "The event {} has been updated."
 msgstr "Akce {} byla upravena."
 
-#: views/events.py:114
+#: views/events.py:115
 msgid "Registration request for event {}"
 msgstr "Žádost o přihlášení na akci {}"
 
-#: views/events.py:140
+#: views/events.py:141
 msgid ""
 "The capacity of this event has already been filled. However, we may contact "
 "you, if someone cancels the registration. Please, leave your contact "
@@ -2341,27 +2461,27 @@ msgstr ""
 "Kapacita této akce již byla naplněna. Můžeme Vás ale kontaktovat, pokud se "
 "někdo odhlásí."
 
-#: views/events.py:154
+#: views/events.py:155
 msgid "Registration for event {}"
 msgstr "Přihláška na akci {}"
 
-#: views/generic.py:40
+#: views/generic.py:42
 msgid "No items found."
 msgstr "Žádné položky nebyly nalezeny."
 
-#: views/generic.py:69
+#: views/generic.py:71
 msgid "No items found matching given search parameters."
 msgstr "Žádné položky neodpovídají zadaným parametrům hledání."
 
-#: views/generic.py:109
+#: views/generic.py:111
 msgid "Save"
 msgstr "Uložit"
 
-#: views/generic.py:148
+#: views/generic.py:150
 msgid "Yes"
 msgstr "Ano"
 
-#: views/generic.py:189
+#: views/generic.py:191
 msgid "Delete"
 msgstr "Smazat"
 

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -302,7 +303,10 @@ class ClubRegistrationConfirmView(DetailView):
 
 class ClubRegistrationPdfView(PdfView):
     model = ClubRegistration
-    template_name_suffix = '_pdf'
+    template_name_suffix = '_rml'
+
+    def get_printsetup(self):
+        return self.object.club.reg_printsetup or self.object.club.club_type.reg_printsetup
 
 
 
