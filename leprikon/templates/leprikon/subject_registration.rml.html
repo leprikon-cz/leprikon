@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+{% load i18n %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{ filename }}">
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <pageTemplate id="main">
+             <frame id="first" x1="{{ x1 }}mm" y1="{{ y1 }}mm" width="{{ width }}mm" height="{{ height }}mm"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
+        <paraStyle name="para" fontName="DejaVuSans" fontSize="12"/>
+        <blockTableStyle id="myBlockTableStyle">
+            <!-- Set fonts -->
+            <blockFont name="DejaVuSans" size="12"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+            <lineStyle kind="GRID" colorName="silver"/>
+        </blockTableStyle>
+    </stylesheet>
+    <story>
+        <para style="title">{% blocktrans with subject_type=object.subject.subject_type.name_akuzativ %}Registration for {{ subject_type }}{% endblocktrans %}</para>
+
+        <spacer length="2mm"/>
+
+        <blockTable style="myBlockTableStyle">
+            <tr>
+                <td>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Name of {{ subject_type }}{% endblocktrans %}</td>
+                <td><para style="para">{{ object.subject.name }}</para></td>
+            </tr>
+            {% if object.subject.event.start_date %}
+            <tr>
+                <td>{% trans 'Dates of event' %}</td>
+                <td><para style="para">{{ object.subject.event.get_times_list }}</para></td>
+            </tr>
+            {% elif object.subject.course.all_times %}
+            <tr>
+                <td>{% trans 'Times' %}</td>
+                <td><para style="para">{{ object.subject.course.get_times_list }}</para></td>
+            </tr>
+            {% endif %}
+        </blockTable>
+
+        <spacer length="5mm"/>
+
+        <para style="title">{% trans 'Participant' %}</para>
+
+        <spacer length="2mm"/>
+
+        <blockTable style="myBlockTableStyle">
+            <tr>
+                <td>{% trans 'Full name' %}</td>
+                <td><para style="para">{{ object.participant.full_name }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Age group' %}</td>
+                <td><para style="para">{{ object.participant.age_group }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Birth number' %}</td>
+                <td><para style="para">{{ object.participant.birth_num }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Address' %}</td>
+                <td><para style="para">{{ object.participant.address }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Citizenship' %}</td>
+                <td><para style="para">{{ object.participant.citizenship }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Insurance' %}</td>
+                <td><para style="para">{{ object.participant.insurance }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Phone' %}</td>
+                <td><para style="para">{{ object.participant.phone }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'E-mail' %}</td>
+                <td><para style="para">{{ object.participant.email }}</para></td>
+            </tr>
+            {% for qa in object.get_questions_and_answers %}
+            <tr>
+                <td>{{ qa.question }}</td>
+                <td><para style="para">{{ qa.answer }}</para></td>
+            </tr>
+            {% endfor %}
+        </blockTable>
+
+        <blockTable style="myBlockTableStyle">
+            <tr>
+                <td>{% trans 'Health' %}</td>
+            </tr>
+            <tr>
+                <td>
+                    <para style="para">{{ object.health }}</para>
+                    <spacer length="1cm"/>
+                </td>
+            </tr>
+        </blockTable>
+
+        {% if object.parents %}
+
+        <spacer length="5mm"/>
+
+        <para style="title">{% trans 'Parents' %}</para>
+
+        {% endif %}
+
+        {% for parent in object.parents %}
+
+        <spacer length="{% if forloop.first %}2{% else %}8{% endif %}mm"/>
+
+        <blockTable style="myBlockTableStyle">
+            <tr>
+                <td>{% trans 'Full name' %}</td>
+                <td><para style="para">{{ parent.full_name }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Address' %}</td>
+                <td><para style="para">{{ parent.address }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Contact' %}</td>
+                <td><para style="para">{{ parent.contact }}</para></td>
+            </tr>
+        </blockTable>
+
+        {% endfor %}
+
+        <spacer length="1cm"/>
+
+        <blockTable>
+            <tr>
+                <td><para style="para">{% trans 'In' %}</para></td>
+                <td><para style="para">{% trans 'date' %}</para></td>
+                <td><para style="para">{% if object.parents %}{% trans "Parent's signature" %}{% else %}{% trans 'Signature' %}{% endif %}</para></td>
+            </tr>
+        </blockTable>
+
+    </story>
+</document>

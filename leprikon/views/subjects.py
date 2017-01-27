@@ -239,7 +239,16 @@ class SubjectRegistrationConfirmView(UserRegistrationMixin, DetailView):
 
 
 class SubjectRegistrationPdfView(UserRegistrationMixin, PdfView):
-    template_name_suffix = '_pdf'
+
+    def get_template_names(self):
+        return [
+            'leprikon/{}_registration.rml.html'.format(self.object.subject.subject_type.slug),
+            'leprikon/{}_registration.rml.html'.format(self.object.subject.subject_type.subject_type),
+            'leprikon/subject_registration.rml.html',
+        ]
+
+    def get_printsetup(self):
+        return self.object.subject.reg_printsetup or self.object.subject.subject_type.reg_printsetup
 
 
 

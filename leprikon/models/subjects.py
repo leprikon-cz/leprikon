@@ -27,6 +27,7 @@ from .agegroup import AgeGroup
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
 from .insurance import Insurance
 from .place import Place
+from .printsetup import PrintSetup
 from .question import Question
 from .roles import Leader
 from .school import School
@@ -49,6 +50,8 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True,
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
+    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                        verbose_name=_('registration print setup'), related_name='+')
 
     class Meta:
         app_label           = 'leprikon'
@@ -160,6 +163,9 @@ class Subject(models.Model):
     note        = models.CharField(_('note'), max_length=300, blank=True, default='')
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'), blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
+    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                        verbose_name=_('registration print setup'), related_name='+')
+
 
     class Meta:
         app_label           = 'leprikon'
