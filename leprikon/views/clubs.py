@@ -240,7 +240,7 @@ class ClubRegistrationRequestFormView(UpdateView):
     fields          = ['contact']
 
     def get_title(self):
-        return _('Registration request for club {}').format(self.kwargs['club'].name)
+        return _('Registration request for club {}').format(self.kwargs['subject'].name)
 
     def get_object(self, queryset=None):
         club = self.kwargs['subject']

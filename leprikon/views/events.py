@@ -112,7 +112,7 @@ class EventRegistrationRequestFormView(UpdateView):
     fields          = ['contact']
 
     def get_title(self):
-        return _('Registration request for event {}').format(self.kwargs['event'].name)
+        return _('Registration request for event {}').format(self.kwargs['subject'].name)
 
     def get_object(self, queryset=None):
         event = self.kwargs['subject']
