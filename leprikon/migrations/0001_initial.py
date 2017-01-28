@@ -188,7 +188,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='description')),
                 ('page', cms.models.fields.PageField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='cms.Page', verbose_name='page')),
-                ('photo', filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='filer.Image', verbose_name='photo')),
+                ('photo', filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='filer.Image', verbose_name='photo')),
             ],
             options={
                 'ordering': ('user__first_name', 'user__last_name'),
@@ -752,7 +752,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='photo',
-            field=filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='filer.Image', verbose_name='photo'),
+            field=filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='filer.Image', verbose_name='photo'),
         ),
         migrations.AddField(
             model_name='subject',

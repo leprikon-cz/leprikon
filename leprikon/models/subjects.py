@@ -153,8 +153,10 @@ class Subject(models.Model):
     public      = models.BooleanField(_('public'), default=False)
     reg_from    = models.DateTimeField(_('registration active from'), blank=True, null=True)
     reg_to      = models.DateTimeField(_('registration active to'), blank=True, null=True)
-    photo       = FilerImageField(verbose_name=_('photo'), related_name='+', blank=True, null=True)
-    page        = PageField(verbose_name=_('page'), related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+    photo       = FilerImageField(verbose_name=_('photo'), blank=True, null=True,
+                                  related_name='+', on_delete=models.SET_NULL)
+    page        = PageField(verbose_name=_('page'), blank=True, null=True,
+                            related_name='+', on_delete=models.SET_NULL)
     min_count   = models.IntegerField(_('minimal count'), blank=True, null=True)
     max_count   = models.IntegerField(_('maximal count'), blank=True, null=True)
     risks       = HTMLField(_('risks'), blank=True)
