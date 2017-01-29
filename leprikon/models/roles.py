@@ -12,6 +12,7 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
 from ..conf import settings
+from ..forms.leaders import LeaderFilterForm
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, PostalCodeField
 from .insurance import Insurance
@@ -259,6 +260,21 @@ class LeaderListPlugin(CMSPlugin):
     class Meta:
         app_label = 'leprikon'
 
+    def render(self, context, instance, placeholder):
+        leaders = Leader.objects.all()
+        if instance.course:
+            leaders = leaders.filter(courses=instance.course)
+        if instance.event:
+            leaders = leaders.filter(events=instance.event)
+        if instance.course is None and instance.event is None:
+            leaders = self.get_school_year(context, instance).leaders.all()
+
+        context.update({
+            'school_year':  school_year,
+            'leaders':      leaders,
+        })
+        return context
+
 
 
 class FilteredLeaderListPlugin(CMSPlugin):
@@ -267,3 +283,17 @@ class FilteredLeaderListPlugin(CMSPlugin):
 
     class Meta:
         app_label = 'leprikon'
+
+    def render(self, context):
+        school_year = self.get_school_year(context, instance)
+        form = LeaderFilterForm(
+            request     = context['request'],
+            school_year = school_year,
+            data=context['request'].GET,
+        )
+        context.update({
+            'school_year':  school_year,
+            'form':         form,
+            'leaders':      form.get_queryset(),
+        })
+        return context

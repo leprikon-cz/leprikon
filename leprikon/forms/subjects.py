@@ -23,11 +23,12 @@ from .widgets import RadioSelectBootstrap
 
 class SubjectFilterForm(FormMixin, forms.Form):
     q           = forms.CharField(label=_('Search term'), required=False)
-    group       = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
-    leader      = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
-    place       = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
-    age_group   = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
-    day_of_week = forms.MultipleChoiceField(label=_('Day of week'),
+    event_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
+    groups      = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
+    leaders     = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
+    places      = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
+    age_groups  = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    days_of_week = forms.MultipleChoiceField(label=_('Day of week'),
                                             choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
     past        = forms.BooleanField(label=_('Include past subjects'), required=False)
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
@@ -38,57 +39,63 @@ class SubjectFilterForm(FormMixin, forms.Form):
         SubjectType.EVENT:  Event,
     }
 
-    def __init__(self, request, subject_type, school_year=None, **kwargs):
-        super(SubjectFilterForm, self).__init__(**kwargs)
-        self.request = request
-        self.subject_type = subject_type
-        school_year = school_year or request.school_year
+    def __init__(self, subject_type_type, subject_types, school_year, is_staff, data, **kwargs):
+        super(SubjectFilterForm, self).__init__(data=data, **kwargs)
+        self.subject_type_type = subject_type_type
 
         # pre filter subjects by initial params
-        model = self._models[subject_type.subject_type]
-        self.subjects = model.objects.filter(school_year=school_year, subject_type=subject_type)
-        if not request.user.is_staff or 'invisible' not in request.GET:
-            self.subjects = self.subjects.filter(public=True)
+        qs = self._models[subject_type_type].objects.filter(school_year=school_year)
+        if len(subject_types) == 1:
+            qs = qs.filter(subject_type=subject_types[0])
+        else:
+            qs = qs.filter(subject_type__in=subject_types)
+        if not is_staff or 'invisible' not in data:
+            qs = qs.filter(public=True)
+        self.qs = qs
 
-        subject_ids = set(self.subjects.order_by().values_list('id', flat=True))
-
-        self.fields['group'].queryset       = SubjectGroup.objects.filter(
-            subject_types__subject_type = subject_type.subject_type,
-            subjects__id__in            = subject_ids).distinct()
-        self.fields['leader'].queryset      = (Leader.objects.filter(subjects__id__in=subject_ids).distinct()
-                                               .order_by('user__first_name', 'user__last_name'))
-        self.fields['place'].queryset       = Place.objects.filter(subjects__id__in=subject_ids).distinct()
-        self.fields['age_group'].queryset   = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
-        if subject_type.subject_type != SubjectType.COURSE:
-            del self.fields['day_of_week']
-        if subject_type.subject_type != SubjectType.EVENT:
+        subject_ids = set(qs.order_by().values_list('id', flat=True))
+        if len(subject_types) == 1:
+            del self.fields['event_types']
+        else:
+            self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=[st.id for st in subject_types])
+        self.fields['groups'].queryset  = SubjectGroup.objects.filter(subject_types__in=subject_types,
+                                                                     subjects__id__in = subject_ids).distinct()
+        self.fields['leaders'].queryset = (Leader.objects.filter(subjects__id__in=subject_ids).distinct()
+                                          .order_by('user__first_name', 'user__last_name'))
+        self.fields['places'].queryset  = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['age_groups'].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        if subject_type_type != SubjectType.COURSE:
+            del self.fields['days_of_week']
+        if subject_type_type != SubjectType.EVENT:
             del self.fields['past']
-        if not request.user.is_staff:
+        if not is_staff:
             del self.fields['invisible']
 
         for f in self.fields:
             self.fields[f].help_text = None
 
     def get_queryset(self):
-        qs = self.subjects
         if not self.is_valid():
-            return qs
+            return self.qs
+        qs = self.qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
                 Q(name__icontains = word) |
                 Q(description__icontains = word)
             )
-        if self.cleaned_data['group']:
-            qs = qs.filter(groups__in = self.cleaned_data['group'])
-        if self.cleaned_data['place']:
-            qs = qs.filter(place__in = self.cleaned_data['place'])
-        if self.cleaned_data['leader']:
-            qs = qs.filter(leaders__in = self.cleaned_data['leader'])
-        if self.cleaned_data['age_group']:
-            qs = qs.filter(age_groups__in = self.cleaned_data['age_group'])
-        if self.subject_type.subject_type == SubjectType.COURSE and self.cleaned_data['day_of_week']:
-            qs = qs.filter(times__day_of_week__in = self.cleaned_data['day_of_week'])
-        if self.subject_type.subject_type == SubjectType.EVENT and not self.cleaned_data['past']:
+        if self.cleaned_data.get('event_types'):
+            qs = qs.filter(subject_type__in = self.cleaned_data['event_types'])
+        if self.cleaned_data['groups']:
+            qs = qs.filter(groups__in = self.cleaned_data['groups'])
+        if self.cleaned_data['places']:
+            qs = qs.filter(place__in = self.cleaned_data['places'])
+        if self.cleaned_data['leaders']:
+            qs = qs.filter(leaders__in = self.cleaned_data['leaders'])
+        if self.cleaned_data['age_groups']:
+            qs = qs.filter(age_groups__in = self.cleaned_data['age_groups'])
+        if self.subject_type_type == SubjectType.COURSE and self.cleaned_data['days_of_week']:
+            qs = qs.filter(times__day_of_week__in = self.cleaned_data['days_of_week'])
+        if self.subject_type_type == SubjectType.EVENT and not self.cleaned_data['past']:
             qs = qs.filter(end_date__gte = now())
         if self.cleaned_data['reg_active']:
             qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now()).exclude(price=None)

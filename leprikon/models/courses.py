@@ -13,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
+from ..forms.subjects import SubjectFilterForm
 from ..utils import comma_separated
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .startend import StartEndMixin
@@ -543,3 +544,126 @@ class CourseJournalLeaderEntry(StartEndMixin, models.Model):
 
     def get_delete_url(self):
         return reverse('leprikon:coursejournalleaderentry_delete', args=(self.id,))
+
+
+
+class CoursePlugin(CMSPlugin):
+    course     = models.ForeignKey(Course, verbose_name=_('course'), related_name='+')
+    template    = models.CharField(_('template'), max_length=100,
+                                   choices=settings.LEPRIKON_COURSE_TEMPLATES,
+                                   default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class CourseListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course type'), blank=True, related_name='+',
+                                          limit_choices_to={'subject_type': SubjectType.COURSE},
+                                          help_text=_('Keep empty to skip searching by course types.'))
+    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by age groups.'))
+    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('course groups'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by groups.'))
+    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by leaders.'))
+    template    = models.CharField(_('template'), max_length=100,
+                                   choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
+                                   default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+    def copy_relations(self, oldinstance):
+        self.course_types   = oldinstance.course_types.all()
+        self.groups         = oldinstance.groups.all()
+        self.age_groups     = oldinstance.age_groups.all()
+        self.leaders        = oldinstance.leaders.all()
+
+    @cached_property
+    def all_course_types(self):
+        return list(self.course_types.all())
+
+    @cached_property
+    def all_age_groups(self):
+        return list(self.age_groups.all())
+
+    @cached_property
+    def all_groups(self):
+        return list(self.groups.all())
+
+    @cached_property
+    def all_leaders(self):
+        return list(self.leaders.all())
+
+    Group = namedtuple('Group', ('group', 'objects'))
+
+    def render(self, context):
+        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                       SchoolYear.objects.get_current())
+        courses = Course.objects.filter(school_year=school_year, public=True).distinct()
+
+        if self.all_course_types:
+            courses = courses.filter(subject_type__in = self.all_course_types)
+        if self.all_age_groups:
+            courses = courses.filter(age_groups__in = self.all_age_groups)
+        if self.all_leaders:
+            courses = courses.filter(leaders__in = self.all_leaders)
+        if self.all_groups:
+            courses = courses.filter(groups__in = self.all_groups)
+            groups = self.all_groups
+        elif self.all_course_types:
+            groups = SubjectGroup.objects.filter(subject_type__in = self.all_course_types)
+        else:
+            groups = SubjectGroup.objects.all()
+
+        context.update({
+            'school_year':  school_year,
+            'courses':      courses,
+            'groups':       (
+                self.Group(group = group, objects = courses.filter(groups=group))
+                for group in groups
+            ),
+        })
+        return context
+
+
+
+class FilteredCourseListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course type'), related_name='+',
+                                          limit_choices_to={'subject_type': SubjectType.COURSE})
+
+    class Meta:
+        app_label = 'leprikon'
+
+    def copy_relations(self, oldinstance):
+        self.course_types = oldinstance.course_types.all()
+
+    @cached_property
+    def all_course_types(self):
+        return list(self.course_types.all())
+
+    def render(self, context):
+        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                       SchoolYear.objects.get_current())
+
+        form = SubjectFilterForm(
+            subject_type_type = SubjectType.COURSE,
+            subject_types = self.all_course_types,
+            school_year = school_year,
+            is_staff = context['request'].user.is_staff,
+            data=context['request'].GET,
+        )
+        context.update({
+            'school_year':  school_year,
+            'form':         form,
+            'objects':      form.get_queryset(),
+        })
+        return context

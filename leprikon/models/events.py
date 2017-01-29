@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from collections import namedtuple
 from datetime import date, datetime
 
 from django.db import models
@@ -133,3 +134,126 @@ class EventRegistration(SubjectRegistration):
 class EventDiscount(SubjectDiscount):
     registration    = models.ForeignKey(EventRegistration, verbose_name=_('registration'),
                                         related_name='discounts', on_delete=models.PROTECT)
+
+
+
+class EventPlugin(CMSPlugin):
+    event     = models.ForeignKey(Event, verbose_name=_('event'), related_name='+')
+    template    = models.CharField(_('template'), max_length=100,
+                                   choices=settings.LEPRIKON_EVENT_TEMPLATES,
+                                   default=settings.LEPRIKON_EVENT_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+
+
+class EventListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), blank=True, related_name='+',
+                                          limit_choices_to={'subject_type': SubjectType.EVENT},
+                                          help_text=_('Keep empty to skip searching by event types.'))
+    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by age groups.'))
+    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('event groups'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by groups.'))
+    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by leaders.'))
+    template    = models.CharField(_('template'), max_length=100,
+                                   choices=settings.LEPRIKON_EVENTLIST_TEMPLATES,
+                                   default=settings.LEPRIKON_EVENTLIST_TEMPLATES[0][0],
+                                   help_text=_('The template used to render plugin.'))
+
+    class Meta:
+        app_label = 'leprikon'
+
+    def copy_relations(self, oldinstance):
+        self.event_types   = oldinstance.event_types.all()
+        self.groups         = oldinstance.groups.all()
+        self.age_groups     = oldinstance.age_groups.all()
+        self.leaders        = oldinstance.leaders.all()
+
+    @cached_property
+    def all_event_types(self):
+        return list(self.event_types.all())
+
+    @cached_property
+    def all_age_groups(self):
+        return list(self.age_groups.all())
+
+    @cached_property
+    def all_groups(self):
+        return list(self.groups.all())
+
+    @cached_property
+    def all_leaders(self):
+        return list(self.leaders.all())
+
+    Group = namedtuple('Group', ('group', 'objects'))
+
+    def render(self, context):
+        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                       SchoolYear.objects.get_current())
+        events = Event.objects.filter(school_year=school_year, public=True).distinct()
+
+        if self.all_event_types:
+            events = events.filter(subject_type__in = self.all_event_types)
+        if self.all_age_groups:
+            events = events.filter(age_groups__in = self.all_age_groups)
+        if self.all_leaders:
+            events = events.filter(leaders__in = self.all_leaders)
+        if self.all_groups:
+            events = events.filter(groups__in = self.all_groups)
+            groups = self.all_groups
+        elif self.all_event_types:
+            groups = SubjectGroup.objects.filter(subject_type__in = self.all_event_types)
+        else:
+            groups = SubjectGroup.objects.all()
+
+        context.update({
+            'school_year':  school_year,
+            'events':      events,
+            'groups':       (
+                self.Group(group = group, objects = events.filter(groups=group))
+                for group in groups
+            ),
+        })
+        return context
+
+
+
+class FilteredEventListPlugin(CMSPlugin):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), related_name='+',
+                                          limit_choices_to={'subject_type': SubjectType.EVENT})
+
+    class Meta:
+        app_label = 'leprikon'
+
+    def copy_relations(self, oldinstance):
+        self.event_types = oldinstance.event_types.all()
+
+    @cached_property
+    def all_event_types(self):
+        return list(self.event_types.all())
+
+    def render(self, context):
+        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                       SchoolYear.objects.get_current())
+
+        form = SubjectFilterForm(
+            subject_type_type = SubjectType.EVENT,
+            subject_types = self.all_event_types,
+            school_year = school_year,
+            is_staff = context['request'].user.is_staff,
+            data=context['request'].GET,
+        )
+        context.update({
+            'school_year':  school_year,
+            'form':         form,
+            'objects':      form.get_queryset(),
+        })
+        return context
