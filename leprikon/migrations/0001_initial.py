@@ -440,12 +440,18 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='payment time')),
                 ('amount', leprikon.models.fields.PriceField(decimal_places=0, max_digits=10, verbose_name='amount')),
+                ('note', models.CharField(blank=True, default='', max_length=300, verbose_name='note')),
             ],
             options={
                 'ordering': ('created',),
                 'verbose_name': 'payment',
                 'verbose_name_plural': 'payments',
             },
+        ),
+        migrations.AddField(
+            model_name='subjectpayment',
+            name='related_payment',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='related_payments', to='leprikon.SubjectPayment', verbose_name='related payment'),
         ),
         migrations.CreateModel(
             name='SubjectPlugin',
@@ -523,7 +529,7 @@ class Migration(migrations.Migration):
                 ('plural', models.CharField(max_length=150, verbose_name='name (plural)')),
                 ('slug', models.SlugField()),
                 ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
-                ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', to='leprikon.Question', verbose_name='additional questions')),
+                ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='+', to='leprikon.Question', verbose_name='additional questions')),
                 ('reg_printsetup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={

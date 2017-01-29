@@ -47,7 +47,7 @@ class SubjectType(models.Model):
     slug            = models.SlugField()
     order           = models.IntegerField(_('order'), blank=True, default=0)
     questions       = models.ManyToManyField(
-        Question, verbose_name=_('additional questions'), blank=True,
+        Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
     reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
@@ -528,10 +528,13 @@ class SubjectRegistrationRequest(models.Model):
 
 @python_2_unicode_compatible
 class SubjectPayment(models.Model):
-    created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
+    created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     amount          = PriceField(_('amount'))
+    note            = models.CharField(_('note'), max_length=300, blank=True, default='')
+    related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
+                                        related_name='related_payments', on_delete=models.PROTECT)
 
     class Meta:
         app_label           = 'leprikon'
