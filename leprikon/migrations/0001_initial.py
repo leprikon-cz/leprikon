@@ -209,7 +209,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='leprikon_leaderplugin', serialize=False, to='cms.CMSPlugin')),
                 ('template', models.CharField(choices=[('default', 'Default')], default='default', help_text='The template used to render plugin.', max_length=100, verbose_name='template')),
-                ('leader', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='leprikon.Leader', verbose_name='leader')),
+                ('leader', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.Leader', verbose_name='leader')),
             ],
             bases=('cms.cmsplugin',),
         ),
@@ -427,10 +427,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='leprikon_subjectlistplugin', serialize=False, to='cms.CMSPlugin')),
                 ('template', models.CharField(choices=[('default', 'Default'), ('grouped', 'Grouped by course groups')], default='default', help_text='The template used to render plugin.', max_length=100, verbose_name='template')),
-                ('age_groups', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by age groups.', to='leprikon.AgeGroup', verbose_name='age groups')),
-                ('groups', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by groups.', to='leprikon.SubjectGroup', verbose_name='subject groups')),
-                ('leaders', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by leaders.', to='leprikon.Leader', verbose_name='leaders')),
-                ('school_year', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='leprikon.SchoolYear', verbose_name='school year')),
+                ('age_groups', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by age groups.', related_name='+', to='leprikon.AgeGroup', verbose_name='age groups')),
+                ('groups', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by groups.', related_name='+', to='leprikon.SubjectGroup', verbose_name='subject groups')),
+                ('leaders', models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by leaders.', related_name='+', to='leprikon.Leader', verbose_name='leaders')),
+                ('school_year', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.SchoolYear', verbose_name='school year')),
             ],
             bases=('cms.cmsplugin',),
         ),
@@ -713,7 +713,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subjectplugin',
             name='subject',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='leprikon.Subject', verbose_name='subject'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.Subject', verbose_name='subject'),
         ),
         migrations.AddField(
             model_name='subjectpayment',
@@ -723,7 +723,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subjectlistplugin',
             name='subject_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='leprikon.SubjectType', verbose_name='subject type'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.SubjectType', verbose_name='subject type'),
         ),
         migrations.AddField(
             model_name='subjectgroup',
@@ -768,7 +768,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='questions',
-            field=models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', to='leprikon.Question', verbose_name='additional questions'),
+            field=models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='+', to='leprikon.Question', verbose_name='additional questions'),
         ),
         migrations.AddField(
             model_name='subject',
@@ -798,12 +798,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leaderlistplugin',
             name='school_year',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='leprikon.SchoolYear', verbose_name='school year'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.SchoolYear', verbose_name='school year'),
         ),
         migrations.AddField(
             model_name='leaderlistplugin',
             name='subject',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='leprikon.Subject', verbose_name='subject'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.Subject', verbose_name='subject'),
         ),
         migrations.AddField(
             model_name='leader',
@@ -818,17 +818,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='filteredsubjectlistplugin',
             name='school_year',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='leprikon.SchoolYear', verbose_name='school year'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.SchoolYear', verbose_name='school year'),
         ),
         migrations.AddField(
             model_name='filteredsubjectlistplugin',
             name='subject_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='leprikon.SubjectType', verbose_name='subject type'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.SubjectType', verbose_name='subject type'),
         ),
         migrations.AddField(
             model_name='filteredleaderlistplugin',
             name='school_year',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='leprikon.SchoolYear', verbose_name='school year'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.SchoolYear', verbose_name='school year'),
         ),
         migrations.AddField(
             model_name='coursejournalleaderentry',

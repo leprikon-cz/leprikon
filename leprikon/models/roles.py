@@ -231,7 +231,7 @@ class Participant(models.Model):
 
 
 class LeaderPlugin(CMSPlugin):
-    leader      = models.ForeignKey(Leader, verbose_name=_('leader'))
+    leader      = models.ForeignKey(Leader, verbose_name=_('leader'), related_name='+')
     template    = models.CharField(
         _('template'), max_length=100,
         choices=settings.LEPRIKON_LEADER_TEMPLATES,
@@ -245,8 +245,10 @@ class LeaderPlugin(CMSPlugin):
 
 
 class LeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    subject     = models.ForeignKey('leprikon.Subject', verbose_name=_('subject'), blank=True, null=True)
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    subject     = models.ForeignKey('leprikon.Subject', verbose_name=_('subject'),
+                                    related_name='+', blank=True, null=True)
     template    = models.CharField(
         _('template'), max_length=100,
         choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,
@@ -260,7 +262,8 @@ class LeaderListPlugin(CMSPlugin):
 
 
 class FilteredLeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
 
     class Meta:
         app_label = 'leprikon'

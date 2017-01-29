@@ -163,7 +163,8 @@ class Subject(models.Model):
     plan        = HTMLField(_('plan'), blank=True)
     evaluation  = HTMLField(_('evaluation'), blank=True)
     note        = models.CharField(_('note'), max_length=300, blank=True, default='')
-    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'), blank=True,
+    questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
+                                         related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
     reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                         verbose_name=_('registration print setup'), related_name='+')
@@ -551,7 +552,7 @@ class SubjectPayment(models.Model):
 
 
 class SubjectPlugin(CMSPlugin):
-    subject     = models.ForeignKey(Subject, verbose_name=_('subject'))
+    subject     = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='+')
     template    = models.CharField(_('template'), max_length=100,
                                    choices=settings.LEPRIKON_COURSE_TEMPLATES,
                                    default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
@@ -563,13 +564,15 @@ class SubjectPlugin(CMSPlugin):
 
 
 class SubjectListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), on_delete=models.PROTECT)
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True,
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
+                                     related_name='+', on_delete=models.PROTECT)
+    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
                                          help_text=_('Keep empty to skip searching by age groups.'))
-    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('subject groups'), blank=True,
+    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('subject groups'), blank=True, related_name='+',
                                          help_text=_('Keep empty to skip searching by groups.'))
-    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True,
+    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
                                          help_text=_('Keep empty to skip searching by leaders.'))
     template    = models.CharField(_('template'), max_length=100,
                                    choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
@@ -587,8 +590,10 @@ class SubjectListPlugin(CMSPlugin):
 
 
 class FilteredSubjectListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), blank=True, null=True)
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), on_delete=models.PROTECT)
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
+                                    related_name='+', blank=True, null=True)
+    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
+                                     related_name='+', on_delete=models.PROTECT)
 
     class Meta:
         app_label = 'leprikon'
