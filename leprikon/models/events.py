@@ -3,12 +3,19 @@ from __future__ import unicode_literals
 from collections import namedtuple
 from datetime import date, datetime
 
+from cms.models import CMSPlugin
 from django.db import models
 from django.utils.formats import date_format, time_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from .subjects import Subject, SubjectDiscount, SubjectRegistration
+from ..conf import settings
+from .agegroup import AgeGroup
+from .roles import Leader
+from .schoolyear import SchoolYear
+from .subjects import (
+    Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
+)
 from .utils import PaymentStatus
 
 
@@ -244,6 +251,7 @@ class FilteredEventListPlugin(CMSPlugin):
         school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
                        SchoolYear.objects.get_current())
 
+        from ..forms.subjects import SubjectFilterForm
         form = SubjectFilterForm(
             subject_type_type = SubjectType.EVENT,
             subject_types = self.all_event_types,
@@ -254,6 +262,6 @@ class FilteredEventListPlugin(CMSPlugin):
         context.update({
             'school_year':  school_year,
             'form':         form,
-            'objects':      form.get_queryset(),
+            'events':      form.get_queryset(),
         })
         return context

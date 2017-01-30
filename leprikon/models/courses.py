@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from collections import namedtuple
 from datetime import date, datetime, timedelta
 
+from cms.models import CMSPlugin
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
@@ -13,11 +14,16 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
-from ..forms.subjects import SubjectFilterForm
+from ..conf import settings
 from ..utils import comma_separated
+from .agegroup import AgeGroup
 from .fields import DAY_OF_WEEK, DayOfWeekField
+from .roles import Leader
+from .schoolyear import SchoolYear
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectDiscount, SubjectRegistration
+from .subjects import (
+    Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
+)
 from .utils import PaymentStatus
 
 
@@ -654,6 +660,7 @@ class FilteredCourseListPlugin(CMSPlugin):
         school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
                        SchoolYear.objects.get_current())
 
+        from ..forms.subjects import SubjectFilterForm
         form = SubjectFilterForm(
             subject_type_type = SubjectType.COURSE,
             subject_types = self.all_course_types,
@@ -664,6 +671,6 @@ class FilteredCourseListPlugin(CMSPlugin):
         context.update({
             'school_year':  school_year,
             'form':         form,
-            'objects':      form.get_queryset(),
+            'courses':      form.get_queryset(),
         })
         return context

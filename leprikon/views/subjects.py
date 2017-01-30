@@ -60,7 +60,6 @@ class SubjectListView(SubjectTypeMixin, FilteredListView):
 
     def get_form(self):
         return self.form_class(
-            request             = self.request,
             subject_type_type   = self.subject_type.subject_type,
             subject_types       = [self.subject_type],
             school_year         = self.request.school_year,

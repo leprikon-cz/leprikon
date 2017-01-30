@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import colorsys
 from json import loads
 
-from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy as reverse

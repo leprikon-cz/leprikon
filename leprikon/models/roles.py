@@ -260,17 +260,21 @@ class LeaderListPlugin(CMSPlugin):
     class Meta:
         app_label = 'leprikon'
 
-    def render(self, context, instance, placeholder):
-        leaders = Leader.objects.all()
-        if instance.course:
-            leaders = leaders.filter(courses=instance.course)
-        if instance.event:
-            leaders = leaders.filter(events=instance.event)
-        if instance.course is None and instance.event is None:
-            leaders = self.get_school_year(context, instance).leaders.all()
+    def clean(self):
+        if self.school_year and self.subject and self.subject.school_year != self.school_year:
+            raise ValidationError({
+                'school_year': [_('Selected subject is not in the selected school year.')],
+                'subject': [_('Selected subject is not in the selected school year.')],
+            })
 
+    def render(self, context):
+        if self.subject:
+            leaders = self.subject.leaders.all()
+        else:
+            school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                           SchoolYear.objects.get_current())
+            leaders = school_year.leaders.all()
         context.update({
-            'school_year':  school_year,
             'leaders':      leaders,
         })
         return context
@@ -285,9 +289,9 @@ class FilteredLeaderListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def render(self, context):
-        school_year = self.get_school_year(context, instance)
+        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
+                       SchoolYear.objects.get_current())
         form = LeaderFilterForm(
-            request     = context['request'],
             school_year = school_year,
             data=context['request'].GET,
         )

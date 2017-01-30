@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from cms.plugin_base import CMSPluginBase
+from django.utils.translation import ugettext as _
 
 
 class LeprikonPluginBase(CMSPluginBase):

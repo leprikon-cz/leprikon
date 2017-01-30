@@ -1,5 +1,9 @@
 from __future__ import unicode_literals
 
-from . import leaders, subjects
+from . import courses, events, leaders
 
-subjects, leaders
+__all__ = [
+    courses,
+    events,
+    leaders,
+]
