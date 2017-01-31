@@ -29,7 +29,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     places      = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_groups  = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
     days_of_week = forms.MultipleChoiceField(label=_('Day of week'),
-                                            choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
+                                             choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
     past        = forms.BooleanField(label=_('Include past subjects'), required=False)
     reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
     invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
@@ -59,9 +59,9 @@ class SubjectFilterForm(FormMixin, forms.Form):
         else:
             self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=[st.id for st in subject_types])
         self.fields['groups'].queryset  = SubjectGroup.objects.filter(subject_types__in=subject_types,
-                                                                     subjects__id__in = subject_ids).distinct()
+                                                                      subjects__id__in = subject_ids).distinct()
         self.fields['leaders'].queryset = (Leader.objects.filter(subjects__id__in=subject_ids).distinct()
-                                          .order_by('user__first_name', 'user__last_name'))
+                                           .order_by('user__first_name', 'user__last_name'))
         self.fields['places'].queryset  = Place.objects.filter(subjects__id__in=subject_ids).distinct()
         self.fields['age_groups'].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
         if subject_type_type != SubjectType.COURSE:

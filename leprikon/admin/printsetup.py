@@ -4,4 +4,4 @@ from django.contrib import admin
 
 
 class PrintSetupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'top', 'left', 'right', 'bottom', 'template')
+    list_display    = ('name', 'background')

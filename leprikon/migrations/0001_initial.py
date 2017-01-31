@@ -358,11 +358,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=150, verbose_name='name')),
-                ('top', models.IntegerField(blank=True, default=20, verbose_name='margin top')),
-                ('left', models.IntegerField(blank=True, default=20, verbose_name='margin left')),
-                ('right', models.IntegerField(blank=True, default=20, verbose_name='margin right')),
-                ('bottom', models.IntegerField(blank=True, default=20, verbose_name='margin bottom')),
-                ('template', filer.fields.file.FilerFileField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='filer.File', verbose_name='pdf template')),
+                ('background', filer.fields.file.FilerFileField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='filer.File', verbose_name='pdf background')),
+                ('top', models.IntegerField(blank=True, default=20, help_text='distance in milimetres', verbose_name='margin top')),
+                ('left', models.IntegerField(blank=True, default=20, help_text='distance in milimetres', verbose_name='margin left')),
+                ('right', models.IntegerField(blank=True, default=20, help_text='distance in milimetres', verbose_name='margin right')),
+                ('bottom', models.IntegerField(blank=True, default=20, help_text='distance in milimetres', verbose_name='margin bottom')),
             ],
             options={
                 'ordering': ('name',),
@@ -545,7 +545,7 @@ class Migration(migrations.Migration):
                 ('plural', models.CharField(max_length=150, verbose_name='name (plural)')),
                 ('slug', models.SlugField()),
                 ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
-                ('reg_printsetup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
+                ('reg_print_setup', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
                 ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='_subjecttype_questions_+', to='leprikon.Question', verbose_name='additional questions')),
             ],
             options={
@@ -783,7 +783,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='subject',
-            name='reg_printsetup',
+            name='reg_print_setup',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup'),
         ),
         migrations.AddField(

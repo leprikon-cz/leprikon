@@ -160,8 +160,8 @@ class EventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
     event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), blank=True, related_name='+',
-                                          limit_choices_to={'subject_type': SubjectType.EVENT},
-                                          help_text=_('Keep empty to skip searching by event types.'))
+                                         limit_choices_to={'subject_type': SubjectType.EVENT},
+                                         help_text=_('Keep empty to skip searching by event types.'))
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
                                          help_text=_('Keep empty to skip searching by age groups.'))
     groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('event groups'), blank=True, related_name='+',
@@ -235,7 +235,7 @@ class FilteredEventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
     event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), related_name='+',
-                                          limit_choices_to={'subject_type': SubjectType.EVENT})
+                                         limit_choices_to={'subject_type': SubjectType.EVENT})
 
     class Meta:
         app_label = 'leprikon'

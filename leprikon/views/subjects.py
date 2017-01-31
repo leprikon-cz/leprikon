@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse_lazy as reverse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -15,7 +16,7 @@ from ..models.subjects import (
 )
 from .generic import (
     ConfirmCreateView, ConfirmUpdateView, CreateView, DetailView,
-    FilteredListView, PdfView, UpdateView,
+    FilteredListView, UpdateView,
 )
 
 
@@ -240,18 +241,18 @@ class SubjectRegistrationConfirmView(UserRegistrationMixin, DetailView):
 
 
 
-class SubjectRegistrationPdfView(UserRegistrationMixin, PdfView):
+class SubjectRegistrationPdfView(UserRegistrationMixin, DetailView):
 
-    def get_template_names(self):
-        return [
-            'leprikon/{}_registration.rml.html'.format(self.object.subject.subject_type.slug),
-            'leprikon/{}_registration.rml.html'.format(self.object.subject.subject_type.subject_type),
-            'leprikon/subject_registration.rml.html',
-        ]
+    def get(self, request, *args, **kwargs):
+        # get registration
+        registration = self.get_object()
 
-    def get_printsetup(self):
-        return self.object.subject.reg_printsetup or self.object.subject.subject_type.reg_printsetup
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
 
+        # create basic pdf registration from rml template
+        return registration.write_pdf(response)
 
 
 class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):

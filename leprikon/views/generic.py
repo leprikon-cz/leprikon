@@ -12,7 +12,6 @@ from django.views.generic import (
 
 from ..conf import settings
 from ..forms.confirm import ConfirmForm
-from .pdf import PdfViewMixin
 
 
 class GenericViewMixin(object):
@@ -203,11 +202,6 @@ class DeleteView(ConfirmFormViewMixin, _DeleteView):
 
 
 class FormView(FormViewMixin, _FormView):
-    pass
-
-
-
-class PdfView(PdfViewMixin, _DetailView):
     pass
 
 

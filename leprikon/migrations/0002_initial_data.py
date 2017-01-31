@@ -25,13 +25,19 @@ age_groups = ['děti', 'dospělí']
 
 def initial_data(apps, schema_editor):
     Insurance = apps.get_model('leprikon', 'insurance')
-    [Insurance.objects.create(code=i[0], name=i[1]) for i in insurances]
+    if Insurance.objects.count() == 0:
+        [Insurance.objects.create(code=i[0], name=i[1]) for i in insurances]
+
+    PrintSetup = apps.get_model('leprikon', 'printsetup')
+    print_setup = PrintSetup.objects.first() or PrintSetup.objects.create(name='výchozí')
 
     SubjectType = apps.get_model('leprikon', 'subjecttype')
-    [SubjectType.objects.create(order=order, **st) for order, st in enumerate(subject_types)]
+    if SubjectType.objects.count() == 0:
+        [SubjectType.objects.create(order=order, reg_print_setup=print_setup, **st) for order, st in enumerate(subject_types)]
 
     AgeGroup = apps.get_model('leprikon', 'agegroup')
-    [AgeGroup.objects.create(order=order, name=name) for order, name in enumerate(age_groups)]
+    if AgeGroup.objects.count() == 0:
+        [AgeGroup.objects.create(order=order, name=name) for order, name in enumerate(age_groups)]
 
 
 class Migration(migrations.Migration):

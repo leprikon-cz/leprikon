@@ -1,12 +1,15 @@
 from __future__ import unicode_literals
 
 import colorsys
+from io import BytesIO
 from json import loads
 
+import trml2pdf
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.template.loader import select_template
 from django.utils import timezone
 from django.utils.encoding import (
     force_text, python_2_unicode_compatible, smart_text,
@@ -18,6 +21,7 @@ from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
+from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
 from ..mailers import RegistrationMailer
@@ -49,8 +53,8 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
-    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        verbose_name=_('registration print setup'), related_name='+')
+    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.PROTECT, related_name='+',
+                                        verbose_name=_('registration print setup'))
 
     class Meta:
         app_label           = 'leprikon'
@@ -165,7 +169,7 @@ class Subject(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                                          related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
-    reg_printsetup  = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                         verbose_name=_('registration print setup'), related_name='+')
 
 
@@ -444,6 +448,42 @@ class SubjectRegistration(models.Model):
 
     def send_mail(self):
         RegistrationMailer().send_mail(self)
+
+    @cached_property
+    def setup(self):
+        return self.subject.reg_print_setup or self.subject.subject_type.reg_print_setup
+
+    @cached_property
+    def pdf_filename(self):
+        return self.slug + '.pdf'
+
+    def write_pdf(self, output):
+        # get plain pdf from rml
+        template = select_template([
+            'leprikon/registration/{}.rml'.format(self.subject.subject_type.slug),
+            'leprikon/registration/{}.rml'.format(self.subject.subject_type.subject_type),
+            'leprikon/registration/subject.rml',
+        ])
+        rml_content = template.render({'object': self})
+        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
+
+        # merge with background
+        if self.setup.background:
+            template_pdf = PdfFileReader(self.setup.background.file)
+            registration_pdf = PdfFileReader(BytesIO(pdf_content))
+            page = template_pdf.getPage(0)
+            page.mergePage(registration_pdf.getPage(0))
+            writer = PdfFileWriter()
+            writer.addPage(page)
+            # add remaining pages from template
+            for i in range(1, template_pdf.getNumPages()):
+                writer.addPage(template_pdf.getPage(i))
+            # write result to output
+            writer.write(output)
+        else:
+            # write basic pdf registration to response
+            output.write(pdf_content)
+        return output
 
     @python_2_unicode_compatible
     class Person:

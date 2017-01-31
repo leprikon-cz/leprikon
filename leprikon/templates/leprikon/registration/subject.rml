@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 {% load i18n %}
 <!DOCTYPE document SYSTEM "rml.dtd">
-<document filename="{{ filename }}">
+<document filename="{{ object.pdf_filename }}">
 
     <template showBoundary="0">
         <!--define a 'frame' into which the content will flow.-->
         <pageTemplate id="main">
-             <frame id="first" x1="{{ x1 }}mm" y1="{{ y1 }}mm" width="{{ width }}mm" height="{{ height }}mm"/>
+             <frame id="first" x1="{{ object.setup.x1 }}" y1="{{ object.setup.y1 }}" width="{{ object.setup.width }}" height="{{ object.setup.height }}"/>
         </pageTemplate>
     </template>
 
@@ -132,6 +132,15 @@
         </blockTable>
 
         {% endfor %}
+
+        <spacer length="1cm"/>
+
+        {{ setup.agreement_rml|safe }}
+
+        {% url 'leprikon:terms_conditions' as term_conditions %}
+        <para style="para">
+            {% blocktrans with domain=view.current_site.domain term_conditions=term_conditions %}I confirm that I have read, understood and agree with the <a href="https://{{ domain }}{{ term_conditions }}">Terms and Conditions</a>.{% endblocktrans %}
+        </para>
 
         <spacer length="1cm"/>
 
