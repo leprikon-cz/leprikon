@@ -159,7 +159,7 @@ class EventPlugin(CMSPlugin):
 class EventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
-    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), blank=True, related_name='+',
+    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event types'), blank=True, related_name='+',
                                          limit_choices_to={'subject_type': SubjectType.EVENT},
                                          help_text=_('Keep empty to skip searching by event types.'))
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
@@ -177,7 +177,7 @@ class EventListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.event_types   = oldinstance.event_types.all()
+        self.event_types    = oldinstance.event_types.all()
         self.groups         = oldinstance.groups.all()
         self.age_groups     = oldinstance.age_groups.all()
         self.leaders        = oldinstance.leaders.all()
@@ -221,7 +221,7 @@ class EventListPlugin(CMSPlugin):
 
         context.update({
             'school_year':  school_year,
-            'events':      events,
+            'events':       events,
             'groups':       (
                 self.Group(group = group, objects = events.filter(groups=group))
                 for group in groups
@@ -234,7 +234,7 @@ class EventListPlugin(CMSPlugin):
 class FilteredEventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
-    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event type'), related_name='+',
+    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event types'), related_name='+',
                                          limit_choices_to={'subject_type': SubjectType.EVENT})
 
     class Meta:

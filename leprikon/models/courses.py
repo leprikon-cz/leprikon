@@ -568,7 +568,7 @@ class CoursePlugin(CMSPlugin):
 class CourseListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
-    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course type'), blank=True, related_name='+',
+    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), blank=True, related_name='+',
                                           limit_choices_to={'subject_type': SubjectType.COURSE},
                                           help_text=_('Keep empty to skip searching by course types.'))
     age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
@@ -643,7 +643,7 @@ class CourseListPlugin(CMSPlugin):
 class FilteredCourseListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
-    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course type'), related_name='+',
+    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), related_name='+',
                                           limit_choices_to={'subject_type': SubjectType.COURSE})
 
     class Meta:
