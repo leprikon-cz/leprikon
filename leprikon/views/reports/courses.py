@@ -53,7 +53,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
         context['form'] = form
         context['reports'] = [
             self.Report(course, context['date'])
-            for course in self.request.school_year.courses.all()
+            for course in Course.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.CoursePaymentsStatusSums(
             registrations   = sum(len(r.registrations)  for r in context['reports']),
@@ -83,7 +83,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             return [
                 self.RegPaymentStatuses(
                     registration = registration,
-                    status       = registration.get_payment_statuses(self.date).partial,
+                    status       = registration.courseregistration.get_payment_statuses(self.date).partial,
                 )
                 for registration in self.registrations
             ]
@@ -117,7 +117,7 @@ class ReportCourseStatsView(ReportBaseView):
         courses = Course.objects.filter(periods__start__lte=d, periods__end__gte=d).distinct()
         context['courses_count'] = courses.count()
 
-        registrations = CourseRegistration.objects.filter(course__in=courses, created__lte=d).exclude(canceled__lte=d)
+        registrations = CourseRegistration.objects.filter(subject__in=courses, created__lte=d).exclude(canceled__lte=d)
 
         context['participants_counts'] = self.ReportItem(
             age_group=None,
@@ -131,7 +131,7 @@ class ReportCourseStatsView(ReportBaseView):
         )
         context['participants_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
-            regs = registrations.filter(age_group=age_group)
+            regs = registrations.filter(participant_age_group=age_group)
             context['participants_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
                 all=regs.count(),

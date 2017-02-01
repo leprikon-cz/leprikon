@@ -22,7 +22,7 @@
     {% for item in items %}
     <tr class="collapse out {{ user.id }}-collapsed">
         <th class="right">
-            {{ item.registration }}
+            {{ item.registration.participant }}, {{ item.registration.subject.name }}
         </th>
         <td class="right">
             {{ item.balance | currency }}

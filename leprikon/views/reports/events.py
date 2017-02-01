@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import ReportBaseView
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
+from ...models.events import Event
 from ...models.subjects import SubjectPayment, SubjectType
 from ...models.utils import PaymentStatus
 
@@ -48,7 +49,7 @@ class ReportEventPaymentsStatusView(ReportBaseView):
         context['form'] = form
         context['reports'] = [
             self.Report(event, context['date'])
-            for event in self.request.school_year.events.all()
+            for event in Event.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.EventPaymentsStatusSums(
             registrations   = sum(len(r.registrations)  for r in context['reports']),
@@ -74,7 +75,7 @@ class ReportEventPaymentsStatusView(ReportBaseView):
             return [
                 self.RegPaymentStatus(
                     registration = registration,
-                    status       = registration.get_payment_status(self.date),
+                    status       = registration.eventregistration.get_payment_status(self.date),
                 )
                 for registration in self.registrations
             ]
