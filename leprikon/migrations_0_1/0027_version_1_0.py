@@ -382,6 +382,7 @@ def migrate_plugins(apps, schema_editor):
     stderr.write('\n\tcms plugins...')
     for p in CoursePlugin.objects.all():
         p.course = p.old_course.course
+        p.plugin_type = 'LeprikonCoursePlugin'
         p.save()
 
     for p in EventPlugin.objects.all():
@@ -392,6 +393,8 @@ def migrate_plugins(apps, schema_editor):
         p.groups = [g.subject_group for g in p.old_groups.all()]
         if p.club_type:
             p.course_types.add(p.club_type.subject_type)
+        p.plugin_type = 'LeprikonCourseListPlugin'
+        p.save()
 
     for p in EventListPlugin.objects.all():
         p.groups = [g.subject_group for g in p.old_groups.all()]
@@ -400,6 +403,8 @@ def migrate_plugins(apps, schema_editor):
 
     for p in FilteredCourseListPlugin.objects.all():
         p.course_types = [t.subject_type for t in p.club_types.all()]
+        p.plugin_type = 'LeprikonFilteredCourseListPlugin'
+        p.save()
 
     for p in FilteredEventListPlugin.objects.all():
         p.event_types = [t.subject_type for t in p.old_event_types.all()]
