@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django import template
+from django.contrib.staticfiles import finders
 
 from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
@@ -111,3 +112,9 @@ def query_string(context, key, value):
     get = context['request'].GET.copy()
     get[key] = value
     return get.urlencode()
+
+
+
+@register.simple_tag
+def font(name):
+    return finders.find(name)

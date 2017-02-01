@@ -9,6 +9,7 @@ from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.html import format_html
@@ -289,8 +290,14 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         )] + urls
 
     def pdf(self, request, reg_id):
-        from ..views.subjects import SubjectRegistrationPdfView
-        return SubjectRegistrationPdfView.as_view()(request, pk=reg_id)
+        registration = self.get_object(request, reg_id)
+
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
+
+        # create basic pdf registration from rml template
+        return registration.write_pdf(response)
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(

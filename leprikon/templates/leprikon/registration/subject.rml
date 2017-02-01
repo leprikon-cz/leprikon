@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-{% load i18n %}
+{% load i18n leprikon_tags %}
 <!DOCTYPE document SYSTEM "rml.dtd">
 <document filename="{{ object.pdf_filename }}">
+
+    <docinit>
+        <registerFont fontName="DejaVuSans" fontFile="{% font 'leprikon/fonts/DejaVuSans.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Bold" fontFile="{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}"/>
+    </docinit>
 
     <template showBoundary="0">
         <!--define a 'frame' into which the content will flow.-->
