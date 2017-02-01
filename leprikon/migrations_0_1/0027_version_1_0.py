@@ -1105,6 +1105,10 @@ class Migration(migrations.Migration):
             name='leader',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='leprikon.Leader', verbose_name='leader'),
         ),
+        migrations.AlterModelOptions(
+            name='messagerecipient',
+            options={'ordering': ('-sent',), 'verbose_name': 'recipient', 'verbose_name_plural': 'recipients'},
+        ),
         migrations.AlterField(
             model_name='participant',
             name='age_group',

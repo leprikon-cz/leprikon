@@ -56,7 +56,7 @@ class MessageRecipient(models.Model):
         app_label           = 'leprikon'
         verbose_name        = _('recipient')
         verbose_name_plural = _('recipients')
-        ordering            = ('sent',)
+        ordering            = ('-sent',)
         unique_together     = (('message', 'recipient'),)
 
     def __str__(self):

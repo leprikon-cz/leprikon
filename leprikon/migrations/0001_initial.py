@@ -277,7 +277,7 @@ class Migration(migrations.Migration):
                 ('recipient', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_messages', to=settings.AUTH_USER_MODEL, verbose_name='recipient')),
             ],
             options={
-                'ordering': ('sent',),
+                'ordering': ('-sent',),
                 'verbose_name': 'recipient',
                 'verbose_name_plural': 'recipients',
             },
