@@ -19,7 +19,7 @@ from ..utils import comma_separated
 from .agegroup import AgeGroup
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .roles import Leader
-from .schoolyear import SchoolYear
+from .schoolyear import SchoolYear, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
@@ -28,7 +28,8 @@ from .utils import PaymentStatus
 
 
 class Course(Subject):
-    unit        = models.CharField(_('unit'), max_length=150)
+    unit    = models.CharField(_('unit'), max_length=150)
+    periods = models.ManyToManyField(SchoolYearPeriod, verbose_name=_('periods'), related_name='courses')
 
     class Meta:
         app_label           = 'leprikon'
@@ -54,11 +55,6 @@ class Course(Subject):
     def get_times_list(self):
         return comma_separated(self.all_times)
     get_times_list.short_description = _('times')
-
-    def get_periods_list(self):
-        return '<br/>'.join(smart_text(p) for p in self.all_periods)
-    get_periods_list.short_description = _('periods')
-    get_periods_list.allow_tags = True
 
     def get_next_time(self, now = None):
         try:
@@ -136,19 +132,19 @@ class Course(Subject):
                     new.reg_to.second,
                 )
         for period in old.all_periods:
-            period.id = None
-            period.course = new
             try:
-                period.start = date(period.start.year + year_offset, period.start.month, period.start.day)
+                start = date(period.start.year + year_offset, period.start.month, period.start.day)
             except ValueError:
                 # handle leap-year
-                period.start = date(period.start.year + year_offset, period.start.month, period.start.day - 1)
+                start = date(period.start.year + year_offset, period.start.month, period.start.day - 1)
             try:
-                period.end   = date(period.end.year   + year_offset, period.end.month,   period.end.day)
+                end   = date(period.end.year   + year_offset, period.end.month,   period.end.day)
             except ValueError:
                 # handle leap-year
-                period.end   = date(period.end.year   + year_offset, period.end.month,   period.end.day - 1)
-            period.save()
+                end   = date(period.end.year   + year_offset, period.end.month,   period.end.day - 1)
+            new.periods.add(SchoolYearPeriod.get_or_create(
+                school_year=school_year, name=period.name, start=start, end=end
+            )[0])
         return new
 
 
@@ -204,83 +200,6 @@ class CourseTime(StartEndMixin, models.Model):
 
 
 
-@python_2_unicode_compatible
-class CoursePeriod(StartEndMixin, models.Model):
-    course      = models.ForeignKey(Course, verbose_name=_('course'), related_name='periods')
-    name        = models.CharField(_('name'), max_length=150)
-    start       = models.DateField(_('start date'))
-    end         = models.DateField(_('end date'))
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('course__name', 'start')
-        verbose_name        = _('period')
-        verbose_name_plural = _('periods')
-
-    def __str__(self):
-        return _('{name}, {start:%m/%d %y} - {end:%m/%d %y}').format(
-            name    = self.name,
-            start   = self.start,
-            end     = self.end,
-        )
-
-    @cached_property
-    def journal_entries(self):
-        return self.course.journal_entries.filter(date__gte=self.start, date__lte=self.end)
-
-    @cached_property
-    def all_journal_entries(self):
-        return list(self.journal_entries.all())
-
-    @cached_property
-    def all_registrations(self):
-        return list(self.course.registrations_history_registrations.filter(created__lt=self.end))
-
-    @cached_property
-    def all_alternates(self):
-        alternates = set()
-        for entry in self.all_journal_entries:
-            for alternate in entry.all_alternates:
-                alternates.add(alternate)
-        return list(alternates)
-
-    PresenceRecord = namedtuple('PresenceRecord', ('name', 'presences'))
-
-    def get_participant_presences(self):
-        return [
-            self.PresenceRecord(
-                reg.participant,
-                [
-                    reg in entry.all_registrations
-                    for entry in self.all_journal_entries
-                ]
-            ) for reg in self.all_registrations
-        ]
-
-    def get_leader_presences(self):
-        return [
-            self.PresenceRecord(
-                leader,
-                [
-                    entry.all_leader_entries_by_leader.get(leader, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for leader in self.course.all_leaders
-        ]
-
-    def get_alternate_presences(self):
-        return [
-            self.PresenceRecord(
-                alternate,
-                [
-                    entry.all_leader_entries_by_leader.get(alternate, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for alternate in self.all_alternates
-        ]
-
-
-
 class CourseRegistration(SubjectRegistration):
 
     class Meta:
@@ -302,10 +221,6 @@ class CourseRegistration(SubjectRegistration):
     @cached_property
     def all_discounts(self):
         return list(self.discounts.all())
-
-    @cached_property
-    def period_payment_statuses(self):
-        return self.get_payment_statuses()
 
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
 
@@ -356,7 +271,7 @@ class CourseRegistration(SubjectRegistration):
 class CourseDiscount(SubjectDiscount):
     registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
                                         related_name='discounts', on_delete=models.PROTECT)
-    period          = models.ForeignKey(CoursePeriod, verbose_name=_('period'),
+    period          = models.ForeignKey(SchoolYearPeriod, verbose_name=_('period'),
                                         related_name='discounts', on_delete=models.PROTECT)
 
 

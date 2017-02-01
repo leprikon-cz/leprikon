@@ -34,10 +34,10 @@ class TimesheetPeriodManager(models.Manager):
 
 @python_2_unicode_compatible
 class TimesheetPeriod(StartEndMixin, models.Model):
-    start           = models.DateField(_('start date'), editable=False, unique=True)
-    end             = models.DateField(_('end date'), editable=False, unique=True)
+    start   = models.DateField(_('start date'), editable=False, unique=True)
+    end     = models.DateField(_('end date'), editable=False, unique=True)
 
-    objects         = TimesheetPeriodManager()
+    objects = TimesheetPeriodManager()
 
     class Meta:
         app_label           = 'leprikon'
@@ -71,14 +71,14 @@ class TimesheetManager(models.Manager):
 
 @python_2_unicode_compatible
 class Timesheet(models.Model):
-    period          = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), editable=False,
-                                        related_name='timesheets', on_delete=models.PROTECT)
-    leader          = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False,
-                                        related_name='timesheets', on_delete=models.PROTECT)
-    submitted       = models.BooleanField(_('submitted'), default=False)
-    paid            = models.BooleanField(_('paid'), default=False)
+    period      = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), editable=False,
+                                    related_name='timesheets', on_delete=models.PROTECT)
+    leader      = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False,
+                                    related_name='timesheets', on_delete=models.PROTECT)
+    submitted   = models.BooleanField(_('submitted'), default=False)
+    paid        = models.BooleanField(_('paid'), default=False)
 
-    objects         = TimesheetManager()
+    objects     = TimesheetManager()
 
     class Meta:
         app_label           = 'leprikon'

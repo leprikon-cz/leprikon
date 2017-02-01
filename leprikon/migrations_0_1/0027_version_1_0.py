@@ -102,7 +102,7 @@ def create_subject_groups(apps, schema_editor):
 def create_subjects(apps, schema_editor):
     Course = apps.get_model('leprikon', 'course')
     CourseTime = apps.get_model('leprikon', 'coursetime')
-    CoursePeriod = apps.get_model('leprikon', 'courseperiod')
+    SchoolYearPeriod = apps.get_model('leprikon', 'schoolyearperiod')
     Event = apps.get_model('leprikon', 'event')
     Club = apps.get_model('leprikon', 'club')
     OldEvent = apps.get_model('leprikon', 'oldevent')
@@ -138,20 +138,20 @@ def create_subjects(apps, schema_editor):
         course.questions    = club.questions.all()
         for t in club.times.all():
             CourseTime.objects.create(
-                course = course,
+                course      = course,
                 day_of_week = t.day_of_week,
                 start       = t.start,
                 end         = t.end
             )
         for p in club.periods.all():
-            p.course_period = CoursePeriod.objects.create(
-                course = course,
-                name    = p.name,
-                start   = p.start,
-                end     = p.end,
-            )
+            p.school_year_period = SchoolYearPeriod.objects.get_or_create(
+                school_year = club.school_year,
+                name        = p.name,
+                start       = p.start,
+                end         = p.end,
+            )[0]
             p.save()
-            
+            course.periods.add(p.school_year_period)
         club.course = course
         club.save()
 
@@ -255,7 +255,7 @@ def create_subject_registrations(apps, schema_editor):
         for d in club_registration.discounts.all():
             CourseDiscount.objects.create(
                 registration    = course_registration,
-                period          = d.period.course_period,
+                period          = d.period.school_year_period,
                 created         = course_registration.created,
                 amount          = d.discount,
                 explanation     = d.explanation,
@@ -571,10 +571,27 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='SchoolYearPeriod',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=150, verbose_name='name')),
+                ('start', models.DateField(verbose_name='start date')),
+                ('end', models.DateField(verbose_name='end date')),
+                ('school_year', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='periods', to='leprikon.SchoolYear', verbose_name='school year')),
+            ],
+            options={
+                'ordering': ('start',),
+                'verbose_name': 'school year period',
+                'verbose_name_plural': 'school year periods',
+            },
+            bases=(leprikon.models.startend.StartEndMixin, models.Model),
+        ),
+        migrations.CreateModel(
             name='Course',
             fields=[
                 ('subject_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='leprikon.Subject')),
                 ('unit', models.CharField(max_length=150, verbose_name='unit')),
+                ('periods', models.ManyToManyField(related_name='courses', to='leprikon.SchoolYearPeriod', verbose_name='periods')),
             ],
             options={
                 'ordering': ('name',),
@@ -582,22 +599,6 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'courses',
             },
             bases=('leprikon.subject',),
-        ),
-        migrations.CreateModel(
-            name='CoursePeriod',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='periods', to='leprikon.Course', verbose_name='course')),
-                ('name', models.CharField(max_length=150, verbose_name='name')),
-                ('start', models.DateField(verbose_name='start date')),
-                ('end', models.DateField(verbose_name='end date')),
-            ],
-            options={
-                'ordering': ('course__name', 'start'),
-                'verbose_name': 'period',
-                'verbose_name_plural': 'periods',
-            },
-            bases=(leprikon.models.startend.StartEndMixin, models.Model),
         ),
         migrations.CreateModel(
             name='CourseTime',
@@ -638,8 +639,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='ClubPeriod',
-            name='course_period',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, null=True, related_name='old_course_period', to='leprikon.CoursePeriod', verbose_name='course period'),
+            name='school_year_period',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, null=True, related_name='old_course_period', to='leprikon.SchoolYearPeriod', verbose_name='school year period'),
         ),
         migrations.AddField(
             model_name='OldEvent',
@@ -654,8 +655,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='ClubPeriod',
-            name='course_period',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='old_course_period', to='leprikon.CoursePeriod', verbose_name='course period'),
+            name='school_year_period',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='old_course_period', to='leprikon.SchoolYearPeriod', verbose_name='school year period'),
         ),
         migrations.AlterField(
             model_name='OldEvent',
@@ -778,7 +779,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('registration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='discounts', to='leprikon.CourseRegistration', verbose_name='registration')),
-                ('period', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='discounts', to='leprikon.CoursePeriod', verbose_name='period')),
+                ('period', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='discounts', to='leprikon.SchoolYearPeriod', verbose_name='period')),
                 ('created', models.DateTimeField(verbose_name='time of discount')),
                 ('amount', leprikon.models.fields.PriceField(decimal_places=0, default=0, max_digits=10, verbose_name='discount')),
                 ('explanation', models.CharField(blank=True, default='', max_length=250, verbose_name='discount explanation')),
@@ -1243,7 +1244,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='clubperiod',
-            name='course_period',
+            name='school_year_period',
         ),
         migrations.AlterUniqueTogether(
             name='clubregistration',

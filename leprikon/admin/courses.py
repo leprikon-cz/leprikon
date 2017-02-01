@@ -16,8 +16,7 @@ from ..forms.courses import (
     CourseJournalEntryAdminForm, CourseJournalLeaderEntryAdminForm,
 )
 from ..models.courses import (
-    Course, CourseJournalLeaderEntry, CoursePeriod, CourseRegistration,
-    CourseTime,
+    Course, CourseJournalLeaderEntry, CourseRegistration, CourseTime,
 )
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
@@ -32,12 +31,6 @@ from .subjects import (
 class CourseTimeInlineAdmin(admin.TabularInline):
     model = CourseTime
     extra = 0
-
-
-class CoursePeriodInlineAdmin(admin.TabularInline):
-    model       = CoursePeriod
-    extra       = 0
-    ordering    = ('start',)
 
 
 class CourseAdmin(SubjectBaseAdmin):
@@ -57,12 +50,12 @@ class CourseAdmin(SubjectBaseAdmin):
     )
     inlines         = (
         CourseTimeInlineAdmin,
-        CoursePeriodInlineAdmin,
     )
     actions         = (
         'publish', 'unpublish',
         'copy_to_school_year',
     )
+    filter_horizontal = ('periods',)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CourseAdmin, self).get_form(request, obj, **kwargs)

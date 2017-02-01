@@ -7,6 +7,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
+from .startend import StartEndMixin
+
 
 class SchoolYearManager(models.Manager):
     def get_current(self):
@@ -53,3 +55,25 @@ class SchoolYear(models.Model):
     @cached_property
     def all_courses(self):
         return list(self.courses.all())
+
+
+
+@python_2_unicode_compatible
+class SchoolYearPeriod(StartEndMixin, models.Model):
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='periods')
+    name        = models.CharField(_('name'), max_length=150)
+    start       = models.DateField(_('start date'))
+    end         = models.DateField(_('end date'))
+
+    class Meta:
+        app_label           = 'leprikon'
+        ordering            = ('start',)
+        verbose_name        = _('school year period')
+        verbose_name_plural = _('school year periods')
+
+    def __str__(self):
+        return _('{name}, {start:%m/%d %y} - {end:%m/%d %y}').format(
+            name    = self.name,
+            start   = self.start,
+            end     = self.end,
+        )
