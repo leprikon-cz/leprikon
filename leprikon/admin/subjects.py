@@ -281,24 +281,6 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     download_tag.short_description = _('download')
     download_tag.allow_tags = True
 
-    def get_urls(self):
-        urls = super(SubjectRegistrationBaseAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<reg_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='leprikon_subjectregistration_pdf',
-        )] + urls
-
-    def pdf(self, request, reg_id):
-        registration = self.get_object(request, reg_id)
-
-        # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
-
-        # create basic pdf registration from rml template
-        return registration.write_pdf(response)
-
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
             leprikon_registrations__in = queryset
@@ -337,6 +319,24 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 
     def get_actions(self, request):
         return {}
+
+    def get_urls(self):
+        urls = super(SubjectRegistrationAdmin, self).get_urls()
+        return [urls_url(
+            r'(?P<reg_id>\d+).pdf$',
+            self.admin_site.admin_view(self.pdf),
+            name='leprikon_subjectregistration_pdf',
+        )] + urls
+
+    def pdf(self, request, reg_id):
+        registration = self.get_object(request, reg_id)
+
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
+
+        # create basic pdf registration from rml template
+        return registration.write_pdf(response)
 
 
 
