@@ -343,7 +343,7 @@ class CourseJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         return actions
 
     def course_name(self, obj):
-        return obj.subject.name
+        return obj.course.name
     course_name.short_description = _('course')
     course_name.admin_order_field = 'subject__name'
 
