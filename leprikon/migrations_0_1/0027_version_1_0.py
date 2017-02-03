@@ -22,6 +22,7 @@ import leprikon.models.startend
 def create_subject_types(apps, schema_editor):
     PrintSetup = apps.get_model('leprikon', 'printsetup')
     SubjectType = apps.get_model('leprikon', 'subjecttype')
+    SubjectTypeAttachment = apps.get_model('leprikon', 'subjecttypeattachment')
     ClubType = apps.get_model('leprikon', 'clubtype')
     EventType = apps.get_model('leprikon', 'eventtype')
 
@@ -44,6 +45,12 @@ def create_subject_types(apps, schema_editor):
         subject_type.questions = club_type.questions.all()
         club_type.subject_type = subject_type
         club_type.save()
+        for attachment in club_type.attachments.all():
+            SubjectTypeAttachment.objects.create(
+                subject_type=subject_type,
+                file=attachment.file,
+                order=attachment.order,
+            )
         order += 1
 
     stderr.write('\n\t{} event types...'.format(EventType.objects.count()))
@@ -61,6 +68,12 @@ def create_subject_types(apps, schema_editor):
         subject_type.questions = event_type.questions.all()
         event_type.subject_type = subject_type
         event_type.save()
+        for attachment in event_type.attachments.all():
+            SubjectTypeAttachment.objects.create(
+                subject_type=subject_type,
+                file=attachment.file,
+                order=attachment.order,
+            )
         order += 1
 
 
@@ -100,6 +113,7 @@ def create_subject_groups(apps, schema_editor):
 
 
 def create_subjects(apps, schema_editor):
+    SubjectAttachment = apps.get_model('leprikon', 'subjectattachment')
     Course = apps.get_model('leprikon', 'course')
     CourseTime = apps.get_model('leprikon', 'coursetime')
     SchoolYearPeriod = apps.get_model('leprikon', 'schoolyearperiod')
@@ -154,6 +168,12 @@ def create_subjects(apps, schema_editor):
             course.periods.add(p.school_year_period)
         club.course = course
         club.save()
+        for attachment in club.attachments.all():
+            SubjectAttachment.objects.create(
+                subject = course,
+                file    = attachment.file,
+                order   = attachment.order,
+            )
 
     stderr.write('\n\t{} events...'.format(OldEvent.objects.count()))
     for oldevent in OldEvent.objects.all():
@@ -187,6 +207,12 @@ def create_subjects(apps, schema_editor):
         event.questions    = oldevent.questions.all()
         oldevent.event = event
         oldevent.save()
+        for attachment in oldevent.attachments.all():
+            SubjectAttachment.objects.create(
+                subject = event,
+                file    = attachment.file,
+                order   = attachment.order,
+            )
 
 
 def create_subject_registrations(apps, schema_editor):
