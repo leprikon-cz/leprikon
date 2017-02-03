@@ -193,10 +193,13 @@ def create_subject_registrations(apps, schema_editor):
     CourseRegistration = apps.get_model('leprikon', 'courseregistration')
     EventRegistration = apps.get_model('leprikon', 'eventregistration')
     CourseRegistrationHistory = apps.get_model('leprikon', 'courseregistrationhistory')
+    SubjectRegistrationRequest = apps.get_model('leprikon', 'subjectregistrationrequest')
     CourseDiscount = apps.get_model('leprikon', 'coursediscount')
     EventDiscount = apps.get_model('leprikon', 'eventdiscount')
     ClubRegistration = apps.get_model('leprikon', 'clubregistration')
     OldEventRegistration = apps.get_model('leprikon', 'oldeventregistration')
+    ClubRegistrationRequest = apps.get_model('leprikon', 'clubregistrationrequest')
+    EventRegistrationRequest = apps.get_model('leprikon', 'eventregistrationrequest')
 
     stderr.write('\n\t{} course registrations...'.format(ClubRegistration.objects.count()))
     for club_registration in ClubRegistration.objects.all():
@@ -319,6 +322,25 @@ def create_subject_registrations(apps, schema_editor):
             )
         old_event_registration.event_registration = event_registration
         old_event_registration.save()
+
+    stderr.write('\n\t{} course registration requests...'.format(ClubRegistrationRequest.objects.count()))
+    for club_registration_request in ClubRegistrationRequest.objects.all():
+        if club_registration_request.user:
+            SubjectRegistrationRequest.objects.create(
+                user    = club_registration_request.user,
+                subject = club_registration_request.club.course,
+                created = club_registration_request.created,
+            )
+
+    stderr.write('\n\t{} event registration requests...'.format(EventRegistrationRequest.objects.count()))
+    for event_registration_request in EventRegistrationRequest.objects.all():
+        if event_registration_request.user:
+            SubjectRegistrationRequest.objects.create(
+                user    = event_registration_request.user,
+                subject = event_registration_request.event.event,
+                created = event_registration_request.created,
+            )
+
 
 
 def create_subject_payments(apps, schema_editor):
