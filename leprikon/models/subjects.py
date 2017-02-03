@@ -413,6 +413,7 @@ class SubjectRegistration(models.Model):
         return reverse('leprikon:registration_pdf', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
+        self.participant_gender = self.participant_birth_num[2:4] > '50' and self.FEMALE or self.MALE
         if not self.slug:
             self.slug = slugify('{}-{}-{}'.format(self.participant.birth_num, self.subject.id, self.subject.name))[:50]
         if self.canceled:
