@@ -7,9 +7,7 @@ from cms.models import CMSPlugin
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
-from django.utils.encoding import (
-    force_text, python_2_unicode_compatible, smart_text,
-)
+from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
