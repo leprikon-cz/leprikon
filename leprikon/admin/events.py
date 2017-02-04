@@ -126,7 +126,7 @@ class EventAdmin(SubjectBaseAdmin):
 class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
         'id', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
-        'created', 'cancel_request', 'canceled',
+        'created', 'approved', 'cancel_request', 'canceled',
     )
 
     def event_discounts(self, obj):

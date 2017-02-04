@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
@@ -31,6 +32,42 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
     def queryset(self, request, queryset):
         return queryset.filter(**{self.field_path: self.school_year})
+
+
+
+class ApprovedListFilter(admin.SimpleListFilter):
+    title = _('approval')
+    parameter_name = 'approved'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', _('approved')),
+            ('no', _('not approved')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(approved__isnull=False)
+        if self.value() == 'no':
+            return queryset.filter(approved__isnull=True)
+
+
+
+class CanceledListFilter(admin.SimpleListFilter):
+    title = _('cancelation')
+    parameter_name = 'canceled'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', _('canceled')),
+            ('no', _('not canceled')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(canceled__isnull=False)
+        if self.value() == 'no':
+            return queryset.filter(canceled__isnull=True)
 
 
 

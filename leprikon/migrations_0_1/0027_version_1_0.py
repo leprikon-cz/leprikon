@@ -19,6 +19,9 @@ import leprikon.models.fields
 import leprikon.models.startend
 
 
+tz = timezone.get_default_timezone()
+
+
 def create_subject_types(apps, schema_editor):
     PrintSetup = apps.get_model('leprikon', 'printsetup')
     SubjectType = apps.get_model('leprikon', 'subjecttype')
@@ -232,12 +235,13 @@ def create_subject_registrations(apps, schema_editor):
         course_registration = CourseRegistration.objects.create(
             slug                        = club_registration.slug,
             created                     = club_registration.created,
+            approved                    = club_registration.created,
             user                        = club_registration.user,
             subject                     = club_registration.club.course,
             price                       = club_registration.price,
             answers                     = club_registration.answers,
             cancel_request              = club_registration.cancel_request,
-            canceled                    = club_registration.canceled,
+            canceled                    = club_registration.canceled and tz.localize(datetime.combine(club_registration.canceled, time(12, 0))),
 
             participant_gender          = club_registration.participant_gender,
             participant_first_name      = club_registration.participant_first_name,
@@ -297,12 +301,13 @@ def create_subject_registrations(apps, schema_editor):
         event_registration = EventRegistration.objects.create(
             slug                        = old_event_registration.slug,
             created                     = old_event_registration.created,
+            approved                    = old_event_registration.created,
             user                        = old_event_registration.user,
             subject                     = old_event_registration.event.event,
             price                       = old_event_registration.price,
             answers                     = old_event_registration.answers,
             cancel_request              = old_event_registration.cancel_request,
-            canceled                    = old_event_registration.canceled,
+            canceled                    = old_event_registration.canceled and tz.localize(datetime.combine(old_event_registration.canceled, time(12, 0))),
 
             participant_gender          = old_event_registration.participant_gender,
             participant_first_name      = old_event_registration.participant_first_name,
@@ -378,7 +383,7 @@ def create_subject_payments(apps, schema_editor):
     for club_payment in ClubPayment.objects.all():
         SubjectPayment.objects.create(
             registration = club_payment.registration.course_registration,
-            created = timezone.get_default_timezone().localize(datetime.combine(club_payment.date, time(12, 0))),
+            created = tz.localize(datetime.combine(club_payment.date, time(12, 0))),
             amount = club_payment.amount,
         )
 
@@ -386,7 +391,7 @@ def create_subject_payments(apps, schema_editor):
     for event_payment in EventPayment.objects.all():
         SubjectPayment.objects.create(
             registration = event_payment.registration.event_registration,
-            created = timezone.get_default_timezone().localize(datetime.combine(event_payment.date, time(12, 0))),
+            created = tz.localize(datetime.combine(event_payment.date, time(12, 0))),
             amount = event_payment.amount,
         )
 
@@ -726,12 +731,13 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('slug', models.SlugField(editable=False)),
                 ('created', models.DateTimeField(verbose_name='time of registration')),
+                ('approved', models.DateTimeField(editable=False, null=True, verbose_name='time of approval')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='leprikon_registrations', to=settings.AUTH_USER_MODEL, verbose_name='user')),
                 ('subject', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='registrations', to='leprikon.Subject', verbose_name='subject')),
                 ('price', leprikon.models.fields.PriceField(decimal_places=0, editable=False, max_digits=10, verbose_name='price')),
                 ('answers', models.TextField(blank=True, default='{}', editable=False, verbose_name='additional answers')),
                 ('cancel_request', models.BooleanField(default=False, verbose_name='cancel request')),
-                ('canceled', models.DateField(blank=True, null=True, verbose_name='date of cancellation')),
+                ('canceled', models.DateTimeField(editable=False, null=True, verbose_name='time of cancellation')),
                 ('participant_gender', models.CharField(choices=[('m', 'male'), ('f', 'female')], editable=False, max_length=1, verbose_name='gender')),
                 ('participant_first_name', models.CharField(max_length=30, verbose_name='first name')),
                 ('participant_last_name', models.CharField(max_length=30, verbose_name='last name')),
@@ -821,7 +827,7 @@ class Migration(migrations.Migration):
                 ('registration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='course_history', to='leprikon.CourseRegistration', verbose_name='course')),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='registrations_history', to='leprikon.Course', verbose_name='course')),
                 ('start', models.DateField()),
-                ('end', models.DateField(default=None, null=True)),
+                ('end', models.DateField(null=True)),
             ],
             options={
                 'ordering': ('start',),

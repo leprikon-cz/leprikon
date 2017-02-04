@@ -224,7 +224,7 @@ class CourseRegistration(SubjectRegistration):
 
     def get_period_payment_statuses(self, d=None):
         paid = self.get_paid(d)
-        for counter, period in enumerate(self.all_periods, start=-len(self.all_periods)):
+        for counter, period in enumerate(self.all_periods, start=1):
             discount = sum(
                 discount.amount
                 for discount in filter(
@@ -237,7 +237,7 @@ class CourseRegistration(SubjectRegistration):
                 status  = PaymentStatus(
                     price       = self.price,
                     discount    = discount,
-                    paid        = min(self.price - discount, paid) if counter < -1 else paid,
+                    paid        = min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
                 ),
             )
             paid = max(paid - (self.price - discount), 0)
@@ -251,8 +251,15 @@ class CourseRegistration(SubjectRegistration):
     def get_payment_statuses(self, d=None):
         if d is None:
             d = date.today()
-        partial_price       = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
-        total_price         = self.price * len(self.all_periods)
+        if self.approved:
+            if self.approved < d:
+                partial_price = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
+            else:
+                partial_price = 0
+            total_price = self.price * len(self.all_periods)
+        else:
+            partial_price = 0
+            total_price = 0
         partial_discount    = sum(
             discount.amount
             for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
@@ -274,13 +281,13 @@ class CourseDiscount(SubjectDiscount):
 
 
 
-class CourseRegistrationHistory(models.Model):
+class CourseRegistrationHistory(StartEndMixin, models.Model):
     registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'),
                                      related_name='course_history', on_delete=models.PROTECT)
     course = models.ForeignKey(Course, verbose_name=_('course'),
                                related_name='registrations_history', on_delete=models.PROTECT)
     start = models.DateField()
-    end = models.DateField(default=None, null=True)
+    end = models.DateField(null=True)
 
     class Meta:
         ordering            = ('start',)

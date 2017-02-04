@@ -23,8 +23,9 @@ from ..models.subjects import (
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
-    LeaderListFilter, SchoolYearListFilter, SubjectGroupListFilter,
-    SubjectListFilter, SubjectTypeListFilter,
+    ApprovedListFilter, CanceledListFilter, LeaderListFilter,
+    SchoolYearListFilter, SubjectGroupListFilter, SubjectListFilter,
+    SubjectTypeListFilter,
 )
 from .messages import SendMessageAdminMixin
 
@@ -218,7 +219,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_export     = (
-        'id', 'slug', 'created', 'user', 'subject', 'price', 'answers', 'cancel_request', 'canceled',
+        'id', 'slug', 'created', 'approved', 'user', 'subject', 'price', 'answers', 'cancel_request', 'canceled',
         'participant_gender', 'participant_first_name', 'participant_last_name', 'participant_birth_num',
         'participant_age_group', 'participant_street', 'participant_city', 'participant_postal_code',
         'participant_citizenship', 'participant_insurance', 'participant_phone', 'participant_email',
@@ -231,10 +232,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
         ('subject__subject_type',   SubjectTypeListFilter),
+        ApprovedListFilter,
+        CanceledListFilter,
         ('subject',                 SubjectListFilter),
         ('subject__leaders',        LeaderListFilter),
     )
-    actions         = ('send_mail',)
+    actions         = ('approve', 'cancel')
     search_fields   = (
         'participant_birth_num', 'participant_first_name', 'participant_last_name',
         'parent1_first_name', 'parent1_last_name',
@@ -254,6 +257,18 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         if 'delete_selected' in actions:
             del(actions['delete_selected'])
         return actions
+
+    def approve(self, request, queryset):
+        for registration in queryset.all():
+            registration.approve()
+        self.message_user(request, _('Selected registrations were approved.'))
+    approve.short_description = _('Approve selected registrations')
+
+    def cancel(self, request, queryset):
+        for registration in queryset.all():
+            registration.cancel()
+        self.message_user(request, _('Selected registrations were canceled.'))
+    cancel.short_description = _('Cancel selected registrations')
 
     def get_form(self, request, obj, **kwargs):
         questions       = obj.subject.all_questions

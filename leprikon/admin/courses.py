@@ -168,7 +168,7 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
         'id', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
-        'created', 'cancel_request', 'canceled',
+        'created', 'approved', 'cancel_request', 'canceled',
     )
 
     def course_discounts(self, obj):

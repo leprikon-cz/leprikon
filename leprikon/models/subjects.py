@@ -270,8 +270,9 @@ class SubjectRegistration(models.Model):
     price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
+    approved        = models.DateTimeField(_('time of approval'), editable=False, null=True)
+    canceled        = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
-    canceled        = models.DateField(_('date of cancellation'), blank=True, null=True)
 
     MALE = 'm'
     FEMALE = 'f'
@@ -416,6 +417,16 @@ class SubjectRegistration(models.Model):
 
     def get_absolute_url(self):
         return reverse('leprikon:registration_pdf', kwargs={'slug': self.slug})
+
+    def approve(self):
+        if self.approved is None:
+            self.approved = timezone.now()
+            self.save()
+
+    def cancel(self):
+        if self.canceled is None:
+            self.canceled = timezone.now()
+            self.save()
 
     def save(self, *args, **kwargs):
         self.participant_gender = self.participant_birth_num[2:4] > '50' and self.FEMALE or self.MALE
