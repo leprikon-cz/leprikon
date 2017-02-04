@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import IntegrityError, transaction
 from django.utils.encoding import iri_to_uri, smart_text
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 from .conf import settings
 
@@ -20,39 +20,32 @@ except ImportError:
 
 
 
-class LocaleConv:
-    def __init__(self, languages):
-        """
-        This function loads localeconv for all languages during module load.
-        It is necessary, because using locale.setlocale later may be dangerous
-        (It is not thread-safe in most of the implementations.)
-        """
-        original_locale_name = locale.setlocale(locale.LC_ALL)
-        self.localeconv = {}
-        for code, name in languages:
-            locale_name = locale.locale_alias[code].split('.')[0] + '.UTF-8'
-            locale.setlocale(locale.LC_ALL, str(locale_name))
-            self.localeconv[code] = locale.localeconv()
-        locale.setlocale(locale.LC_ALL, original_locale_name)
-
-    def __call__(self, language=None):
-        return self.localeconv[language or get_language()]
+def _get_localeconv(languages):
+    """
+    This function loads localeconv during module load.
+    It is necessary, because using locale.setlocale later may be dangerous
+    (It is not thread-safe in most of the implementations.)
+    """
+    original_locale_name = locale.setlocale(locale.LC_ALL)
+    locale_name = locale.locale_alias[settings.LANGUAGE_CODE].split('.')[0] + '.UTF-8'
+    locale.setlocale(locale.LC_ALL, str(locale_name))
+    lc = locale.localeconv()
+    locale.setlocale(locale.LC_ALL, original_locale_name)
+    return lc
 
 
-localeconv = LocaleConv(settings.LANGUAGES)
+localeconv = _get_localeconv(settings.LANGUAGE_CODE)
 
 
 # This function is inspired by python's standard locale.currency().
 def currency(val, international=False):
     """Formats val according to the currency settings for current language."""
-    conv = localeconv()
-
     digits = settings.PRICE_DECIMAL_PLACES
 
     # grouping
     groups = []
     s = str(abs(int(val)))
-    for interval in locale._grouping_intervals(conv['mon_grouping']):
+    for interval in locale._grouping_intervals(localeconv['mon_grouping']):
         if not s:
             break
         groups.append(s[-interval:])
@@ -60,26 +53,26 @@ def currency(val, international=False):
     if s:
         groups.append(s)
     groups.reverse()
-    s = smart_text(conv['mon_thousands_sep']).join(groups)
+    s = smart_text(localeconv['mon_thousands_sep']).join(groups)
 
     # display fraction for non integer values
     if digits and not isinstance(val, int):
-        s += smart_text(conv['mon_decimal_point']) + '{{:.{}f}}'.format(digits).format(val).split('.')[1]
+        s += smart_text(localeconv['mon_decimal_point']) + '{{:.{}f}}'.format(digits).format(val).split('.')[1]
 
     # '<' and '>' are markers if the sign must be inserted between symbol and value
     s = '<' + s + '>'
 
-    smb = smart_text(conv[international and 'int_curr_symbol' or 'currency_symbol'])
-    precedes = conv[val < 0 and 'n_cs_precedes' or 'p_cs_precedes']
-    separated = conv[val < 0 and 'n_sep_by_space' or 'p_sep_by_space']
+    smb = smart_text(localeconv[international and 'int_curr_symbol' or 'currency_symbol'])
+    precedes = localeconv[val < 0 and 'n_cs_precedes' or 'p_cs_precedes']
+    separated = localeconv[val < 0 and 'n_sep_by_space' or 'p_sep_by_space']
 
     if precedes:
         s = smb + (separated and ' ' or '') + s
     else:
         s = s + (separated and ' ' or '') + smb
 
-    sign_pos = conv[val < 0 and 'n_sign_posn' or 'p_sign_posn']
-    sign = conv[val < 0 and 'negative_sign' or 'positive_sign']
+    sign_pos = localeconv[val < 0 and 'n_sign_posn' or 'p_sign_posn']
+    sign = localeconv[val < 0 and 'negative_sign' or 'positive_sign']
 
     if sign_pos == 0:
         s = '(' + s + ')'
