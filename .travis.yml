@@ -5,6 +5,10 @@ cache: pip
 env:
   - TOXENV="flake8"
   - TOXENV="isort"
+  - TOXENV="py27-dj19-cms34"
+  - TOXENV="py27-dj110-cms34"
+  - TOXENV="py33-dj19-cms34"
+  - TOXENV="py33-dj110-cms34"
 install:
   - pip install tox codecov
 script:

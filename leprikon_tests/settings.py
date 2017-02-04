@@ -125,3 +125,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SITE_ID = 1
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'data', 'search'),
+    },
+    'cs': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'data', 'search'),
+    },
+}
+
