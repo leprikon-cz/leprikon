@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
 
-from cgi import escape
+import csv
 from functools import partial
 
+import six
 from django.http import HttpResponse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -17,7 +18,7 @@ def lookup_attr(obj, name):
 
 
 class AdminExportMixin:
-    actions = ('export_as_csv', 'export_as_xls')
+    actions = ('export_as_csv',)
 
     def get_list_export(self, request):
         try:
@@ -72,25 +73,11 @@ class AdminExportMixin:
     def export_as_csv(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(self.model._meta.model_name)
-        for row in self.get_export_data(request, queryset):
-            response.write(', '.join([
-                '"{}"'.format(force_text(field).replace('"', '\\"'))
-                for field in row
-            ]) + '\n')
+        data = self.get_export_data(request, queryset)
+        # convert data to bytes
+        if six.PY2:
+            data = map(lambda row: map(lambda value: value and force_bytes(value), row), data)
+        # write data to response (use all to evaluate the map generator)
+        csv.writer(response).writerows(data)
         return response
     export_as_csv.short_description = _('Export selected records as CSV')
-
-    def export_as_xls(self, request, queryset):
-        response = HttpResponse(content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="{}.xls"'.format(self.model._meta.model_name)
-        response.write('<html><head><meta charset="UTF-8" /></head><body><table>')
-        for row in self.get_export_data(request, queryset):
-            response.write('<tr><td>')
-            response.write('</td><td>'.join(
-                escape(force_text(value)).encode('ascii', 'xmlcharrefreplace')
-                for value in row
-            ))
-            response.write('</td></tr>')
-        response.write('</table></body></html>')
-        return response
-    export_as_xls.short_description = _('Export selected records as XLS')
