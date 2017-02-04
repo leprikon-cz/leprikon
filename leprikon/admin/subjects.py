@@ -50,6 +50,7 @@ class SubjectTypeAdmin(admin.ModelAdmin):
 class SubjectGroupAdmin(admin.ModelAdmin):
     list_display    = ('name', 'color', 'order')
     list_editable   = ('color', 'order')
+    filter_horizontal = ('subject_types',)
 
 
 

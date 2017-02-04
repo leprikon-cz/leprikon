@@ -104,6 +104,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
             ) for group in obj.groups
         )
     group_durations.allow_tags = True
+    group_durations.short_description = _('group durations')
 
     def set_paid(self, request, queryset):
         queryset.update(submitted=True, paid=True)
