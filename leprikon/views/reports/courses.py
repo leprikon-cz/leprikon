@@ -119,7 +119,7 @@ class ReportCourseStatsView(ReportBaseView):
 
         registrations = CourseRegistration.objects.filter(subject__in=courses, created__lte=d).exclude(canceled__lte=d)
 
-        context['participants_counts'] = self.ReportItem(
+        context['registrations_counts'] = self.ReportItem(
             age_group=None,
             all=registrations.count(),
             boys=registrations.filter(participant_gender=Participant.MALE).count(),
@@ -129,10 +129,10 @@ class ReportCourseStatsView(ReportBaseView):
             noneu=registrations.exclude(participant_citizenship__in=self.EU_countries +
                                         [settings.LEPRIKON_COUNTRY]).count(),
         )
-        context['participants_counts_by_age_groups'] = []
+        context['registrations_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
             regs = registrations.filter(participant_age_group=age_group)
-            context['participants_counts_by_age_groups'].append(self.ReportItem(
+            context['registrations_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
                 all=regs.count(),
                 boys=regs.filter(participant_gender=Participant.MALE).count(),

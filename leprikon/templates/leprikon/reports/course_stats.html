@@ -16,14 +16,14 @@
     </tr>
     <tr>
         <th>{% trans 'Age Group' %}</th>
-        <th>{% trans 'Participants' %}</th>
+        <th>{% trans 'Registrations' %}</th>
         <th>{% trans 'Boys' %}</th>
         <th>{% trans 'Girls' %}</th>
         <th>{% trans 'Locals' %}</th>
         <th>{% trans 'Foreigners EU' %}</th>
         <th>{% trans 'Foreigners non-EU' %}</th>
     </tr>
-    {% for counts in participants_counts_by_age_groups %}
+    {% for counts in registrations_counts_by_age_groups %}
     <tr>
         <th>{{ counts.age_group.title }}</th>
         <td class="right">{{ counts.all }}</td>
@@ -36,12 +36,12 @@
     {% endfor %}
     <tr>
         <th>{% trans 'Total' %}</th>
-        <td class="right">{{ participants_counts.all }}</td>
-        <td class="right">{{ participants_counts.boys }}</td>
-        <td class="right">{{ participants_counts.girls }}</td>
-        <td class="right">{{ participants_counts.local }}</td>
-        <td class="right">{{ participants_counts.eu }}</td>
-        <td class="right">{{ participants_counts.noneu }}</td>
+        <td class="right">{{ registrations_counts.all }}</td>
+        <td class="right">{{ registrations_counts.boys }}</td>
+        <td class="right">{{ registrations_counts.girls }}</td>
+        <td class="right">{{ registrations_counts.local }}</td>
+        <td class="right">{{ registrations_counts.eu }}</td>
+        <td class="right">{{ registrations_counts.noneu }}</td>
     </tr>
 </table>
 {% endif %}
