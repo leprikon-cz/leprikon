@@ -1,0 +1,9 @@
+{% load i18n %}{% blocktrans %}Hello,
+
+thank You for submitting registration.{% endblocktrans %}{% if self.all_attachments %}
+{% trans 'See attached files for futher information.' %}{% endif %}
+
+{% trans 'Use the link below to see and manage your registrations:' %}
+https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+
+{{ site.name }}

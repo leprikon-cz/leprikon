@@ -192,6 +192,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         self.instance.answers = dumps(self.questions_form.cleaned_data)
         super(RegistrationForm, self).save(commit)
 
+        # send mail
+        self.instance.send_mail()
+
         # save / update participant
         if self.participant_select_form.cleaned_data['participant'] == 'new':
             try:

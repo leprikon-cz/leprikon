@@ -6,7 +6,9 @@ from json import loads
 
 import trml2pdf
 from cms.models.fields import PageField
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.template.loader import select_template
@@ -24,7 +26,6 @@ from filer.fields.image import FilerImageField
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
-from ..mailers import RegistrationMailer
 from ..utils import comma_separated, currency
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
@@ -374,6 +375,10 @@ class SubjectRegistration(models.Model):
     parent2.short_description = _('second parent')
 
     @cached_property
+    def all_attachments(self):
+        return self.subject.all_attachments + self.subject.subject_type.all_attachments
+
+    @cached_property
     def all_recipients(self):
         recipients = set()
         if self.user.email:
@@ -448,7 +453,37 @@ class SubjectRegistration(models.Model):
         super(SubjectRegistration, self).save(*args, **kwargs)
 
     def send_mail(self):
-        RegistrationMailer().send_mail(self)
+        # get plain pdf from rml
+        template_txt = select_template([
+            'leprikon/registration-mail/{}.txt'.format(self.subject.subject_type.slug),
+            'leprikon/registration-mail/{}.txt'.format(self.subject.subject_type.subject_type),
+            'leprikon/registration-mail/subject.txt',
+        ])
+        template_html = select_template([
+            'leprikon/registration-mail/{}.html'.format(self.subject.subject_type.slug),
+            'leprikon/registration-mail/{}.html'.format(self.subject.subject_type.subject_type),
+            'leprikon/registration-mail/subject.html',
+        ])
+        context = {
+            'object': self,
+            'site': Site.objects.get_current(),
+        }
+        content_txt = template_txt.render(context)
+        content_html = template_html.render(context)
+        msg = EmailMultiAlternatives(
+            subject = _('Registration for {subject_type} accepted').format(
+                subject_type=self.subject.subject_type.name_akuzativ
+            ),
+            body        = content_txt,
+            from_email  = settings.SERVER_EMAIL,
+            to          = self.all_recipients,
+            headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+        )
+        msg.attach_alternative(content_html, 'text/html')
+        msg.attach(self.pdf_filename, self.get_pdf(), 'application/pdf')
+        for attachment in self.all_attachments:
+            msg.attach_file(attachment.file.file.path)
+        msg.send()
 
     @cached_property
     def setup(self):
@@ -457,6 +492,12 @@ class SubjectRegistration(models.Model):
     @cached_property
     def pdf_filename(self):
         return self.slug + '.pdf'
+
+    def get_pdf(self):
+        output = BytesIO()
+        self.write_pdf(output)
+        output.seek(0)
+        return output.read()
 
     def write_pdf(self, output):
         # get plain pdf from rml

@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<p>{% blocktrans %}Hello,<br/>
+thank You for submitting registration.{% endblocktrans %}</p>
+
+{% if self.all_attachments %}
+<p>{% trans 'See attached files for futher information.' %}</p>
+{% endif %}
+
+<p>
+    {% trans 'Use the link below to see and manage your registrations:' %}<br/>
+    <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
+        https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+    </a>
+</p>
+
+<p>{{ site.name }}</p>
