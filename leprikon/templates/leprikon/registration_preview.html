@@ -41,14 +41,20 @@
                 {{ reg.created }}
             </div>
         </div>
-        {% if reg.canceled or reg.cancel_request %}
         <div class="row">
-            <label class="col-sm-4">{% trans 'Date of cancellation' %}:</label>
+            <label class="col-sm-4">{% trans 'Status' %}:</label>
             <div class="col-sm-8">
-                {% if reg.canceled %}{{ reg.canceled }}{% else %}{% trans 'cancellation requested' %}{% endif %}
+                {% if reg.canceled %}
+                    {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
+                {% elif reg.cancel_request %}
+                    {% trans 'cancellation requested' %}
+                {% elif reg.approved %}
+                    {% blocktrans with d=reg.approved %}registration approved on {{ d }}{% endblocktrans %}
+                {% else %}
+                    {% trans 'awaiting approval' %}
+                {% endif %}
             </div>
         </div>
-        {% endif %}
         {% include 'leprikon/registration_payments_presences.html' %}
     </div>
 </div>

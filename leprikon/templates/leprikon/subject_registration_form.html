@@ -5,6 +5,12 @@
 
 <h1>{% block title %}{{ title }}{% endblock %}</h1>
 
+{% if form.instance.subject.full %}
+    <div class="alert alert-warning" role="alert">
+        {% blocktrans with subject_type=form.instance.subject.subject_type %}The capacity of this {{ subject_type }} has already been filled. You may register anyway, but the registration may not be approved. We will inform You.{% endblocktrans %}
+    </div>
+{% endif %}
+
 {% for error in form.non_field_errors %}
     <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endfor %}

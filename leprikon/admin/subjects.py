@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.subjects import RegistrationAdminForm
 from ..models.subjects import (
     Subject, SubjectAttachment, SubjectRegistration,
-    SubjectRegistrationRequest, SubjectTypeAttachment,
+    SubjectTypeAttachment,
 )
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
@@ -81,7 +81,6 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     def get_queryset(self, request):
         return super(SubjectBaseAdmin, self).get_queryset(request).annotate(
             registrations_count=Count('registrations', distinct=True),
-            registration_requests_count=Count('registration_requests', distinct=True),
         )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -131,27 +130,10 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         return _boolean_icon(obj.registration_allowed)
     registration_allowed_icon.short_description = _('registration allowed')
 
-    def get_registration_requests_link(self, obj):
-        return '<a href="{url}">{count}</a>'.format(
-            url     = reverse('admin:{}_{}_changelist'.format(
-                SubjectRegistrationRequest._meta.app_label,
-                SubjectRegistrationRequest._meta.model_name,
-            )) + '?subject={}'.format(obj.id),
-            count   = obj.registration_requests_count,
-        )
-    get_registration_requests_link.short_description = _('registration requests')
-    get_registration_requests_link.admin_order_field = 'registration_requests_count'
-    get_registration_requests_link.allow_tags = True
-
     def get_registrations_count(self, obj):
         return obj.registrations_count
     get_registrations_count.short_description = _('registrations count')
     get_registrations_count.admin_order_field = 'registrations_count'
-
-    def get_registration_requests_count(self, obj):
-        return obj.registration_requests_count
-    get_registration_requests_count.short_description = _('registration requests count')
-    get_registration_requests_count.admin_order_field = 'registration_requests_count'
 
     def icon(self, obj):
         return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
@@ -397,26 +379,3 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     amount_html.short_description = _('amount')
     amount_html.admin_order_field = 'amount'
     amount_html.allow_tags = True
-
-
-
-class SubjectRegistrationRequestAdmin(AdminExportMixin, admin.ModelAdmin):
-    date_hierarchy  = 'created'
-    list_display    = ('created', 'subject', 'user_link')
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
-        ('subject__subject_type',   SubjectTypeListFilter),
-        ('subject__groups',         SubjectGroupListFilter),
-        ('subject',                 SubjectListFilter),
-        ('subject__leaders',        LeaderListFilter),
-    )
-    ordering        = ('-created',)
-    raw_id_fields   = ('subject', 'user')
-
-    def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url     = reverse('admin:auth_user_change', args=(obj.user.id,)),
-            user    = obj.user,
-        )
-    user_link.allow_tags = True
-    user_link.short_description = _('user')

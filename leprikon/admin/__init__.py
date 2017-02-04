@@ -18,8 +18,7 @@ from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import (
-    Subject, SubjectGroup, SubjectPayment, SubjectRegistration,
-    SubjectRegistrationRequest, SubjectType,
+    Subject, SubjectGroup, SubjectPayment, SubjectRegistration, SubjectType,
 )
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .agegroup import AgeGroupAdmin
@@ -38,8 +37,7 @@ from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
 from .subjects import (
     SubjectAdmin, SubjectGroupAdmin, SubjectPaymentAdmin,
-    SubjectRegistrationAdmin, SubjectRegistrationRequestAdmin,
-    SubjectTypeAdmin,
+    SubjectRegistrationAdmin, SubjectTypeAdmin,
 )
 from .timesheets import (
     TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin,
@@ -63,7 +61,6 @@ admin.site.register(Subject,                    SubjectAdmin)
 admin.site.register(SubjectType,                SubjectTypeAdmin)
 admin.site.register(SubjectGroup,               SubjectGroupAdmin)
 admin.site.register(SubjectRegistration,        SubjectRegistrationAdmin)
-admin.site.register(SubjectRegistrationRequest, SubjectRegistrationRequestAdmin)
 admin.site.register(SubjectPayment,             SubjectPaymentAdmin)
 
 admin.site.register(Course,                     CourseAdmin)

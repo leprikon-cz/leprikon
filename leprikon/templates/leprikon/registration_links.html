@@ -12,11 +12,4 @@
     </a>
 {% else %}
     {% trans 'Registering is currently not allowed.' %}
-    {% if registration_request %}
-    <strong>{% blocktrans with created=registration_request.created %}Your registration request was recorded {{ created }}.{% endblocktrans %}
-    {% else %}
-    <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
-        {% trans 'contact me, if there is some place available' %}
-    </a>
-    {% endif %}
 {% endif %}

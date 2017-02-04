@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
@@ -11,12 +11,9 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
-from ..models.subjects import (
-    Subject, SubjectRegistration, SubjectRegistrationRequest, SubjectType,
-)
+from ..models.subjects import Subject, SubjectRegistration, SubjectType
 from .generic import (
-    ConfirmCreateView, ConfirmUpdateView, CreateView, DetailView,
-    FilteredListView, UpdateView,
+    ConfirmUpdateView, CreateView, DetailView, FilteredListView, UpdateView,
 )
 
 
@@ -137,34 +134,6 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
 
 
 
-class SubjectRegistrationRequestFormView(ConfirmCreateView):
-    back_url        = reverse('leprikon:registration_list')
-    model           = SubjectRegistrationRequest
-    message         = _('The registration request has been accepted.')
-
-    def get_title(self):
-        return _('Registration request for {subject_type} {subject}').format(
-            subject_type = self.kwargs['subject_type'].name_akuzativ,
-            subject = self.kwargs['subject'].name,
-        )
-
-    def get_question(self):
-        return _('Do You want us to contact You if someone cancels the registration?')
-
-    def get_instructions(self):
-        instructions = _(
-            'We apologize, the capacity of {subject_type} {subject} has already been filled.'
-        ).format(
-            subject_type = self.kwargs['subject_type'].name_genitiv,
-            subject = self.kwargs['subject'].name,
-        )
-        return '<p>{}</p>'.format(instructions)
-
-    def confirmed(self):
-        SubjectRegistrationRequest.objects.get_or_create(subject=self.kwargs['subject'], user=self.request.user)
-
-
-
 class SubjectRegistrationFormView(CreateView):
     back_url        = reverse('leprikon:registration_list')
     submit_label    = _('Submit registration')
@@ -200,11 +169,9 @@ class SubjectRegistrationFormView(CreateView):
         if not self.request.user.is_staff:
             lookup_kwargs['public'] = True
         self.subject = get_object_or_404(Subject, **lookup_kwargs)
-        self.request.school_year = self.subject.school_year
         if not self.subject.registration_allowed:
-            return SubjectRegistrationRequestFormView.as_view()(
-                request, subject_type=self.subject_type, subject=self.subject
-            )
+            return redirect(self.subject)
+        self.request.school_year = self.subject.school_year
         self.model = self._models[self.subject.subject_type.subject_type]
         return super(SubjectRegistrationFormView, self).dispatch(request, **kwargs)
 

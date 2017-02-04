@@ -526,18 +526,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='SubjectRegistrationRequest',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='time of request')),
-            ],
-            options={
-                'ordering': ('created',),
-                'verbose_name': 'registration request',
-                'verbose_name_plural': 'registration requests',
-            },
-        ),
-        migrations.CreateModel(
             name='SubjectType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -694,16 +682,6 @@ class Migration(migrations.Migration):
             model_name='timesheet',
             name='period',
             field=models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, related_name='timesheets', to='leprikon.TimesheetPeriod', verbose_name='period'),
-        ),
-        migrations.AddField(
-            model_name='subjectregistrationrequest',
-            name='subject',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registration_requests', to='leprikon.Subject', verbose_name='subject'),
-        ),
-        migrations.AddField(
-            model_name='subjectregistrationrequest',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_registration_requests', to=settings.AUTH_USER_MODEL, verbose_name='user'),
         ),
         migrations.AddField(
             model_name='subjectregistration',
@@ -913,10 +891,6 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='timesheet',
             unique_together=set([('period', 'leader')]),
-        ),
-        migrations.AlterUniqueTogether(
-            name='subjectregistrationrequest',
-            unique_together=set([('user', 'subject')]),
         ),
         migrations.AlterUniqueTogether(
             name='subjectregistration',

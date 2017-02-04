@@ -65,11 +65,6 @@ def registration_links(context, subject):
     context['subject'] = subject
     if context['request'].user.is_authenticated():
         context['registrations'] = subject.registrations.filter(user=context['request'].user)
-        try:
-            context['registration_request'] = (context['request'].user.leprikon_registration_requests
-                                               .get(subject=subject))
-        except:
-            pass
     else:
         context['registrations'] = []
     context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))

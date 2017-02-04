@@ -214,9 +214,12 @@ class Subject(models.Model):
             self.price is not None and
             self.reg_from is not None and
             self.reg_from <= now and
-            (self.reg_to is None or self.reg_to > now) and
-            (self.max_count is None or self.registrations.count() < self.max_count)
+            (self.reg_to is None or self.reg_to > now)
         )
+
+    @property
+    def full(self):
+        return self.max_count and self.active_registrations.count() >= self.max_count
 
     def get_absolute_url(self):
         return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
@@ -594,28 +597,6 @@ class SubjectDiscount(models.Model):
 
     def __str__(self):
         return currency(self.amount)
-
-
-
-@python_2_unicode_compatible
-class SubjectRegistrationRequest(models.Model):
-    user    = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                                related_name='leprikon_registration_requests')
-    subject = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='registration_requests')
-    created = models.DateTimeField(_('time of request'), editable=False, auto_now_add=True)
-
-    class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('registration request')
-        verbose_name_plural = _('registration requests')
-        ordering            = ('created',)
-        unique_together     = (('user', 'subject'),)
-
-    def __str__(self):
-        return '{user}, {subject}'.format(
-            user    = self.user,
-            subject = self.subject,
-        )
 
 
 

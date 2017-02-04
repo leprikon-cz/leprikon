@@ -25,14 +25,14 @@ class EventAdmin(SubjectBaseAdmin):
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'registration_allowed_icon',
-        'get_registrations_link', 'get_registration_requests_link',
+        'get_registrations_link',
         'icon', 'note',
     )
     list_export     = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public',
-        'get_registrations_count', 'get_registration_requests_count', 'note',
+        'get_registrations_count', 'note',
     )
     date_hierarchy  = 'start_date'
     actions         = (

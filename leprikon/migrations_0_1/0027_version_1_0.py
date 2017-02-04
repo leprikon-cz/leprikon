@@ -222,13 +222,10 @@ def create_subject_registrations(apps, schema_editor):
     CourseRegistration = apps.get_model('leprikon', 'courseregistration')
     EventRegistration = apps.get_model('leprikon', 'eventregistration')
     CourseRegistrationHistory = apps.get_model('leprikon', 'courseregistrationhistory')
-    SubjectRegistrationRequest = apps.get_model('leprikon', 'subjectregistrationrequest')
     CourseDiscount = apps.get_model('leprikon', 'coursediscount')
     EventDiscount = apps.get_model('leprikon', 'eventdiscount')
     ClubRegistration = apps.get_model('leprikon', 'clubregistration')
     OldEventRegistration = apps.get_model('leprikon', 'oldeventregistration')
-    ClubRegistrationRequest = apps.get_model('leprikon', 'clubregistrationrequest')
-    EventRegistrationRequest = apps.get_model('leprikon', 'eventregistrationrequest')
 
     stderr.write('\n\t{} course registrations...'.format(ClubRegistration.objects.count()))
     for club_registration in ClubRegistration.objects.all():
@@ -353,24 +350,6 @@ def create_subject_registrations(apps, schema_editor):
             )
         old_event_registration.event_registration = event_registration
         old_event_registration.save()
-
-    stderr.write('\n\t{} course registration requests...'.format(ClubRegistrationRequest.objects.count()))
-    for club_registration_request in ClubRegistrationRequest.objects.all():
-        if club_registration_request.user:
-            SubjectRegistrationRequest.objects.create(
-                user    = club_registration_request.user,
-                subject = club_registration_request.club.course,
-                created = club_registration_request.created,
-            )
-
-    stderr.write('\n\t{} event registration requests...'.format(EventRegistrationRequest.objects.count()))
-    for event_registration_request in EventRegistrationRequest.objects.all():
-        if event_registration_request.user:
-            SubjectRegistrationRequest.objects.create(
-                user    = event_registration_request.user,
-                subject = event_registration_request.event.event,
-                created = event_registration_request.created,
-            )
 
 
 
@@ -781,24 +760,6 @@ class Migration(migrations.Migration):
             unique_together=set([('subject', 'participant_birth_num')]),
         ),
         migrations.CreateModel(
-            name='SubjectRegistrationRequest',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_registration_requests', to=settings.AUTH_USER_MODEL, verbose_name='user')),
-                ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registration_requests', to='leprikon.Subject', verbose_name='subject')),
-                ('created', models.DateTimeField(verbose_name='time of request')),
-            ],
-            options={
-                'ordering': ('created',),
-                'verbose_name': 'registration request',
-                'verbose_name_plural': 'registration requests',
-            },
-        ),
-        migrations.AlterUniqueTogether(
-            name='subjectregistrationrequest',
-            unique_together=set([('user', 'subject')]),
-        ),
-        migrations.CreateModel(
             name='CourseRegistration',
             fields=[
                 ('subjectregistration_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='leprikon.SubjectRegistration')),
@@ -901,11 +862,6 @@ class Migration(migrations.Migration):
             model_name='subjectregistration',
             name='created',
             field=models.DateTimeField(auto_now_add=True, verbose_name='time of registration'),
-        ),
-        migrations.AlterField(
-            model_name='subjectregistrationrequest',
-            name='created',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='time of request'),
         ),
         #
         # Subject Payments
