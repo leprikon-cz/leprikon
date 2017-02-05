@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import include, url
+from django.db import transaction
 from django.views.generic.base import RedirectView
 
 from . import views
@@ -15,7 +16,7 @@ LEPRIKON_URL = dict(
 
 
 def d_url(pattern, name):
-    return url(pattern.format(**LEPRIKON_URL), getattr(views, name), name=name)
+    return url(pattern.format(**LEPRIKON_URL), transaction.atomic(getattr(views, name)), name=name)
 
 
 urlpatterns = [
