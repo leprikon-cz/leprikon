@@ -785,13 +785,15 @@ class Migration(migrations.Migration):
             name='CourseRegistrationHistory',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('registration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='course_history', to='leprikon.CourseRegistration', verbose_name='course')),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='registrations_history', to='leprikon.Course', verbose_name='course')),
+                ('registration', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, related_name='course_history', to='leprikon.CourseRegistration', verbose_name='course')),
+                ('course', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, related_name='registrations_history', to='leprikon.Course', verbose_name='course')),
                 ('start', models.DateField()),
-                ('end', models.DateField(null=True)),
+                ('end', models.DateField(blank=True, null=True)),
             ],
             options={
                 'ordering': ('start',),
+                'verbose_name': 'course registration history',
+                'verbose_name_plural': 'course registration history',
             },
         ),
         migrations.CreateModel(

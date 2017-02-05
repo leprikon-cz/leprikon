@@ -16,7 +16,8 @@ from ..forms.courses import (
     CourseJournalEntryAdminForm, CourseJournalLeaderEntryAdminForm,
 )
 from ..models.courses import (
-    Course, CourseJournalLeaderEntry, CourseRegistration, CourseTime,
+    Course, CourseJournalLeaderEntry, CourseRegistration,
+    CourseRegistrationHistory, CourseTime,
 )
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
@@ -164,12 +165,25 @@ class CourseAdmin(SubjectBaseAdmin):
 
 
 
+class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
+    model = CourseRegistrationHistory
+    extra = 0
+    readonly_fields = ('course',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
         'id', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
         'created', 'approved', 'cancel_request', 'canceled',
     )
+    inlines         = (CourseRegistrationHistoryInlineAdmin,)
 
     def course_discounts(self, obj):
         html = []

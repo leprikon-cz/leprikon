@@ -7,7 +7,9 @@ from cms.models import CMSPlugin
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
@@ -252,7 +254,7 @@ class CourseRegistration(SubjectRegistration):
         if d is None:
             d = date.today()
         if self.approved:
-            if self.approved < d:
+            if self.approved.date() <= d:
                 partial_price = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
             else:
                 partial_price = 0
@@ -281,16 +283,27 @@ class CourseDiscount(SubjectDiscount):
 
 
 
+@python_2_unicode_compatible
 class CourseRegistrationHistory(StartEndMixin, models.Model):
-    registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'),
+    registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'), editable=False,
                                      related_name='course_history', on_delete=models.PROTECT)
-    course = models.ForeignKey(Course, verbose_name=_('course'),
+    course = models.ForeignKey(Course, verbose_name=_('course'), editable=False,
                                related_name='registrations_history', on_delete=models.PROTECT)
     start = models.DateField()
-    end = models.DateField(null=True)
+    end = models.DateField(blank=True, null=True)
 
     class Meta:
+        app_label           = 'leprikon'
         ordering            = ('start',)
+        verbose_name        = _('course registration history')
+        verbose_name_plural = _('course registration history')
+
+    def __str__(self):
+        return '{course}, {start} - {end}'.format(
+            course  = self.course.name,
+            start   = date_format(self.start, 'SHORT_DATE_FORMAT'),
+            end     = date_format(self.end, 'SHORT_DATE_FORMAT') if self.end else _('now'),
+        )
 
     @property
     def course_journal_entries(self):
@@ -300,24 +313,37 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
         else:
             return qs
 
+    def save(self, *args, **kwargs):
+        if self.id:
+            original = self.__class__.objects.get(id=self.id)
+            min_journal_date = original.course_journal_entries.aggregate(models.Min('date'))['date__min']
+            max_journal_date = original.course_journal_entries.aggregate(models.Max('date'))['date__max']
+            # if journal entry exists, start must be set and lower or equal to min journal date
+            if min_journal_date and self.start > min_journal_date:
+                self.start = min_journal_date
+            # end can not be lower than max journal date
+            if self.end and max_journal_date and self.end < max_journal_date:
+                self.end = max_journal_date
+        super(CourseRegistrationHistory, self).save(*args, **kwargs)
+
 
 
 @receiver(models.signals.post_save, sender=CourseRegistration)
 def update_course_registration_history(sender, instance, created, **kwargs):
-    d = date.today()
-    # if created or changed
-    if (created or
-        CourseRegistrationHistory.objects.filter(registration_id=instance.id, end=None)
-                                 .exclude(course_id=instance.subject_id).update(end=d)):
-        # reopen or create entry starting today
-        (
-            CourseRegistrationHistory.objects.filter(
-                registration_id=instance.id, course_id=instance.subject_id, start=d,
-            ).update(end=None) or
-            CourseRegistrationHistory.objects.create(
-                registration_id=instance.id, course_id=instance.subject_id, start=d,
+    if instance.approved:
+        d = date.today()
+        # if created or changed
+        if (instance.course_history.count() == 0 or
+            instance.course_history.filter(end=None).exclude(course_id=instance.subject_id).update(end=d)):
+            # reopen or create entry starting today
+            (
+                CourseRegistrationHistory.objects.filter(
+                    registration_id=instance.id, course_id=instance.subject_id, start=d,
+                ).update(end=None) or
+                CourseRegistrationHistory.objects.create(
+                    registration_id=instance.id, course_id=instance.subject_id, start=d,
+                )
             )
-        )
 
 
 
