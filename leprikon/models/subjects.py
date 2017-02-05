@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import colorsys
+from collections import OrderedDict
 from io import BytesIO
 from json import loads
 
@@ -602,13 +603,33 @@ class SubjectDiscount(models.Model):
 
 @python_2_unicode_compatible
 class SubjectPayment(models.Model):
+    PAYMENT_CASH = 'PAYMENT_CASH'
+    PAYMENT_BANK = 'PAYMENT_BANK'
+    PAYMENT_ONLINE = 'PAYMENT_ONLINE'
+    PAYMENT_TRANSFER = 'PAYMENT_TRANSFER'
+    RETURN_CASH = 'RETURN_CASH'
+    RETURN_BANK = 'RETURN_BANK'
+    RETURN_TRANSFER = 'RETURN_TRANSFER'
+    payment_type_labels = OrderedDict([
+        (PAYMENT_CASH, _('payment - cash')),
+        (PAYMENT_BANK, _('payment - bank')),
+        (PAYMENT_ONLINE, _('payment - online')),
+        (PAYMENT_TRANSFER, _('payment - transfer from return')),
+        (RETURN_CASH, _('return - cash')),
+        (RETURN_BANK, _('return - bank')),
+        (RETURN_TRANSFER, _('return - transfer to payment')),
+    ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
     created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
-    amount          = PriceField(_('amount'))
+    payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
+    amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
     related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
                                         related_name='related_payments', on_delete=models.PROTECT)
+
+    payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
+    returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
 
     class Meta:
         app_label           = 'leprikon'
@@ -617,7 +638,36 @@ class SubjectPayment(models.Model):
         ordering            = ('created',)
 
     def __str__(self):
-        return '{registration}, {amount}'.format(
+        return '{registration}, {payment_type} {amount}'.format(
             registration    = self.registration,
-            amount          = currency(self.amount),
+            payment_type    = self.payment_type_label,
+            amount          = currency(abs(self.amount)),
         )
+
+    @cached_property
+    def payment_type_label(self):
+        return self.payment_type_labels.get(self.payment_type, '-')
+    payment_type_label.short_description = _('payment type')
+
+    def validate(self):
+        if self.amount == 0:
+            raise ValidationError({
+                'amount': [_('Amount can not be zero.')]
+            })
+        if self.payment_type:
+            if self.amount > 0 and self.payment_type not in self.payments:
+                raise ValidationError({
+                    'payment_type': [_('Select one of the payments or use negative amount.')],
+                })
+            if self.amount < 0 and self.payment_type not in self.returns:
+                raise ValidationError({
+                    'payment_type': [_('Select one of the returns or use positive amount.')],
+                })
+
+    def clean_fields(self, exclude=None):
+        super(SubjectPayment, self).clean_fields(exclude)
+        self.validate()
+
+    def save(self, *args, **kwargs):
+        self.validate()
+        super(SubjectPayment, self).save(*args, **kwargs)

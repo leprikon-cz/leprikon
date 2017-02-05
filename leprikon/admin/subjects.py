@@ -339,7 +339,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 
 
 class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('created', 'registration', 'subject', 'amount_html')
+    list_display    = ('created', 'registration', 'subject', 'payment_type_label', 'amount_html')
     list_filter     = (
         ('registration__subject__school_year',  SchoolYearListFilter),
         ('registration__subject__subject_type', SubjectTypeListFilter),
@@ -374,7 +374,7 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
             color   = amount_color(obj.amount),
-            amount  = currency(obj.amount),
+            amount  = currency(abs(obj.amount)),
         )
     amount_html.short_description = _('amount')
     amount_html.admin_order_field = 'amount'

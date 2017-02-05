@@ -364,6 +364,7 @@ def create_subject_payments(apps, schema_editor):
             registration = club_payment.registration.course_registration,
             created = tz.localize(datetime.combine(club_payment.date, time(12, 0))),
             amount = club_payment.amount,
+            payment_type = '',
         )
 
     stderr.write('\n\t{} event payments...'.format(EventPayment.objects.count()))
@@ -372,6 +373,7 @@ def create_subject_payments(apps, schema_editor):
             registration = event_payment.registration.event_registration,
             created = tz.localize(datetime.combine(event_payment.date, time(12, 0))),
             amount = event_payment.amount,
+            payment_type = '',
         )
 
 
@@ -874,7 +876,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('registration', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='payments', to='leprikon.SubjectRegistration', verbose_name='registration')),
                 ('created', models.DateTimeField(verbose_name='payment time')),
-                ('amount', leprikon.models.fields.PriceField(decimal_places=0, max_digits=10, verbose_name='amount')),
+                ('payment_type', models.CharField(choices=[('PAYMENT_CASH', 'payment - cash'), ('PAYMENT_BANK', 'payment - bank'), ('PAYMENT_ONLINE', 'payment - online'), ('PAYMENT_TRANSFER', 'payment - transfer from return'), ('RETURN_CASH', 'return - cash'), ('RETURN_BANK', 'return - bank'), ('RETURN_TRANSFER', 'return - transfer to payment')], max_length=30, verbose_name='payment type')),
+                ('amount', leprikon.models.fields.PriceField(decimal_places=0, help_text='positive value for payment, negative value for return', max_digits=10, verbose_name='amount')),
                 ('note', models.CharField(blank=True, default='', max_length=300, verbose_name='note')),
             ],
             options={
