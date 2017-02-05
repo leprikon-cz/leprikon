@@ -232,7 +232,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return obj and obj.approved is None and obj.payments.count() == 0
 
     def get_actions(self, request):
         actions = super(SubjectRegistrationBaseAdmin, self).get_actions(request)
