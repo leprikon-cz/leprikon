@@ -7,7 +7,6 @@ from cms.models import CMSPlugin
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
-from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
@@ -334,7 +333,7 @@ def update_course_registration_history(sender, instance, created, **kwargs):
         d = date.today()
         # if created or changed
         if (instance.course_history.count() == 0 or
-            instance.course_history.filter(end=None).exclude(course_id=instance.subject_id).update(end=d)):
+                instance.course_history.filter(end=None).exclude(course_id=instance.subject_id).update(end=d)):
             # reopen or create entry starting today
             (
                 CourseRegistrationHistory.objects.filter(

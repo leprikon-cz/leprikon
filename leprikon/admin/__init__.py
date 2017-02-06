@@ -10,6 +10,7 @@ from ..models.courses import (
 )
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.insurance import Insurance
+from ..models.leprikonsite import LeprikonSite
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
 from ..models.printsetup import PrintSetup
@@ -28,6 +29,7 @@ from .courses import (
 )
 from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
 from .insurance import InsuranceAdmin
+from .leprikonsite import LeprikonSiteAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
 from .printsetup import PrintSetupAdmin
@@ -48,6 +50,7 @@ User = get_user_model()
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
 admin.site.register(Insurance,                  InsuranceAdmin)
+admin.site.register(LeprikonSite,               LeprikonSiteAdmin)
 admin.site.register(Place,                      PlaceAdmin)
 admin.site.register(PrintSetup,                 PrintSetupAdmin)
 admin.site.register(School,                     SchoolAdmin)

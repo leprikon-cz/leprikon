@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-05 22:17+0100\n"
+"POT-Creation-Date: 2017-02-06 04:41+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -119,9 +119,9 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/courses.py:354 models/courses.py:37 models/courses.py:154
-#: models/courses.py:288 models/courses.py:290 models/courses.py:357
-#: models/courses.py:475 models/courses.py:503 models/subjects.py:47
+#: admin/courses.py:354 models/courses.py:36 models/courses.py:153
+#: models/courses.py:287 models/courses.py:289 models/courses.py:356
+#: models/courses.py:474 models/courses.py:502 models/subjects.py:47
 #: templates/leprikon/course_alternating.html:15
 msgid "course"
 msgstr "kurz"
@@ -306,7 +306,7 @@ msgstr "kontakty"
 msgid "user"
 msgstr "uživatel"
 
-#: admin/roles.py:106 admin/roles.py:216 models/courses.py:38
+#: admin/roles.py:106 admin/roles.py:216 models/courses.py:37
 msgid "courses"
 msgstr "kurzy"
 
@@ -457,11 +457,11 @@ msgstr "přihlásit"
 msgid "parents"
 msgstr "zástupci"
 
-#: admin/user.py:131 models/courses.py:365 models/roles.py:181
+#: admin/user.py:131 models/courses.py:364 models/roles.py:181
 msgid "participants"
 msgstr "účastníci"
 
-#: apps.py:9 cms_apps.py:13 cms_plugins/base.py:9 cms_toolbars.py:17
+#: apps.py:17 cms_apps.py:13 cms_plugins/base.py:9 cms_toolbars.py:17
 #: cms_toolbars.py:19 menu.py:16
 msgid "Leprikon"
 msgstr "Leprikón"
@@ -505,8 +505,9 @@ msgstr "Výpis vedoucích"
 msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
-#: conf/default_settings.py:14 models/roles.py:120 models/roles.py:164
-#: models/subjects.py:296 models/subjects.py:311 models/subjects.py:320
+#: conf/default_settings.py:14 models/leprikonsite.py:27 models/roles.py:120
+#: models/roles.py:164 models/subjects.py:296 models/subjects.py:311
+#: models/subjects.py:320
 msgid "phone"
 msgstr "telefon"
 
@@ -839,164 +840,164 @@ msgstr "pořadí"
 msgid "age group"
 msgstr "věková skupina"
 
-#: models/agegroup.py:19 models/courses.py:520 models/events.py:165
+#: models/agegroup.py:19 models/courses.py:519 models/events.py:165
 #: models/subjects.py:155
 msgid "age groups"
 msgstr "věkové skupiny"
 
-#: models/courses.py:31
+#: models/courses.py:30
 msgid "unit"
 msgstr "jednotka"
 
-#: models/courses.py:32
+#: models/courses.py:31
 msgid "periods"
 msgstr "období"
 
-#: models/courses.py:57 models/courses.py:163 models/events.py:51
+#: models/courses.py:56 models/courses.py:162 models/events.py:51
 msgid "times"
 msgstr "časy"
 
-#: models/courses.py:155
+#: models/courses.py:154
 msgid "day of week"
 msgstr "den v týdnu"
 
-#: models/courses.py:156 models/courses.py:360 models/courses.py:454
+#: models/courses.py:155 models/courses.py:359 models/courses.py:453
 #: models/events.py:25 models/timesheets.py:161
 msgid "start time"
 msgstr "čas začátku"
 
-#: models/courses.py:157 models/courses.py:362 models/courses.py:455
+#: models/courses.py:156 models/courses.py:361 models/courses.py:454
 #: models/events.py:26 models/timesheets.py:162
 msgid "end time"
 msgstr "čas konce"
 
-#: models/courses.py:162
+#: models/courses.py:161
 msgid "time"
 msgstr "čas"
 
-#: models/courses.py:167
+#: models/courses.py:166
 msgid "{day}, {start:%H:%M} - {end:%H:%M}"
 msgstr "{day} od {start:%H:%M} do {end:%H:%M}"
 
-#: models/courses.py:173
+#: models/courses.py:172
 msgid "{day}, {start:%H:%M}"
 msgstr "{day} od {start:%H:%M}"
 
-#: models/courses.py:207
+#: models/courses.py:206
 msgid "course registration"
 msgstr "přihláška na kurz"
 
-#: models/courses.py:208
+#: models/courses.py:207
 msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
-#: models/courses.py:279 models/events.py:142 models/subjects.py:325
+#: models/courses.py:278 models/events.py:142 models/subjects.py:325
 #: models/subjects.py:622
 msgid "registration"
 msgstr "přihláška"
 
-#: models/courses.py:281 models/timesheets.py:74
+#: models/courses.py:280 models/timesheets.py:74
 msgid "period"
 msgstr "období"
 
-#: models/courses.py:298 models/courses.py:299
+#: models/courses.py:297 models/courses.py:298
 msgid "course registration history"
 msgstr "historie přihlášky na kurz"
 
-#: models/courses.py:305
+#: models/courses.py:304
 msgid "now"
 msgstr "nyní"
 
-#: models/courses.py:351
+#: models/courses.py:350
 msgid "instruction on OSH"
 msgstr "poučení o BOZP"
 
-#: models/courses.py:359 models/courses.py:469 models/timesheets.py:160
+#: models/courses.py:358 models/courses.py:468 models/timesheets.py:160
 #: templates/leprikon/course_alternating.html:14
 #: templates/leprikon/registration/subject.rml:155
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
 
-#: models/courses.py:361 models/courses.py:363
+#: models/courses.py:360 models/courses.py:362
 msgid "Leave empty, if the course does not take place"
 msgstr "Nevyplňujte, pokud se kurz nekonal"
 
-#: models/courses.py:364
+#: models/courses.py:363
 msgid "session agenda"
 msgstr "program schůzky"
 
-#: models/courses.py:371
+#: models/courses.py:370
 msgid "journal entry"
 msgstr "záznam deníku"
 
-#: models/courses.py:372
+#: models/courses.py:371
 msgid "journal entries"
 msgstr "záznamy deníku"
 
-#: models/courses.py:400 models/courses.py:488 models/timesheets.py:185
+#: models/courses.py:399 models/courses.py:487 models/timesheets.py:185
 #: templates/leprikon/timesheet_detail.html:22
 msgid "duration"
 msgstr "doba trvání"
 
-#: models/courses.py:450
+#: models/courses.py:449
 msgid "course journal entry"
 msgstr "záznam deníku kurzu"
 
-#: models/courses.py:452 models/timesheets.py:87 models/timesheets.py:156
+#: models/courses.py:451 models/timesheets.py:87 models/timesheets.py:156
 msgid "timesheet"
 msgstr "výkaz práce"
 
-#: models/courses.py:459
+#: models/courses.py:458
 msgid "course journal leader entry"
 msgstr "záznam vedoucího v deníku kurzu"
 
-#: models/courses.py:460
+#: models/courses.py:459
 msgid "course journal leader entries"
 msgstr "záznamy vedoucích v deníku kurzu"
 
-#: models/courses.py:504 models/courses.py:526 models/events.py:149
+#: models/courses.py:503 models/courses.py:525 models/events.py:149
 #: models/events.py:171 models/roles.py:237 models/roles.py:254
 msgid "template"
 msgstr "šablona"
 
-#: models/courses.py:507 models/courses.py:529 models/events.py:152
+#: models/courses.py:506 models/courses.py:528 models/events.py:152
 #: models/events.py:174 models/roles.py:240 models/roles.py:257
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
-#: models/courses.py:515 models/courses.py:590 models/events.py:160
+#: models/courses.py:514 models/courses.py:589 models/events.py:160
 #: models/events.py:235 models/roles.py:249 models/roles.py:285
 #: models/schoolyear.py:40 models/schoolyear.py:63 models/subjects.py:147
 msgid "school year"
 msgstr "školní rok"
 
-#: models/courses.py:517 models/courses.py:592
+#: models/courses.py:516 models/courses.py:591
 msgid "course types"
 msgstr "typy kurzů"
 
-#: models/courses.py:519
+#: models/courses.py:518
 msgid "Keep empty to skip searching by course types."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle typů kurzů."
 
-#: models/courses.py:521 models/events.py:166
+#: models/courses.py:520 models/events.py:166
 msgid "Keep empty to skip searching by age groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle věkových skupin."
 
-#: models/courses.py:522
+#: models/courses.py:521
 msgid "course groups"
 msgstr "skupiny kurzů"
 
-#: models/courses.py:523 models/events.py:168
+#: models/courses.py:522 models/events.py:168
 msgid "Keep empty to skip searching by groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin."
 
-#: models/courses.py:524 models/events.py:169 models/roles.py:38
+#: models/courses.py:523 models/events.py:169 models/roles.py:38
 #: models/subjects.py:156
 msgid "leaders"
 msgstr "vedoucí"
 
-#: models/courses.py:525 models/events.py:170
+#: models/courses.py:524 models/events.py:170
 msgid "Keep empty to skip searching by leaders."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle vedoucích."
 
@@ -1079,6 +1080,56 @@ msgstr "zdravotní pojišťovna"
 #: models/insurance.py:17
 msgid "insurance companies"
 msgstr "zdravotní pojišťovny"
+
+#: models/leprikonsite.py:23 models/leprikonsite.py:28 models/roles.py:116
+#: models/roles.py:160 models/school.py:12 models/subjects.py:290
+#: models/subjects.py:308 models/subjects.py:317
+msgid "street"
+msgstr "ulice a číslo popisné"
+
+#: models/leprikonsite.py:24 models/roles.py:117 models/roles.py:161
+#: models/school.py:13 models/subjects.py:291 models/subjects.py:309
+#: models/subjects.py:318
+msgid "city"
+msgstr "město (pošta)"
+
+#: models/leprikonsite.py:25 models/roles.py:118 models/roles.py:162
+#: models/subjects.py:292 models/subjects.py:310 models/subjects.py:319
+msgid "postal code"
+msgstr "PSČ"
+
+#: models/leprikonsite.py:26 models/roles.py:119 models/roles.py:163
+#: models/subjects.py:297 models/subjects.py:312 models/subjects.py:321
+msgid "email address"
+msgstr "e-mail"
+
+#: models/leprikonsite.py:29
+msgid "company number"
+msgstr "IČ"
+
+#: models/leprikonsite.py:30
+msgid "VAT number"
+msgstr "DIČ"
+
+#: models/leprikonsite.py:31
+msgid "IBAN"
+msgstr "IBAN"
+
+#: models/leprikonsite.py:32
+msgid "BIC (SWIFT)"
+msgstr "BIC (SWIFT)"
+
+#: models/leprikonsite.py:34
+msgid "bill print setup"
+msgstr "nastavení tisku dokladů"
+
+#: models/leprikonsite.py:40
+msgid "leprikon site"
+msgstr "nastavení Leprikónu"
+
+#: models/leprikonsite.py:41
+msgid "leprikon sites"
+msgstr "nastavení Leprikónu"
 
 #: models/messages.py:22
 msgid "created"
@@ -1220,26 +1271,6 @@ msgstr "kontakt"
 #: models/roles.py:91 models/subjects.py:158
 msgid "public"
 msgstr "veřejný"
-
-#: models/roles.py:116 models/roles.py:160 models/school.py:12
-#: models/subjects.py:290 models/subjects.py:308 models/subjects.py:317
-msgid "street"
-msgstr "ulice a číslo popisné"
-
-#: models/roles.py:117 models/roles.py:161 models/school.py:13
-#: models/subjects.py:291 models/subjects.py:309 models/subjects.py:318
-msgid "city"
-msgstr "město (pošta)"
-
-#: models/roles.py:118 models/roles.py:162 models/subjects.py:292
-#: models/subjects.py:310 models/subjects.py:319
-msgid "postal code"
-msgstr "PSČ"
-
-#: models/roles.py:119 models/roles.py:163 models/subjects.py:297
-#: models/subjects.py:312 models/subjects.py:321
-msgid "email address"
-msgstr "e-mail"
 
 #: models/roles.py:124
 msgid "parent"

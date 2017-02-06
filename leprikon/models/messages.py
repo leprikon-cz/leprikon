@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import uuid
 
-from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
@@ -15,6 +14,8 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 
 from ..conf import settings
+
+from .leprikonsite import LeprikonSite
 
 
 @python_2_unicode_compatible
@@ -76,7 +77,7 @@ class MessageRecipient(models.Model):
         if self.recipient.email:
             context = {
                 'message_recipient': self,
-                'site': Site.objects.get_current(),
+                'site': LeprikonSite.objects.get_current(),
             }
             msg = EmailMultiAlternatives(
                 subject     = self.message.subject,

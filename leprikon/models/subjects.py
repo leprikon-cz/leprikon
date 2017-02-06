@@ -7,7 +7,6 @@ from json import loads
 
 import trml2pdf
 from cms.models.fields import PageField
-from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -31,6 +30,7 @@ from ..utils import comma_separated, currency
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
 from .insurance import Insurance
+from .leprikonsite import LeprikonSite
 from .place import Place
 from .printsetup import PrintSetup
 from .question import Question
@@ -481,7 +481,7 @@ class SubjectRegistration(models.Model):
         ])
         context = {
             'object': self,
-            'site': Site.objects.get_current(),
+            'site': LeprikonSite.objects.get_current(),
         }
         content_txt = template_txt.render(context)
         content_html = template_html.render(context)

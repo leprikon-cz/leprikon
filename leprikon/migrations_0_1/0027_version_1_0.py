@@ -17,6 +17,7 @@ import filer.fields.image
 import leprikon.models.courses
 import leprikon.models.fields
 import leprikon.models.startend
+import localflavor.generic.models
 
 
 tz = timezone.get_default_timezone()
@@ -457,12 +458,34 @@ class Migration(migrations.Migration):
         ('filer', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('leprikon', '0026_printsetup'),
+        ('sites', '0001_initial'),
     ]
 
     operations = [
         #
         # Subject Types
         #
+        migrations.CreateModel(
+            name='LeprikonSite',
+            fields=[
+                ('site_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sites.Site')),
+                ('city', models.CharField(blank=True, max_length=150, null=True, verbose_name='city')),
+                ('postal_code', leprikon.models.fields.PostalCodeField(blank=True, null=True, verbose_name='postal code')),
+                ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='email address')),
+                ('phone', models.CharField(blank=True, max_length=30, null=True, verbose_name='phone')),
+                ('street', models.CharField(blank=True, max_length=150, null=True, verbose_name='street')),
+                ('company_num', models.CharField(blank=True, max_length=8, null=True, verbose_name='company number')),
+                ('vat_number', models.CharField(blank=True, max_length=10, null=True, verbose_name='VAT number')),
+                ('iban', localflavor.generic.models.IBANField('IBAN', None, blank=True, null=True)),
+                ('bic', localflavor.generic.models.BICField(blank=True, null=True, verbose_name='BIC (SWIFT)')),
+                ('bill_printsetup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
+            ],
+            options={
+                'verbose_name': 'leprikon site',
+                'verbose_name_plural': 'leprikon sites',
+            },
+            bases=('sites.site',),
+        ),
         migrations.CreateModel(
             name='SubjectType',
             fields=[
