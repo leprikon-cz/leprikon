@@ -677,7 +677,7 @@ class Migration(migrations.Migration):
                 ('end_time', models.TimeField(blank=True, null=True, verbose_name='end time')),
             ],
             options={
-                'ordering': ('start_date', 'start_time'),
+                'ordering': ('-start_date', 'start_time'),
                 'verbose_name': 'event',
                 'verbose_name_plural': 'events',
             },

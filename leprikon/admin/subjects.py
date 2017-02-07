@@ -17,8 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import RegistrationAdminForm
 from ..models.subjects import (
-    Subject, SubjectAttachment, SubjectRegistration,
-    SubjectTypeAttachment,
+    Subject, SubjectAttachment, SubjectRegistration, SubjectTypeAttachment,
 )
 from ..utils import amount_color, currency
 from .export import AdminExportMixin

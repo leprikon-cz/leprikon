@@ -14,6 +14,11 @@ from ..models.events import Event, EventRegistration
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
+from .filters import (
+    ApprovedListFilter, CanceledListFilter, EventGroupListFilter,
+    EventListFilter, EventTypeListFilter, LeaderListFilter,
+    SchoolYearListFilter,
+)
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
 )
@@ -33,6 +38,12 @@ class EventAdmin(SubjectBaseAdmin):
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public',
         'get_registrations_count', 'note',
+    )
+    list_filter     = (
+        ('school_year',     SchoolYearListFilter),
+        ('subject_type',    EventTypeListFilter),
+        ('groups',          EventGroupListFilter),
+        ('leaders',         LeaderListFilter),
     )
     date_hierarchy  = 'start_date'
     actions         = (
@@ -127,6 +138,14 @@ class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
         'id', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
         'created', 'approved', 'cancel_request', 'canceled',
+    )
+    list_filter     = (
+        ('subject__school_year',    SchoolYearListFilter),
+        ('subject__subject_type',   EventTypeListFilter),
+        ApprovedListFilter,
+        CanceledListFilter,
+        ('subject',                 EventListFilter),
+        ('subject__leaders',        LeaderListFilter),
     )
 
     def event_discounts(self, obj):

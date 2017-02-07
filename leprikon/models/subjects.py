@@ -43,8 +43,15 @@ from .schoolyear import SchoolYear
 class SubjectType(models.Model):
     COURSE = 'course'
     EVENT = 'event'
-    subject_type    = models.CharField(_('subjects'), max_length=10,
-                                       choices=((COURSE, _('course')), (EVENT, _('event'))))
+    subject_type_labels = OrderedDict([
+        (COURSE, _('course')),
+        (EVENT, _('event')),
+    ])
+    subject_type_type_labels = OrderedDict([
+        (COURSE, _('course type')),
+        (EVENT, _('event type')),
+    ])
+    subject_type    = models.CharField(_('subjects'), max_length=10, choices=subject_type_labels.items())
     name            = models.CharField(_('name'), max_length=150)
     name_genitiv    = models.CharField(_('name (genitiv)'), max_length=150, blank=True)
     name_akuzativ   = models.CharField(_('name (akuzativ)'), max_length=150, blank=True)

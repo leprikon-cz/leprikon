@@ -23,7 +23,11 @@ from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
 from .export import AdminExportMixin
-from .filters import CourseListFilter, LeaderListFilter, SchoolYearListFilter
+from .filters import (
+    ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
+    CourseListFilter, CourseTypeListFilter, LeaderListFilter,
+    SchoolYearListFilter,
+)
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
 )
@@ -48,6 +52,12 @@ class CourseAdmin(SubjectBaseAdmin):
         'get_times_list',
         'place', 'public',
         'get_registrations_count', 'note',
+    )
+    list_filter     = (
+        ('school_year',     SchoolYearListFilter),
+        ('subject_type',    CourseTypeListFilter),
+        ('groups',          CourseGroupListFilter),
+        ('leaders',         LeaderListFilter),
     )
     inlines         = (
         CourseTimeInlineAdmin,
@@ -182,6 +192,14 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
         'id', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
         'created', 'approved', 'cancel_request', 'canceled',
+    )
+    list_filter     = (
+        ('subject__school_year',    SchoolYearListFilter),
+        ('subject__subject_type',   CourseTypeListFilter),
+        ApprovedListFilter,
+        CanceledListFilter,
+        ('subject',                 CourseListFilter),
+        ('subject__leaders',        LeaderListFilter),
     )
     inlines         = (CourseRegistrationHistoryInlineAdmin,)
 
