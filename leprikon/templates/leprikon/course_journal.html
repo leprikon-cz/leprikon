@@ -118,10 +118,11 @@
         {% endfor %}
     </div>
     {% endif %}
-    {% for period in course.all_periods %}
+    {% for period in course.all_journal_periods %}
     {% with period.journal_entries.count|add:2 as columns_count %}
     <div class="container paper">
-        <h1>{% trans 'Attendance' %} - {{ period.name }}</h1>
+        <h1>{% trans 'Attendance' %} - {{ period.period.name }}</h1>
+        <div style="overflow: auto">
         <table class="table-hover presence">
             <tr>
                 <th>{% trans 'Name' context 'person' %}</th>
@@ -183,6 +184,7 @@
             </tr>
             {% endfor %}
         </table>
+        </div>
     </div>
     {% endwith %}
     {% endfor %}
@@ -238,7 +240,7 @@
         <h1>
             {% trans 'Risks' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:course_update' course.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' course.subject_type.slug course.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>
@@ -257,7 +259,7 @@
         <h1>
             {% trans 'Plan for the whole year course activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:course_update' course.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' course.subject_type.slug course.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>
@@ -276,7 +278,7 @@
         <h1>
             {% trans 'Evaluation of the whole year course activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:course_update' course.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' course.subject_type.slug course.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>

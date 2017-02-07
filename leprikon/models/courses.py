@@ -45,6 +45,10 @@ class Course(Subject):
         return list(self.periods.all())
 
     @cached_property
+    def all_journal_periods(self):
+        return list(CourseJournalPeriod(self, period) for period in self.all_periods)
+
+    @cached_property
     def all_journal_entries(self):
         return list(self.journal_entries.all())
 
@@ -145,6 +149,70 @@ class Course(Subject):
                 school_year=school_year, name=period.name, start=start, end=end
             )[0])
         return new
+
+
+
+class CourseJournalPeriod:
+
+    def __init__(self, course, period):
+        self.course = course
+        self.period = period
+
+    @property
+    def journal_entries(self):
+        return self.course.journal_entries.filter(date__gte=self.period.start, date__lte=self.period.end)
+
+    @cached_property
+    def all_journal_entries(self):
+        return list(self.journal_entries.all())
+
+    @cached_property
+    def all_registrations(self):
+        return list(self.course.registrations_history_registrations.filter(created__lt=self.period.end))
+
+    @cached_property
+    def all_alternates(self):
+        alternates = set()
+        for entry in self.all_journal_entries:
+            for alternate in entry.all_alternates:
+                alternates.add(alternate)
+        return list(alternates)
+
+    PresenceRecord = namedtuple('PresenceRecord', ('name', 'presences'))
+
+    def get_participant_presences(self):
+        return [
+            self.PresenceRecord(
+                reg.participant,
+                [
+                    reg in entry.all_registrations
+                    for entry in self.all_journal_entries
+                ]
+            ) for reg in self.all_registrations
+        ]
+
+    def get_leader_presences(self):
+        return [
+            self.PresenceRecord(
+                leader,
+                [
+                    entry.all_leader_entries_by_leader.get(leader, None)
+                    for entry in self.all_journal_entries
+                ]
+            ) for leader in self.course.all_leaders
+        ]
+
+    def get_alternate_presences(self):
+        return [
+            self.PresenceRecord(
+                alternate,
+                [
+                    entry.all_leader_entries_by_leader.get(alternate, None)
+                    for entry in self.all_journal_entries
+                ]
+            ) for alternate in self.all_alternates
+        ]
+
 
 
 
