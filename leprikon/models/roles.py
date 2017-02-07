@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from collections import namedtuple
+
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
@@ -78,6 +80,18 @@ class Leader(models.Model):
             timesheet__leader                   = self,
             course_entry__course__school_year   = school_year,
         ).exclude(course_entry__course__in      = self.courses.all())
+
+    SubjectsGroup = namedtuple('SubjectsGroup', ('subject_type', 'subjects'))
+
+    def get_subjects_by_types(self):
+        from .subjects import SubjectType
+        return (
+            self.SubjectsGroup(
+                subject_type = subject_type,
+                subjects = subject_type.subjects.filter(leaders=self)
+            )
+            for subject_type in SubjectType.objects.all()
+        )
 
 
 

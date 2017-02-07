@@ -69,7 +69,7 @@ class FilteredListView(ListView):
     message_empty   = _('No items found matching given search parameters.')
 
     def get_form(self):
-        return self.form_class(self.request, data=self.request.GET)
+        return self.form_class(data=self.request.GET)
 
     def get_context_data(self, *args, **kwargs):
         return super(FilteredListView, self).get_context_data(*args, form=self.get_form(), **kwargs)

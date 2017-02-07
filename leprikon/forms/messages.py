@@ -13,10 +13,14 @@ from .form import FormMixin
 class MessageFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_('Search term'), required=False)
 
-    def __init__(self, request, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(MessageFilterForm, self).__init__(*args, **kwargs)
+        self.qs = user.leprikon_messages.all()
 
-    def filter_queryset(self, request, qs):
+    def get_queryset(self):
+        if not self.is_valid():
+            return self.qs
+        qs = self.qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
                 Q(message__subject__icontains = word) |

@@ -18,6 +18,11 @@ class LeaderListView(FilteredListView):
     def get_title(self):
         return _('Leaders in school year {}').format(self.request.school_year)
 
+    def get_form(self):
+        return self.form_class(
+            school_year = self.request.school_year,
+            data = self.request.GET,
+        )
+
     def get_queryset(self):
-        form = self.get_form()
-        return form.get_queryset()
+        return self.get_form().get_queryset()

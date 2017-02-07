@@ -20,12 +20,14 @@ class MessageListView(FilteredListView):
     def get_title(self):
         return _('Messages')
 
+    def get_form(self):
+        return self.form_class(
+            user = self.request.user,
+            data = self.request.GET,
+        )
+
     def get_queryset(self):
-        qs = self.request.user.leprikon_messages.all()
-        form = self.get_form()
-        if form.is_valid():
-            qs = form.filter_queryset(self.request, qs)
-        return qs
+        return self.get_form().get_queryset()
 
 
 class MessageDetailView(BackViewMixin, DetailView):
