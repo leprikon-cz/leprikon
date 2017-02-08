@@ -62,8 +62,9 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
-    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.PROTECT, related_name='+',
-                                        verbose_name=_('registration print setup'))
+    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                        verbose_name=_('registration print setup'), blank=True, null=True)
 
     class Meta:
         app_label           = 'leprikon'
@@ -178,8 +179,9 @@ class Subject(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                                          related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
-    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        verbose_name=_('registration print setup'), related_name='+')
+    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                        verbose_name=_('registration print setup'), blank=True, null=True)
 
 
     class Meta:
@@ -250,6 +252,15 @@ class Subject(models.Model):
     @property
     def active_registrations(self):
         return self.registrations.filter(canceled=None)
+
+    def get_agreement(self):
+        return (
+            self.agreement or
+            self.subject_type.agreement or
+            LeprikonSite.objects.get_current().agreement or
+            _('I confirm that I have read, understood and agree with the Terms and Conditions. '
+              'The terms and conditions are available on the web.')
+        )
 
 
 
@@ -508,8 +519,17 @@ class SubjectRegistration(models.Model):
         msg.send()
 
     @cached_property
-    def setup(self):
-        return self.subject.reg_print_setup or self.subject.subject_type.reg_print_setup
+    def agreement(self):
+        return self.subject.get_agreement()
+
+    @cached_property
+    def print_setup(self):
+        return (
+            self.subject.reg_print_setup or
+            self.subject.subject_type.reg_print_setup or
+            LeprikonSite.objects.get_current().reg_print_setup or
+            PrintSetup()
+        )
 
     @cached_property
     def pdf_filename(self):
@@ -532,16 +552,18 @@ class SubjectRegistration(models.Model):
         pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
 
         # merge with background
-        if self.setup.background:
-            template_pdf = PdfFileReader(self.setup.background.file)
+        if self.print_setup.background:
+            template_pdf = PdfFileReader(self.print_setup.background.file)
             registration_pdf = PdfFileReader(BytesIO(pdf_content))
-            page = template_pdf.getPage(0)
-            page.mergePage(registration_pdf.getPage(0))
             writer = PdfFileWriter()
-            writer.addPage(page)
-            # add remaining pages from template
-            for i in range(1, template_pdf.getNumPages()):
-                writer.addPage(template_pdf.getPage(i))
+            # merge pages from both template and registration
+            for i in range(registration_pdf.getNumPages()):
+                if i < template_pdf.getNumPages():
+                    page = template_pdf.getPage(i)
+                    page.mergePage(registration_pdf.getPage(i))
+                else:
+                    page = registration_pdf.getPage(i)
+                writer.addPage(page)
             # write result to output
             writer.write(output)
         else:

@@ -11,13 +11,14 @@
     <template showBoundary="0">
         <!--define a 'frame' into which the content will flow.-->
         <pageTemplate id="main">
-             <frame id="first" x1="{{ object.setup.x1 }}" y1="{{ object.setup.y1 }}" width="{{ object.setup.width }}" height="{{ object.setup.height }}"/>
+             <frame id="first" x1="{{ object.print_setup.x1 }}" y1="{{ object.print_setup.y1 }}" width="{{ object.print_setup.width }}" height="{{ object.print_setup.height }}"/>
         </pageTemplate>
     </template>
 
     <stylesheet>
         <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
         <paraStyle name="para" fontName="DejaVuSans" fontSize="12"/>
+        <paraStyle name="agreement" fontName="DejaVuSans" fontSize="10"/>
         <blockTableStyle id="myBlockTableStyle">
             <!-- Set fonts -->
             <blockFont name="DejaVuSans" size="12"/>
@@ -103,8 +104,12 @@
             </tr>
             <tr>
                 <td>
-                    <para style="para">{{ object.health }}</para>
+                    {% for line in object.participant.health|lines %}
+                    <para style="para">{{ line }}</para>
+                    {% empty %}
+                    <para style="para"></para>
                     <spacer length="1cm"/>
+                    {% endfor %}
                 </td>
             </tr>
         </blockTable>
@@ -140,12 +145,9 @@
 
         <spacer length="1cm"/>
 
-        {{ setup.agreement_rml|safe }}
-
-        {% url 'leprikon:terms_conditions' as term_conditions %}
-        <para style="para">
-            {% blocktrans with domain=view.current_site.domain term_conditions=term_conditions %}I confirm that I have read, understood and agree with the <a href="https://{{ domain }}{{ term_conditions }}">Terms and Conditions</a>.{% endblocktrans %}
-        </para>
+        {% for line in object.agreement|lines %}
+        <para style="agreement">{{ line }}</para>
+        {% endfor %}
 
         <spacer length="1cm"/>
 

@@ -27,8 +27,11 @@ class LeprikonSite(Site):
     vat_number      = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
     iban            = IBANField(_('IBAN'), blank=True, null=True)
     bic             = BICField(_('BIC (SWIFT)'), blank=True, null=True)
-    bill_printsetup = models.ForeignKey(PrintSetup, on_delete=models.PROTECT, related_name='+',
-                                        verbose_name=_('bill print setup'), blank=True, null=True)
+    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                         verbose_name=_('bill print setup'), blank=True, null=True)
+    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                        verbose_name=_('registration print setup'), blank=True, null=True)
 
     objects = LeprikonSiteManager()
 

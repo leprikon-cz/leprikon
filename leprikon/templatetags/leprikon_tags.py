@@ -41,6 +41,16 @@ def filter_current_school_year(value, school_year):
 
 
 
+@register.filter
+def lines(value):
+    try:
+        print(value.strip().split('\n'))
+        return value.strip().split('\n')
+    except:
+        return []
+
+
+
 @register.simple_tag
 def param_back():
     return settings.LEPRIKON_PARAM_BACK

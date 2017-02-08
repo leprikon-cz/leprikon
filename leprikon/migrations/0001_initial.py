@@ -245,6 +245,27 @@ class Migration(migrations.Migration):
             bases=('cms.cmsplugin',),
         ),
         migrations.CreateModel(
+            name='LeprikonSite',
+            fields=[
+                ('site_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sites.Site')),
+                ('city', models.CharField(blank=True, max_length=150, null=True, verbose_name='city')),
+                ('postal_code', leprikon.models.fields.PostalCodeField(blank=True, null=True, verbose_name='postal code')),
+                ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='email address')),
+                ('phone', models.CharField(blank=True, max_length=30, null=True, verbose_name='phone')),
+                ('street', models.CharField(blank=True, max_length=150, null=True, verbose_name='street')),
+                ('company_num', models.CharField(blank=True, max_length=8, null=True, verbose_name='company number')),
+                ('vat_number', models.CharField(blank=True, max_length=10, null=True, verbose_name='VAT number')),
+                ('iban', localflavor.generic.models.IBANField('IBAN', None, blank=True, null=True)),
+                ('bic', localflavor.generic.models.BICField(blank=True, null=True, verbose_name='BIC (SWIFT)')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
+            ],
+            options={
+                'verbose_name': 'leprikon site',
+                'verbose_name_plural': 'leprikon sites',
+            },
+            bases=('sites.site',),
+        ),
+        migrations.CreateModel(
             name='Message',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -419,27 +440,6 @@ class Migration(migrations.Migration):
             bases=(leprikon.models.startend.StartEndMixin, models.Model),
         ),
         migrations.CreateModel(
-            name='LeprikonSite',
-            fields=[
-                ('site_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sites.Site')),
-                ('city', models.CharField(blank=True, max_length=150, null=True, verbose_name='city')),
-                ('postal_code', leprikon.models.fields.PostalCodeField(blank=True, null=True, verbose_name='postal code')),
-                ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='email address')),
-                ('phone', models.CharField(blank=True, max_length=30, null=True, verbose_name='phone')),
-                ('street', models.CharField(blank=True, max_length=150, null=True, verbose_name='street')),
-                ('company_num', models.CharField(blank=True, max_length=8, null=True, verbose_name='company number')),
-                ('vat_number', models.CharField(blank=True, max_length=10, null=True, verbose_name='VAT number')),
-                ('iban', localflavor.generic.models.IBANField('IBAN', None, blank=True, null=True)),
-                ('bic', localflavor.generic.models.BICField(blank=True, null=True, verbose_name='BIC (SWIFT)')),
-                ('bill_printsetup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
-            ],
-            options={
-                'verbose_name': 'leprikon site',
-                'verbose_name_plural': 'leprikon sites',
-            },
-            bases=('sites.site',),
-        ),
-        migrations.CreateModel(
             name='Subject',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -455,6 +455,7 @@ class Migration(migrations.Migration):
                 ('plan', djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name='plan')),
                 ('evaluation', djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name='evaluation')),
                 ('note', models.CharField(blank=True, default='', max_length=300, verbose_name='note')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
             ],
             options={
                 'ordering': ('name',),
@@ -563,7 +564,8 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField()),
                 ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
                 ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='_subjecttype_questions_+', to='leprikon.Question', verbose_name='additional questions')),
-                ('reg_print_setup', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
+                ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={
                 'ordering': ('order',),
@@ -813,6 +815,16 @@ class Migration(migrations.Migration):
             model_name='participant',
             name='user',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='leprikon_participants', to=settings.AUTH_USER_MODEL, verbose_name='user'),
+        ),
+        migrations.AddField(
+            model_name='leprikonsite',
+            name='bill_print_setup',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup'),
+        ),
+        migrations.AddField(
+            model_name='leprikonsite',
+            name='reg_print_setup',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup'),
         ),
         migrations.AddField(
             model_name='leaderlistplugin',

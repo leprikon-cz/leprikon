@@ -237,10 +237,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
     class AgreementForm(FormMixin, forms.Form):
         agreement = forms.BooleanField(
             label       = _('Terms and Conditions agreement'),
-            help_text   = SimpleLazyObject(lambda: _(
-                'By checking the checkbox above I confirm that I have read, understood and agree with the '
-                '<a href="{}" target="_blank">Terms and Conditions</a>.'
-            ).format(reverse('leprikon:terms_conditions')))
         )
 
 

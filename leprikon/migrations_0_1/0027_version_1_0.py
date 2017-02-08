@@ -30,8 +30,6 @@ def create_subject_types(apps, schema_editor):
     ClubType = apps.get_model('leprikon', 'clubtype')
     EventType = apps.get_model('leprikon', 'eventtype')
 
-    print_setup = PrintSetup.objects.first() or PrintSetup.objects.create(name='default')
-
     order = 1
 
     stderr.write('\n\t{} course types...'.format(ClubType.objects.count()))
@@ -44,7 +42,7 @@ def create_subject_types(apps, schema_editor):
             plural=club_type.name,
             slug=club_type.slug,
             order=order,
-            reg_print_setup=club_type.reg_printsetup or print_setup,
+            reg_print_setup=club_type.reg_printsetup,
         )
         subject_type.questions = club_type.questions.all()
         club_type.subject_type = subject_type
@@ -67,7 +65,7 @@ def create_subject_types(apps, schema_editor):
             plural=event_type.name,
             slug=event_type.slug,
             order=order,
-            reg_print_setup=event_type.reg_printsetup or print_setup,
+            reg_print_setup=event_type.reg_printsetup,
         )
         subject_type.questions = event_type.questions.all()
         event_type.subject_type = subject_type
@@ -478,7 +476,9 @@ class Migration(migrations.Migration):
                 ('vat_number', models.CharField(blank=True, max_length=10, null=True, verbose_name='VAT number')),
                 ('iban', localflavor.generic.models.IBANField('IBAN', None, blank=True, null=True)),
                 ('bic', localflavor.generic.models.BICField(blank=True, null=True, verbose_name='BIC (SWIFT)')),
-                ('bill_printsetup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
+                ('bill_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
+                ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={
                 'verbose_name': 'leprikon site',
@@ -498,7 +498,8 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField()),
                 ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
                 ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='+', to='leprikon.Question', verbose_name='additional questions')),
-                ('reg_print_setup', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
+                ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={
                 'ordering': ('order',),
@@ -610,6 +611,7 @@ class Migration(migrations.Migration):
                 ('evaluation', djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name='evaluation')),
                 ('note', models.CharField(blank=True, default='', max_length=300, verbose_name='note')),
                 ('questions', models.ManyToManyField(blank=True, help_text='Add additional questions to be asked in the registration form.', related_name='+', to='leprikon.Question', verbose_name='additional questions')),
+                ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
                 ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={
