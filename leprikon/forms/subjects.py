@@ -3,9 +3,7 @@ from __future__ import unicode_literals
 from json import dumps
 
 from django import forms
-from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.utils.functional import SimpleLazyObject
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 

@@ -144,8 +144,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     def set_registration_dates(self, request, queryset):
         class RegistrationDatesForm(forms.Form):
-            reg_from = Subject._meta.get_field('reg_from').formfield()
-            reg_to = Subject._meta.get_field('reg_to').formfield()
+            reg_from = self.formfield_for_dbfield(Subject._meta.get_field('reg_from'))
+            reg_to = self.formfield_for_dbfield(Subject._meta.get_field('reg_to'))
         if request.POST.get('post', 'no') == 'yes':
             form = RegistrationDatesForm(request.POST)
             if form.is_valid():
@@ -157,11 +157,12 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
                 return
         else:
             form = RegistrationDatesForm()
-        return render_to_response('leprikon/admin/action_form.html', {
+        return render_to_response('leprikon/admin/change_form.html', {
             'title': _('Select registration dates'),
             'queryset': queryset,
             'opts': self.model._meta,
             'form': form,
+            'media': self.media + form.media,
             'action': 'set_registration_dates',
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
         }, context_instance=RequestContext(request))
