@@ -152,7 +152,7 @@ class SubjectGroup(models.Model):
 
 @python_2_unicode_compatible
 class Subject(models.Model):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects')
+    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects', editable=False)
     subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
                                      related_name='subjects', on_delete=models.PROTECT)
     name        = models.CharField(_('name'), max_length=150)

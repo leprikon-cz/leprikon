@@ -66,7 +66,7 @@ class CourseAdmin(SubjectBaseAdmin):
         'publish', 'unpublish',
         'copy_to_school_year',
     )
-    filter_horizontal = ('periods',)
+    filter_horizontal = SubjectBaseAdmin.filter_horizontal + ('periods',)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
@@ -74,12 +74,10 @@ class CourseAdmin(SubjectBaseAdmin):
             school_year = obj.school_year
         else:
             school_year = request.school_year
-        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
-        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=SubjectType.COURSE)
-        form.base_fields['subject_type'].choices = subject_type_choices
-        leaders_choices = form.base_fields['leaders'].widget.widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
-        form.base_fields['leaders'].choices = leaders_choices
+        # periods choices
+        periods_choices = form.base_fields['periods'].widget.widget.choices
+        periods_choices.queryset = periods_choices.queryset.filter(school_year=school_year)
+        form.base_fields['periods'].choices = periods_choices
         return form
 
     def publish(self, request, queryset):

@@ -799,7 +799,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='school_year',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subjects', to='leprikon.SchoolYear', verbose_name='school year'),
+            field=models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='subjects', to='leprikon.SchoolYear', verbose_name='school year'),
         ),
         migrations.AddField(
             model_name='subject',

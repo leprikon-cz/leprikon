@@ -85,16 +85,24 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
         if obj:
-            school_year = obj.school_year
-        else:
-            school_year = request.school_year
+            request.school_year = obj.school_year
+
         subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
         subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=self.subject_type)
         form.base_fields['subject_type'].choices = subject_type_choices
+        groups_choices = form.base_fields['groups'].widget.widget.choices
+        groups_choices.queryset = groups_choices.queryset.filter(
+            subject_types__subject_type=self.subject_type).distinct()
+        form.base_fields['groups'].choices = groups_choices
         leaders_choices = form.base_fields['leaders'].widget.widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
+        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = request.school_year)
         form.base_fields['leaders'].choices = leaders_choices
         return form
+
+    def save_form(self, request, form, change):
+        obj = super(SubjectBaseAdmin, self).save_form(request, form, change)
+        obj.school_year = request.school_year
+        return obj
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(

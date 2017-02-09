@@ -51,20 +51,6 @@ class EventAdmin(SubjectBaseAdmin):
         'copy_to_school_year',
     )
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(EventAdmin, self).get_form(request, obj, **kwargs)
-        if obj:
-            school_year = obj.school_year
-        else:
-            school_year = request.school_year
-        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
-        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=SubjectType.EVENT)
-        form.base_fields['subject_type'].choices = subject_type_choices
-        leaders_choices = form.base_fields['leaders'].widget.widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = school_year)
-        form.base_fields['leaders'].choices = leaders_choices
-        return form
-
     def publish(self, request, queryset):
         Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public = True)
         self.message_user(request, _('Selected events were published.'))
