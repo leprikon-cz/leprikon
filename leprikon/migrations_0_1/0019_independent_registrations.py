@@ -19,7 +19,7 @@ def populate_registrations(apps, schema_editor):
             for n, parent in enumerate(reg.parents.all()[:2]):
                 setattr(reg, 'has_parent{}'.format(n+1), True)
                 for attr in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                    setattr(reg, 'parent{}_{}'.format(n+1, attr), getattr(reg.participant, attr))
+                    setattr(reg, 'parent{}_{}'.format(n+1, attr), getattr(parent, attr))
             reg.save()
 
 
