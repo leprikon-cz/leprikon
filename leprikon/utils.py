@@ -19,7 +19,6 @@ except ImportError:
     from urllib.parse import urlencode
 
 
-
 def _get_localeconv(languages):
     """
     This function loads localeconv during module load.
@@ -92,7 +91,6 @@ def currency(val, international=False):
     return s.replace('<', '').replace('>', '').replace(' ', '\u00A0')
 
 
-
 def amount_color(amount):
     if amount > 0:
         return settings.LEPRIKON_COLOR_POSITIVE
@@ -100,7 +98,6 @@ def amount_color(amount):
         return settings.LEPRIKON_COLOR_NEGATIVE
     else:
         return settings.LEPRIKON_COLOR_ZERO
-
 
 
 def comma_separated(l):
@@ -111,10 +108,8 @@ def comma_separated(l):
         return _(', and ').join(l)
 
 
-
 def get_rand_hash(length=32, stringset=string.ascii_letters + string.digits):
     return ''.join([stringset[i % len(stringset)] for i in [ord(x) for x in os.urandom(length)]])
-
 
 
 def current_url(request):
@@ -140,7 +135,6 @@ def url_with_back(url, url_back):
 
 def reverse_with_back(request, *args, **kwargs):
     return url_with_back(reverse(*args, **kwargs), current_url(request))
-
 
 
 def get_birth_date(birth_num):
@@ -169,21 +163,23 @@ def get_age(birth_date, today=None):
         return today.year - birth_date.year
 
 
-
 def first_upper(s):
     return s[0].upper() + s[1:] if s else ''
 
 
+def merge_objects(source, target, attributes=None, exclude=[]):
+    attributes = attributes or [f.name for f in source._meta.fields if f.name not in exclude]
+    for attr in attributes:
+        if not getattr(target, attr):
+            setattr(target, attr, getattr(source, attr))
+    return target
+
 
 @transaction.atomic
 def merge_users(source, target):
-    if not target.first_name and source.first_name:
-        target.first_name = source.first_name
-    if not target.last_name and source.last_name:
-        target.last_name = source.last_name
-    if not target.email and source.email:
-        target.email = source.email
+    target = merge_objects(source, target, ('first_name', 'last_name', 'email'))
     target.date_joined = min(source.date_joined, target.date_joined)
+    target.last_login = max(source.last_login, target.last_login)
 
     try:
         leader = source.leprikon_leader
@@ -195,18 +191,25 @@ def merge_users(source, target):
         # both users are leaders
         raise
 
-    source.leprikon_courseregistrations.update(user=target)
-    source.leprikon_eventregistrations.update(user=target)
+    source.leprikon_registrations.update(user=target)
 
-    for p in source.leprikon_participants.all():
-        if not target.leprikon_participants.filter(birth_num=p.birth_num).exists():
-            p.user = target
-            p.save()
+    for sp in source.leprikon_participants.all():
+        tp = target.leprikon_participants.filter(birth_num=sp.birth_num).first()
+        if tp:
+            tp = merge_objects(sp, tp, exclude=('id', 'user', 'birth_num'))
+            tp.save()
+        else:
+            sp.user = target
+            sp.save()
 
-    for p in source.leprikon_parents.all():
-        if not target.leprikon_parents.filter(first_name=p.first_name, last_name=p.last_name).exists():
-            p.user = target
-            p.save()
+    for sp in source.leprikon_parents.all():
+        tp = target.leprikon_parents.filter(first_name=sp.first_name, last_name=sp.last_name).first()
+        if tp:
+            tp = merge_objects(sp, tp, exclude=('id', 'user'))
+            tp.save()
+        else:
+            sp.user = target
+            sp.save()
 
     for mr in source.leprikon_messages.all():
         if not target.leprikon_messages.filter(message=mr.message).exists():
