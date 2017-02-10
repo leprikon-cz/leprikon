@@ -52,8 +52,8 @@ class SubjectListView(SubjectTypeMixin, FilteredListView):
         )
 
     def get_message_empty(self):
-        return _('No {subject_type} matching given search parameters.').format(
-            subject_type    = self.subject_type.name,
+        return _('No {subject_type} matching given search parameters found.').format(
+            subject_type = self.subject_type.plural,
         )
 
     def get_form(self):
