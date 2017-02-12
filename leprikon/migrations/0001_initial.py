@@ -819,7 +819,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leprikonsite',
             name='bill_print_setup',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup'),
         ),
         migrations.AddField(
             model_name='leprikonsite',

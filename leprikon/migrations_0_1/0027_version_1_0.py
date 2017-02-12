@@ -476,9 +476,9 @@ class Migration(migrations.Migration):
                 ('vat_number', models.CharField(blank=True, max_length=10, null=True, verbose_name='VAT number')),
                 ('iban', localflavor.generic.models.IBANField('IBAN', None, blank=True, null=True)),
                 ('bic', localflavor.generic.models.BICField(blank=True, null=True, verbose_name='BIC (SWIFT)')),
-                ('bill_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
+                ('bill_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='bill print setup')),
                 ('agreement', models.TextField(blank=True, null=True, verbose_name='registration agreement')),
-                ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
+                ('reg_print_setup', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='leprikon.PrintSetup', verbose_name='registration print setup')),
             ],
             options={
                 'verbose_name': 'leprikon site',
