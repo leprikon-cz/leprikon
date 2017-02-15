@@ -44,7 +44,6 @@ def filter_current_school_year(value, school_year):
 @register.filter
 def lines(value):
     try:
-        print(value.strip().split('\n'))
         return value.strip().split('\n')
     except:
         return []
