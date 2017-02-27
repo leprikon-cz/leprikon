@@ -17,11 +17,12 @@
 
     <stylesheet>
         <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
-        <paraStyle name="para" fontName="DejaVuSans" fontSize="12"/>
+        <paraStyle name="subtitle" fontName="DejaVuSans-Bold" fontSize="10" alignment="CENTER"/>
+        <paraStyle name="para" fontName="DejaVuSans" fontSize="10"/>
         <paraStyle name="agreement" fontName="DejaVuSans" fontSize="10"/>
         <blockTableStyle id="myBlockTableStyle">
             <!-- Set fonts -->
-            <blockFont name="DejaVuSans" size="12"/>
+            <blockFont name="DejaVuSans" size="10"/>
             <blockTextColor colorName="black"/>
             <blockAlignment value="LEFT"/>
             <blockValign value="TOP"/>
@@ -30,6 +31,7 @@
     </stylesheet>
     <story>
         <para style="title">{% blocktrans with subject_type=object.subject.subject_type.name_akuzativ %}Registration for {{ subject_type }}{% endblocktrans %}</para>
+        <para style="subtitle">{% blocktrans with school_year=object.subject.school_year %}in school year {{ school_year }}{% endblocktrans %}</para>
 
         <spacer length="2mm"/>
 
