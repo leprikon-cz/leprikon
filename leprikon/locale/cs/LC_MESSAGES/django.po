@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-27 22:17+0100\n"
+"POT-Creation-Date: 2017-03-02 21:54+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1826,10 +1826,12 @@ msgid "edit course journal entry"
 msgstr "upravit záznam deníku"
 
 #: templates/leprikon/course_journal.html:124
+#: templates/leprikon/coursejournal/course.rml:33
 msgid "Attendance"
 msgstr "Docházka"
 
 #: templates/leprikon/course_journal.html:128
+#: templates/leprikon/coursejournal/course.rml:36
 msgctxt "person"
 msgid "Name"
 msgstr "Jméno"
@@ -2590,8 +2592,9 @@ msgid "Change {subject_type} {subject}"
 msgstr "Upravit {subject_type} {subject}"
 
 #: views/subjects.py:124
-msgid "The {} {} has been updated."
-msgstr "{} {} byla upravena."
+#, python-brace-format
+msgid "The changes in {subject_type} {subject} have been saved."
+msgstr "Změny v {subject_type} {subject} byly uloženy."
 
 #: views/subjects.py:139
 msgid "Submit registration"
@@ -2694,3 +2697,6 @@ msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 #: views/user.py:111
 msgid "Set my password"
 msgstr "Nastavit heslo"
+
+#~ msgid "The {} {} has been updated."
+#~ msgstr "{} {} byla upravena."

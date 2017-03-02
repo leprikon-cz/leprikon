@@ -121,8 +121,8 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
         )
 
     def get_message(self):
-        return _('The {} {} has been updated.').format(
-            subject_type = self.subject_type.name,
+        return _('The changes in {subject_type} {subject} have been saved.').format(
+            subject_type = self.subject_type.name_genitiv,
             subject = self.object.name,
         )
 
