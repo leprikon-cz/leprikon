@@ -120,7 +120,7 @@ class CourseAdmin(SubjectBaseAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_subjectregistrations__subject__in = queryset
+            leprikon_registrations__subject__in = queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
