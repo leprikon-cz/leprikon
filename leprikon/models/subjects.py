@@ -239,7 +239,7 @@ class Subject(models.Model):
                        kwargs={'subject_type': self.subject_type.slug, 'pk': self.id})
 
     def get_edit_url(self):
-        return reverse('admin:leprikon_subject_change', args=(self.subject_type.slug, self.id))
+        return reverse('admin:leprikon_{}_change'.format(self._meta.model_name), args=(self.id,))
 
     def get_groups_list(self):
         return comma_separated(self.all_groups)

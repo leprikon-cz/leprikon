@@ -637,7 +637,7 @@ class CourseListPlugin(CMSPlugin):
             courses = courses.filter(groups__in = self.all_groups)
             groups = self.all_groups
         elif self.all_course_types:
-            groups = SubjectGroup.objects.filter(subject_type__in = self.all_course_types)
+            groups = SubjectGroup.objects.filter(subject_types__in = self.all_course_types)
         else:
             groups = SubjectGroup.objects.all()
 

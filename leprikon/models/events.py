@@ -215,7 +215,7 @@ class EventListPlugin(CMSPlugin):
             events = events.filter(groups__in = self.all_groups)
             groups = self.all_groups
         elif self.all_event_types:
-            groups = SubjectGroup.objects.filter(subject_type__in = self.all_event_types)
+            groups = SubjectGroup.objects.filter(subject_types__in = self.all_event_types)
         else:
             groups = SubjectGroup.objects.all()
 
