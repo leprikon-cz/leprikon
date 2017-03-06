@@ -8,7 +8,7 @@
 <h2>{% trans 'Active Registrations' %}</h2>
 
 {% for reg in event.active_registrations.all %}
-{% include 'leprikon/registration_details.html' %}
+{% include 'leprikon/registration_details.html' with reg=reg.eventregistration %}
 {% empty %}
 <p>{% trans 'There are no active registrations for this event.' %}</p>
 {% endfor %}
@@ -16,7 +16,7 @@
 <h2>{% trans 'Inactive Registrations' %}</h2>
 
 {% for reg in event.inactive_registrations.all %}
-{% include 'leprikon/registration_details.html' %}
+{% include 'leprikon/registration_details.html' with reg=reg.eventregistration %}
 {% empty %}
 <p>{% trans 'There are no inactive registrations for this event.' %}</p>
 {% endfor %}
