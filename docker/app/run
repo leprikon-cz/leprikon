@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# collect static files
+./manage.py collectstatic --no-input
+
+# perform data migrations
+./manage.py migrate --no-input
+
+export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-${SITE_MODULE:-leprikon_site}.settings}
+
+# run uwsgi server
+exec uwsgi --chdir=/app \
+    --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
+    --module=${UWSGI_MODULE:-${SITE_MODULE:-leprikon_site}.wsgi:application} \
+    --master \
+    --socket=${UWSGI_SOCKET:-/app/var/run/socket} \
+    --chmod-socket=${UWSGI_CHMOD_SOCKET:-666} \
+    --http-socket=${UWSGI_HTTP_SOCKET:-0:8000} \
+    --processes=${UWSGI_PROCESSES:-3} \

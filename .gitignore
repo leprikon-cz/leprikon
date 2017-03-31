@@ -1,9 +1,9 @@
 *.pyc
 *.pyo
-build
-dist
 *.egg-info
 *.swp
 *~
-.coverage
-.tox
+/build
+/dist
+/.coverage
+/.tox
