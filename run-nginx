@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# run nginx server
+exec nginx -g "daemon off;" -c "${NGINX_CONF:-/app/conf/nginx.conf}"

@@ -19,6 +19,8 @@ def d_url(pattern, name):
     return url(pattern.format(**LEPRIKON_URL), transaction.atomic(getattr(views, name)), name=name)
 
 
+app_name = 'leprikon'
+
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='{summary}/'.format(**LEPRIKON_URL), permanent=True), name='index'),
     d_url(r'^{summary}/$',          'summary'),

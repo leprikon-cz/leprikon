@@ -1,13 +1,11 @@
 #!/bin/bash
 
-export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-${SITE_MODULE:-leprikon.site}.settings}
-
 # run uwsgi server
 exec uwsgi --chdir=/app \
     --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
     --module=${UWSGI_MODULE:-${SITE_MODULE:-leprikon.site}.wsgi:application} \
     --master \
     --socket=${UWSGI_SOCKET:-/app/var/run/socket} \
-    --chmod-socket=${UWSGI_CHMOD_SOCKET:-666} \
-    --http-socket=${UWSGI_HTTP_SOCKET:-0:8000} \
+    --chmod-socket=${UWSGI_CHMOD_SOCKET:-600} \
     --processes=${UWSGI_PROCESSES:-3} \
+    ${UWSGI_OPTIONS}

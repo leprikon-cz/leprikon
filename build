@@ -1,3 +1,8 @@
 #!/bin/bash
 
+set -e
+
+python setup.py sdist
+mv dist/$(python setup.py --fullname).tar.gz dist/leprikon.tar.gz
+
 exec docker build "$@" --tag leprikon/leprikon .

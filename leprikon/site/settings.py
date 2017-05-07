@@ -254,15 +254,14 @@ LOGGING = {
 }
 
 # Caching and session configuration
-if os.environ.get('MEMCACHED_LOCATION'):
-    CACHES = {
-        'default': {
-            'BACKEND':    'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION':   os.environ.get('MEMCACHED_LOCATION'),
-            'KEY_PREFIX': os.environ.get('MEMCACHED_KEY_PREFIX'),
-        }
+CACHES = {
+    'default': {
+        'BACKEND':    'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION':   os.environ.get('MEMCACHED_LOCATION', '127.0.0.1:11211'),
+        'KEY_PREFIX': os.environ.get('MEMCACHED_KEY_PREFIX', 'leprikon'),
     }
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+}
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # https://docs.sentry.io/clients/python/integrations/django/
 RAVEN_CONFIG = {
