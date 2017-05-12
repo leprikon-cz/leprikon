@@ -79,14 +79,14 @@ class EventAdmin(SubjectBaseAdmin):
         else:
             form = SchoolYearForm()
         return render_to_response(
-            'leprikon/admin/action_form.html', {
+            'leprikon/admin/action_form.html', RequestContext(request, {
                 'title': _('Select target school year'),
                 'queryset': queryset,
                 'opts': self.model._meta,
                 'form': form,
                 'action': 'copy_to_school_year',
                 'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            }, context_instance=RequestContext(request))
+            }))
     copy_to_school_year.short_description = _('Copy selected events to another school year')
 
     def get_message_recipients(self, request, queryset):

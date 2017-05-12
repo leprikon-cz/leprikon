@@ -165,7 +165,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
                 return
         else:
             form = RegistrationDatesForm()
-        return render_to_response('leprikon/admin/change_form.html', {
+        return render_to_response('leprikon/admin/change_form.html', RequestContext(request, {
             'title': _('Select registration dates'),
             'queryset': queryset,
             'opts': self.model._meta,
@@ -173,7 +173,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             'media': self.media + form.media,
             'action': 'set_registration_dates',
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
+        }))
     set_registration_dates.short_description = _('Set registration dates')
 
 

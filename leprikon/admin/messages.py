@@ -17,14 +17,17 @@ from ..models.messages import Message, MessageAttachment, MessageRecipient
 
 
 def messagerecipient_send_mails(request, message, recipients, media):
-    return render_to_response('admin/leprikon/messagerecipient/send_mails.html', {
-        'title':        _('Sending emails'),
-        'message':      message,
-        'recipients':   recipients,
-        'media':        media,
-        'message_opts': Message._meta,
-        'opts':         MessageRecipient._meta,
-    }, context_instance=RequestContext(request))
+    return render_to_response(
+        'admin/leprikon/messagerecipient/send_mails.html',
+        RequestContext(request, {
+            'title':        _('Sending emails'),
+            'message':      message,
+            'recipients':   recipients,
+            'media':        media,
+            'message_opts': Message._meta,
+            'opts':         MessageRecipient._meta,
+        }),
+    )
 
 
 
@@ -59,13 +62,16 @@ class SendMessageAdminMixin(object):
                 )
         else:
             form = MessageForm()
-        return render_to_response('admin/leprikon/message/add_recipients.html', {
-            'title':    _('Select target message'),
-            'queryset': queryset,
-            'opts': self.model._meta,
-            'form': form,
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
+        return render_to_response(
+            'admin/leprikon/message/add_recipients.html',
+            RequestContext(request, {
+                'title':    _('Select target message'),
+                'queryset': queryset,
+                'opts': self.model._meta,
+                'form': form,
+                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
+            }),
+        )
     add_to_message.short_description = _('Add recipients to existing message')
 
 

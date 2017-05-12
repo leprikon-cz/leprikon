@@ -51,14 +51,14 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render_to_response('leprikon/admin/action_form.html', {
+        return render_to_response('leprikon/admin/action_form.html', RequestContext(request, {
             'title': _('Select target school year'),
             'queryset': queryset,
             'opts': self.model._meta,
             'form': form,
             'action': 'add_school_year',
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }, context_instance=RequestContext(request))
+        }))
     add_school_year.short_description = _('Add selected leaders to another school year')
 
     def first_name(self, obj):
