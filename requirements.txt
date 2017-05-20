@@ -1,0 +1,13 @@
+# Requirements of leprikon.site
+Django<1.11
+cmsplugin-filer
+djangocms-column
+djangocms-link
+djangocms-style
+djangocms-snippet
+djangocms-googlemap
+djangocms-video
+ipython
+python-memcached
+raven
+social-auth-app-django

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+import os
 
 from setuptools import setup, find_packages
 
@@ -17,10 +17,9 @@ setup(
     url             = 'https://github.com/leprikon-cz/leprikon',
     packages        = find_packages(),
     include_package_data = True,
-    install_requires=[
+    install_requires = [
         'PyPDF2',
-        'cmsplugin-filer',
-        'django>=1.9',
+        'Django>=1.9',
         'django-cms>=3.4',
         'django-countries',
         'django-filer',
@@ -28,15 +27,7 @@ setup(
         'django-haystack',
         'django-localflavor',
         'django-verified-email-field',
-        'djangocms-column',
-        'djangocms-link',
-        'djangocms-style',
-        'djangocms-snippet',
-        'djangocms-googlemap',
-        'djangocms-video',
         'djangocms_text_ckeditor',
-        'raven',
-        'social-auth-app-django',
         'trml2pdf',
     ],
     classifiers     = [

@@ -16,21 +16,17 @@ RUN apt-get update \
  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 
 # install required packages
-RUN pip install --no-cache-dir uwsgi 'Django<1.11' ipython python-memcached
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir uwsgi -r requirements.txt \
+ && rm requirements.txt
 
 # install leprikon
-COPY dist/leprikon.tar.gz /app/
-RUN pip install --no-cache-dir /app/leprikon.tar.gz && rm /app/leprikon.tar.gz
-
-# copy files
-COPY manage.py run-nginx run-uwsgi /app/
-COPY conf /app/conf
-COPY var /app/var
-
-# run this command at the end of any dockerfile based on this one
-RUN ./manage.py collectstatic --link --no-input
-
-# ensure that /app/var is writable
-RUN chown www-data -R /app/var
+COPY . /src
+RUN pip install --no-cache-dir /src \
+ && cp -a /src/conf /src/manage.py /src/run-nginx /src/run-uwsgi ./ \
+ && rm -r /src \
+ && mkdir -p var/data var/htdocs/media var/htdocs/static var/run \
+ && ./manage.py collectstatic --link --no-input \
+ && chown www-data -R var
 
 CMD ["/usr/bin/supervisord", "-c", "/app/conf/supervisord.conf"]
