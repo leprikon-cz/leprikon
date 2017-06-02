@@ -10,14 +10,14 @@ WORKDIR /app
 # install requirements and generate czech locale
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get -y install locales supervisor nginx memcached \
+ && apt-get -y install locales supervisor nginx memcached mysql-client postgresql-client \
  && apt-get -y autoremove \
  && apt-get -y clean \
  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 
 # install required packages
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir uwsgi -r requirements.txt \
+RUN pip install --no-cache-dir uwsgi MySQL-python psycopg2 -r requirements.txt \
  && rm requirements.txt
 
 # install leprikon
