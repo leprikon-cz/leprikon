@@ -17,8 +17,7 @@ RUN apt-get update \
 
 # install required packages
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir uwsgi MySQL-python psycopg2 -r requirements.txt \
- && rm requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 
 # install leprikon
 COPY . /src

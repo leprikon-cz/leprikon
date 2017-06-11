@@ -1,13 +1,18 @@
 # Requirements of leprikon.site
 Django<1.11
+MySQL-python
 cmsplugin-filer
+django-ganalytics
 djangocms-column
-djangocms-link
-djangocms-style
-djangocms-snippet
 djangocms-googlemap
+djangocms-link
+djangocms-snippet
+djangocms-style
+djangocms-text-ckeditor
 djangocms-video
 ipython
+psycopg2
 python-memcached
 raven
 social-auth-app-django
+uwsgi
