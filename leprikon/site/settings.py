@@ -215,11 +215,7 @@ STATICFILES_FINDERS = [
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
-    'root': {
-        'level': 'DEBUG' if DEBUG else 'WARNING',
-        'handlers': ['console'] if DEBUG else ['console', 'sentry'],
-    },
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
@@ -238,31 +234,44 @@ LOGGING = {
             'formatter': 'verbose',
             'filters': [],
         },
-        'sentry': {
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'handlers': ['console'],
+        },
+        'django.db.backends': {
+            'level': 'DEBUG' if DBDEBUG else 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+try:
+    import raven
+except ImportError:
+    pass
+else:
+    del raven
+    if not DEBUG and os.environ.get('SENTRY_DSN'):
+        # https://docs.sentry.io/clients/python/integrations/django/
+        RAVEN_CONFIG = {
+            'dsn': os.environ.get('SENTRY_DSN'),
+        }
+
+        LOGGING['handlers']['sentry'] = {
             'level': 'WARNING',
             'filters': ['require_debug_false'],
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             # supports SENTRY_TAGS env var in form "tag1:value1,tag2:value2"
             'tags': dict(t.split(':', 1) for t in os.environ.get('SENTRY_TAGS', '').split(',') if ':' in t),
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG' if DBDEBUG else 'ERROR',
-            'propagate': True,
-        },
-        'raven': {
+        }
+        LOGGING['loggers']['raven'] = {
             'level': 'DEBUG',
             'handlers': ['console'],
             'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-    },
-}
+        }
+        LOGGING['loggers']['']['handlers'].append('sentry')
 
 # Caching and session configuration
 CACHES = {
@@ -273,11 +282,6 @@ CACHES = {
     }
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-# https://docs.sentry.io/clients/python/integrations/django/
-RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_DSN'),
-}
 
 # CMS configuration
 # http://djangocms.readthedocs.io/en/latest/reference/configuration/
