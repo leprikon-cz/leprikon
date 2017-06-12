@@ -1,26 +1,26 @@
-{% load sekizai_tags %}
+{% load sekizai_tags staticfiles %}
 
 {% addtoblock "css" %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" integrity="sha384-/XmhRcB6e51B3NO1S5VVWnNKCDM74NlX0cmxZUwCJPg2P/0ECTkBKnjnzNnF7rX5" crossorigin="anonymous"/>
+<link rel="stylesheet" href="{% static 'leprikon/lib/bootstrap-datetimepicker.min.css' %}"/>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment-with-locales.min.js" integrity="sha384-V0utPzNT28o7j37Ll4BIKqEVcL1yOE45HoCoaLu/CqF4nFaf2nAyZTHKJW1KdJMH" crossorigin="anonymous"></script>
+<script src="{% static 'leprikon/lib/moment-with-locales.min.js' %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js" integrity="sha384-V936AaxnYTkq53cO2z8e42PFtCCdZhbRttfhgX8U1K9weNYVdCMbDetUKTtllFdc" crossorigin="anonymous"></script>
+<script src="{% static 'leprikon/lib/bootstrap-datetimepicker.min.js' %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
 <script type="text/javascript">
 $(function () {
     $('input[data-type=DateField]').datetimepicker({
-        locale: 'cs',
+        locale: '{{ LANGUAGE_CODE }}',
         format: 'L',
     });
     $('input[data-type=TimeField]').datetimepicker({
-        locale: 'cs',
+        locale: '{{ LANGUAGE_CODE }}',
         format: 'LT',
     });
 });

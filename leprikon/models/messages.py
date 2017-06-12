@@ -14,7 +14,6 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 
 from ..conf import settings
-
 from .leprikonsite import LeprikonSite
 
 

@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir /src \
  && cp -a /src/conf /src/manage.py /src/run-nginx /src/run-uwsgi ./ \
  && rm -r /src \
  && mkdir -p var/data var/htdocs/media var/htdocs/static var/run \
- && ./manage.py collectstatic --link --no-input \
+ && ./manage.py collectstatic --no-input \
  && chown www-data -R var
 
 CMD ["/usr/bin/supervisord", "-c", "/app/conf/supervisord.conf"]

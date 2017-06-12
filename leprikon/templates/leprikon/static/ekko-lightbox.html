@@ -1,10 +1,9 @@
-{% load sekizai_tags %}
+{% load sekizai_tags staticfiles %}
 
 {% addtoblock 'css' %}
-<link href="//cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.css" integrity="sha384-EsoR0pjPTZTUy5b8kJf6aTfA7quYluD5mNQ/Lz4hsxU2kXuuc6PlXVfBJCFdTXqD" rel="stylesheet" crossorigin="anonymous"/>
+<link rel="stylesheet" href="{% static 'leprikon/lib/ekko-lightbox.min.css' %}"/>
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.js" integrity="sha384-2aVpK/uKiYlyFXHZ36wvxOPZyWeouEKvbSUlqCrkFhyT80n2aSYtT15Tgdn6g41M" crossorigin="anonymous"></script>
+<script src="{% static 'leprikon/lib/ekko-lightbox.min.js' %}"></script>
 {% endaddtoblock %}
-

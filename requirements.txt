@@ -3,6 +3,7 @@ Django<1.11
 MySQL-python
 cmsplugin-filer
 django-ganalytics
+django-staticfiles-downloader
 djangocms-column
 djangocms-googlemap
 djangocms-link
