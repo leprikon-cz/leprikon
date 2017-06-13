@@ -7,30 +7,29 @@ from setuptools import setup, find_packages
 
 from leprikon import __version__
 
-setup(
-    name            = 'leprikon',
-    version         = __version__,
-    description     = 'Django CMS based IS for leisure centre',
-    author          = 'Jakub Dorňák',
-    author_email    = 'jakub.dornak@misli.cz',
-    license         = 'BSD',
-    url             = 'https://github.com/leprikon-cz/leprikon',
-    packages        = find_packages(),
-    include_package_data = True,
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+    long_description = readme.read()
+
+with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as requirements:
     install_requires = [
-        'PyPDF2',
-        'Django>=1.9',
-        'django-cms>=3.4',
-        'django-countries',
-        'django-filer',
-        'django-ganalytics',
-        'django-haystack',
-        'django-localflavor',
-        'django-verified-email-field',
-        'djangocms_text_ckeditor',
-        'trml2pdf',
-    ],
-    classifiers     = [
+        line.strip() for line in requirements.readlines()
+        if not line.startswith('#')
+    ]
+
+setup(
+    name='leprikon',
+    version=__version__,
+    description='Django CMS based IS for leisure centre',
+    long_description=long_description,
+    author='Jakub Dorňák',
+    author_email='jakub.dornak@misli.cz',
+    license='BSD',
+    url='https://github.com/leprikon-cz/leprikon',
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=install_requires,
+    scripts=['bin/leprikon'],
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',

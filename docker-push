@@ -1,3 +1,0 @@
-#!/bin/bash
-
-exec docker push "$@" leprikon/leprikon:latest

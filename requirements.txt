@@ -1,9 +1,17 @@
-# Requirements of leprikon.site
+# Requirements of leprikon
 Django<1.11
 MySQL-python
+PyPDF2
 cmsplugin-filer
+django-cms<3.5
+django-countries
+django-filer
 django-ganalytics
+django-ganalytics
+django-haystack
+django-localflavor
 django-staticfiles-downloader
+django-verified-email-field
 djangocms-column
 djangocms-googlemap
 djangocms-link
@@ -11,9 +19,11 @@ djangocms-snippet
 djangocms-style
 djangocms-text-ckeditor
 djangocms-video
+djangocms_text_ckeditor
 ipython
 psycopg2
 python-memcached
 raven
 social-auth-app-django
+trml2pdf
 uwsgi

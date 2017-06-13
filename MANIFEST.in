@@ -1,11 +1,6 @@
-include Dockerfile
 include LICENSE
-include README.md
-include docker-build
-include manage.py
 include requirements.txt
-include run-nginx run-uwsgi
-recursive-include conf *.conf
+include bin/leprikon
 recursive-exclude * *.py[co]
 recursive-include leprikon/locale *
 recursive-include leprikon/static *

@@ -8,7 +8,9 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # install requirements and generate czech locale
-RUN apt-get update \
+RUN curl https://nginx.org/keys/nginx_signing.key | apt-key add - \
+ && echo deb http://nginx.org/packages/debian/ jessie nginx > /etc/apt/sources.list.d/nginx.list \
+ && apt-get update \
  && apt-get -y upgrade \
  && apt-get -y install locales supervisor nginx memcached mysql-client postgresql-client \
  && apt-get -y autoremove \
@@ -22,10 +24,10 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 # install leprikon
 COPY . /src
 RUN pip install --no-cache-dir /src \
- && cp -a /src/conf /src/manage.py /src/run-nginx /src/run-uwsgi ./ \
+ && cp -a /src/conf /src/bin/run-nginx /src/bin/run-uwsgi ./ \
  && rm -r /src \
- && mkdir -p var/data var/htdocs/media var/htdocs/static var/run \
- && ./manage.py collectstatic --no-input \
- && chown www-data -R var
+ && mkdir -p htdocs/media htdocs/static run \
+ && leprikon collectstatic --no-input \
+ && chown www-data -R run htdocs/media
 
 CMD ["/usr/bin/supervisord", "-c", "/app/conf/supervisord.conf"]

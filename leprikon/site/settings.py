@@ -16,23 +16,18 @@ from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.environ.get('BASE_DIR', os.getcwd())
-VAR_DIR = os.path.join(BASE_DIR, 'var')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-try:
-    with open(os.path.join(VAR_DIR, 'data', 'secret_key')) as f:
-        SECRET_KEY = f.read()
-except IOError:
-    with open(os.path.join(VAR_DIR, 'data', 'secret_key'), 'w') as f:
-        from django.utils.crypto import get_random_string
-        SECRET_KEY = get_random_string(
-            50,
-            'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)',
-        )
-        f.write(SECRET_KEY)
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    from django.utils.crypto import get_random_string
+    SECRET_KEY = get_random_string(
+        50,
+        'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)',
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', '') and True or False
@@ -146,7 +141,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('DATABASE_NAME', os.path.join(VAR_DIR, 'data', 'db.sqlite3')),
+        'NAME': os.environ.get('DATABASE_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
         'HOST': os.environ.get('DATABASE_HOST', None),
         'PORT': os.environ.get('DATABASE_PORT', None),
         'USER': os.environ.get('DATABASE_USER', None),
@@ -201,8 +196,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(VAR_DIR, 'htdocs', 'media')
-STATIC_ROOT = os.path.join(VAR_DIR, 'htdocs', 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'htdocs', 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'htdocs', 'static')
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -216,11 +211,6 @@ STATICFILES_FINDERS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s '
@@ -259,6 +249,11 @@ else:
             'dsn': os.environ.get('SENTRY_DSN'),
         }
 
+        LOGGING['filters'] = {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse',
+            },
+        }
         LOGGING['handlers']['sentry'] = {
             'level': 'WARNING',
             'filters': ['require_debug_false'],
