@@ -12,7 +12,7 @@ RUN curl https://nginx.org/keys/nginx_signing.key | apt-key add - \
  && echo deb http://nginx.org/packages/debian/ jessie nginx > /etc/apt/sources.list.d/nginx.list \
  && apt-get update \
  && apt-get -y upgrade \
- && apt-get -y install locales supervisor nginx memcached mysql-client postgresql-client \
+ && apt-get -y install locales supervisor nginx memcached sqlite3 mysql-client postgresql-client \
  && apt-get -y autoremove \
  && apt-get -y clean \
  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
