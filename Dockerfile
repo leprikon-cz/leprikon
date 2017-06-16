@@ -26,8 +26,8 @@ COPY . /src
 RUN pip install --no-cache-dir /src \
  && cp -a /src/conf /src/bin/run-nginx /src/bin/run-uwsgi ./ \
  && rm -r /src \
- && mkdir -p htdocs/media htdocs/static run \
+ && mkdir -p data htdocs/media htdocs/static run \
  && leprikon collectstatic --no-input \
- && chown www-data -R run htdocs/media
+ && chown www-data -R data htdocs/media run
 
 CMD ["/usr/bin/supervisord", "-c", "/app/conf/supervisord.conf"]

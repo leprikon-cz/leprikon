@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.environ.get('BASE_DIR', os.getcwd())
+DATA_DIR = os.environ.get('DATA_DIR', os.path.join(BASE_DIR, 'data'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -145,7 +146,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('DATABASE_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'NAME': os.environ.get('DATABASE_NAME', os.path.join(DATA_DIR, 'db.sqlite3')),
         'HOST': os.environ.get('DATABASE_HOST', None),
         'PORT': os.environ.get('DATABASE_PORT', None),
         'USER': os.environ.get('DATABASE_USER', None),
