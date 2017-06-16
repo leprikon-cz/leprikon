@@ -7,13 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-16 02:10+0200\n"
+"POT-Creation-Date: 2017-06-16 03:37+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: admin/__init__.py:52 admin/__init__.py:53
+msgid "Leprikon administration"
+msgstr "Správa systému Leprikón"
 
 #: admin/courses.py:85
 msgid "Selected courses were published."
@@ -709,10 +713,6 @@ msgstr "nový zástupce"
 #: forms/subjects.py:237
 msgid "Terms and Conditions agreement"
 msgstr "Souhlas s podmínkami"
-
-#: forms/support.py:11
-msgid "Help needed?"
-msgstr "Potřebujete poradit?"
 
 #: forms/timesheets.py:34
 msgid "Entry type"
@@ -2612,3 +2612,6 @@ msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 #: views/user.py:111
 msgid "Set my password"
 msgstr "Nastavit heslo"
+
+#~ msgid "Help needed?"
+#~ msgstr "Potřebujete poradit?"

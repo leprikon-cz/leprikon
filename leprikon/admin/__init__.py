@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import (
@@ -47,6 +48,9 @@ from .timesheets import (
 from .user import UserAdmin
 
 User = get_user_model()
+
+admin.site.site_header = _('Leprikon administration')
+admin.site.site_title = _('Leprikon administration')
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
 admin.site.register(Insurance,                  InsuranceAdmin)
