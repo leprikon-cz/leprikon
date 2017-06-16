@@ -1,4 +1,4 @@
-{% load i18n cms_tags menu_tags leprikon_tags sekizai_tags staticfiles ganalytics %}
+{% load i18n cms_tags menu_tags leprikon_tags rocketchat sekizai_tags staticfiles ganalytics %}
 <!DOCTYPE html>
 <html lang="cs-CZ">
 
@@ -119,20 +119,6 @@
                     <nav class="list-group">
                         {% show_menu_below_id 'leprikon' 0 100 0 1 'leprikon/menu.html' %}
                     </nav>
-                    {% if request.user.is_authenticated %}
-                    <form action="{% url 'leprikon:support' %}" method="post" class="form-horizontal">{% csrf_token %}
-                        <input type="hidden" name="{% param_back %}" value="{% current_url %}"/>
-                        <div class="box">
-                            <div class="box-header">
-                                <label for="id_question">{% trans 'Help needed?' %}</label>
-                            </div>
-                            <div class="box-content">
-                                <textarea class="form-control" id="id_question" name="question" rows="3"></textarea>
-                                <button class="btn btn-primary btn-xs" type="submit">{% trans 'send question or suggestion' %}</button>
-                            </div>
-                        </div>
-                    </form>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -141,6 +127,8 @@
     </div>
 
     {% render_block "js" %}
+
+    {% livechat %}
 
 </body>
 </html>

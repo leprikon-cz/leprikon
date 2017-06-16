@@ -72,8 +72,6 @@ urlpatterns = [
 
     d_url(r'^{school_year}/$',                              'school_year'),
 
-    d_url(r'^{support}/$',                                  'support'),
-
     d_url(r'^{reports}/$',                                  'report_list'),
     d_url(r'^{reports}/{courses}/{payments}/$',             'report_course_payments'),
     d_url(r'^{reports}/{courses}/{payments_status}/$',      'report_course_payments_status'),

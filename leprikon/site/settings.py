@@ -320,6 +320,9 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
+# Rocket.Chat URL
+ROCKETCHAT_URL = os.environ.get('ROCKETCHAT_URL')
+
 # Google Analytics configuration
 GANALYTICS_TRACKING_CODE = os.environ.get('GANALYTICS_TRACKING_CODE')
 

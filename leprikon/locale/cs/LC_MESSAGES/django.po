@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-02 21:54+0100\n"
+"POT-Creation-Date: 2017-06-16 02:10+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -199,75 +199,75 @@ msgstr "zrušeno"
 msgid "not canceled"
 msgstr "nezrušeno"
 
-#: admin/messages.py:21
+#: admin/messages.py:23
 msgid "Sending emails"
 msgstr "Odesílání e-mailů"
 
-#: admin/messages.py:41 templates/leprikon/admin/send_message.html:11
+#: admin/messages.py:44 templates/leprikon/admin/send_message.html:11
 msgid "Send message"
 msgstr "Poslat zprávu"
 
-#: admin/messages.py:47
+#: admin/messages.py:50
 msgid "Target message"
 msgstr "Cílová zpráva"
 
-#: admin/messages.py:48
+#: admin/messages.py:51
 msgid "Recipients will be added to selected message."
 msgstr "Příjemci budou přidáni k vybarané zprávě."
 
-#: admin/messages.py:63
+#: admin/messages.py:68
 msgid "Select target message"
 msgstr "Vyberte cílovou zprávu"
 
-#: admin/messages.py:69
+#: admin/messages.py:75
 msgid "Add recipients to existing message"
 msgstr "Přidat příjemce k existující zprávě"
 
-#: admin/messages.py:102
+#: admin/messages.py:108
 msgid "recipients count"
 msgstr "počet příjemců"
 
-#: admin/messages.py:103
+#: admin/messages.py:109
 msgid "sent mail"
 msgstr "odesláno e-mailem"
 
-#: admin/messages.py:104 models/messages.py:53
+#: admin/messages.py:110 models/messages.py:52
 msgid "viewed on site"
 msgstr "zobrazeno na webu"
 
-#: admin/messages.py:110 admin/messages.py:118 models/messages.py:59
+#: admin/messages.py:116 admin/messages.py:124 models/messages.py:58
 msgid "recipients"
 msgstr "příjemci"
 
-#: admin/messages.py:119
+#: admin/messages.py:125
 msgid "show recipients details"
 msgstr "zobrazit podrobnosti o příjemcích"
 
-#: admin/messages.py:122
+#: admin/messages.py:128
 msgid "send mails"
 msgstr "odeslat e-maily"
 
-#: admin/messages.py:123
+#: admin/messages.py:129
 msgid "send mail to all recipients"
 msgstr "odeslat e-mail všem příjemcům"
 
-#: admin/messages.py:125
+#: admin/messages.py:131
 msgid "send unsent"
 msgstr "odeslat neodeslané"
 
-#: admin/messages.py:126
+#: admin/messages.py:132
 msgid "send mails to new recipients only"
 msgstr "odeslat e-maily pouze novým příjemcům"
 
-#: admin/messages.py:130
+#: admin/messages.py:136
 msgid "actions"
 msgstr "akce"
 
-#: admin/messages.py:171
+#: admin/messages.py:177
 msgid "Send email to selected recipients"
 msgstr "Odeslat e-mail vybraným příjemcům"
 
-#: admin/messages.py:178
+#: admin/messages.py:184
 msgid "Recipients of message {}"
 msgstr "Příjemci zprávy {}"
 
@@ -368,7 +368,7 @@ msgstr "Vybrané přihlášky byly stornovány."
 msgid "Cancel selected registrations"
 msgstr "Stornovat vybrané přihlášky"
 
-#: admin/subjects.py:283 admin/subjects.py:379 models/messages.py:24
+#: admin/subjects.py:283 admin/subjects.py:379 models/messages.py:23
 #: models/roles.py:265 models/subjects.py:190 models/subjects.py:269
 #: models/subjects.py:290
 msgid "subject"
@@ -674,7 +674,6 @@ msgid "Place"
 msgstr "Místo"
 
 #: forms/subjects.py:28 templates/leprikon/participant_preview.html:23
-#: templates/leprikon/registration/subject.rml:68
 #: templates/leprikon/registration_details.html:9
 msgid "Age group"
 msgstr "Věková skupina"
@@ -711,7 +710,7 @@ msgstr "nový zástupce"
 msgid "Terms and Conditions agreement"
 msgstr "Souhlas s podmínkami"
 
-#: forms/support.py:11 templates/leprikon/base.html:127
+#: forms/support.py:11
 msgid "Help needed?"
 msgstr "Potřebujete poradit?"
 
@@ -905,7 +904,6 @@ msgstr "poučení o BOZP"
 
 #: models/courses.py:426 models/courses.py:536 models/timesheets.py:160
 #: templates/leprikon/course_alternating.html:14
-#: templates/leprikon/registration/subject.rml:159
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
@@ -1130,40 +1128,40 @@ msgstr "nastavení Leprikónu"
 msgid "leprikon sites"
 msgstr "nastavení Leprikónu"
 
-#: models/messages.py:23
+#: models/messages.py:22
 msgid "created"
 msgstr "vytvořeno"
 
-#: models/messages.py:25
+#: models/messages.py:24
 msgid "text"
 msgstr "text"
 
-#: models/messages.py:30 models/messages.py:49 models/messages.py:100
+#: models/messages.py:29 models/messages.py:48 models/messages.py:99
 msgid "message"
 msgstr "zpráva"
 
-#: models/messages.py:31
+#: models/messages.py:30
 msgid "messages"
 msgstr "zprávy"
 
-#: models/messages.py:50 models/messages.py:58
+#: models/messages.py:49 models/messages.py:57
 msgid "recipient"
 msgstr "příjemce"
 
-#: models/messages.py:52
+#: models/messages.py:51
 #: templates/admin/leprikon/messagerecipient/send_mails.html:63
 msgid "sent"
 msgstr "odesláno"
 
-#: models/messages.py:54
+#: models/messages.py:53
 msgid "sent by email"
 msgstr "odesláno e-mailem"
 
-#: models/messages.py:105 models/subjects.py:104 models/subjects.py:276
+#: models/messages.py:104 models/subjects.py:104 models/subjects.py:276
 msgid "attachment"
 msgstr "příloha"
 
-#: models/messages.py:106 models/subjects.py:105 models/subjects.py:277
+#: models/messages.py:105 models/subjects.py:105 models/subjects.py:277
 msgid "attachments"
 msgstr "přílohy"
 
@@ -1649,6 +1647,10 @@ msgstr "zbývá doplatit {}"
 msgid "{} overpaid"
 msgstr "přeplaceno {}"
 
+#: site/settings.py:184
+msgid "Czech"
+msgstr "Čeština"
+
 #: templates/admin/leprikon/message/add_recipients.html:12 views/generic.py:37
 msgid "add"
 msgstr "přidat"
@@ -1722,11 +1724,7 @@ msgstr "Změnit heslo"
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:131
-msgid "send question or suggestion"
-msgstr "odeslat dotaz nebo podnět"
-
-#: templates/leprikon/base.html:140
+#: templates/leprikon/base.html:126
 msgid "Powered by Leprikón Information System"
 msgstr "Informační systém Leprikón"
 
@@ -1795,7 +1793,6 @@ msgstr "Více informací"
 #: templates/leprikon/cms/leader_list/default.html:25
 #: templates/leprikon/leader_preview.html:28
 #: templates/leprikon/participant_preview.html:35
-#: templates/leprikon/registration/subject.rml:141
 #: templates/leprikon/registration_details.html:21
 msgid "Contact"
 msgstr "Kontakt"
@@ -1826,12 +1823,10 @@ msgid "edit course journal entry"
 msgstr "upravit záznam deníku"
 
 #: templates/leprikon/course_journal.html:124
-#: templates/leprikon/coursejournal/course.rml:33
 msgid "Attendance"
 msgstr "Docházka"
 
 #: templates/leprikon/course_journal.html:128
-#: templates/leprikon/coursejournal/course.rml:36
 msgctxt "person"
 msgid "Name"
 msgstr "Jméno"
@@ -1880,7 +1875,6 @@ msgstr "Celoroční plán činnosti zájmového útvaru"
 
 #: templates/leprikon/course_journal.html:273
 #: templates/leprikon/course_journal.html:292
-#: templates/leprikon/registration/subject.rml:160
 msgid "Signature"
 msgstr "Podpis"
 
@@ -1989,8 +1983,6 @@ msgid "Participant has not filled all contact information."
 msgstr "Účastník nemá vyplněny některé kontaktní informace."
 
 #: templates/leprikon/participant_preview.html:29
-#: templates/leprikon/registration/subject.rml:76
-#: templates/leprikon/registration/subject.rml:137
 #: templates/leprikon/registration_details.html:15
 msgid "Address"
 msgstr "Adresa"
@@ -2001,19 +1993,16 @@ msgid "School"
 msgstr "Škola"
 
 #: templates/leprikon/participant_preview.html:47
-#: templates/leprikon/registration/subject.rml:84
 #: templates/leprikon/registration_details.html:33
 msgid "Insurance"
 msgstr "Zdravotní pojišťovna"
 
 #: templates/leprikon/participant_preview.html:53
-#: templates/leprikon/registration/subject.rml:105
 #: templates/leprikon/registration_details.html:39
 msgid "Health"
 msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
 
 #: templates/leprikon/participants.html:7
-#: templates/leprikon/registration/subject.rml:123
 #: templates/leprikon/registration_preview.html:33
 #: templates/leprikon/subject_registration_form.html:47
 msgid "Parents"
@@ -2114,64 +2103,6 @@ msgstr ""
 "\n"
 "děkujeme Vám za vyplnění přihlášky."
 
-#: templates/leprikon/registration/subject.rml:33
-#, python-format
-msgid "Registration for %(subject_type)s"
-msgstr "Přihláška na %(subject_type)s"
-
-#: templates/leprikon/registration/subject.rml:34
-#, python-format
-msgid "in school year %(school_year)s"
-msgstr "ve školním roce %(school_year)s"
-
-#: templates/leprikon/registration/subject.rml:40
-#, python-format
-msgid "Name of %(subject_type)s"
-msgstr "Název %(subject_type)s"
-
-#: templates/leprikon/registration/subject.rml:45
-msgid "Dates of event"
-msgstr "Termín konání"
-
-#: templates/leprikon/registration/subject.rml:50
-msgid "Times"
-msgstr "Čas"
-
-#: templates/leprikon/registration/subject.rml:58
-#: templates/leprikon/registration_preview.html:27
-#: templates/leprikon/subject_registration_form.html:19
-msgid "Participant"
-msgstr "Účastník"
-
-#: templates/leprikon/registration/subject.rml:64
-#: templates/leprikon/registration/subject.rml:133
-msgid "Full name"
-msgstr "Jméno a příjmení"
-
-#: templates/leprikon/registration/subject.rml:72
-msgid "Birth number"
-msgstr "Rodné číslo"
-
-#: templates/leprikon/registration/subject.rml:80
-msgid "Citizenship"
-msgstr "Státní občanství"
-
-#: templates/leprikon/registration/subject.rml:88
-msgid "Phone"
-msgstr "Telefon"
-
-#: templates/leprikon/registration/subject.rml:92
-msgid "E-mail"
-msgstr "E-mail"
-
-#: templates/leprikon/registration/subject.rml:158
-msgid "In"
-msgstr "V"
-
-#: templates/leprikon/registration/subject.rml:160
-msgid "Parent's signature"
-msgstr "Podpis zákonného zástupce"
-
 #: templates/leprikon/registration_details.html:46
 msgid "Parent"
 msgstr "Zástupce"
@@ -2210,6 +2141,11 @@ msgstr "stornovat přihlášku"
 #: templates/leprikon/registration_preview.html:14
 msgid "cancel"
 msgstr "zrušit"
+
+#: templates/leprikon/registration_preview.html:27
+#: templates/leprikon/subject_registration_form.html:19
+msgid "Participant"
+msgstr "Účastník"
 
 #: templates/leprikon/registration_preview.html:39
 msgid "Date and time of registration"
@@ -2621,27 +2557,6 @@ msgstr "Opravdu chcete stornovat přihlášku \"{}\"?"
 msgid "The cancellation request for {} has been saved."
 msgstr "Požadavek o stornování přihlášky {} byl uložen."
 
-#: views/support.py:12
-msgid "Support"
-msgstr "Podpora"
-
-#: views/support.py:13
-msgid "Your question has been sent to our support team. Thank You."
-msgstr "Váš dotaz byl zaslán pracovníkům podpory. Děkujeme Vám."
-
-#: views/support.py:19
-msgid "Question from web"
-msgstr "Otázka z webu"
-
-#: views/support.py:20
-#, python-brace-format
-msgid ""
-"User {user} asks:\n"
-"{question}"
-msgstr ""
-"Uživatel {user} se ptá:\n"
-"{question}"
-
 #: views/timesheets.py:41
 msgid "Submit timesheet"
 msgstr "Odevzdat výkaz práce"
@@ -2697,6 +2612,3 @@ msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 #: views/user.py:111
 msgid "Set my password"
 msgstr "Nastavit heslo"
-
-#~ msgid "The {} {} has been updated."
-#~ msgstr "{} {} byla upravena."

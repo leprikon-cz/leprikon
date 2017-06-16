@@ -6,8 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from . import (
     courses, leaders, messages, parents, participants, registrations, reports,
-    schoolyear, subjects, summaries, support, terms_conditions, timesheets,
-    user,
+    schoolyear, subjects, summaries, terms_conditions, timesheets, user,
 )
 from ..conf import settings
 from .reports import (
@@ -104,7 +103,6 @@ timesheetentry_update           = leader_required(timesheets.TimesheetEntryUpdat
 timesheetentry_delete           = leader_required(timesheets.TimesheetEntryDeleteView.as_view())
 
 school_year                     = schoolyear.SchoolYearView.as_view()
-support                         = login_required(support.SupportView.as_view())
 
 report_list                     = staff_required(reports.ReportsListView.as_view())
 report_course_payments          = staff_required(reports_courses.ReportCoursePaymentsView.as_view())
