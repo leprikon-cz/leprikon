@@ -12,4 +12,14 @@ staticfiles_urls = {
     'leprikon/lib/moment-with-locales.min.js': ('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment-with-locales.min.js', 'sha384', 'V0utPzNT28o7j37Ll4BIKqEVcL1yOE45HoCoaLu/CqF4nFaf2nAyZTHKJW1KdJMH'),  # NOQA
     'leprikon/lib/bootstrap.min.css': ('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css', 'sha384', '1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7'),  # NOQA
     'leprikon/lib/bootstrap.min.js': ('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js', 'sha384', '0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS'),  # NOQA
+    'leprikon/lib/bootstrap-social.min.css': ('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css', 'sha384', 'N7gull5mxE2uLDqZ+kcZolhmuopwLtTcThUsVnUS2LVMQljojN9cfJ9A6fUA63zB'),  # NOQA
+    'leprikon/lib/font-awesome/css/font-awesome.css': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css',  # NOQA 
+    'leprikon/lib/font-awesome/css/font-awesome.css.map': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css.map',  # NOQA 
+    'leprikon/lib/font-awesome/css/font-awesome.min.css': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/FontAwesome.otf': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/FontAwesome.otf',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/fontawesome-webfont.eot': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.eot',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/fontawesome-webfont.svg': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.svg',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/fontawesome-webfont.ttf': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/fontawesome-webfont.woff': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff',  # NOQA 
+    'leprikon/lib/font-awesome/fonts/fontawesome-webfont.woff2': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2',  # NOQA 
 }
