@@ -3,6 +3,7 @@ FROM python:2
 MAINTAINER Jakub Dorňák <jakub.dornak@misli.com>
 LABEL name=Leprikón
 
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
