@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
+if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
+    su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
+fi
+
 # run uwsgi server
 exec uwsgi --chdir=/app \
     --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
