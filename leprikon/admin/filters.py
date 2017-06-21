@@ -61,15 +61,30 @@ class CanceledListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
+            (None, _('not canceled')),
             ('yes', _('canceled')),
-            ('no', _('not canceled')),
         )
 
     def queryset(self, request, queryset):
         if self.value() == 'yes':
             return queryset.filter(canceled__isnull=False)
-        if self.value() == 'no':
+        else:
             return queryset.filter(canceled__isnull=True)
+
+    def choices(self, cl):
+        value = self.value()
+        return [
+            {
+                'selected': value != 'yes',
+                'query_string': cl.get_query_string({}, [self.parameter_name]),
+                'display': _('active'),
+            },
+            {
+                'selected': value == 'yes',
+                'query_string': cl.get_query_string({self.parameter_name: 'yes'}),
+                'display': _('canceled'),
+            },
+        ]
 
 
 
