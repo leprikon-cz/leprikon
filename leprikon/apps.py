@@ -1,15 +1,8 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.apps import AppConfig
-from django.db.models.signals import post_migrate, post_save
 from django.utils.translation import ugettext_lazy as _
-
-
-def create_leprikonsites(sender, **kwargs):
-    from .models.leprikonsite import LeprikonSite, Site
-
-    for site in Site.objects.filter(leprikonsite=None):
-        LeprikonSite.objects.create(site_ptr=site, **{f.name: getattr(site, f.name) for f in Site._meta.fields})
 
 
 class LeprikonConfig(AppConfig):
@@ -17,6 +10,32 @@ class LeprikonConfig(AppConfig):
     verbose_name    = _('Leprikon')
 
     def ready(self):
-        from django.contrib.sites.models import Site
-        post_migrate.connect(create_leprikonsites, sender=self)
-        post_save.connect(create_leprikonsites, sender=Site)
+
+        # ensure that current LeprikonSite exists
+        from .models.leprikonsite import LeprikonSite
+        try:
+            LeprikonSite.objects.get_current()
+        except:
+            pass
+
+        # create leprikon page on first run
+        from cms.api import create_page
+        from cms.constants import TEMPLATE_INHERITANCE_MAGIC
+        from menus.menu_pool import menu_pool
+        from .conf import settings
+        try:
+            create_page(
+                title='Leprikón',
+                template=TEMPLATE_INHERITANCE_MAGIC,
+                language=settings.LANGUAGE_CODE,
+                slug='leprikon',
+                apphook='LeprikonApp',
+                apphook_namespace='leprikon',
+                reverse_id='leprikon',
+                in_navigation=True,
+                navigation_extenders='LeprikonMenu',
+                published=True,
+            )
+            menu_pool.clear()
+        except:
+            pass

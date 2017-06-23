@@ -12,8 +12,11 @@ from .printsetup import PrintSetup
 class LeprikonSiteManager(models.Manager):
 
     def get_current(self, request=None):
-        return Site.objects.get_current(request).leprikonsite
-
+        current_site = Site.objects.get_current(request)
+        try:
+            return current_site.leprikonsite
+        except:
+            return LeprikonSite.objects.create(site_ptr=current_site)
 
 
 class LeprikonSite(Site):
