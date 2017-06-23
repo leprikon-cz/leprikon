@@ -5,5 +5,7 @@
 *~
 /build
 /dist
+/env
+/htdocs
 /.coverage
 /.tox
