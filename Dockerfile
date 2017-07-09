@@ -31,4 +31,8 @@ RUN pip install --no-cache-dir /src \
  && leprikon collectstatic --no-input \
  && chown www-data -R data htdocs/media run
 
+# fix bug in cmsplugin-filer
+RUN sed -i 's/BaseImage.objects.none/File.objects.none/' \
+    /usr/local/lib/python2.7/site-packages/cmsplugin_filer_folder/cms_plugins.py || :
+
 CMD ["/usr/bin/supervisord", "-c", "/app/conf/supervisord.conf"]
