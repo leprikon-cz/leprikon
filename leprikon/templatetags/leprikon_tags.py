@@ -18,7 +18,7 @@ register = template.Library()
 def currency(value):
     try:
         return _currency(value)
-    except ValueError:
+    except (ValueError, TypeError):
         return ''
 
 
