@@ -1,3 +1,4 @@
+{% if rocketchat_url %}
 <!-- Start of Rocket.Chat Livechat Script -->
 <script type="text/javascript">
 (function(w, d, s, u) {
@@ -8,3 +9,6 @@
 })(window, document, 'script', '{{ rocketchat_url }}/livechat');
 </script>
 <!-- End of Rocket.Chat Livechat Script -->
+{% elif DEBUG %}
+<!-- Rocket.Chat Livechat Script could not be rendered due to missing ROCKETCHAT_URL setting -->
+{% endif %}

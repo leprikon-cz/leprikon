@@ -8,4 +8,7 @@ register = template.Library()
 
 @register.inclusion_tag('rocketchat/livechat.html')
 def livechat():
-    return {'rocketchat_url': getattr(settings, 'ROCKETCHAT_URL', None)}
+    return {
+        'rocketchat_url': getattr(settings, 'ROCKETCHAT_URL', None),
+        'DEBUG': settings.DEBUG,
+    }
