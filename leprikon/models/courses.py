@@ -145,7 +145,7 @@ class Course(Subject):
             except ValueError:
                 # handle leap-year
                 end   = date(period.end.year   + year_offset, period.end.month,   period.end.day - 1)
-            new.periods.add(SchoolYearPeriod.get_or_create(
+            new.periods.add(SchoolYearPeriod.objects.get_or_create(
                 school_year=school_year, name=period.name, start=start, end=end
             )[0])
         return new
