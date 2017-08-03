@@ -8,8 +8,7 @@ from django.db import transaction
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.messages import MessageAdminForm
@@ -17,16 +16,17 @@ from ..models.messages import Message, MessageAttachment, MessageRecipient
 
 
 def messagerecipient_send_mails(request, message, recipients, media):
-    return render_to_response(
+    return render(
+        request,
         'admin/leprikon/messagerecipient/send_mails.html',
-        RequestContext(request, {
+        {
             'title':        _('Sending emails'),
             'message':      message,
             'recipients':   recipients,
             'media':        media,
             'message_opts': Message._meta,
             'opts':         MessageRecipient._meta,
-        }),
+        },
     )
 
 
@@ -62,15 +62,16 @@ class SendMessageAdminMixin(object):
                 )
         else:
             form = MessageForm()
-        return render_to_response(
+        return render(
+            request,
             'admin/leprikon/message/add_recipients.html',
-            RequestContext(request, {
+            {
                 'title':    _('Select target message'),
                 'queryset': queryset,
                 'opts': self.model._meta,
                 'form': form,
                 'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            }),
+            },
         )
     add_to_message.short_description = _('Add recipients to existing message')
 

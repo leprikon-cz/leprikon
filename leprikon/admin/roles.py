@@ -4,8 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -51,14 +50,14 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render_to_response('leprikon/admin/action_form.html', RequestContext(request, {
+        return render(request, 'leprikon/admin/action_form.html', {
             'title': _('Select target school year'),
             'queryset': queryset,
             'opts': self.model._meta,
             'form': form,
             'action': 'add_school_year',
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }))
+        })
     add_school_year.short_description = _('Add selected leaders to another school year')
 
     def first_name(self, obj):

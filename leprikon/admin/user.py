@@ -9,8 +9,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.messages import ERROR
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render
 from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -54,7 +53,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
                 return
         else:
             form = MergeForm()
-        return render_to_response('leprikon/admin/merge.html', RequestContext(request, {
+        return render(request, 'leprikon/admin/merge.html', {
             'title':    _('Select target user for merge'),
             'question': _('Are you sure you want to merge selected users into one? '
                           'All participants, parents, registrations and other related information '
@@ -65,7 +64,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
             'opts': self.model._meta,
             'form': form,
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }))
+        })
     merge.short_description = _('Merge selected user accounts')
 
     def get_list_display(self, request):

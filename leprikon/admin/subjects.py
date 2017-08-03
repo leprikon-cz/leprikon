@@ -10,8 +10,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
@@ -165,7 +164,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
                 return
         else:
             form = RegistrationDatesForm()
-        return render_to_response('leprikon/admin/change_form.html', RequestContext(request, {
+        return render(request, 'leprikon/admin/change_form.html', {
             'title': _('Select registration dates'),
             'queryset': queryset,
             'opts': self.model._meta,
@@ -173,7 +172,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             'media': self.media + form.media,
             'action': 'set_registration_dates',
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        }))
+        })
     set_registration_dates.short_description = _('Set registration dates')
 
 

@@ -6,8 +6,7 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -107,15 +106,18 @@ class CourseAdmin(SubjectBaseAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render_to_response(
-            'leprikon/admin/action_form.html', RequestContext(request, {
+        return render(
+            request,
+            'leprikon/admin/action_form.html',
+            {
                 'title': _('Select target school year'),
                 'queryset': queryset,
                 'opts': self.model._meta,
                 'form': form,
                 'action': 'copy_to_school_year',
                 'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            }))
+            },
+        )
     copy_to_school_year.short_description = _('Copy selected courses to another school year')
 
     def get_message_recipients(self, request, queryset):
@@ -166,10 +168,10 @@ class CourseAdmin(SubjectBaseAdmin):
 
     def journal(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
-        return render_to_response('leprikon/course_journal.html', {
+        return render(request, 'leprikon/course_journal.html', {
             'course': course,
             'admin': True,
-        }, context=RequestContext(request))
+        })
 
 
 
