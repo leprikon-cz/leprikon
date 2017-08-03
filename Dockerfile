@@ -1,7 +1,7 @@
 FROM python:2
 
-MAINTAINER Jakub Dorňák <jakub.dornak@misli.com>
-LABEL name=Leprikón
+LABEL name="Leprikón"
+LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
 
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED 1
