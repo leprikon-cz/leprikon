@@ -11,6 +11,7 @@ staticfiles_urls = {
     'leprikon/lib/jquery.min.js': ('https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.2/jquery.min.js', 'sha384', 'o6l2EXLcx4A+q7ls2O2OP2Lb2W7iBgOsYvuuRI6G+Efbjbk6J4xbirJpHZZoHbfs'),  # NOQA
     'leprikon/lib/moment-with-locales.min.js': ('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment-with-locales.min.js', 'sha384', 'V0utPzNT28o7j37Ll4BIKqEVcL1yOE45HoCoaLu/CqF4nFaf2nAyZTHKJW1KdJMH'),  # NOQA
     'leprikon/lib/bootstrap.min.css': ('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css', 'sha384', '1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7'),  # NOQA
+    'leprikon/lib/bootstrap.min.css.map': ('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css.map', 'sha384', 'hwlMpG8OrJxC0v8uTpPo10egi5Hv/p1/EYrBp72RRtfr5u9jKqRSNqnT6B62Lc3D'),  # NOQA
     'leprikon/lib/bootstrap.min.js': ('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js', 'sha384', '0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS'),  # NOQA
     'leprikon/lib/bootstrap-social.min.css': ('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css', 'sha384', 'N7gull5mxE2uLDqZ+kcZolhmuopwLtTcThUsVnUS2LVMQljojN9cfJ9A6fUA63zB'),  # NOQA
     'leprikon/lib/font-awesome/css/font-awesome.css': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css',  # NOQA 
