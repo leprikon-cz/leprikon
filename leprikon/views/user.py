@@ -34,10 +34,13 @@ class UserCreateView(CreateView):
 
     def form_valid(self, form):
         response = super(UserCreateView, self).form_valid(form)
+        if self.model.objects.count() == 1:
+            self.object.is_staff = True
+            self.object.is_superuser = True
+            self.object.save()
         self.object.backend = 'django.contrib.auth.backends.ModelBackend'
         auth_login(self.request, self.object)
         return response
-
 
 
 class UserUpdateView(UpdateView):
@@ -50,7 +53,6 @@ class UserUpdateView(UpdateView):
 
     def get_message(self):
         return _('User account {} has been updated.').format(self.object)
-
 
 
 def user_password(request):
