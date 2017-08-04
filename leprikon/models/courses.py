@@ -81,7 +81,7 @@ class Course(Subject):
 
     def copy_to_school_year(old, school_year):
         new = Course.objects.get(id=old.id)
-        new.id = None
+        new.id, new.pk = None, None
         new.school_year = school_year
         new.public      = False
         new.evaluation  = ''
