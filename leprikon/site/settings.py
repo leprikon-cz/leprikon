@@ -23,7 +23,7 @@ DATA_DIR = os.environ.get('DATA_DIR', os.path.join(BASE_DIR, 'data'))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', os.environ.get('DEBUG'))
 if not SECRET_KEY:
     from django.utils.crypto import get_random_string
     SECRET_KEY = get_random_string(
