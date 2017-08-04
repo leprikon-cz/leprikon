@@ -191,7 +191,13 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         super(RegistrationForm, self).save(commit)
 
         # send mail
-        self.instance.send_mail()
+        try:
+            self.instance.send_mail()
+        except:
+            import traceback
+            from raven.contrib.django.models import client
+            traceback.print_exc()
+            client.captureException()
 
         # save / update participant
         if self.participant_select_form.cleaned_data['participant'] == 'new':
