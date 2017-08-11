@@ -347,6 +347,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 
 class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = ('created', 'registration', 'subject', 'payment_type_label', 'amount_html')
+    list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
     list_filter     = (
         ('registration__subject__school_year',  SchoolYearListFilter),
         ('registration__subject__subject_type', SubjectTypeListFilter),
