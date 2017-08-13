@@ -4,6 +4,7 @@ PyPDF2
 cmsplugin-filer
 django-cms<3.5
 django-countries
+django-excel
 django-filer
 django-ganalytics
 django-ganalytics
@@ -22,6 +23,7 @@ djangocms_text_ckeditor
 ipython
 mysqlclient
 psycopg2
+pyexcel-xlsxw
 python-memcached
 raven
 social-auth-app-django

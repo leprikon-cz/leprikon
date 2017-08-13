@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
 import csv
+from datetime import datetime
 from functools import partial
 
+import django_excel
 import six
+from django.db.models import Model
 from django.http import HttpResponse
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_text
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -18,7 +21,7 @@ def lookup_attr(obj, name):
 
 
 class AdminExportMixin:
-    actions = ('export_as_csv',)
+    actions = ('export_as_xlsx', 'export_as_csv')
 
     def get_list_export(self, request):
         try:
@@ -66,9 +69,17 @@ class AdminExportMixin:
 
     def get_export_data(self, request, queryset):
         fields = self.get_export_fields(request)
-        yield [f['verbose_name'] for f in fields]
+        yield [force_text(f['verbose_name']) for f in fields]
         for obj in queryset.all():
-            yield [f['get_value'](obj) for f in fields]
+            values = []
+            for field in fields:
+                value = field['get_value'](obj)
+                if isinstance(value, datetime):
+                    value = value.replace(tzinfo=None)
+                if isinstance(value, Model) or type(value).__name__ == '__proxy__':
+                    value = force_text(value)
+                values.append(value)
+            yield values
 
     def export_as_csv(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
@@ -81,3 +92,10 @@ class AdminExportMixin:
         csv.writer(response).writerows(data)
         return response
     export_as_csv.short_description = _('Export selected records as CSV')
+
+    def export_as_xlsx(self, request, queryset):
+        data = self.get_export_data(request, queryset)
+        response = django_excel.make_response(django_excel.pe.Sheet(data), 'xlsx')
+        response['Content-Disposition'] = 'attachment; filename="{}.xlsx"'.format(self.model._meta.model_name)
+        return response
+    export_as_xlsx.short_description = _('Export selected records as XLSX')
