@@ -6,6 +6,12 @@
 
     <div class="box-content">
         <div class="row">
+            <label class="col-sm-4">{% trans 'Birth date' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.participant.birth_date }}
+            </div>
+        </div>
+        <div class="row">
             <label class="col-sm-4">{% trans 'Age group' %}:</label>
             <div class="col-sm-8">
                 {{ reg.participant.age_group }}

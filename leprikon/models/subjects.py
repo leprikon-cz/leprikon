@@ -26,7 +26,7 @@ from filer.fields.image import FilerImageField
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
-from ..utils import comma_separated, currency
+from ..utils import comma_separated, currency, get_birth_date
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
 from .insurance import Insurance
@@ -609,6 +609,10 @@ class SubjectRegistration(models.Model):
                 return '{}, {}'.format(self.school_name, self.school_class)
             else:
                 return self.school_name or self.school_class or ''
+
+        @cached_property
+        def birth_date(self):
+            return get_birth_date(self.birth_num)
 
 
 
