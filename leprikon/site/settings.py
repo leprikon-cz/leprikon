@@ -290,6 +290,11 @@ CACHES = {
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+# Login / logout urls
+LOGIN_URL = 'leprikon:user_login'
+LOGOUT_URL = 'leprikon:user_logout'
+LOGIN_REDIRECT_URL = 'leprikon:summary'
+
 # Email configuration
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'leprikon@localhost')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
