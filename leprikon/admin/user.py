@@ -10,8 +10,6 @@ from django.contrib.messages import ERROR
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.utils.encoding import smart_text
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.user import UserAdminCreateForm
@@ -70,7 +68,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
     def get_list_display(self, request):
         return ['id'] \
             + list(super(UserAdmin, self).get_list_display(request)) \
-            + ['parents_link', 'participants_link', 'login_as_link']
+            + ['login_as_link']
 
     def get_search_fields(self, request):
         return list(super(UserAdmin, self).get_search_fields(request)) + [
@@ -102,32 +100,6 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
         )
     login_as_link.allow_tags = True
     login_as_link.short_description = _('login')
-
-    @cached_property
-    def parents_url(self):
-        return reverse('admin:leprikon_parent_changelist')
-
-    def parents_link(self, obj):
-        return '<a href="{url}?user__id={user}">{names}</a>'.format(
-            url     = self.parents_url,
-            user    = obj.id,
-            names   = ', '.join(smart_text(parent) for parent in obj.leprikon_parents.all()),
-        )
-    parents_link.allow_tags = True
-    parents_link.short_description = _('parents')
-
-    @cached_property
-    def participants_url(self):
-        return reverse('admin:leprikon_participant_changelist')
-
-    def participants_link(self, obj):
-        return '<a href="{url}?user__id={user}">{names}</a>'.format(
-            url     = self.participants_url,
-            user    = obj.id,
-            names   = ', '.join(smart_text(participant) for participant in obj.leprikon_participants.all()),
-        )
-    participants_link.allow_tags = True
-    participants_link.short_description = _('participants')
 
     def get_message_recipients(self, request, queryset):
         return queryset.all()
