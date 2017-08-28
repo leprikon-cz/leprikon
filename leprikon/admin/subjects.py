@@ -142,10 +142,10 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     get_registrations_count.admin_order_field = 'registrations_count'
 
     def icon(self, obj):
-        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
-            src = obj.photo.icons['48'],
-            alt = obj.photo.label,
-        ) or ''
+        try:
+            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons['48'], obj.photo.label)
+        except (AttributeError, KeyError):
+            return ''
     icon.allow_tags = True
     icon.short_description = _('photo')
 
@@ -197,10 +197,10 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         return False
 
     def icon(self, obj):
-        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
-            src = obj.photo.icons['48'],
-            alt = obj.photo.label,
-        ) or ''
+        try:
+            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons['48'], obj.photo.label)
+        except (AttributeError, KeyError):
+            return ''
     icon.allow_tags = True
     icon.short_description = _('photo')
 

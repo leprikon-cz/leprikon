@@ -114,10 +114,10 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     events_link.short_description = _('events')
 
     def icon(self, obj):
-        return obj.photo and '<img src="{src}" alt="{alt}"/>'.format(
-            src = obj.photo.icons['48'],
-            alt = obj.photo.label,
-        ) or ''
+        try:
+            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons['48'], obj.photo.label)
+        except (AttributeError, KeyError):
+            return ''
     icon.allow_tags = True
     icon.short_description = _('photo')
 
