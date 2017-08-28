@@ -6,7 +6,6 @@ from functools import partial
 
 import django_excel
 import six
-from django.db.models import Model
 from django.http import HttpResponse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.translation import ugettext_lazy as _
@@ -74,10 +73,16 @@ class AdminExportMixin:
             values = []
             for field in fields:
                 value = field['get_value'](obj)
+                if value is None:
+                    value = ''
                 if isinstance(value, datetime):
                     value = value.replace(tzinfo=None)
-                if isinstance(value, Model) or type(value).__name__ == '__proxy__':
-                    value = force_text(value)
+                else:
+                    # what can not be converted to float, must be converted to string
+                    try:
+                        float(value)
+                    except:
+                        value = force_text(value)
                 values.append(value)
             yield values
 
