@@ -156,7 +156,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         if request.POST.get('post', 'no') == 'yes':
             form = RegistrationDatesForm(request.POST)
             if form.is_valid():
-                Subject.objects.filter(id__in=queryset.values_list('id', flat=True)).update(
+                Subject.objects.filter(id__in=[s['id'] for s in queryset.values('id')]).update(
                     reg_from = form.cleaned_data['reg_from'],
                     reg_to = form.cleaned_data['reg_to'],
                 )
