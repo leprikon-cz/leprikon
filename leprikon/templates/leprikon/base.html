@@ -48,7 +48,7 @@
     <div id="header">
         <div class="container">
             <div class="col-sm-9">
-                {% include 'leprikon/brand.html' %}
+                {% static_placeholder "brand" or %}<a href="/"><img src="{% static 'leprikon/img/logo-horizontal.png' %}" height="80"/></a>{% endstatic_placeholder %}
             </div>
             <div class="col-sm-3">
                 {% school_year_form %}
