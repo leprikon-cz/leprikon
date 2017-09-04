@@ -16,7 +16,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
+from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
@@ -28,3 +30,6 @@ urlpatterns = [
     # but allows reverse resolving before leprikon apphook is attached to any page
     url(r'^leprikon', include('leprikon.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
