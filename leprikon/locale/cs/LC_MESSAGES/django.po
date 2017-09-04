@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-13 23:17+0200\n"
+"POT-Creation-Date: 2017-09-04 17:28+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -174,11 +174,11 @@ msgstr "slevy na akce"
 msgid "event payments"
 msgstr "platby za akce"
 
-#: admin/export.py:94
+#: admin/export.py:99
 msgid "Export selected records as CSV"
 msgstr "Exportovat vybrané záznamy ve formátu CSV (hodnoty oddělené čárkou)"
 
-#: admin/export.py:101
+#: admin/export.py:106
 msgid "Export selected records as XLSX"
 msgstr "Exportovat vybrané záznamy ve formátu XLSX (Excel)"
 
@@ -420,27 +420,27 @@ msgstr "Vybrané výkazy byly odevzdány."
 msgid "Submit selected timesheets"
 msgstr "Odevzdat vybrané výkazy práce"
 
-#: admin/user.py:35
+#: admin/user.py:33
 msgid "Target user"
 msgstr "Cílový uživatel"
 
-#: admin/user.py:36
+#: admin/user.py:34
 msgid "All information will be merged into selected account."
 msgstr "Všechny informace budou sloučeny do vybraného uživatelského účtu."
 
-#: admin/user.py:47
+#: admin/user.py:45
 msgid "User {} was merged into user {}."
 msgstr "Uživatel {} byl sloučen do uživatele {}."
 
-#: admin/user.py:50
+#: admin/user.py:48
 msgid "Can not merge user {} into user {}."
 msgstr "Není možné sloučitu uživatele {} do uživatele {}."
 
-#: admin/user.py:57
+#: admin/user.py:55
 msgid "Select target user for merge"
 msgstr "Vyberte cílového uživatele pro sloučení"
 
-#: admin/user.py:58
+#: admin/user.py:56
 msgid ""
 "Are you sure you want to merge selected users into one? All participants, "
 "parents, registrations and other related information will be added to the "
@@ -450,29 +450,21 @@ msgstr ""
 "zástupci, přihlášky, a další informace spojené s těmito uživateli budou "
 "přidány k cílovému uživatelskému účtu a zbývající účty budou smazány."
 
-#: admin/user.py:62
+#: admin/user.py:60
 msgid "Users"
 msgstr "Uživatelé"
 
-#: admin/user.py:63
+#: admin/user.py:61
 msgid "Select target account for merge"
 msgstr "Vyberte cílový uživatelský účet pro sloučení"
 
-#: admin/user.py:68
+#: admin/user.py:66
 msgid "Merge selected user accounts"
 msgstr "Sloučit vybrané uživatele"
 
-#: admin/user.py:101 admin/user.py:104
+#: admin/user.py:99 admin/user.py:102
 msgid "login"
 msgstr "přihlásit"
-
-#: admin/user.py:117 models/roles.py:139
-msgid "parents"
-msgstr "zástupci"
-
-#: admin/user.py:130 models/courses.py:432 models/roles.py:195
-msgid "participants"
-msgstr "účastníci"
 
 #: apps.py:10 cms_apps.py:13 cms_plugins/base.py:9 cms_toolbars.py:17
 #: cms_toolbars.py:19 menu.py:16
@@ -914,7 +906,7 @@ msgstr "poučení o BOZP"
 
 #: models/courses.py:426 models/courses.py:536 models/timesheets.py:160
 #: templates/leprikon/course_alternating.html:14
-#: templates/leprikon/registration/subject.rml:159
+#: templates/leprikon/registration/subject.rml:167
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
@@ -926,6 +918,10 @@ msgstr "Nevyplňujte, pokud se kurz nekonal"
 #: models/courses.py:431
 msgid "session agenda"
 msgstr "program schůzky"
+
+#: models/courses.py:432 models/roles.py:195
+msgid "participants"
+msgstr "účastníci"
 
 #: models/courses.py:438
 msgid "journal entry"
@@ -1283,6 +1279,10 @@ msgstr "veřejný"
 #: models/roles.py:138
 msgid "parent"
 msgstr "zástupce"
+
+#: models/roles.py:139
+msgid "parents"
+msgstr "zástupci"
 
 #: models/roles.py:173 models/subjects.py:305
 msgid "birth number"
@@ -1800,7 +1800,7 @@ msgstr "Více informací"
 #: templates/leprikon/cms/leader_list/default.html:25
 #: templates/leprikon/leader_preview.html:28
 #: templates/leprikon/participant_preview.html:35
-#: templates/leprikon/registration/subject.rml:141
+#: templates/leprikon/registration/subject.rml:149
 #: templates/leprikon/registration_details.html:27
 msgid "Contact"
 msgstr "Kontakt"
@@ -1883,7 +1883,7 @@ msgstr "Celoroční plán činnosti zájmového útvaru"
 
 #: templates/leprikon/course_journal.html:273
 #: templates/leprikon/course_journal.html:292
-#: templates/leprikon/registration/subject.rml:160
+#: templates/leprikon/registration/subject.rml:168
 msgid "Signature"
 msgstr "Podpis"
 
@@ -1993,12 +1993,13 @@ msgstr "Účastník nemá vyplněny některé kontaktní informace."
 
 #: templates/leprikon/participant_preview.html:29
 #: templates/leprikon/registration/subject.rml:76
-#: templates/leprikon/registration/subject.rml:137
+#: templates/leprikon/registration/subject.rml:145
 #: templates/leprikon/registration_details.html:21
 msgid "Address"
 msgstr "Adresa"
 
 #: templates/leprikon/participant_preview.html:41
+#: templates/leprikon/registration/subject.rml:96
 #: templates/leprikon/registration_details.html:33
 msgid "School"
 msgstr "Škola"
@@ -2010,13 +2011,13 @@ msgid "Insurance"
 msgstr "Zdravotní pojišťovna"
 
 #: templates/leprikon/participant_preview.html:53
-#: templates/leprikon/registration/subject.rml:105
+#: templates/leprikon/registration/subject.rml:113
 #: templates/leprikon/registration_details.html:45
 msgid "Health"
 msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
 
 #: templates/leprikon/participants.html:7
-#: templates/leprikon/registration/subject.rml:123
+#: templates/leprikon/registration/subject.rml:131
 #: templates/leprikon/registration_preview.html:33
 #: templates/leprikon/subject_registration_form.html:47
 msgid "Parents"
@@ -2135,7 +2136,7 @@ msgid "Participant"
 msgstr "Účastník"
 
 #: templates/leprikon/registration/subject.rml:64
-#: templates/leprikon/registration/subject.rml:133
+#: templates/leprikon/registration/subject.rml:141
 msgid "Full name"
 msgstr "Jméno a příjmení"
 
@@ -2155,11 +2156,15 @@ msgstr "Telefon"
 msgid "E-mail"
 msgstr "E-mail"
 
-#: templates/leprikon/registration/subject.rml:158
+#: templates/leprikon/registration/subject.rml:100
+msgid "Class"
+msgstr "Třída"
+
+#: templates/leprikon/registration/subject.rml:166
 msgid "In"
 msgstr "V"
 
-#: templates/leprikon/registration/subject.rml:160
+#: templates/leprikon/registration/subject.rml:168
 msgid "Parent's signature"
 msgstr "Podpis zákonného zástupce"
 
