@@ -52,10 +52,6 @@ class SchoolYear(models.Model):
     def name(self):
         return '{}/{}'.format(self.year, self.year + 1)
 
-    @cached_property
-    def all_courses(self):
-        return list(self.courses.all())
-
 
 
 @python_2_unicode_compatible

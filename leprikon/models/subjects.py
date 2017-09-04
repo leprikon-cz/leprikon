@@ -34,7 +34,7 @@ from .leprikonsite import LeprikonSite
 from .place import Place
 from .printsetup import PrintSetup
 from .question import Question
-from .roles import Leader
+from .roles import Leader, Manager
 from .school import School
 from .schoolyear import SchoolYear
 
@@ -157,6 +157,7 @@ class Subject(models.Model):
                                      related_name='subjects', on_delete=models.PROTECT)
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
+    managers    = models.ManyToManyField(Manager, verbose_name=_('managers'), related_name='subjects', blank=True)
     groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
     place       = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
                                     related_name='subjects', on_delete=models.SET_NULL)
@@ -192,6 +193,10 @@ class Subject(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.name)
+
+    @cached_property
+    def all_managers(self):
+        return list(self.managers.all())
 
     @cached_property
     def all_groups(self):
@@ -252,6 +257,10 @@ class Subject(models.Model):
     @property
     def active_registrations(self):
         return self.registrations.filter(canceled=None)
+
+    def get_managers_list(self):
+        return comma_separated(self.all_managers)
+    get_managers_list.short_description = _('managers list')
 
     def get_agreement(self):
         return (

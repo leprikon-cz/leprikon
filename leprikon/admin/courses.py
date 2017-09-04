@@ -25,7 +25,7 @@ from .export import AdminExportMixin
 from .filters import (
     ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
     CourseListFilter, CourseTypeListFilter, LeaderListFilter,
-    SchoolYearListFilter,
+    ManagerListFilter, SchoolYearListFilter,
 )
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
@@ -47,13 +47,14 @@ class CourseAdmin(SubjectBaseAdmin):
         'get_journal_link', 'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'get_managers_list', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public',
         'get_registrations_count', 'note',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
+        ('managers',        ManagerListFilter),
         ('subject_type',    CourseTypeListFilter),
         ('groups',          CourseGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -195,6 +196,7 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
+        ('subject__managers',       ManagerListFilter),
         ('subject__subject_type',   CourseTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,

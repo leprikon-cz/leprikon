@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
 from .agegroup import AgeGroup
-from .roles import Leader
+from .roles import Leader, Manager
 from .schoolyear import SchoolYear
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
@@ -109,6 +109,7 @@ class Event(Subject):
             # handle leap-year
             new.end_date   = date(new.end_date.year   + year_offset, new.end_date.month,   new.end_date.day - 1)
         new.save()
+        new.managers    = old.managers.all()
         new.groups      = old.groups.all()
         new.age_groups  = old.age_groups.all()
         new.leaders     = old.leaders.all()
@@ -145,7 +146,7 @@ class EventDiscount(SubjectDiscount):
 
 
 class EventPlugin(CMSPlugin):
-    event     = models.ForeignKey(Event, verbose_name=_('event'), related_name='+')
+    event       = models.ForeignKey(Event, verbose_name=_('event'), related_name='+')
     template    = models.CharField(_('template'), max_length=100,
                                    choices=settings.LEPRIKON_EVENT_TEMPLATES,
                                    default=settings.LEPRIKON_EVENT_TEMPLATES[0][0],
@@ -159,6 +160,8 @@ class EventPlugin(CMSPlugin):
 class EventListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
+    managers    = models.ManyToManyField(Manager, verbose_name=_('managers'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by managers.'))
     event_types = models.ManyToManyField(SubjectType, verbose_name=_('event types'), blank=True, related_name='+',
                                          limit_choices_to={'subject_type': SubjectType.EVENT},
                                          help_text=_('Keep empty to skip searching by event types.'))
@@ -177,10 +180,15 @@ class EventListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
+        self.managers        = oldinstance.managers.all()
         self.event_types    = oldinstance.event_types.all()
         self.groups         = oldinstance.groups.all()
         self.age_groups     = oldinstance.age_groups.all()
         self.leaders        = oldinstance.leaders.all()
+
+    @cached_property
+    def all_managers(self):
+        return list(self.managers.all())
 
     @cached_property
     def all_event_types(self):
@@ -205,6 +213,8 @@ class EventListPlugin(CMSPlugin):
                        SchoolYear.objects.get_current())
         events = Event.objects.filter(school_year=school_year, public=True).distinct()
 
+        if self.all_managers:
+            events = events.filter(managers__in = self.all_managers)
         if self.all_event_types:
             events = events.filter(subject_type__in = self.all_event_types)
         if self.all_age_groups:

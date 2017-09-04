@@ -15,7 +15,7 @@ from ..models.subjects import SubjectType
 from ..utils import currency
 from .filters import (
     ApprovedListFilter, CanceledListFilter, EventGroupListFilter,
-    EventListFilter, EventTypeListFilter, LeaderListFilter,
+    EventListFilter, EventTypeListFilter, LeaderListFilter, ManagerListFilter,
     SchoolYearListFilter,
 )
 from .subjects import (
@@ -33,13 +33,14 @@ class EventAdmin(SubjectBaseAdmin):
         'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'get_managers_list', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public',
         'get_registrations_count', 'note',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
+        ('managers',        ManagerListFilter),
         ('subject_type',    EventTypeListFilter),
         ('groups',          EventGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -129,6 +130,7 @@ class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
+        ('subject__managers',       ManagerListFilter),
         ('subject__subject_type',   EventTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,

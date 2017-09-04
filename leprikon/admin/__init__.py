@@ -16,7 +16,7 @@ from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
 from ..models.printsetup import PrintSetup
 from ..models.question import Question
-from ..models.roles import Leader, Parent, Participant
+from ..models.roles import Leader, Manager, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import (
@@ -35,7 +35,7 @@ from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
 from .printsetup import PrintSetupAdmin
 from .question import QuestionAdmin
-from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
+from .roles import LeaderAdmin, ManagerAdmin, ParentAdmin, ParticipantAdmin
 from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin
 from .subjects import (
@@ -61,6 +61,7 @@ admin.site.register(School,                     SchoolAdmin)
 admin.site.register(SchoolYear,                 SchoolYearAdmin)
 
 admin.site.register(Leader,                     LeaderAdmin)
+admin.site.register(Manager,                     ManagerAdmin)
 admin.site.register(Parent,                     ParentAdmin)
 admin.site.register(Participant,                ParticipantAdmin)
 
