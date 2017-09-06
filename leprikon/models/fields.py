@@ -93,10 +93,8 @@ class BirthNumberField(models.CharField):
         return name, path, args, kwargs
 
     def clean(self, value, model_instance):
-        return super(BirthNumberField, self).clean(
-            value[6] == '/' and value or '{}/{}'.format(value[:6], value[6:]),
-            model_instance,
-        )
+        value = super(BirthNumberField, self).clean(value, model_instance)
+        return value if value[6] == '/' else '{}/{}'.format(value[:6], value[6:])
 
 
 
