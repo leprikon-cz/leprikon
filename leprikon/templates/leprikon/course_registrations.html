@@ -7,18 +7,26 @@
 
 <h2>{% trans 'Active Registrations' %}</h2>
 
-{% for reg in course.active_registrations.all %}
+{% for reg in course.all_approved_registrations %}
 {% include 'leprikon/registration_details.html' with reg=reg.courseregistration %}
 {% empty %}
 <p>{% trans 'There are no active registrations for this course.' %}</p>
 {% endfor %}
 
-<h2>{% trans 'Inactive Registrations' %}</h2>
+{% if course.all_unapproved_registrations %}
+    <h2>{% trans 'Unapproved Registrations' %}</h2>
 
-{% for reg in course.inactive_registrations.all %}
-{% include 'leprikon/registration_details.html' with reg=reg.courseregistration %}
-{% empty %}
-<p>{% trans 'There are no inactive registrations for this course.' %}</p>
-{% endfor %}
+    {% for reg in course.all_unapproved_registrations %}
+    {% include 'leprikon/registration_details.html' with reg=reg.courseregistration %}
+    {% endfor %}
+{% endif %}
+
+{% if course.all_inactive_registrations %}
+    <h2>{% trans 'Inactive Registrations' %}</h2>
+
+    {% for reg in course.all_inactive_registrations %}
+    {% include 'leprikon/registration_details.html' with reg=reg.courseregistration %}
+    {% endfor %}
+{% endif %}
 
 {% endblock %}

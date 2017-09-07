@@ -182,7 +182,7 @@ msgid "approved"
 msgstr ""
 
 #: admin/filters.py:47
-msgid "not approved"
+msgid "unapproved"
 msgstr ""
 
 #: admin/filters.py:59

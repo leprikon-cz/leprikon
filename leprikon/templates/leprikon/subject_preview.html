@@ -87,7 +87,7 @@
         <div class="btn-group">
             <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:subject_registrations' object.subject_type.slug object.id %}">
                 {% trans 'registrations' %}
-                ({{ object.registrations.count }})
+                ({{ object.approved_registrations_count }}{% if object.unapproved_registrations_count %} + {{ object.unapproved_registrations_count }}{% endif %})
             </a>
             {% if object.all_periods %}{# course #}
             <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:course_journal' object.id %}">

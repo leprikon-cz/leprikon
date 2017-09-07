@@ -44,7 +44,7 @@ class ApprovedListFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('yes', _('approved')),
-            ('no', _('not approved')),
+            ('no', _('unapproved')),
         )
 
     def queryset(self, request, queryset):

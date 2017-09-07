@@ -234,7 +234,7 @@ class Subject(models.Model):
 
     @property
     def full(self):
-        return self.max_count and self.active_registrations.count() >= self.max_count
+        return self.max_count and self.approved_registrations_count >= self.max_count
 
     def get_absolute_url(self):
         return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
@@ -257,6 +257,38 @@ class Subject(models.Model):
     @property
     def active_registrations(self):
         return self.registrations.filter(canceled=None)
+
+    @property
+    def approved_registrations(self):
+        return self.active_registrations.exclude(approved=None)
+
+    @cached_property
+    def approved_registrations_count(self):
+        return self.approved_registrations.count()
+
+    @cached_property
+    def all_approved_registrations(self):
+        return list(self.approved_registrations.all())
+
+    @property
+    def unapproved_registrations(self):
+        return self.active_registrations.filter(approved=None)
+
+    @cached_property
+    def unapproved_registrations_count(self):
+        return self.unapproved_registrations.count()
+
+    @cached_property
+    def all_unapproved_registrations(self):
+        return list(self.unapproved_registrations.all())
+
+    @cached_property
+    def inactive_registrations_count(self):
+        return self.inactive_registrations.count()
+
+    @cached_property
+    def all_inactive_registrations(self):
+        return list(self.inactive_registrations.all())
 
     def get_managers_list(self):
         return comma_separated(self.all_managers)

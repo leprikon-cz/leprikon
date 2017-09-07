@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
-from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render
@@ -39,6 +38,7 @@ class CourseTimeInlineAdmin(admin.TabularInline):
 
 class CourseAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.COURSE
+    registration_model = CourseRegistration
     list_display    = (
         'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
@@ -50,7 +50,7 @@ class CourseAdmin(SubjectBaseAdmin):
         'id', 'name', 'get_managers_list', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public',
-        'get_registrations_count', 'note',
+        'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
@@ -125,30 +125,6 @@ class CourseAdmin(SubjectBaseAdmin):
         return get_user_model().objects.filter(
             leprikon_registrations__subject__in = queryset
         ).distinct()
-
-    def get_registrations_link(self, obj):
-        icon = False
-        if obj.registrations_count == 0:
-            title = _('There are no registrations for this course.')
-        elif obj.min_count is not None and obj.registrations_count < obj.min_count:
-            title = _('The number of registrations is lower than {}.').format(obj.min_count)
-        elif obj.max_count is not None and obj.registrations_count > obj.max_count:
-            title = _('The number of registrations is greater than {}.').format(obj.max_count)
-        else:
-            icon = True
-            title = ''
-        return '<a href="{url}" title="{title}">{icon} {count}</a>'.format(
-            url     = reverse('admin:{}_{}_changelist'.format(
-                CourseRegistration._meta.app_label,
-                CourseRegistration._meta.model_name,
-            )) + '?subject={}'.format(obj.id),
-            title   = title,
-            icon    = _boolean_icon(icon),
-            count   = obj.registrations_count,
-        )
-    get_registrations_link.short_description = _('registrations')
-    get_registrations_link.admin_order_field = 'registrations_count'
-    get_registrations_link.allow_tags = True
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(

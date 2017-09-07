@@ -35,8 +35,8 @@ class Event(Subject):
     def inactive_registrations(self):
         return self.registrations.filter(canceled__isnull=False)
 
-    def get_active_registrations(self, d):
-        return self.registrations.filter(created__lte=d).exclude(canceled__lt=d)
+    def get_approved_registrations(self, d):
+        return self.registrations.filter(created__lte=d, approved__lte=d).exclude(canceled__lt=d)
 
     def get_times_list(self):
         return '{start}{separator}{end}'.format(

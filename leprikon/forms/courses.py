@@ -116,7 +116,7 @@ class CourseJournalEntryAdminForm(forms.ModelForm):
             except:
                 d = self.initial['date']
 
-        self.fields['registrations'].widget.choices.queryset = self.instance.course.get_active_registrations(d)
+        self.fields['registrations'].widget.choices.queryset = self.instance.course.get_approved_registrations(d)
         self.fields['registrations'].help_text = None
 
     def clean(self):

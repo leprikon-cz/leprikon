@@ -8,16 +8,13 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import RegistrationAdminForm
-from ..models.subjects import (
-    Subject, SubjectAttachment, SubjectRegistration, SubjectTypeAttachment,
-)
+from ..models.subjects import Subject, SubjectAttachment, SubjectTypeAttachment
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -61,6 +58,7 @@ class SubjectAttachmentInlineAdmin(admin.TabularInline):
 
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     subject_type    = None
+    registration_model = None
     list_editable   = ('public', 'note')
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
@@ -76,11 +74,6 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     actions         = ('set_registration_dates',)
     search_fields   = ('name', 'description')
     save_as         = True
-
-    def get_queryset(self, request):
-        return super(SubjectBaseAdmin, self).get_queryset(request).annotate(
-            registrations_count=Count('registrations', distinct=True),
-        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
@@ -114,36 +107,44 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     def get_registrations_link(self, obj):
         icon = False
-        if obj.registrations_count == 0:
-            title = _('There are no registrations for this subject.')
-        elif obj.min_count is not None and obj.registrations_count < obj.min_count:
-            title = _('The number of registrations is lower than {}.').format(obj.min_count)
-        elif obj.max_count is not None and obj.registrations_count > obj.max_count:
-            title = _('The number of registrations is greater than {}.').format(obj.max_count)
+        approved_registrations_count = obj.approved_registrations.count()
+        unapproved_registrations_count = obj.unapproved_registrations.count()
+
+        if approved_registrations_count == 0:
+            title = _('There are no approved registrations for this {}.').format(obj.subject_type.name_akuzativ)
+        elif obj.min_count is not None and approved_registrations_count < obj.min_count:
+            title = _('The number of approved registrations is lower than {}.').format(obj.min_count)
+        elif obj.max_count is not None and approved_registrations_count > obj.max_count:
+            title = _('The number of approved registrations is greater than {}.').format(obj.max_count)
         else:
             icon = True
             title = ''
-        return '<a href="{url}" title="{title}">{icon} {count}</a>'.format(
+        return '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>'.format(
             url     = reverse('admin:{}_{}_changelist'.format(
-                SubjectRegistration._meta.app_label,
-                SubjectRegistration._meta.model_name,
-            )) + '?subject={}'.format(obj.id),
-            title   = title,
-            icon    = _boolean_icon(icon),
-            count   = obj.registrations_count,
+                self.registration_model._meta.app_label,
+                self.registration_model._meta.model_name,
+            )) + '?subject__id__exact={}'.format(obj.id),
+            title       = title,
+            icon        = _boolean_icon(icon),
+            approved    = approved_registrations_count,
+            unapproved = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
         )
     get_registrations_link.short_description = _('registrations')
-    get_registrations_link.admin_order_field = 'registrations_count'
     get_registrations_link.allow_tags = True
 
     def registration_allowed_icon(self, obj):
         return _boolean_icon(obj.registration_allowed)
     registration_allowed_icon.short_description = _('registration allowed')
 
-    def get_registrations_count(self, obj):
-        return obj.registrations_count
-    get_registrations_count.short_description = _('registrations count')
-    get_registrations_count.admin_order_field = 'registrations_count'
+    def get_approved_registrations_count(self, obj):
+        return obj.registrations.filter(canceled=None).exclude(approved=None).count()
+    get_approved_registrations_count.short_description = _('approved registrations count')
+    get_approved_registrations_count.admin_order_field = 'approved registrations_count'
+
+    def get_unapproved_registrations_count(self, obj):
+        return obj.registrations.filter(canceled=None, approved=None).count()
+    get_unapproved_registrations_count.short_description = _('unapproved registrations count')
+    get_unapproved_registrations_count.admin_order_field = 'unapproved registrations_count'
 
     def icon(self, obj):
         try:

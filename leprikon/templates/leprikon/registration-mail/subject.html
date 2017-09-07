@@ -3,8 +3,8 @@
 <p>{% blocktrans %}Hello,<br/>
 thank You for submitting registration.{% endblocktrans %}</p>
 
-{% if self.all_attachments %}
-<p>{% trans 'See attached files for futher information.' %}</p>
+{% if object.subject.full %}
+<p>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled. The registration may not be approved. We will inform You.{% endblocktrans %}</p>
 {% endif %}
 
 <p>

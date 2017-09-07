@@ -74,10 +74,14 @@ class Course(Subject):
         return (CourseRegistration.objects.filter(course_history__course=self)
                 .exclude(id__in=self.active_registrations.all()).distinct())
 
-    def get_active_registrations(self, d):
-        ids = (CourseRegistrationHistory.objects.filter(course=self, start__lte=d)
-               .exclude(end__lt=d).values_list('registration_id', flat=True))
-        return CourseRegistration.objects.filter(id__in=ids).exclude(canceled__lt=d).distinct()
+    def get_approved_registrations(self, d):
+        ids = list(
+            CourseRegistrationHistory.objects
+            .filter(course=self, start__lte=d)
+            .exclude(end__lt=d)
+            .values_list('registration_id', flat=True)
+        )
+        return CourseRegistration.objects.filter(id__in=ids, approved__lte=d).exclude(canceled__lt=d).distinct()
 
     def copy_to_school_year(old, school_year):
         new = Course.objects.get(id=old.id)
