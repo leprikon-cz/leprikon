@@ -351,7 +351,6 @@ class SubjectRegistration(models.Model):
         app_label           = 'leprikon'
         verbose_name        = _('registration')
         verbose_name_plural = _('registrations')
-        unique_together     = (('subject', 'participant_birth_num'),)
 
     def __str__(self):
         return _('{participant} ({birth_num})').format(
@@ -360,12 +359,14 @@ class SubjectRegistration(models.Model):
         )
 
     def validate_unique(self, exclude=None):
-        try:
-            # perform the all unique checks, do not exclude anything
-            super(SubjectRegistration, self).validate_unique(None)
-        except ValidationError:
-            # The only unique constraint is on birth_num and user.
-            # Let's use nice birth_num related message instead of the default one.
+        super(SubjectRegistration, self).validate_unique(None)
+        qs = SubjectRegistration.objects.filter(
+            subject=self.subject,
+            participant_birth_num=self.participant_birth_num,
+            canceled=None)
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+        if qs.exists():
             raise ValidationError(
                 message={'participant_birth_num': _('Participant with this birth number has already been registered.')},
             )
@@ -447,7 +448,7 @@ class SubjectRegistration(models.Model):
         return sum(p.amount for p in self.get_payments(d))
 
     def get_absolute_url(self):
-        return reverse('leprikon:registration_pdf', kwargs={'slug': self.slug})
+        return reverse('leprikon:registration_pdf', kwargs={'pk': self.pk, 'slug': self.slug})
 
     def approve(self):
         if self.approved is None:
@@ -462,7 +463,7 @@ class SubjectRegistration(models.Model):
     def save(self, *args, **kwargs):
         self.participant_gender = self.participant_birth_num[2:4] > '50' and self.FEMALE or self.MALE
         if not self.slug:
-            self.slug = slugify('{}-{}-{}'.format(self.participant.birth_num, self.subject.id, self.subject.name))[:50]
+            self.slug = slugify('{}-{}'.format(self.participant.full_name, self.subject.name))[:50]
         if self.canceled:
             self.cancel_request = False
         if not self.has_parent1:

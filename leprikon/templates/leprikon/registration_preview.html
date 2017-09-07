@@ -8,7 +8,7 @@
         </a>
         {% if not reg.canceled and not reg.cancel_request %}
         <a class="btn btn-primary btn-xs"
-            href="{% url_with_back 'leprikon:registration_cancel' reg.slug %}"
+            href="{% url_with_back 'leprikon:registration_cancel' reg.id %}"
             title="{% trans 'cancel registration' %}">
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
             {% trans 'cancel' %}
