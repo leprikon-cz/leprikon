@@ -189,10 +189,10 @@
     {% endwith %}
     {% endfor %}
 
-    {% for period in course.all_periods %}
+    {% for period in course.all_journal_periods %}
     <div class="container paper">
 
-        <h1>{% trans 'Agenda' %} - {{ period.name }}</h1>
+        <h1>{% trans 'Agenda' %} - {{ period.period.name }}</h1>
         <table class="journal">
             <tr>
                 <th>{% trans 'Date' %}</th>
