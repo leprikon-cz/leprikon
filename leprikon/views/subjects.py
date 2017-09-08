@@ -203,11 +203,6 @@ class UserRegistrationMixin(object):
 
 
 
-class SubjectRegistrationConfirmView(UserRegistrationMixin, DetailView):
-    template_name_suffix = '_confirm'
-
-
-
 class SubjectRegistrationPdfView(UserRegistrationMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
