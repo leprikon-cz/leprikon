@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir /src \
  && rm -r /src \
  && mkdir -p data htdocs/media htdocs/static run \
  && leprikon collectstatic --no-input \
- && chown www-data -R data htdocs/media run
+ && chown www-data:www-data data htdocs/media run
 
 # fix bug in cmsplugin-filer
 RUN sed -i 's/BaseImage.objects.none/File.objects.none/' \

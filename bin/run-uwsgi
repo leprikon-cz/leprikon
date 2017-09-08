@@ -5,6 +5,9 @@ if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
     su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
 fi
 
+# ensure ownership of likely mounted directory
+chown www-data:www-data data htdocs/media run
+
 # run uwsgi server
 exec uwsgi --chdir=/app \
     --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
