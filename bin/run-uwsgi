@@ -11,7 +11,7 @@ chown www-data:www-data data htdocs/media run
 # run uwsgi server
 exec uwsgi --chdir=/app \
     --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
-    --module=${UWSGI_MODULE:-${SITE_MODULE:-leprikon.site}.wsgi:application} \
+    --module=${UWSGI_MODULE:-leprikon.site.wsgi:application} \
     --master \
     --enable-threads \
     --socket=${UWSGI_SOCKET:-/app/run/socket} \
