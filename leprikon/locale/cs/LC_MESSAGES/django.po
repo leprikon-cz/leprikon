@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-07 23:52+0200\n"
+"POT-Creation-Date: 2017-09-21 00:54+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -759,6 +759,10 @@ msgstr ""
 "Uživatel s touto e-mailovou adresou již existuje. Pokud si nepamatujete "
 "uživatelské jméno nebo heslo ke svému existujícímu účtu, použijte formulář "
 "pro reset hesla."
+
+#: gettext_overrides.py:8
+msgid "Publish page changes"
+msgstr "Publikovat změny"
 
 #: menu.py:25 templates/leprikon/login.html:19
 #: templates/leprikon/password_reset_complete.html:12
@@ -2640,15 +2644,15 @@ msgstr "Přihláška byla přijata."
 msgid "Registration for {subject_type} {subject}"
 msgstr "Přihláška na {subject_type} {subject}"
 
-#: views/subjects.py:227
+#: views/subjects.py:222
 msgid "Registration cancellation request"
 msgstr "Požadavek na zrušení"
 
-#: views/subjects.py:230
+#: views/subjects.py:225
 msgid "Are you sure You want to cancel the registration \"{}\"?"
 msgstr "Opravdu chcete stornovat přihlášku \"{}\"?"
 
-#: views/subjects.py:233
+#: views/subjects.py:228
 msgid "The cancellation request for {} has been saved."
 msgstr "Požadavek o stornování přihlášky {} byl uložen."
 
