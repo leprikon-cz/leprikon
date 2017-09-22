@@ -12,4 +12,5 @@
     </a>
 {% else %}
     {% trans 'Registering is currently not allowed.' %}
+    {% if subject.full %}{% trans 'The capacity is full.' %}{% endif %}
 {% endif %}

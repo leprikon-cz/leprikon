@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 00:54+0200\n"
+"POT-Creation-Date: 2017-09-22 09:56+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -760,7 +760,7 @@ msgstr ""
 "uživatelské jméno nebo heslo ke svému existujícímu účtu, použijte formulář "
 "pro reset hesla."
 
-#: gettext_overrides.py:8
+#: gettext_overrides.py:9
 msgid "Publish page changes"
 msgstr "Publikovat změny"
 
@@ -2223,6 +2223,10 @@ msgstr "přihlásit"
 #: templates/leprikon/registration_links.html:14
 msgid "Registering is currently not allowed."
 msgstr "Přihlašování momentálně není povoleno."
+
+#: templates/leprikon/registration_links.html:15
+msgid "The capacity is full."
+msgstr "Kapacita je naplněna."
 
 #: templates/leprikon/registration_payments_presences.html:5
 #: templates/leprikon/reports/course_payments_status.html:17
