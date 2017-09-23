@@ -73,7 +73,7 @@ def registration_links(context, subject):
     context = context.__copy__()
     context['subject'] = subject
     if context['request'].user.is_authenticated():
-        context['registrations'] = subject.registrations.filter(user=context['request'].user)
+        context['registrations'] = subject.registrations.filter(user=context['request'].user, canceled=None)
     else:
         context['registrations'] = []
     context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
