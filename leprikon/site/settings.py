@@ -202,6 +202,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+# set max upload size to 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
