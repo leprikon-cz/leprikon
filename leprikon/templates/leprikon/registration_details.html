@@ -56,6 +56,12 @@
             </div>
         </div>
         {% endfor %}
+        {% for qa in reg.get_questions_and_answers %}
+        <div class="row">
+            <label class="col-sm-4">{{ qa.question }}:</label>
+            <div class="col-sm-8">{{ qa.answer }}</div>
+        </div>
+        {% endfor %}
         {% include 'leprikon/registration_payments_presences.html' %}
     </div>
 </div>
