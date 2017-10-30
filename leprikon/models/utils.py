@@ -54,3 +54,21 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
         )
 
     __radd__ = __add__
+
+
+def generate_variable_symbol(registration):
+    # basic variable symbol consists of year number and last four (configurable) numbers of id
+    variable_symbol = (
+        registration.subject.school_year.year % 100 * settings.LEPRIKON_VARIABLE_SYMBOL_PER_YEAR +
+        registration.id % settings.LEPRIKON_VARIABLE_SYMBOL_PER_YEAR
+    )
+    # add check digit
+    odd_sum = 0
+    even_sum = 0
+    for i, char in enumerate(str(variable_symbol)):
+        if i % 2:
+            even_sum += int(char)
+        else:
+            odd_sum += int(char)
+    check_digit = (odd_sum * 3 + even_sum) % 10
+    return variable_symbol * 10 + check_digit

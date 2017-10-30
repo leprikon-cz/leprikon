@@ -89,7 +89,7 @@
                 {% trans 'registrations' %}
                 ({{ object.approved_registrations_count }}{% if object.unapproved_registrations_count %} + {{ object.unapproved_registrations_count }}{% endif %})
             </a>
-            {% if object.all_periods %}{# course #}
+            {% if object.course %}
             <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:course_journal' object.id %}">
                 {% trans 'journal' %}
             </a>

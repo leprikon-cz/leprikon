@@ -214,7 +214,8 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_export     = (
-        'id', 'slug', 'created', 'approved', 'user', 'subject', 'price', 'answers', 'cancel_request', 'canceled',
+        'id', 'variable_symbol', 'slug', 'created', 'approved', 'user', 'subject', 'price', 'answers',
+        'cancel_request', 'canceled',
         'participant_gender', 'participant_first_name', 'participant_last_name', 'participant_birth_num',
         'participant_age_group', 'participant_street', 'participant_city', 'participant_postal_code',
         'participant_citizenship', 'participant_insurance', 'participant_phone', 'participant_email',

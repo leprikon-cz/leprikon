@@ -101,7 +101,7 @@ class EventAdmin(SubjectBaseAdmin):
 
 class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
-        'id', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
+        'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
         'created', 'approved', 'cancel_request', 'canceled',
     )
     list_filter     = (

@@ -37,6 +37,7 @@ from .question import Question
 from .roles import Leader, Manager
 from .school import School
 from .schoolyear import SchoolYear
+from .utils import generate_variable_symbol
 
 
 @python_2_unicode_compatible
@@ -379,6 +380,8 @@ class SubjectRegistration(models.Model):
     parent2_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
     parent2_email       = models.EmailField(_('email address'),               blank=True, null=True)
 
+    variable_symbol     = models.IntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
+
     class Meta:
         app_label           = 'leprikon'
         verbose_name        = _('registration')
@@ -526,6 +529,9 @@ class SubjectRegistration(models.Model):
             self.parent2_phone       = None
             self.parent2_email       = None
         super(SubjectRegistration, self).save(*args, **kwargs)
+        if not self.variable_symbol:
+            self.variable_symbol = generate_variable_symbol(self)
+            super(SubjectRegistration, self).save(*args, **kwargs)
 
     def send_mail(self):
         # get plain pdf from rml

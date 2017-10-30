@@ -166,7 +166,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 
 class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
     list_display    = (
-        'id', 'download_tag', 'subject_name', 'participant', 'price',
+        'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
         'created', 'approved', 'cancel_request', 'canceled',
     )

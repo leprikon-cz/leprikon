@@ -51,6 +51,10 @@
                 <td><para style="para">{{ object.subject.course.get_times_list }}</para></td>
             </tr>
             {% endif %}
+            <tr>
+                <td>{% trans 'Registration number (variable symbol)' %}</td>
+                <td><para style="para">{{ object.variable_symbol }}</para></td>
+            </tr>
         </blockTable>
 
         <spacer length="5mm"/>

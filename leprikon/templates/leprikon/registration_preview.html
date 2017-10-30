@@ -2,6 +2,7 @@
 <div class="box box-registration" name="{{ reg.slug }}">
     <div class="box-header">
         <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.subject.name }}{% if reg.canceled %}</s>{% endif %}</strong>
+        <small>({% trans 'registration number' %}: {{ reg.variable_symbol }})</small>
         <a class="btn btn-primary btn-xs" href="{{ reg.get_absolute_url }}">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             {% trans 'download' %}
