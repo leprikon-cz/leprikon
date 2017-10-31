@@ -100,12 +100,12 @@ def amount_color(amount):
         return settings.LEPRIKON_COLOR_ZERO
 
 
-def comma_separated(l):
-    l = list(map(smart_text, l))
-    if len(l) > 2:
-        return _(', and ').join([', '.join(l[:-1]), l[-1]])
+def comma_separated(lst):
+    lst = list(map(smart_text, lst))
+    if len(lst) > 2:
+        return _(', and ').join([', '.join(lst[:-1]), lst[-1]])
     else:
-        return _(', and ').join(l)
+        return _(', and ').join(lst)
 
 
 def get_rand_hash(length=32, stringset=string.ascii_letters + string.digits):
