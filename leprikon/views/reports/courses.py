@@ -73,7 +73,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
         @cached_property
         def registrations(self):
             return list(self.course.registrations.filter(
-                created__lte=self.date,
+                approved__lte=self.date,
             ))
 
         RegPaymentStatuses = namedtuple('RegPaymentStatuses', ('registration', 'status'))
@@ -117,7 +117,7 @@ class ReportCourseStatsView(ReportBaseView):
         courses = Course.objects.filter(periods__start__lte=d, periods__end__gte=d).distinct()
         context['courses_count'] = courses.count()
 
-        registrations = CourseRegistration.objects.filter(subject__in=courses, created__lte=d).exclude(canceled__lte=d)
+        registrations = CourseRegistration.objects.filter(subject__in=courses, approved__lte=d).exclude(canceled__lte=d)
 
         context['registrations_counts'] = self.ReportItem(
             age_group=None,

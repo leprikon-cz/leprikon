@@ -65,7 +65,7 @@ class ReportEventPaymentsStatusView(ReportBaseView):
         @cached_property
         def registrations(self):
             return list(self.event.registrations.filter(
-                created__lte=self.date,
+                approved__lte=self.date,
             ))
 
         RegPaymentStatus = namedtuple('RegPaymentStatus', ('registration', 'status'))
