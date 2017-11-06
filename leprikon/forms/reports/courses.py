@@ -18,4 +18,5 @@ class CoursePaymentsStatusForm(FormMixin, forms.Form):
 
 
 class CourseStatsForm(FormMixin, forms.Form):
-    date = forms.DateField(label=_('Statistics for date'))
+    date        = forms.DateField(label=_('Statistics for date'))
+    paid_only   = forms.BooleanField(label=_('Count only paid registrations'), required=False)

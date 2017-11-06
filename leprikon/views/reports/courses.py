@@ -103,44 +103,50 @@ class ReportCourseStatsView(ReportBaseView):
 
     ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'local', 'eu', 'noneu'))
 
-    EU_countries    = [
+    all_EU_countries    = [
         'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
         'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB',
     ]
-    EU_countries.remove(settings.LEPRIKON_COUNTRY)
+    other_EU_countries = [country for country in all_EU_countries if country != settings.LEPRIKON_COUNTRY]
 
     def form_valid(self, form):
-        d       = form.cleaned_data['date']
-        context = form.cleaned_data
+        d               = form.cleaned_data['date']
+        paid_only       = form.cleaned_data['paid_only']
+        context         = form.cleaned_data
         context['form'] = form
 
         courses = Course.objects.filter(periods__start__lte=d, periods__end__gte=d).distinct()
         context['courses_count'] = courses.count()
 
         registrations = CourseRegistration.objects.filter(subject__in=courses, approved__lte=d).exclude(canceled__lte=d)
+        if paid_only:
+            registrations = [
+                reg for reg in registrations
+                if reg.get_payment_statuses(d).partial.balance >= 0
+            ]
+        else:
+            registrations = list(registrations)
 
         context['registrations_counts'] = self.ReportItem(
             age_group=None,
-            all=registrations.count(),
-            boys=registrations.filter(participant_gender=Participant.MALE).count(),
-            girls=registrations.filter(participant_gender=Participant.FEMALE).count(),
-            local=registrations.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
-            eu=registrations.filter(participant_citizenship__in=self.EU_countries).count(),
-            noneu=registrations.exclude(participant_citizenship__in=self.EU_countries +
-                                        [settings.LEPRIKON_COUNTRY]).count(),
+            all=len(registrations),
+            boys=len([r for r in registrations if r.participant_gender == Participant.MALE]),
+            girls=len([r for r in registrations if r.participant_gender == Participant.FEMALE]),
+            local=len([r for r in registrations if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
+            eu=len([r for r in registrations if r.participant_citizenship in self.other_EU_countries]),
+            noneu=len([r for r in registrations if r.participant_citizenship not in self.all_EU_countries]),
         )
         context['registrations_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
-            regs = registrations.filter(participant_age_group=age_group)
+            regs = [r for r in registrations if r.participant_age_group == age_group]
             context['registrations_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
-                all=regs.count(),
-                boys=regs.filter(participant_gender=Participant.MALE).count(),
-                girls=regs.filter(participant_gender=Participant.FEMALE).count(),
-                local=regs.filter(participant_citizenship=settings.LEPRIKON_COUNTRY).count(),
-                eu=regs.filter(participant_citizenship__in=self.EU_countries).count(),
-                noneu=regs.exclude(participant_citizenship__in=self.EU_countries +
-                                   [settings.LEPRIKON_COUNTRY]).count(),
+                all=len(regs),
+                boys=len([r for r in regs if r.participant_gender == Participant.MALE]),
+                girls=len([r for r in regs if r.participant_gender == Participant.FEMALE]),
+                local=len([r for r in regs if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
+                eu=len([r for r in regs if r.participant_citizenship in self.other_EU_countries]),
+                noneu=len([r for r in regs if r.participant_citizenship not in self.all_EU_countries]),
             ))
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
