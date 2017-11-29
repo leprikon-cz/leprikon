@@ -236,7 +236,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     )
     actions         = ('approve', 'cancel')
     search_fields   = (
-        'participant_birth_num', 'participant_first_name', 'participant_last_name',
+        'variable_symbol', 'participant_birth_num',
+        'participant_first_name', 'participant_last_name',
         'parent1_first_name', 'parent1_last_name',
         'parent2_first_name', 'parent2_last_name',
     )
@@ -304,20 +305,16 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
     list_display    = (
-        'id', 'subject', 'participant', 'created', 'canceled',
+        'id', 'variable_symbol', 'subject', 'participant', 'created', 'canceled',
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
         ('subject__managers',       ManagerListFilter),
         ('subject__subject_type',   SubjectTypeListFilter),
+        ApprovedListFilter,
+        CanceledListFilter,
         ('subject',                 SubjectListFilter),
         ('subject__leaders',        LeaderListFilter),
-    )
-    search_fields   = (
-        'participant_birth_num',
-        'participant_first_name', 'participant_last_name',
-        'parent1_first_name', 'parent1_last_name',
-        'parent2_first_name', 'parent2_last_name',
     )
     ordering        = ('-created',)
     fieldsets       = ((None, {'fields': ()}),)
