@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
+if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
+    su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
+fi
+
+# configure and run supervisord with components specified
+# in environment variable SUPERVISORD_RUN (space separated).
+# Runs all components (*) by default.
+#
+# Example:
+#   SUPERVISORD_RUN="nginx uwsgi" /app/bin/run-supervisord
+
+cp /app/conf/supervisord.base.conf /app/run/supervisord.conf
+
+for component in ${SUPERVISORD_RUN:-'*'}; do
+    cat /app/conf/supervisord/$component.conf >> /app/run/supervisord.conf
+done
+
+exec supervisord -c /app/run/supervisord.conf

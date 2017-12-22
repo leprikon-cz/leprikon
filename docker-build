@@ -1,3 +1,7 @@
 #!/bin/bash
 
-exec docker build "$@" --tag leprikon/leprikon .
+if [ -w /var/run/docker.sock ]; then
+    exec docker build "$@" --tag leprikon/leprikon:testing .
+else
+    exec sudo docker build "$@" --tag leprikon/leprikon:testing .
+fi

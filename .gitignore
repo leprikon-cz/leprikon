@@ -1,11 +1,14 @@
+*.egg-info
 *.pyc
 *.pyo
-*.egg-info
 *.swp
 *~
+/.coverage
+/.ipython
+/.tox
 /build
+/data
 /dist
 /env
 /htdocs
-/.coverage
-/.tox
+/mysql

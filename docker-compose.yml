@@ -1,38 +1,32 @@
-version: '2'
+version: '3.4'
 services:
 
   leprikon:
-    image: leprikon/leprikon
-    command:
-      - ./run-uwsgi
+    image: leprikon/leprikon:testing
     depends_on:
-      - memcached
       - db
-    links:
       - memcached
     environment:
+      DEBUG: TEMPLATE
+      SECRET_KEY: secretkey
       DATABASE_ENGINE: django.db.backends.mysql
       DATABASE_HOST: ''
       DATABASE_NAME: leprikon
       DATABASE_PASSWORD: leprikonpassword
       DATABASE_USER: leprikon
       MEMCACHED_LOCATION: memcached:11211
-    volumes:
-      - /app/run
-      - ./htdocs/media:/app/htdocs/media:z
-    volumes_from:
-      - db
-
-  proxy:
-    depends_on:
-      - leprikon
-    image: leprikon/leprikon
-    command: ./run-nginx
-    tty: true
-    volumes_from:
-      - leprikon
     ports:
-      - 8000:80/tcp
+      - 127.0.0.1:8000:80
+    restart: unless-stopped
+    volumes:
+      - ./.ipython:/root/.ipython:z
+      - ./leprikon:/app/leprikon:z
+      - ./leprikon_tests:/app/leprikon_tests:z
+      - ./bin:/app/bin:z
+      - ./conf:/app/conf:z
+      - ./data:/app/data:z
+      - ./htdocs/media:/app/htdocs/media:z
+      - db:/var/run/mysqld:z
 
   db:
     image: mariadb
@@ -41,9 +35,16 @@ services:
       MYSQL_PASSWORD: leprikonpassword
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_USER: leprikon
+    restart: unless-stopped
     volumes:
-      - /var/run/mysqld
-      - ./mysql:/var/lib/mysql:Z
+      - db:/var/run/mysqld:z
+      - ./mysql:/var/lib/mysql:z
 
   memcached:
     image: memcached
+    ports:
+      - 127.0.0.1:11211:11211
+    restart: unless-stopped
+
+volumes:
+  db:

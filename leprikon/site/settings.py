@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     'verified_email_field',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'cms.middleware.utils.ApphookReloadMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -94,12 +94,12 @@ MIDDLEWARE = [
     'leprikon.middleware.LeprikonMiddleware',
 ]
 
-ROOT_URLCONF = 'leprikon.site.urls'
+ROOT_URLCONF = os.environ.get('ROOT_URLCONF', 'leprikon.site.urls')
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -131,7 +131,7 @@ if DEBUG_TEMPLATE:
     del TEMPLATES[0]['OPTIONS']['loaders']
     TEMPLATES[0]['APP_DIRS'] = True
 
-WSGI_APPLICATION = 'leprikon.site.wsgi.application'
+WSGI_APPLICATION = os.environ.get('UWSGI_MODULE', 'leprikon.site.wsgi:application').replace(':', '.')
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
@@ -182,7 +182,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+] if not DEBUG else []
 
 
 # Internationalization
@@ -213,13 +213,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'htdocs', 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'htdocs', 'static')
 
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] if os.path.exists(os.path.join(BASE_DIR, 'static')) else []
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'staticfiles_downloader.DownloaderFinder',
 ]
 
-# Static files (CSS, JavaScript, Images)
+# Logging
 # https://docs.djangoproject.com/en/1.10/topics/logging/
 
 LOGGING = {
@@ -303,7 +304,7 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Leprikón] ')
+EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Leprikón] ').strip() + ' '
 
 # CMS configuration
 # http://djangocms.readthedocs.io/en/latest/reference/configuration/
