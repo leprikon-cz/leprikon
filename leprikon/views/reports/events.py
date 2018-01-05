@@ -9,10 +9,14 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from . import ReportBaseView
-from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
-from ...models.events import Event
+from ...conf import settings
+from ...forms.reports.events import (
+    EventPaymentsForm, EventPaymentsStatusForm, EventStatsForm,
+)
+from ...models.agegroup import AgeGroup
+from ...models.events import Event, EventRegistration
+from ...models.roles import Participant
 from ...models.subjects import SubjectPayment, SubjectType
-from ...models.utils import PaymentStatus
 
 
 class ReportEventPaymentsView(ReportBaseView):
@@ -83,3 +87,62 @@ class ReportEventPaymentsStatusView(ReportBaseView):
         @cached_property
         def status(self):
             return sum(rs.status for rs in self.registration_statuses)
+
+
+
+class ReportEventStatsView(ReportBaseView):
+    form_class      = EventStatsForm
+    template_name   = 'leprikon/reports/event_stats.html'
+    title           = _('Event statistics')
+    submit_label    = _('Show')
+    back_url        = reverse('leprikon:report_list')
+
+    ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'local', 'eu', 'noneu'))
+
+    all_EU_countries    = [
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
+        'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB',
+    ]
+    other_EU_countries = [country for country in all_EU_countries if country != settings.LEPRIKON_COUNTRY]
+
+    def form_valid(self, form):
+        d               = form.cleaned_data['date']
+        paid_only       = form.cleaned_data['paid_only']
+        context         = form.cleaned_data
+        context['form'] = form
+
+        events = Event.objects.filter(school_year=self.request.school_year)
+        context['events_count'] = events.count()
+
+        registrations = EventRegistration.objects.filter(subject__in=events, approved__lte=d).exclude(canceled__lte=d)
+        if paid_only:
+            registrations = [
+                reg for reg in registrations
+                if reg.get_payment_status(d).balance >= 0
+            ]
+        else:
+            registrations = list(registrations)
+
+        context['registrations_counts'] = self.ReportItem(
+            age_group=None,
+            all=len(registrations),
+            boys=len([r for r in registrations if r.participant_gender == Participant.MALE]),
+            girls=len([r for r in registrations if r.participant_gender == Participant.FEMALE]),
+            local=len([r for r in registrations if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
+            eu=len([r for r in registrations if r.participant_citizenship in self.other_EU_countries]),
+            noneu=len([r for r in registrations if r.participant_citizenship not in self.all_EU_countries]),
+        )
+        context['registrations_counts_by_age_groups'] = []
+        for age_group in AgeGroup.objects.all():
+            regs = [r for r in registrations if r.participant_age_group == age_group]
+            context['registrations_counts_by_age_groups'].append(self.ReportItem(
+                age_group=age_group,
+                all=len(regs),
+                boys=len([r for r in regs if r.participant_gender == Participant.MALE]),
+                girls=len([r for r in regs if r.participant_gender == Participant.FEMALE]),
+                local=len([r for r in regs if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
+                eu=len([r for r in regs if r.participant_citizenship in self.other_EU_countries]),
+                noneu=len([r for r in regs if r.participant_citizenship not in self.all_EU_countries]),
+            ))
+
+        return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))

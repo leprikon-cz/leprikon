@@ -1,0 +1,52 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if form.is_valid %}
+<h1>{% blocktrans with date=date %}Event statistics for {{ date }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Events count' %}</th>
+        <td colspan="6">{{ events_count }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Age Group' %}</th>
+        <th>{% trans 'Registrations' %}</th>
+        <th>{% trans 'Boys' %}</th>
+        <th>{% trans 'Girls' %}</th>
+        <th>{% trans 'Locals' %}</th>
+        <th>{% trans 'Foreigners EU' %}</th>
+        <th>{% trans 'Foreigners non-EU' %}</th>
+    </tr>
+    {% for counts in registrations_counts_by_age_groups %}
+    <tr>
+        <th>{{ counts.age_group.title }}</th>
+        <td class="right">{{ counts.all }}</td>
+        <td class="right">{{ counts.boys }}</td>
+        <td class="right">{{ counts.girls }}</td>
+        <td class="right">{{ counts.local }}</td>
+        <td class="right">{{ counts.eu }}</td>
+        <td class="right">{{ counts.noneu }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <th>{% trans 'Total' %}</th>
+        <td class="right">{{ registrations_counts.all }}</td>
+        <td class="right">{{ registrations_counts.boys }}</td>
+        <td class="right">{{ registrations_counts.girls }}</td>
+        <td class="right">{{ registrations_counts.local }}</td>
+        <td class="right">{{ registrations_counts.eu }}</td>
+        <td class="right">{{ registrations_counts.noneu }}</td>
+    </tr>
+</table>
+{% endif %}
+
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+
+{% endblock %}

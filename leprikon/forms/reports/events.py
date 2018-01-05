@@ -13,3 +13,8 @@ class EventPaymentsForm(GetFormMixin, forms.Form):
 
 class EventPaymentsStatusForm(GetFormMixin, forms.Form):
     date    = forms.DateField(label=_('Status for date'))
+
+
+class EventStatsForm(GetFormMixin, forms.Form):
+    date        = forms.DateField(label=_('Statistics for date'))
+    paid_only   = forms.BooleanField(label=_('Count only paid registrations'), required=False)

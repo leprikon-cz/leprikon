@@ -109,6 +109,7 @@ report_course_payments_status   = staff_required(reports_courses.ReportCoursePay
 report_course_stats             = staff_required(reports_courses.ReportCourseStatsView.as_view())
 report_event_payments           = staff_required(reports_events.ReportEventPaymentsView.as_view())
 report_event_payments_status    = staff_required(reports_events.ReportEventPaymentsStatusView.as_view())
+report_event_stats              = staff_required(reports_events.ReportEventStatsView.as_view())
 report_debtors                  = staff_required(reports_debtors.ReportDebtorsView.as_view())
 
 terms_conditions                = terms_conditions.TermsConditionsView.as_view()

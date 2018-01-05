@@ -9,7 +9,9 @@ from ...forms.reports.courses import (
     CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm,
 )
 from ...forms.reports.debtors import DebtorsForm
-from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
+from ...forms.reports.events import (
+    EventPaymentsForm, EventPaymentsStatusForm, EventStatsForm,
+)
 from ..generic import GetFormView, TemplateView
 
 
@@ -52,6 +54,12 @@ class ReportsListView(TemplateView):
                 instructions    = '',
                 form            = self.get_form(CourseStatsForm),
                 url             = reverse('leprikon:report_course_stats'),
+            ),
+            self.Report(
+                title           = _('Event statistics'),
+                instructions    = '',
+                form            = self.get_form(EventStatsForm),
+                url             = reverse('leprikon:report_event_stats'),
             ),
             self.Report(
                 title           = _('Debtors list'),
