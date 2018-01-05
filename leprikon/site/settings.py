@@ -35,6 +35,7 @@ if not SECRET_KEY:
 DEBUG = os.environ.get('DEBUG', '') and True or False
 DBDEBUG = 'DB' in os.environ.get('DEBUG', '').split(',')
 DEBUG_TEMPLATE = 'TEMPLATE' in os.environ.get('DEBUG', '').split(',')
+DEBUG_LML = 'LML' in os.environ.get('DEBUG', '').split(',')
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',')]
 
@@ -251,6 +252,10 @@ LOGGING = {
         },
     },
 }
+if not DEBUG_LML:
+    LOGGING['loggers']['lml'] = {'level': 'WARNING'}
+    LOGGING['loggers']['pyexcel'] = {'level': 'WARNING'}
+    LOGGING['loggers']['pyexcel_io'] = {'level': 'WARNING'}
 
 try:
     import raven
