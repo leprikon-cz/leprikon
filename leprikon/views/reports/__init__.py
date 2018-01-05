@@ -10,7 +10,7 @@ from ...forms.reports.courses import (
 )
 from ...forms.reports.debtors import DebtorsForm
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm
-from ..generic import FormView, TemplateView
+from ..generic import GetFormView, TemplateView
 
 
 class ReportsListView(TemplateView):
@@ -63,7 +63,7 @@ class ReportsListView(TemplateView):
 
 
 
-class ReportBaseView(FormView):
+class ReportBaseView(GetFormView):
 
     def get_form_kwargs(self):
         kwargs = super(ReportBaseView, self).get_form_kwargs()

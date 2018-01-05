@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 class FormMixin(object):
     required_css_class = 'required'
+    use_get = False
 
     def __init__(self, *args, **kwargs):
         super(FormMixin, self).__init__(*args, **kwargs)
@@ -14,3 +15,7 @@ class FormMixin(object):
             # add data-type
             if 'data-type' not in self.fields[f].widget.attrs:
                 self.fields[f].widget.attrs['data-type'] = self.fields[f].__class__.__name__
+
+
+class GetFormMixin(FormMixin):
+    use_get = True

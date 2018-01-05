@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from ..form import FormMixin
+from ..form import GetFormMixin
 
 
-class DebtorsForm(FormMixin, forms.Form):
+class DebtorsForm(GetFormMixin, forms.Form):
     date = forms.DateField(label=_('Status for date'))

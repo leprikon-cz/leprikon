@@ -15,7 +15,8 @@
     <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endfor %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
+<form action="" method="{% if form.use_get %}get{% else %}post{% endif %}" class="form-horizontal">
+    {% if not form.use_get %}{% csrf_token %}{% endif %}
     {% for ro in form.readonly_fields %}
     <div class="form-group required">
         <label class="control-label col-md-3">{{ ro.label }}</label>
