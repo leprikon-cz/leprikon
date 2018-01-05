@@ -9,7 +9,9 @@ from django.utils.translation import (
     ugettext_lazy as _, ungettext_lazy as ungettext,
 )
 
-from ..models.courses import CourseJournalEntry, CourseJournalLeaderEntry
+from ..models.courses import (
+    CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
+)
 from ..models.roles import Leader
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated
@@ -17,6 +19,26 @@ from .fields import ReadonlyField
 from .form import FormMixin
 
 User = get_user_model()
+
+
+class CourseDiscountAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = CourseDiscount
+        fields = ['registration', 'period', 'amount', 'explanation']
+
+    def __init__(self, *args, **kwargs):
+        super(CourseDiscountAdminForm, self).__init__(*args, **kwargs)
+        if 'period' in self.fields:
+            if self.data:
+                registration_id = int(self.data['registration'])
+            elif self.initial:
+                registration_id = int(self.initial['registration'])
+            else:
+                registration_id = self.instance.registration_id
+            self.fields['period'].widget.choices.queryset = self.fields['period'].widget.choices.queryset.filter(
+                courses__registrations__id = registration_id
+            )
 
 
 class CourseJournalLeaderEntryAdminForm(forms.ModelForm):

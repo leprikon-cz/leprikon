@@ -11,7 +11,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.courses import (
-    CourseJournalEntryAdminForm, CourseJournalLeaderEntryAdminForm,
+    CourseDiscountAdminForm, CourseJournalEntryAdminForm,
+    CourseJournalLeaderEntryAdminForm,
 )
 from ..models.courses import (
     Course, CourseJournalLeaderEntry, CourseRegistration,
@@ -249,13 +250,14 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
 
 
 class CourseDiscountAdmin(SubjectPaymentAdmin):
+    form            = CourseDiscountAdminForm
     list_display    = ('created', 'registration', 'subject', 'period', 'amount_html', 'explanation')
 
     def get_model_perms(self, request):
         return {}
 
     def get_readonly_fields(self, request, obj=None):
-        return obj and ('registration', 'period', 'amount') or ()
+        return ('registration', 'period', 'amount') if obj else ()
 
 
 
