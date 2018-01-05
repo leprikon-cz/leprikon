@@ -327,23 +327,25 @@ class CourseRegistration(SubjectRegistration):
             d = date.today()
         if self.approved:
             if self.approved.date() <= d:
-                partial_price = self.price * len(list(filter(lambda p: p.start <= d, self.all_periods)))
+                partial_price = self.price * len(list(p for p in self.all_periods if p.start <= d))
             else:
                 partial_price = 0
             total_price = self.price * len(self.all_periods)
         else:
             partial_price = 0
             total_price = 0
-        partial_discount    = sum(
-            discount.amount
-            for discount in filter(lambda discount: discount.period.start <= d, self.all_discounts)
-        )
-        total_discount  = sum(discount.amount for discount in self.all_discounts)
-        paid            = self.get_paid(d)
+        discounted  = self.get_discounted(d)
+        partial_discounted  = self.get_partial_discounted(d)
+        paid        = self.get_paid(d)
         return self.PaymentStatuses(
-            partial = PaymentStatus(price=partial_price, discount=partial_discount, paid=paid),
-            total   = PaymentStatus(price=total_price, discount=total_discount, paid=paid),
+            partial = PaymentStatus(price=partial_price, discount=partial_discounted, paid=paid),
+            total   = PaymentStatus(price=total_price, discount=discounted, paid=paid),
         )
+
+    def get_partial_discounted(self, d=None):
+        if d is None:
+            d = date.today()
+        return sum(p.amount for p in self.get_discounts(d) if p.period.start <= d)
 
 
 

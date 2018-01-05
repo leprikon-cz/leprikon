@@ -7,14 +7,14 @@
 </div>
 
 {% if reports %}
-<h1>{% blocktrans with date=date %}Course payment status by date {{ date }}{% endblocktrans %}</h1>
+<h1>{% blocktrans with date=date %}Course payments status by date {{ date }}{% endblocktrans %}</h1>
 
 <table class="table table-hover">
     <tr>
         <th>{% trans 'Course' %}</th>
         <th>{% trans 'Price' %}</th>
         <th>{% trans 'Number of registrations' %}</th>
-        <th>{% trans 'Discount' %}</th>
+        <th>{% trans 'Discounts' %}</th>
         <th>{% trans 'Receivables' %}</th>
         <th>{% trans 'Received payments' %}</th>
         <th>{% trans 'Balance' %}</th>
@@ -29,7 +29,7 @@
         <td class="right">{{ report.course.price | currency }}</td>
         <td class="right">{{ report.registrations | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
-        <td class="right">{{ report.status.price | currency }}</td>
+        <td class="right">{{ report.status.receivable | currency }}</td>
         <td class="right">{{ report.status.paid | currency }}</td>
         <td class="right">
             <strong style="color: {{ report.status.color }}" title="{{ report.status.title }}">
@@ -40,12 +40,14 @@
     {% for rs in report.registration_statuses %}
     <tr class="collapse out {{ report.course.id }}-collapsed">
         <th class="right" colspan="3">
-            <a href="{% url 'admin:leprikon_courseregistration_change' rs.registration.id %}">
+            <a href="{% url 'admin:leprikon_courseregistration_changelist' %}?id={{ rs.registration.id }}">
                 {{ rs.registration.participant }}
             </a>
         </th>
         <td class="right">
-            {{ rs.status.discount | currency }}
+            <a href="{% url 'admin:leprikon_coursediscount_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.discount | currency }}
+            </a>
         </td>
         <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">

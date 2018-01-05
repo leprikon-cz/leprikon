@@ -82,8 +82,4 @@ class ReportEventPaymentsStatusView(ReportBaseView):
 
         @cached_property
         def status(self):
-            return PaymentStatus(
-                price       = sum(rs.status.price    for rs in self.registration_statuses),
-                paid        = sum(rs.status.paid     for rs in self.registration_statuses),
-                discount    = sum(rs.status.discount for rs in self.registration_statuses),
-            )
+            return sum(rs.status for rs in self.registration_statuses)

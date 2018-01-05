@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-06 19:45+0100\n"
+"POT-Creation-Date: 2018-01-05 22:49+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -19,80 +19,80 @@ msgstr ""
 msgid "Leprikon administration"
 msgstr "Správa systému Leprikón"
 
-#: admin/courses.py:85
+#: admin/courses.py:86
 msgid "Selected courses were published."
 msgstr "Vybrané kurzy byly zveřejněny."
 
-#: admin/courses.py:86
+#: admin/courses.py:87
 msgid "Publish selected courses"
 msgstr "Zveřejnit vybrané kurzy"
 
-#: admin/courses.py:90
+#: admin/courses.py:91
 msgid "Selected courses were unpublished."
 msgstr "Vybrané kurzy byly skryty."
 
-#: admin/courses.py:91
+#: admin/courses.py:92
 msgid "Unpublish selected courses"
 msgstr "Skrýt vybrané kurzy"
 
-#: admin/courses.py:96 admin/events.py:67 admin/roles.py:38 admin/roles.py:133
+#: admin/courses.py:97 admin/events.py:67 admin/roles.py:38 admin/roles.py:133
 msgid "Target school year"
 msgstr "Cílový školní rok"
 
-#: admin/courses.py:97
+#: admin/courses.py:98
 msgid "All selected courses will be copied to selected school year."
 msgstr "Vybrané kurzy budou zkopírovány do vybraného školního roku."
 
-#: admin/courses.py:106
+#: admin/courses.py:107
 msgid "Selected courses were copied to school year {}."
 msgstr "Vybrané kurzy byly zkopírovány do školního roku {}."
 
-#: admin/courses.py:114 admin/events.py:85 admin/roles.py:53 admin/roles.py:148
+#: admin/courses.py:115 admin/events.py:85 admin/roles.py:53 admin/roles.py:148
 msgid "Select target school year"
 msgstr "Vyberte cílový školní rok"
 
-#: admin/courses.py:122
+#: admin/courses.py:123
 msgid "Copy selected courses to another school year"
 msgstr "Kopírovat vybrané kurzy do jiného školního roku"
 
-#: admin/courses.py:132
+#: admin/courses.py:133
 msgid "printable course journal"
 msgstr "tisknutelný deník kurzu"
 
-#: admin/courses.py:133 admin/courses.py:135
+#: admin/courses.py:134 admin/courses.py:136
 #: templates/leprikon/subject_preview.html:94
 msgid "journal"
 msgstr "deník"
 
-#: admin/courses.py:198 admin/events.py:124
+#: admin/courses.py:199 admin/events.py:124
 msgid "add discount"
 msgstr "přidat slevu"
 
-#: admin/courses.py:200
+#: admin/courses.py:201
 msgid "course discounts"
 msgstr "slevy na kurz"
 
-#: admin/courses.py:217 admin/events.py:139
+#: admin/courses.py:218 admin/events.py:139
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/courses.py:219
+#: admin/courses.py:220
 msgid "course payments"
 msgstr "platby za kurzy"
 
-#: admin/courses.py:223 admin/courses.py:237
+#: admin/courses.py:224 admin/courses.py:238
 msgid "actual balance"
 msgstr "aktuální zůstatek"
 
-#: admin/courses.py:227 admin/courses.py:247
+#: admin/courses.py:228 admin/courses.py:248
 msgid "total balance"
 msgstr "celkový zůstatek"
 
-#: admin/courses.py:310 admin/timesheets.py:63
+#: admin/courses.py:312 admin/timesheets.py:63
 msgid "update entry"
 msgstr "upravit záznam"
 
-#: admin/courses.py:311 admin/timesheets.py:64
+#: admin/courses.py:313 admin/timesheets.py:64
 #: templates/leprikon/course_journal.html:133
 #: templates/leprikon/course_journal.html:216
 #: templates/leprikon/course_journal.html:245
@@ -105,14 +105,14 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/courses.py:350 models/courses.py:36 models/courses.py:226
-#: models/courses.py:360 models/courses.py:362 models/courses.py:429
-#: models/courses.py:547 models/courses.py:575 models/subjects.py:48
+#: admin/courses.py:352 models/courses.py:36 models/courses.py:226
+#: models/courses.py:362 models/courses.py:364 models/courses.py:431
+#: models/courses.py:549 models/courses.py:577 models/subjects.py:48
 #: templates/leprikon/course_alternating.html:15
 msgid "course"
 msgstr "kurz"
 
-#: admin/courses.py:355
+#: admin/courses.py:357
 msgid "agenda"
 msgstr "program"
 
@@ -377,33 +377,33 @@ msgstr "Vyberte datumy přihlašování"
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:261
+#: admin/subjects.py:262
 msgid "Selected registrations were approved."
 msgstr "Vybrané přihlášky byly schváleny."
 
-#: admin/subjects.py:262
+#: admin/subjects.py:263
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:267
+#: admin/subjects.py:268
 msgid "Selected registrations were canceled."
 msgstr "Vybrané přihlášky byly stornovány."
 
-#: admin/subjects.py:268
+#: admin/subjects.py:269
 msgid "Cancel selected registrations"
 msgstr "Stornovat vybrané přihlášky"
 
-#: admin/subjects.py:290 admin/subjects.py:389 models/messages.py:23
+#: admin/subjects.py:291 admin/subjects.py:386 models/messages.py:23
 #: models/roles.py:290 models/subjects.py:192 models/subjects.py:311
 #: models/subjects.py:332
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:294 templates/leprikon/registration_preview.html:8
+#: admin/subjects.py:295 templates/leprikon/registration_preview.html:8
 msgid "download"
 msgstr "stažení"
 
-#: admin/subjects.py:397 models/subjects.py:707
+#: admin/subjects.py:394 models/subjects.py:707
 msgid "amount"
 msgstr "částka"
 
@@ -483,7 +483,7 @@ msgstr "přihlásit"
 msgid "Leprikon"
 msgstr "Leprikón"
 
-#: cms_plugins/courses.py:14 forms/courses.py:68 forms/courses.py:176
+#: cms_plugins/courses.py:14 forms/courses.py:90 forms/courses.py:198
 #: templates/leprikon/reports/course_payments_status.html:14
 msgid "Course"
 msgstr "Kurz"
@@ -509,7 +509,7 @@ msgstr "Výpis akcí"
 msgid "Event list with search form"
 msgstr "Výpis akcí s vyhledávacím formulářem"
 
-#: cms_plugins/leaders.py:14 forms/courses.py:70 forms/subjects.py:26
+#: cms_plugins/leaders.py:14 forms/courses.py:92 forms/subjects.py:26
 #: menu.py:50
 msgid "Leader"
 msgstr "Vedoucí"
@@ -566,17 +566,17 @@ msgstr "výběr"
 msgid "date field"
 msgstr "datum"
 
-#: forms/courses.py:49
+#: forms/courses.py:71
 #, python-brace-format
 msgid "The course journal entry starts at {start}"
 msgstr "Záznam deníku začíná v {start}."
 
-#: forms/courses.py:53
+#: forms/courses.py:75
 #, python-brace-format
 msgid "The course journal entry ends at {end}"
 msgstr "Záznam deníku končí v {end}."
 
-#: forms/courses.py:69 forms/courses.py:95 forms/timesheets.py:31
+#: forms/courses.py:91 forms/courses.py:117 forms/timesheets.py:31
 #: templates/leprikon/course_journal.html:198
 #: templates/leprikon/messages_table.html:7
 #: templates/leprikon/reports/course_payments.html:14
@@ -584,51 +584,51 @@ msgstr "Záznam deníku končí v {end}."
 msgid "Date"
 msgstr "Datum"
 
-#: forms/courses.py:74 forms/timesheets.py:32
+#: forms/courses.py:96 forms/timesheets.py:32
 #: templates/leprikon/cms/event_list/default.html:26
 #: templates/leprikon/cms/event_list/grouped.html:28
 #: templates/leprikon/subject_preview.html:31
 msgid "Start"
 msgstr "Začátek"
 
-#: forms/courses.py:75 forms/timesheets.py:33
+#: forms/courses.py:97 forms/timesheets.py:33
 #: templates/leprikon/cms/event_list/default.html:29
 #: templates/leprikon/cms/event_list/grouped.html:31
 #: templates/leprikon/subject_preview.html:34
 msgid "End"
 msgstr "Konec"
 
-#: forms/courses.py:128
+#: forms/courses.py:150
 msgid "If You fill in start time, You must fill end time too."
 msgstr "Pokud vyplníte čas začátku, musíte vyplnit také čas konce."
 
-#: forms/courses.py:130
+#: forms/courses.py:152
 msgid "If You fill in end time, You must fill start time too."
 msgstr "Pokud vyplníte čas konce, musíte vyplnit také čas začátku."
 
-#: forms/courses.py:143
+#: forms/courses.py:165
 msgid "An overlaping entry has already been added in the course journal."
 msgstr "V deníku kurzu už je kolidující záznam."
 
-#: forms/courses.py:155
+#: forms/courses.py:177
 #, python-brace-format
 msgid "Some submitted timesheet entries start at {start}"
 msgstr "Některé odevzdané záznamy práce začínají v {start}"
 
-#: forms/courses.py:159
+#: forms/courses.py:181
 #, python-brace-format
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/courses.py:170 menu.py:132 templates/leprikon/course_journal.html:154
+#: forms/courses.py:192 menu.py:132 templates/leprikon/course_journal.html:154
 msgid "Leaders"
 msgstr "Vedoucí"
 
-#: forms/courses.py:171
+#: forms/courses.py:193
 msgid "Alternates"
 msgstr "Náhradní vedoucí"
 
-#: forms/courses.py:264
+#: forms/courses.py:286
 #, python-brace-format
 msgid "Leader {leaders} has already submitted timesheet for {period}."
 msgid_plural "Leaders {leaders} have already submitted timesheet for {period}."
@@ -636,7 +636,7 @@ msgstr[0] "Vedoucí {leaders} má již odevzdaný výkaz práce za {period}."
 msgstr[1] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 msgstr[2] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 
-#: forms/courses.py:273
+#: forms/courses.py:295
 #, python-brace-format
 msgid "Alternate {leaders} has already submitted timesheet for {period}."
 msgid_plural ""
@@ -664,16 +664,16 @@ msgstr "Datum začátku"
 msgid "End date"
 msgstr "Datum konce"
 
-#: forms/reports/courses.py:16 forms/reports/debtors.py:10
-#: forms/reports/events.py:16
+#: forms/reports/courses.py:15 forms/reports/debtors.py:10
+#: forms/reports/events.py:15
 msgid "Status for date"
 msgstr "Stav k datu"
 
-#: forms/reports/courses.py:21
+#: forms/reports/courses.py:19
 msgid "Statistics for date"
 msgstr "Statistiky k datu"
 
-#: forms/reports/courses.py:22
+#: forms/reports/courses.py:20
 msgid "Count only paid registrations"
 msgstr "Započítat pouze zaplacené přihlášky"
 
@@ -852,7 +852,7 @@ msgstr "pořadí"
 msgid "age group"
 msgstr "věková skupina"
 
-#: models/agegroup.py:19 models/courses.py:594 models/events.py:168
+#: models/agegroup.py:19 models/courses.py:596 models/events.py:168
 #: models/subjects.py:165
 msgid "age groups"
 msgstr "věkové skupiny"
@@ -873,12 +873,12 @@ msgstr "časy"
 msgid "day of week"
 msgstr "den v týdnu"
 
-#: models/courses.py:228 models/courses.py:432 models/courses.py:526
+#: models/courses.py:228 models/courses.py:434 models/courses.py:528
 #: models/events.py:25 models/timesheets.py:161
 msgid "start time"
 msgstr "čas začátku"
 
-#: models/courses.py:229 models/courses.py:434 models/courses.py:527
+#: models/courses.py:229 models/courses.py:436 models/courses.py:529
 #: models/events.py:26 models/timesheets.py:162
 msgid "end time"
 msgstr "čas konce"
@@ -903,126 +903,126 @@ msgstr "přihláška na kurz"
 msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
-#: models/courses.py:351 models/events.py:143 models/subjects.py:387
+#: models/courses.py:353 models/events.py:143 models/subjects.py:387
 #: models/subjects.py:703
 msgid "registration"
 msgstr "přihláška"
 
-#: models/courses.py:353 models/timesheets.py:74
+#: models/courses.py:355 models/timesheets.py:74
 msgid "period"
 msgstr "období"
 
-#: models/courses.py:370 models/courses.py:371
+#: models/courses.py:372 models/courses.py:373
 msgid "course registration history"
 msgstr "historie přihlášky na kurz"
 
-#: models/courses.py:377
+#: models/courses.py:379
 msgid "now"
 msgstr "nyní"
 
-#: models/courses.py:423
+#: models/courses.py:425
 msgid "instruction on OSH"
 msgstr "poučení o BOZP"
 
-#: models/courses.py:431 models/courses.py:541 models/timesheets.py:160
+#: models/courses.py:433 models/courses.py:543 models/timesheets.py:160
 #: templates/leprikon/course_alternating.html:14
 #: templates/leprikon/registration/subject.rml:171
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
 
-#: models/courses.py:433 models/courses.py:435
+#: models/courses.py:435 models/courses.py:437
 msgid "Leave empty, if the course does not take place"
 msgstr "Nevyplňujte, pokud se kurz nekonal"
 
-#: models/courses.py:436
+#: models/courses.py:438
 msgid "session agenda"
 msgstr "program schůzky"
 
-#: models/courses.py:437 models/roles.py:220
+#: models/courses.py:439 models/roles.py:220
 msgid "participants"
 msgstr "účastníci"
 
-#: models/courses.py:443
+#: models/courses.py:445
 msgid "journal entry"
 msgstr "záznam deníku"
 
-#: models/courses.py:444
+#: models/courses.py:446
 msgid "journal entries"
 msgstr "záznamy deníku"
 
-#: models/courses.py:472 models/courses.py:560 models/timesheets.py:185
+#: models/courses.py:474 models/courses.py:562 models/timesheets.py:185
 #: templates/leprikon/timesheet_detail.html:22
 msgid "duration"
 msgstr "doba trvání"
 
-#: models/courses.py:522
+#: models/courses.py:524
 msgid "course journal entry"
 msgstr "záznam deníku kurzu"
 
-#: models/courses.py:524 models/timesheets.py:87 models/timesheets.py:156
+#: models/courses.py:526 models/timesheets.py:87 models/timesheets.py:156
 msgid "timesheet"
 msgstr "výkaz práce"
 
-#: models/courses.py:531
+#: models/courses.py:533
 msgid "course journal leader entry"
 msgstr "záznam vedoucího v deníku kurzu"
 
-#: models/courses.py:532
+#: models/courses.py:534
 msgid "course journal leader entries"
 msgstr "záznamy vedoucích v deníku kurzu"
 
-#: models/courses.py:576 models/courses.py:600 models/events.py:150
+#: models/courses.py:578 models/courses.py:602 models/events.py:150
 #: models/events.py:174 models/roles.py:276 models/roles.py:293
 msgid "template"
 msgstr "šablona"
 
-#: models/courses.py:579 models/courses.py:603 models/events.py:153
+#: models/courses.py:581 models/courses.py:605 models/events.py:153
 #: models/events.py:177 models/roles.py:279 models/roles.py:296
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
-#: models/courses.py:587 models/courses.py:671 models/events.py:161
+#: models/courses.py:589 models/courses.py:673 models/events.py:161
 #: models/events.py:245 models/roles.py:288 models/roles.py:324
 #: models/schoolyear.py:40 models/schoolyear.py:59 models/subjects.py:156
 msgid "school year"
 msgstr "školní rok"
 
-#: models/courses.py:589 models/events.py:163 models/roles.py:126
+#: models/courses.py:591 models/events.py:163 models/roles.py:126
 #: models/subjects.py:161
 msgid "managers"
 msgstr "manažeři"
 
-#: models/courses.py:590 models/events.py:164
+#: models/courses.py:592 models/events.py:164
 msgid "Keep empty to skip searching by managers."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle manažerů."
 
-#: models/courses.py:591 models/courses.py:673
+#: models/courses.py:593 models/courses.py:675
 msgid "course types"
 msgstr "typy kurzů"
 
-#: models/courses.py:593
+#: models/courses.py:595
 msgid "Keep empty to skip searching by course types."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle typů kurzů."
 
-#: models/courses.py:595 models/events.py:169
+#: models/courses.py:597 models/events.py:169
 msgid "Keep empty to skip searching by age groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle věkových skupin."
 
-#: models/courses.py:596
+#: models/courses.py:598
 msgid "course groups"
 msgstr "skupiny kurzů"
 
-#: models/courses.py:597 models/events.py:171
+#: models/courses.py:599 models/events.py:171
 msgid "Keep empty to skip searching by groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin."
 
-#: models/courses.py:598 models/events.py:172 models/roles.py:40
+#: models/courses.py:600 models/events.py:172 models/roles.py:40
 #: models/subjects.py:166
 msgid "leaders"
 msgstr "vedoucí"
 
-#: models/courses.py:599 models/events.py:173
+#: models/courses.py:601 models/events.py:173
 msgid "Keep empty to skip searching by leaders."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle vedoucích."
 
@@ -1695,7 +1695,7 @@ msgstr "zbývá doplatit {}"
 msgid "{} overpaid"
 msgstr "přeplaceno {}"
 
-#: site/settings.py:193
+#: site/settings.py:192
 msgid "Czech"
 msgstr "Čeština"
 
@@ -2246,8 +2246,6 @@ msgid "The capacity is full."
 msgstr "Kapacita je naplněna."
 
 #: templates/leprikon/registration_payments_presences.html:5
-#: templates/leprikon/reports/course_payments_status.html:17
-#: templates/leprikon/reports/event_payments_status.html:17
 msgid "Discount"
 msgstr "Sleva"
 
@@ -2320,13 +2318,18 @@ msgstr "Částka"
 
 #: templates/leprikon/reports/course_payments_status.html:10
 #, python-format
-msgid "Course payment status by date %(date)s"
+msgid "Course payments status by date %(date)s"
 msgstr "Stav plateb za kurzy ke dni %(date)s"
 
 #: templates/leprikon/reports/course_payments_status.html:16
 #: templates/leprikon/reports/event_payments_status.html:16
 msgid "Number of registrations"
 msgstr "Počet přihlášek"
+
+#: templates/leprikon/reports/course_payments_status.html:17
+#: templates/leprikon/reports/event_payments_status.html:17
+msgid "Discounts"
+msgstr "Slevy"
 
 #: templates/leprikon/reports/course_payments_status.html:18
 #: templates/leprikon/reports/event_payments_status.html:18
@@ -2343,7 +2346,7 @@ msgstr "Přijaté platby"
 msgid "Balance"
 msgstr "Zůstatek"
 
-#: templates/leprikon/reports/course_payments_status.html:65
+#: templates/leprikon/reports/course_payments_status.html:67
 msgid "All courses"
 msgstr "Všechny kurzy"
 
@@ -2408,15 +2411,15 @@ msgstr "Platby za akce od %(date_start)s do %(date_end)s"
 
 #: templates/leprikon/reports/event_payments_status.html:10
 #, python-format
-msgid "Event payment status by date %(date)s"
+msgid "Event payments status by date %(date)s"
 msgstr "Stav plateb za akce ke dni %(date)s"
 
-#: templates/leprikon/reports/event_payments_status.html:65
+#: templates/leprikon/reports/event_payments_status.html:67
 msgid "All events"
 msgstr "Všechny akce"
 
 #: templates/leprikon/reports/index.html:36 views/reports/courses.py:26
-#: views/reports/courses.py:46 views/reports/courses.py:101
+#: views/reports/courses.py:46 views/reports/courses.py:97
 #: views/reports/debtors.py:19 views/reports/events.py:22
 #: views/reports/events.py:42
 msgid "Show"
@@ -2535,11 +2538,11 @@ msgstr "Žádné položky neodpovídají zadaným parametrům hledání."
 msgid "Save"
 msgstr "Uložit"
 
-#: views/generic.py:147
+#: views/generic.py:159
 msgid "Yes"
 msgstr "Ano"
 
-#: views/generic.py:190
+#: views/generic.py:202
 msgid "Delete"
 msgstr "Smazat"
 
@@ -2611,7 +2614,7 @@ msgstr "Stav plateb za kurzy"
 msgid "Event payments status"
 msgstr "Stav plateb za akce"
 
-#: views/reports/__init__.py:51 views/reports/courses.py:100
+#: views/reports/__init__.py:51 views/reports/courses.py:96
 msgid "Course statistics"
 msgstr "Statistiky kurzů"
 

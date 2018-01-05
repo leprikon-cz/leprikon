@@ -67,23 +67,19 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             self.date = d
 
         @cached_property
-        def periods(self):
-            return list(self.course.periods.filter(start__lte=self.date))
-
-        @cached_property
         def registrations(self):
             return list(self.course.registrations.filter(
                 approved__lte=self.date,
             ))
 
-        RegPaymentStatuses = namedtuple('RegPaymentStatuses', ('registration', 'status'))
+        RegPaymentStatus = namedtuple('RegPaymentStatus', ('registration', 'status'))
 
         @cached_property
         def registration_statuses(self):
             return [
-                self.RegPaymentStatuses(
+                self.RegPaymentStatus(
                     registration = registration,
-                    status       = registration.courseregistration.get_payment_statuses(self.date).partial,
+                    status       = registration.courseregistration.get_payment_statuses(self.date).total,
                 )
                 for registration in self.registrations
             ]
