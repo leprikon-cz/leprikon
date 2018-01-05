@@ -701,7 +701,8 @@ class SubjectPayment(models.Model):
         (RETURN_TRANSFER, _('return - transfer to payment')),
     ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
-                                        related_name='payments', on_delete=models.PROTECT)
+                                        related_name='payments', on_delete=models.PROTECT,
+                                        limit_choices_to={'approved__isnull': False})
     created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))

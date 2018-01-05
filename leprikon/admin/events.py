@@ -116,29 +116,39 @@ class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
 
     def event_discounts(self, obj):
         status = obj.get_payment_status()
-        return format_html(
-            '<a target="_blank" href="{href_list}"><b>{amount}</b></a> &nbsp; '
-            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
+        html = format_html(
+            '<a target="_blank" href="{href_list}"><b>{amount}</b></a>',
             href_list   = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
-            href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
-            add         = _('add discount'),
             amount      = currency(status.discount),
         )
+        if obj.approved:
+            html += format_html(
+                ' &nbsp; <a target="_blank" class="addlink" href="{href_add}" '
+                'style="background-position: 0 0" title="{add}"></a>',
+                href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
+                add         = _('add discount'),
+            )
+        return html
     event_discounts.allow_tags = True
     event_discounts.short_description = _('event discounts')
 
     def event_payments(self, obj):
         status = obj.get_payment_status()
-        return format_html(
-            '<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a> &nbsp; '
-            '<a target="_blank" class="addlink" href="{href_add}" style="background-position: 0 0" title="{add}"></a>',
+        html = format_html(
+            '<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>',
             color       = status.color,
             href_list   = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
-            href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
             title       = status.title,
-            add         = _('add payment'),
             amount      = currency(status.paid),
         )
+        if obj.approved:
+            html += format_html(
+                ' &nbsp; <a target="_blank" class="addlink" href="{href_add}" '
+                'style="background-position: 0 0" title="{add}"></a>',
+                href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+                add         = _('add payment'),
+            )
+        return html
     event_payments.allow_tags = True
     event_payments.short_description = _('event payments')
 

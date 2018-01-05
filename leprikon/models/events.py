@@ -141,7 +141,8 @@ class EventRegistration(SubjectRegistration):
 
 class EventDiscount(SubjectDiscount):
     registration    = models.ForeignKey(EventRegistration, verbose_name=_('registration'),
-                                        related_name='discounts', on_delete=models.PROTECT)
+                                        related_name='discounts', on_delete=models.PROTECT,
+                                        limit_choices_to={'approved__isnull': False})
 
 
 

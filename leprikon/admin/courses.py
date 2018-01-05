@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.courses import (
@@ -192,12 +191,15 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
                            '?registration={}&period={}'.format(obj.id, period.period.id)),
                 amount  = currency(period.status.discount),
             ))
-        return mark_safe('<br/>'.join(html) + format_html(
-            ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
-            ' style="background-position: 0 0" title="{title}"></a>',
-            href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
-            title   = _('add discount'),
-        ))
+        if obj.approved:
+            html.append(format_html(
+                ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
+                ' style="background-position: 0 0" title="{title}"></a>',
+                href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
+                title   = _('add discount'),
+            ))
+        return '<br/>'.join(html)
+    course_discounts.allow_tags = True
     course_discounts.short_description = _('course discounts')
 
     def course_payments(self, obj):
@@ -211,12 +213,15 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
                 title   = period.status.title,
                 amount  = currency(period.status.paid),
             ))
-        return mark_safe('<br/>'.join(html) + format_html(
-            ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
-            ' style="background-position: 0 0" title="{title}"></a>',
-            href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-            title   = _('add payment'),
-        ))
+        if obj.approved:
+            html.append(format_html(
+                ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
+                ' style="background-position: 0 0" title="{title}"></a>',
+                href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+                title   = _('add payment'),
+            ))
+        return '<br/>'.join(html)
+    course_payments.allow_tags = True
     course_payments.short_description = _('course payments')
 
     def payments_partial_balance(self, obj):
