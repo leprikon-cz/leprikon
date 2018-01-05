@@ -205,8 +205,8 @@
             {% for entry in period.all_journal_entries %}
             <tr>
                 <td>{{ entry.date }}</td>
-                <td>{% if entry.duration %}{{ entry.start }}{% else %}{% trans 'canceled' %}{% endif %}</td>
-                <td>{% if entry.duration %}{{ entry.duration }}{% else %}{% trans 'canceled' %}{% endif %}</td>
+                <td>{% if entry.duration %}{{ entry.start }}{% else %}{% trans 'skipped' %}{% endif %}</td>
+                <td>{% if entry.duration %}{{ entry.duration }}{% else %}{% trans 'skipped' %}{% endif %}</td>
                 <td>{{ entry.all_leader_entries|length }}</td>
                 <td>{{ entry.all_registrations|length }}</td>
                 <td>

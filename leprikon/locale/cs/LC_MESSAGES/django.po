@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-05 22:49+0100\n"
+"POT-Creation-Date: 2018-01-05 23:05+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -174,17 +174,15 @@ msgstr "neschváleno"
 
 #: admin/filters.py:59
 msgid "cancelation"
-msgstr "stornování"
+msgstr "odhlášení"
 
 #: admin/filters.py:64
 msgid "not canceled"
-msgstr "nezrušeno"
+msgstr "neodhlášeno"
 
 #: admin/filters.py:65 admin/filters.py:85
-#: templates/leprikon/course_journal.html:208
-#: templates/leprikon/course_journal.html:209
 msgid "canceled"
-msgstr "zrušeno"
+msgstr "odhlášeno"
 
 #: admin/filters.py:80 models/schoolyear.py:33
 msgid "active"
@@ -387,11 +385,11 @@ msgstr "Schválit vybrané přihlášky"
 
 #: admin/subjects.py:268
 msgid "Selected registrations were canceled."
-msgstr "Vybrané přihlášky byly stornovány."
+msgstr "Vybrané přihlášky byly odhlášeny."
 
 #: admin/subjects.py:269
 msgid "Cancel selected registrations"
-msgstr "Stornovat vybrané přihlášky"
+msgstr "Odhlásit vybrané přihlášky"
 
 #: admin/subjects.py:291 admin/subjects.py:386 models/messages.py:23
 #: models/roles.py:290 models/subjects.py:192 models/subjects.py:311
@@ -1529,11 +1527,11 @@ msgstr "čas schválení"
 
 #: models/subjects.py:338
 msgid "time of cancellation"
-msgstr "čas zrušení"
+msgstr "čas odhlášení"
 
 #: models/subjects.py:339
 msgid "cancel request"
-msgstr "požadavek na zrušení"
+msgstr "požadavek na odhlášení"
 
 #: models/subjects.py:365 models/subjects.py:435
 msgid "first parent"
@@ -1910,6 +1908,11 @@ msgstr "Počet přítomných"
 msgid "Session agenda"
 msgstr "Program schůzky"
 
+#: templates/leprikon/course_journal.html:208
+#: templates/leprikon/course_journal.html:209
+msgid "skipped"
+msgstr "zrušeno"
+
 #: templates/leprikon/course_journal.html:241
 msgid "Risks"
 msgstr "Rizika"
@@ -2259,11 +2262,11 @@ msgstr "Docházka"
 
 #: templates/leprikon/registration_preview.html:13
 msgid "cancel registration"
-msgstr "stornovat přihlášku"
+msgstr "odhlásit"
 
 #: templates/leprikon/registration_preview.html:15
 msgid "cancel"
-msgstr "zrušit"
+msgstr "odhlásit"
 
 #: templates/leprikon/registration_preview.html:40
 msgid "Date and time of registration"
@@ -2276,11 +2279,11 @@ msgstr "Stav"
 #: templates/leprikon/registration_preview.html:49
 #, python-format
 msgid "registration canceled on %(d)s"
-msgstr "přihláška zrušena %(d)s"
+msgstr "odhlášeno %(d)s"
 
 #: templates/leprikon/registration_preview.html:51
 msgid "cancellation requested"
-msgstr "požadáno o zrušení"
+msgstr "požadáno o odhlášení"
 
 #: templates/leprikon/registration_preview.html:53
 #, python-format
@@ -2670,7 +2673,7 @@ msgstr "Přihláška na {subject_type} {subject}"
 
 #: views/subjects.py:222
 msgid "Registration cancellation request"
-msgstr "Požadavek na zrušení"
+msgstr "Požadavek na odhlášení"
 
 #: views/subjects.py:225
 msgid "Are you sure You want to cancel the registration \"{}\"?"
@@ -2678,7 +2681,7 @@ msgstr "Opravdu chcete stornovat přihlášku \"{}\"?"
 
 #: views/subjects.py:228
 msgid "The cancellation request for {} has been saved."
-msgstr "Požadavek o stornování přihlášky {} byl uložen."
+msgstr "Požadavek na zrušení přihlášky {} byl uložen."
 
 #: views/timesheets.py:41
 msgid "Submit timesheet"
