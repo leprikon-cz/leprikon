@@ -236,11 +236,15 @@ class UserPaymentMixin(object):
     model = SubjectPayment
 
     def get_queryset(self):
-        return super(UserPaymentMixin, self).get_queryset().filter(registration__user=self.request.user)
+        return super(UserPaymentMixin, self).get_queryset().filter(registration__user=self.request.user).order_by('-created')
 
 
 class SubjectPaymentsListView(UserPaymentMixin, ListView):
     template_name = 'leprikon/payments.html'
+    paginate_by = 20
+
+    def get_title(self):
+        return _('Payments')
 
 
 class SubjectPaymentPdfView(UserPaymentMixin, DetailView):

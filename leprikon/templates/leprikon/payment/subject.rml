@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+{% load leprikon_tags %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{ object.pdf_filename }}">
+
+    <docinit>
+        <registerFont fontName="DejaVuSans" fontFile="{% font 'leprikon/fonts/DejaVuSans.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Bold" fontFile="{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}"/>
+    </docinit>
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <pageTemplate id="main">
+            <pageGraphics>
+                <place x="{{ object.print_setup.x1 }}" y="{{ object.print_setup.bill_y1 }}" width="{{ object.print_setup.width }}" height="{{ object.print_setup.bill_height }}">
+                    {% include 'leprikon/payment/recipe.rml' %}
+                </place>
+                <place x="{{ object.print_setup.x1 }}" y="{{ object.print_setup.y1 }}" width="{{ object.print_setup.width }}" height="{{ object.print_setup.bill_height }}">
+                    {% include 'leprikon/payment/recipe.rml' %}
+                </place>
+                <lineMode width="1" dash="5,5" colorName="silver"/>
+                <lines>1cm 148.5mm 20cm 148.5mm</lines>
+            </pageGraphics>
+            <frame id="first" x1="{{ object.print_setup.x1 }}" y1="{{ object.print_setup.y1 }}" width="{{ object.print_setup.width }}" height="{{ object.print_setup.height }}"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="10"/>
+        <paraStyle name="small" fontName="DejaVuSans" fontSize="8" alignment="LEFT"/>
+        <paraStyle name="left" fontName="DejaVuSans" fontSize="10" alignment="LEFT"/>
+        <paraStyle name="center" fontName="DejaVuSans" fontSize="10" alignment="CENTER"/>
+        <paraStyle name="right" fontName="DejaVuSans" fontSize="10" alignment="RIGHT"/>
+        <blockTableStyle id="with-borders">
+            <blockFont name="DejaVuSans" size="10"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+            <lineStyle kind="GRID" colorName="silver"/>
+        </blockTableStyle>
+        <blockTableStyle id="without-borders">
+            <blockFont name="DejaVuSans" size="10"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+        </blockTableStyle>
+    </stylesheet>
+    <story>
+        <para></para>
+    </story>
+</document>

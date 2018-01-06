@@ -1,0 +1,32 @@
+{% extends 'leprikon/list.html' %}
+{% load cms_tags i18n leprikon_tags %}
+
+{% block list %}
+<table class="table">
+    <tr>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Subject' %}</th>
+        <th>{% trans 'Payment Type' %}</th>
+        <th>{% trans 'Amount' %}</th>
+        <th></th>
+    </tr>
+{% for payment in object_list %}
+    <tr>
+        <td>{{ payment.created.date }}</td>
+        <td>{{ payment.registration.subject }}, {{ payment.registration.participant }}</td>
+        <td>{{ payment.payment_type_label }}</td>
+        <td>{{ payment.amount | currency }}</td>
+        <td>
+            <a class="btn btn-primary btn-xs" href="{{ payment.get_absolute_url }}">
+                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                {% trans 'download' %}
+            </a>
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="5">{{ message_empty }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

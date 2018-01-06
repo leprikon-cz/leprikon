@@ -66,6 +66,8 @@ class SubjectType(models.Model):
     agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
+    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                         verbose_name=_('payment print setup'), blank=True, null=True)
 
     class Meta:
         app_label           = 'leprikon'
@@ -184,6 +186,8 @@ class Subject(models.Model):
     agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
+    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
+                                         verbose_name=_('payment print setup'), blank=True, null=True)
 
 
     class Meta:
@@ -323,8 +327,89 @@ class SubjectAttachment(models.Model):
 
 
 
+class PdfExportMixin(object):
+    all_attachments = []
+
+    def get_absolute_url(self):
+        return reverse('leprikon:{}_pdf'.format(self.pdf_export), kwargs={'pk': self.pk, 'slug': self.slug})
+
+    def send_mail(self):
+        # get plain pdf from rml
+        template_txt = select_template([
+            'leprikon/{}-mail/{}.txt'.format(self.pdf_export, self.subject.subject_type.slug),
+            'leprikon/{}-mail/{}.txt'.format(self.pdf_export, self.subject.subject_type.subject_type),
+            'leprikon/{}-mail/subject.txt'.format(self.pdf_export),
+        ])
+        template_html = select_template([
+            'leprikon/{}-mail/{}.html'.format(self.pdf_export, self.subject.subject_type.slug),
+            'leprikon/{}-mail/{}.html'.format(self.pdf_export, self.subject.subject_type.subject_type),
+            'leprikon/{}-mail/subject.html'.format(self.pdf_export),
+        ])
+        context = {
+            'object': self,
+            'site': LeprikonSite.objects.get_current(),
+        }
+        content_txt = template_txt.render(context)
+        content_html = template_html.render(context)
+        msg = EmailMultiAlternatives(
+            subject = self.mail_subject,
+            body        = content_txt,
+            from_email  = settings.SERVER_EMAIL,
+            to          = self.all_recipients,
+            headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+        )
+        msg.attach_alternative(content_html, 'text/html')
+        msg.attach(self.pdf_filename, self.get_pdf(), 'application/pdf')
+        for attachment in self.all_attachments:
+            msg.attach_file(attachment.file.file.path)
+        msg.send()
+
+    @cached_property
+    def pdf_filename(self):
+        return self.slug + '.pdf'
+
+    def get_pdf(self):
+        output = BytesIO()
+        self.write_pdf(output)
+        output.seek(0)
+        return output.read()
+
+    def write_pdf(self, output):
+        # get plain pdf from rml
+        template = select_template([
+            'leprikon/{}/{}.rml'.format(self.pdf_export, self.subject.subject_type.slug),
+            'leprikon/{}/{}.rml'.format(self.pdf_export, self.subject.subject_type.subject_type),
+            'leprikon/{}/subject.rml'.format(self.pdf_export),
+        ])
+        rml_content = template.render({
+            'object': self,
+            'site': LeprikonSite.objects.get_current(),
+        })
+        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
+
+        # merge with background
+        if self.print_setup.background:
+            template_pdf = PdfFileReader(self.print_setup.background.file)
+            registration_pdf = PdfFileReader(BytesIO(pdf_content))
+            writer = PdfFileWriter()
+            # merge pages from both template and registration
+            for i in range(registration_pdf.getNumPages()):
+                if i < template_pdf.getNumPages():
+                    page = template_pdf.getPage(i)
+                    page.mergePage(registration_pdf.getPage(i))
+                else:
+                    page = registration_pdf.getPage(i)
+                writer.addPage(page)
+            # write result to output
+            writer.write(output)
+        else:
+            # write basic pdf registration to response
+            output.write(pdf_content)
+        return output
+
+
 @python_2_unicode_compatible
-class SubjectRegistration(models.Model):
+class SubjectRegistration(PdfExportMixin, models.Model):
     slug            = models.SlugField(editable=False)
     created         = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
@@ -482,9 +567,6 @@ class SubjectRegistration(models.Model):
     def get_paid(self, d=None):
         return sum(p.amount for p in self.get_payments(d))
 
-    def get_absolute_url(self):
-        return reverse('leprikon:registration_pdf', kwargs={'pk': self.pk, 'slug': self.slug})
-
     def approve(self):
         if self.approved is None:
             self.approved = timezone.now()
@@ -533,42 +615,11 @@ class SubjectRegistration(models.Model):
             self.variable_symbol = generate_variable_symbol(self)
             super(SubjectRegistration, self).save(*args, **kwargs)
 
-    def send_mail(self):
-        # get plain pdf from rml
-        template_txt = select_template([
-            'leprikon/registration-mail/{}.txt'.format(self.subject.subject_type.slug),
-            'leprikon/registration-mail/{}.txt'.format(self.subject.subject_type.subject_type),
-            'leprikon/registration-mail/subject.txt',
-        ])
-        template_html = select_template([
-            'leprikon/registration-mail/{}.html'.format(self.subject.subject_type.slug),
-            'leprikon/registration-mail/{}.html'.format(self.subject.subject_type.subject_type),
-            'leprikon/registration-mail/subject.html',
-        ])
-        context = {
-            'object': self,
-            'site': LeprikonSite.objects.get_current(),
-        }
-        content_txt = template_txt.render(context)
-        content_html = template_html.render(context)
-        msg = EmailMultiAlternatives(
-            subject = _('Registration for {subject_type} accepted').format(
-                subject_type=self.subject.subject_type.name_akuzativ
-            ),
-            body        = content_txt,
-            from_email  = settings.SERVER_EMAIL,
-            to          = self.all_recipients,
-            headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
-        )
-        msg.attach_alternative(content_html, 'text/html')
-        msg.attach(self.pdf_filename, self.get_pdf(), 'application/pdf')
-        for attachment in self.all_attachments:
-            msg.attach_file(attachment.file.file.path)
-        msg.send()
-
     @cached_property
     def agreement(self):
         return self.subject.get_agreement()
+
+    pdf_export = 'registration'
 
     @cached_property
     def print_setup(self):
@@ -580,44 +631,10 @@ class SubjectRegistration(models.Model):
         )
 
     @cached_property
-    def pdf_filename(self):
-        return self.slug + '.pdf'
-
-    def get_pdf(self):
-        output = BytesIO()
-        self.write_pdf(output)
-        output.seek(0)
-        return output.read()
-
-    def write_pdf(self, output):
-        # get plain pdf from rml
-        template = select_template([
-            'leprikon/registration/{}.rml'.format(self.subject.subject_type.slug),
-            'leprikon/registration/{}.rml'.format(self.subject.subject_type.subject_type),
-            'leprikon/registration/subject.rml',
-        ])
-        rml_content = template.render({'object': self})
-        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
-
-        # merge with background
-        if self.print_setup.background:
-            template_pdf = PdfFileReader(self.print_setup.background.file)
-            registration_pdf = PdfFileReader(BytesIO(pdf_content))
-            writer = PdfFileWriter()
-            # merge pages from both template and registration
-            for i in range(registration_pdf.getNumPages()):
-                if i < template_pdf.getNumPages():
-                    page = template_pdf.getPage(i)
-                    page.mergePage(registration_pdf.getPage(i))
-                else:
-                    page = registration_pdf.getPage(i)
-                writer.addPage(page)
-            # write result to output
-            writer.write(output)
-        else:
-            # write basic pdf registration to response
-            output.write(pdf_content)
-        return output
+    def mail_subject(self):
+        return _('Registration for {subject_type} accepted').format(
+            subject_type=self.subject.subject_type.name_akuzativ
+        )
 
     @python_2_unicode_compatible
     class Person:
@@ -683,7 +700,7 @@ class SubjectDiscount(models.Model):
 
 
 @python_2_unicode_compatible
-class SubjectPayment(models.Model):
+class SubjectPayment(PdfExportMixin, models.Model):
     PAYMENT_CASH = 'PAYMENT_CASH'
     PAYMENT_BANK = 'PAYMENT_BANK'
     PAYMENT_ONLINE = 'PAYMENT_ONLINE'
@@ -730,6 +747,31 @@ class SubjectPayment(models.Model):
     def payment_type_label(self):
         return self.payment_type_labels.get(self.payment_type, '-')
     payment_type_label.short_description = _('payment type')
+
+    pdf_export = 'payment'
+
+    @cached_property
+    def slug(self):
+        return '{}-{}'.format(self.registration.slug, self.id)
+
+    @cached_property
+    def print_setup(self):
+        return (
+            self.registration.subject.bill_print_setup or
+            self.registration.subject.subject_type.bill_print_setup or
+            LeprikonSite.objects.get_current().bill_print_setup or
+            PrintSetup()
+        )
+
+    @cached_property
+    def subject(self):
+        return self.registration.subject
+
+    @cached_property
+    def mail_subject(self):
+        return _('Registration for {subject_type} accepted').format(
+            subject_type=self.subject.subject_type.name_akuzativ
+        )
 
     def validate(self):
         if self.amount == 0:

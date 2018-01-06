@@ -352,7 +352,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 
 
 class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('created', 'registration', 'subject', 'payment_type_label', 'amount_html')
+    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html')
     list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
     list_filter     = (
         ('registration__subject__school_year',  SchoolYearListFilter),
@@ -380,6 +380,29 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         if 'delete_selected' in actions:
             del(actions['delete_selected'])
         return actions
+
+    def get_urls(self):
+        urls = super(SubjectPaymentAdmin, self).get_urls()
+        return [urls_url(
+            r'(?P<reg_id>\d+).pdf$',
+            self.admin_site.admin_view(self.pdf),
+            name='leprikon_subjectpayment_pdf',
+        )] + urls
+
+    def pdf(self, request, reg_id):
+        payment = self.get_object(request, reg_id)
+
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(payment.pdf_filename)
+
+        # create basic pdf payment from rml template
+        return payment.write_pdf(response)
+
+    def download_tag(self, obj):
+        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectpayment_pdf', args=(obj.id,)))
+    download_tag.short_description = _('download')
+    download_tag.allow_tags = True
 
     def subject(self, obj):
         return obj.registration.subject

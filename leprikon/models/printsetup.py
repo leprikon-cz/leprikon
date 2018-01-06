@@ -59,3 +59,11 @@ class PrintSetup(models.Model):
     @cached_property
     def height(self):
         return int(self.page_size[1] - self.top * mm - self.bottom * mm)
+
+    @cached_property
+    def bill_y1(self):
+        return int(self.page_size[1] / 2.0 + self.bottom * mm)
+
+    @cached_property
+    def bill_height(self):
+        return int(self.page_size[1] / 2.0 - self.top * mm - self.bottom * mm)

@@ -25,7 +25,6 @@ class LeprikonSite(Site):
     postal_code     = PostalCodeField(_('postal code'), blank=True, null=True)
     email           = models.EmailField(_('email address'), blank=True, null=True)
     phone           = models.CharField(_('phone'), max_length=30, blank=True, null=True)
-    street          = models.CharField(_('street'), max_length=150, blank=True, null=True)
     company_num     = models.CharField(_('company number'), max_length=8, blank=True, null=True)
     vat_number      = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
     iban            = IBANField(_('IBAN'), blank=True, null=True)
