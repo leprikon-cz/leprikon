@@ -11,9 +11,9 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
-from ..models.subjects import Subject, SubjectRegistration, SubjectType
+from ..models.subjects import Subject, SubjectPayment, SubjectRegistration, SubjectType
 from .generic import (
-    ConfirmUpdateView, CreateView, DetailView, FilteredListView, UpdateView,
+    ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView,
 )
 
 
@@ -230,3 +230,27 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
     def confirmed(self):
         self.object.cancel_request = True
         self.object.save()
+
+
+class UserPaymentMixin(object):
+    model = SubjectPayment
+
+    def get_queryset(self):
+        return super(UserPaymentMixin, self).get_queryset().filter(registration__user=self.request.user)
+
+
+class SubjectPaymentsListView(UserPaymentMixin, ListView):
+    template_name = 'leprikon/payments.html'
+
+
+class SubjectPaymentPdfView(UserPaymentMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        # get payment
+        payment = self.get_object()
+
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(payment.pdf_filename)
+
+        # create basic pdf payment from rml template
+        return payment.write_pdf(response)

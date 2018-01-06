@@ -101,6 +101,12 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 attr={'visible_for_anonymous': False},
             ))
+            nodes.append(NavigationNode(
+                _('Payments'),
+                reverse('leprikon:payment_list'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
             participants = len(nodes)
             nodes.append(NavigationNode(
                 _('Participants'),
