@@ -11,9 +11,12 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
-from ..models.subjects import Subject, SubjectPayment, SubjectRegistration, SubjectType
+from ..models.subjects import (
+    Subject, SubjectPayment, SubjectRegistration, SubjectType,
+)
 from .generic import (
-    ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView,
+    ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView,
+    UpdateView,
 )
 
 
@@ -236,7 +239,9 @@ class UserPaymentMixin(object):
     model = SubjectPayment
 
     def get_queryset(self):
-        return super(UserPaymentMixin, self).get_queryset().filter(registration__user=self.request.user).order_by('-created')
+        return super(UserPaymentMixin, self).get_queryset().filter(
+            registration__user=self.request.user
+        ).order_by('-created')
 
 
 class SubjectPaymentsListView(UserPaymentMixin, ListView):
