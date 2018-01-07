@@ -350,10 +350,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
         return registration.write_pdf(response)
 
 
-
-class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html')
-    list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
+class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     list_filter     = (
         ('registration__subject__school_year',  SchoolYearListFilter),
         ('registration__subject__managers',     ManagerListFilter),
@@ -376,10 +373,29 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         return obj and ('registration', 'amount') or ()
 
     def get_actions(self, request):
-        actions = super(SubjectPaymentAdmin, self).get_actions(request)
+        actions = super(SubjectPaymentBaseAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
             del(actions['delete_selected'])
         return actions
+
+    def subject(self, obj):
+        return obj.registration.subject
+    subject.short_description = _('subject')
+
+    def amount_html(self, obj):
+        return format_html(
+            '<b style="color: {color}">{amount}</b>',
+            color   = amount_color(obj.amount),
+            amount  = currency(abs(obj.amount)),
+        )
+    amount_html.short_description = _('amount')
+    amount_html.admin_order_field = 'amount'
+    amount_html.allow_tags = True
+
+
+class SubjectPaymentAdmin(SubjectPaymentBaseAdmin):
+    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html')
+    list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
 
     def get_urls(self):
         urls = super(SubjectPaymentAdmin, self).get_urls()
@@ -403,17 +419,3 @@ class SubjectPaymentAdmin(AdminExportMixin, admin.ModelAdmin):
         return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectpayment_pdf', args=(obj.id,)))
     download_tag.short_description = _('download')
     download_tag.allow_tags = True
-
-    def subject(self, obj):
-        return obj.registration.subject
-    subject.short_description = _('subject')
-
-    def amount_html(self, obj):
-        return format_html(
-            '<b style="color: {color}">{amount}</b>',
-            color   = amount_color(obj.amount),
-            amount  = currency(abs(obj.amount)),
-        )
-    amount_html.short_description = _('amount')
-    amount_html.admin_order_field = 'amount'
-    amount_html.allow_tags = True

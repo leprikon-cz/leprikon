@@ -27,7 +27,7 @@ from .filters import (
     ManagerListFilter, SchoolYearListFilter,
 )
 from .subjects import (
-    SubjectBaseAdmin, SubjectPaymentAdmin, SubjectRegistrationBaseAdmin,
+    SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin,
 )
 
 
@@ -254,9 +254,10 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
 
 
 
-class CourseDiscountAdmin(SubjectPaymentAdmin):
+class CourseDiscountAdmin(SubjectPaymentBaseAdmin):
     form            = CourseDiscountAdminForm
     list_display    = ('created', 'registration', 'subject', 'period', 'amount_html', 'explanation')
+    list_export     = ('created', 'registration', 'subject', 'period', 'amount', 'explanation')
 
     def get_model_perms(self, request):
         return {}
