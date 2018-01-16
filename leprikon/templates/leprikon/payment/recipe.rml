@@ -51,12 +51,18 @@
 <blockTable style="without-borders">
     <tr>
         <td>
+            <para style="small">{% trans 'participant' %}:</para>
+            <para style="left">{{ object.registration.participant.full_name }}</para>
+            <para style="left">{{ object.registration.participant.address }}</para>
+
+            <spacer length="2mm"/>
+
             <para style="small">{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}name of {{ subject_type }}{% endblocktrans %}:</para>
             <para style="left">{{ object.subject.name }}</para>
         </td>
         <td>
-            <para style="small">{% trans 'participant' %}:</para>
-            <para style="left">{{ object.registration.participant }}</para>
+            <para style="small">{% trans 'payment received by' %}:</para>
+            <para style="left">{{ object.received_by.get_full_name }}</para>
         </td>
     </tr>
 </blockTable>

@@ -394,8 +394,12 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 class SubjectPaymentAdmin(SubjectPaymentBaseAdmin):
-    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html')
+    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html',
+                       'received_by', 'note')
+    list_editable   = ('note',)
     list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
+    raw_id_fields   = ('related_payment',)
+    exclude         = ('received_by',)
 
     def get_urls(self):
         urls = super(SubjectPaymentAdmin, self).get_urls()
@@ -419,3 +423,8 @@ class SubjectPaymentAdmin(SubjectPaymentBaseAdmin):
         return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectpayment_pdf', args=(obj.id,)))
     download_tag.short_description = _('download')
     download_tag.allow_tags = True
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.received_by = request.user
+        super(SubjectPaymentAdmin, self).save_model(request, obj, form, change)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-16 16:37+0100\n"
+"POT-Creation-Date: 2018-01-16 16:57+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -398,7 +398,7 @@ msgstr "Odhlásit vybrané přihlášky"
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:295 admin/subjects.py:420
+#: admin/subjects.py:295 admin/subjects.py:423
 #: templates/leprikon/payments.html:22
 #: templates/leprikon/registration_preview.html:8
 msgid "download"
@@ -1366,7 +1366,7 @@ msgid "female"
 msgstr "žena"
 
 #: models/roles.py:219 models/subjects.py:508
-#: templates/leprikon/payment/recipe.rml:58
+#: templates/leprikon/payment/recipe.rml:54
 msgid "participant"
 msgstr "účastník"
 
@@ -1573,7 +1573,7 @@ msgstr "{participant} ({birth_num})"
 msgid "Participant with this birth number has already been registered."
 msgstr "Účastník s tímto rodným číslem je již přihlášený."
 
-#: models/subjects.py:635 models/subjects.py:772
+#: models/subjects.py:635 models/subjects.py:774
 #, python-brace-format
 msgid "Registration for {subject_type} accepted"
 msgstr "Přihláška na {subject_type} přijata"
@@ -1627,7 +1627,7 @@ msgstr "navrácení přeplatku převodem na platbu"
 msgid "payment time"
 msgstr "čas platby"
 
-#: models/subjects.py:724 models/subjects.py:749
+#: models/subjects.py:724 models/subjects.py:751
 #: templates/leprikon/payment/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
@@ -1640,23 +1640,27 @@ msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:735
+#: models/subjects.py:729
+msgid "received by"
+msgstr "přijal(a)"
+
+#: models/subjects.py:737
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:736
+#: models/subjects.py:738
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:779
+#: models/subjects.py:781
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:784
+#: models/subjects.py:786
 msgid "Select one of the payments or use negative amount."
 msgstr "Vyberte některou z plateb nebo použijte zápornou částku."
 
-#: models/subjects.py:788
+#: models/subjects.py:790
 msgid "Select one of the returns or use positive amount."
 msgstr "Vyberte formu navrácení přeplatku nebo použijte kladnou částku."
 
@@ -2144,7 +2148,7 @@ msgstr "Vaše uživatelské jméno:"
 
 #: templates/leprikon/password_reset_email.html:10
 msgid "Thanks for using our site!"
-msgstr "Děkujeme, že používáte náše stránky!"
+msgstr "Děkujeme, že používáte naše stránky!"
 
 #: templates/leprikon/password_reset_email.html:12
 #, python-format
@@ -2163,10 +2167,14 @@ msgstr "číslo stvrzenky"
 msgid "payment date"
 msgstr "datum přijetí platby"
 
-#: templates/leprikon/payment/recipe.rml:54
+#: templates/leprikon/payment/recipe.rml:60
 #, python-format
 msgid "name of %(subject_type)s"
 msgstr "název %(subject_type)s"
+
+#: templates/leprikon/payment/recipe.rml:64
+msgid "payment received by"
+msgstr "platbu přijal(a)"
 
 #: templates/leprikon/payments.html:9
 msgid "Payment Type"

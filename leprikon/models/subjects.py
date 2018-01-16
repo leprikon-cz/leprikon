@@ -726,6 +726,8 @@ class SubjectPayment(PdfExportMixin, models.Model):
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
     related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
                                         related_name='related_payments', on_delete=models.PROTECT)
+    received_by     = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_('received by'),
+                                        related_name='+', on_delete=models.PROTECT)
 
     payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
     returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
