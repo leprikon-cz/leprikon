@@ -132,7 +132,7 @@ class EventRegistration(SubjectRegistration):
 
     def get_payment_status(self, d=None):
         return PaymentStatus(
-            price       = self.price if self.approved and (d is None or d <= self.approved.date()) else 0,
+            price       = self.price if self.approved and (d is None or d >= self.approved.date()) else 0,
             discount    = self.get_discounted(d),
             paid        = self.get_paid(d),
         )
