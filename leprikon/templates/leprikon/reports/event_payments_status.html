@@ -27,7 +27,7 @@
     {% endif %}
         <th>{{ report.event.name }}</th>
         <td class="right">{{ report.event.price | currency }}</td>
-        <td class="right">{{ report.registrations | length }}</td>
+        <td class="right">{{ report.registration_statuses | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
         <td class="right">{{ report.status.receivable | currency }}</td>
         <td class="right">{{ report.status.paid | currency }}</td>

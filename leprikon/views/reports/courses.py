@@ -77,11 +77,13 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
         @cached_property
         def registration_statuses(self):
             return [
-                self.RegPaymentStatus(
-                    registration = registration,
-                    status       = registration.courseregistration.get_payment_statuses(self.date).total,
-                )
-                for registration in self.registrations
+                registration_status for registration_status in (
+                    self.RegPaymentStatus(
+                        registration = registration,
+                        status       = registration.courseregistration.get_payment_statuses(self.date).total,
+                    )
+                    for registration in self.registrations
+                ) if registration_status.status.receivable
             ]
 
         @cached_property
