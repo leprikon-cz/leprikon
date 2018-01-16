@@ -10,7 +10,7 @@
             <blockTable style="with-borders">
                 <tr>
                     <td>
-                        <para style="title">{{ site.name }}</para>
+                        <para style="title">{{ site.get_company_name }}</para>
                         <spacer length="2mm"/>
                         <para style="left">{% trans 'address' %}:</para>
                         <para style="left">{{ site.street }}</para>

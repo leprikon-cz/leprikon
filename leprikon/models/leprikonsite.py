@@ -20,6 +20,7 @@ class LeprikonSiteManager(models.Manager):
 
 
 class LeprikonSite(Site):
+    company_name    = models.CharField(_('company name'), max_length=150, blank=True, null=True)
     street          = models.CharField(_('street'), max_length=150, blank=True, null=True)
     city            = models.CharField(_('city'), max_length=150, blank=True, null=True)
     postal_code     = PostalCodeField(_('postal code'), blank=True, null=True)
@@ -41,3 +42,6 @@ class LeprikonSite(Site):
         app_label           = 'leprikon'
         verbose_name        = _('leprikon site')
         verbose_name_plural = _('leprikon sites')
+
+    def get_company_name(self):
+        return self.company_name or self.name
