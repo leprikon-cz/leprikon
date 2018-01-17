@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, clear_site_cache
 from django.db import models
+from django.db.models.signals import pre_delete, pre_save
 from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.models import BICField, IBANField
 
@@ -13,10 +14,7 @@ class LeprikonSiteManager(models.Manager):
 
     def get_current(self, request=None):
         current_site = Site.objects.get_current(request)
-        try:
-            return current_site.leprikonsite
-        except:
-            return LeprikonSite.objects.create(site_ptr=current_site)
+        return self.get_or_create(site_ptr=current_site)[0]
 
 
 class LeprikonSite(Site):
@@ -45,3 +43,7 @@ class LeprikonSite(Site):
 
     def get_company_name(self):
         return self.company_name or self.name
+
+
+pre_save.connect(clear_site_cache, sender=LeprikonSite)
+pre_delete.connect(clear_site_cache, sender=LeprikonSite)
