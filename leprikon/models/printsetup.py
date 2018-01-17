@@ -39,9 +39,10 @@ class PrintSetup(models.Model):
 
     @cached_property
     def page_size(self):
-        try:
-            return self.background_pdf.getPage(0).mediaBox[2:4]
-        except:
+        if self.background:
+            mediaBox = self.background_pdf.getPage(0).mediaBox
+            return [int(mediaBox[2]), int(mediaBox[3])]
+        else:
             return portrait(A4)
 
     @cached_property
