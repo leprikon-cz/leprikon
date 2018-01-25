@@ -25,6 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 # install leprikon
 COPY . /src
 RUN pip install --no-cache-dir /src \
+ && cp -a /src/translations/* /usr/local/lib/python2.7/dist-packages/ \
  && cp -a /src/conf /src/bin ./ \
  && rm -r /src \
  && mkdir -p data htdocs/media htdocs/static run \
