@@ -64,17 +64,21 @@
                         <li><a href="{% url_with_back 'leprikon:user_logout' %}">{% trans 'Log out' %}</a></li>
                         {% if 'google-plus' in backends.not_associated %}
                         <li>
-                            <a class="btn btn-social btn-google-plus" href="{% url 'social:begin' 'google-plus' %}?next={{ next }}">
-                                &nbsp;&nbsp; <i class="fa fa-google-plus pull-left"></i>
-                                propojit s&nbsp;Google+
+                            <a href="{% url 'social:begin' 'google-plus' %}?next={{ next }}">
+                                <button class="btn btn-block btn-sm btn-social btn-google">
+                                    <i class="fa fa-google pull-left"></i>
+                                    {% trans 'Link with your Google account' %}
+                                </button>
                             </a>
                         </li>
                         {% endif %}
                         {% if 'facebook' in backends.not_associated %}
                         <li>
-                            <a class="btn btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}?next={{ next }}">
-                                &nbsp;&nbsp; <i class="fa fa-facebook pull-left"></i>
-                                propojit s&nbsp;Facebookem
+                            <a href="{% url 'social:begin' 'facebook' %}?next={{ next }}">
+                                <button class="btn btn-social btn-sm btn-facebook">
+                                    <i class="fa fa-facebook pull-left"></i>
+                                    {% trans 'Link with your Facebook account' %}
+                                </button>
                             </a>
                         </li>
                         {% endif %}

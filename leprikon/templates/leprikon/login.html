@@ -16,7 +16,7 @@
         </div>
         {% endfor %}
         <div class="form-group">
-            <button class="btn btn-primary form-control" type="submit">{% trans 'Log in' %}</button>
+            <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
         </div>
     </form>
 </div></div>
@@ -24,21 +24,21 @@
 <div class="col-sm-6"><div class="col-md-offset-1 col-md-10">
     <h2>{% trans 'Other options' %}</h2>
     <div class="form-group">
-        <a class="btn btn-primary form-control" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
+        <a class="btn btn-block btn-primary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
             {% trans 'Create account' %}
         </a>
     </div>
     {% if 'google-plus' in backends.not_associated %}
     <div class="form-group">
-        <a class="btn btn-social btn-google-plus form-control" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
-            <i class="fa fa-google-plus pull-left"></i>
-            {% trans 'Log in with Google+' %}
+        <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
+            <i class="fa fa-google pull-left"></i>
+            {% trans 'Log in with Google' %}
         </a>
     </div>
     {% endif %}
     {% if 'facebook' in backends.not_associated %}
     <div class="form-group">
-        <a class="btn btn-social btn-facebook form-control" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
+        <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
             <i class="fa fa-facebook pull-left"></i>
             {% trans 'Log in with Facebook' %}
         </a>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-16 16:57+0100\n"
+"POT-Creation-Date: 2018-01-25 22:15+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -398,7 +398,7 @@ msgstr "Odhlásit vybrané přihlášky"
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:295 admin/subjects.py:423
+#: admin/subjects.py:295 admin/subjects.py:424
 #: templates/leprikon/payments.html:22
 #: templates/leprikon/registration_preview.html:8
 msgid "download"
@@ -524,7 +524,7 @@ msgstr "Výpis vedoucích"
 msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
-#: conf/default_settings.py:14 models/leprikonsite.py:28 models/roles.py:159
+#: conf/default_settings.py:14 models/leprikonsite.py:26 models/roles.py:159
 #: models/roles.py:203 models/subjects.py:441 models/subjects.py:456
 #: models/subjects.py:465 templates/leprikon/payment/recipe.rml:20
 msgid "phone"
@@ -1114,65 +1114,65 @@ msgstr "zdravotní pojišťovna"
 msgid "insurance companies"
 msgstr "zdravotní pojišťovny"
 
-#: models/leprikonsite.py:23
+#: models/leprikonsite.py:21
 msgid "company name"
 msgstr "název organizace"
 
-#: models/leprikonsite.py:24 models/roles.py:155 models/roles.py:199
+#: models/leprikonsite.py:22 models/roles.py:155 models/roles.py:199
 #: models/school.py:12 models/subjects.py:435 models/subjects.py:453
 #: models/subjects.py:462
 msgid "street"
 msgstr "ulice a číslo popisné"
 
-#: models/leprikonsite.py:25 models/roles.py:156 models/roles.py:200
+#: models/leprikonsite.py:23 models/roles.py:156 models/roles.py:200
 #: models/school.py:13 models/subjects.py:436 models/subjects.py:454
 #: models/subjects.py:463
 msgid "city"
 msgstr "město (pošta)"
 
-#: models/leprikonsite.py:26 models/roles.py:157 models/roles.py:201
+#: models/leprikonsite.py:24 models/roles.py:157 models/roles.py:201
 #: models/subjects.py:437 models/subjects.py:455 models/subjects.py:464
 msgid "postal code"
 msgstr "PSČ"
 
-#: models/leprikonsite.py:27 models/roles.py:158 models/roles.py:202
+#: models/leprikonsite.py:25 models/roles.py:158 models/roles.py:202
 #: models/subjects.py:442 models/subjects.py:457 models/subjects.py:466
 msgid "email address"
 msgstr "e-mail"
 
-#: models/leprikonsite.py:29 templates/leprikon/payment/recipe.rml:22
+#: models/leprikonsite.py:27 templates/leprikon/payment/recipe.rml:22
 msgid "company number"
 msgstr "IČ"
 
-#: models/leprikonsite.py:30
+#: models/leprikonsite.py:28
 msgid "VAT number"
 msgstr "DIČ"
 
-#: models/leprikonsite.py:31
+#: models/leprikonsite.py:29
 msgid "IBAN"
 msgstr "IBAN"
 
-#: models/leprikonsite.py:32
+#: models/leprikonsite.py:30
 msgid "BIC (SWIFT)"
 msgstr "BIC (SWIFT)"
 
-#: models/leprikonsite.py:34
+#: models/leprikonsite.py:32
 msgid "bill print setup"
 msgstr "nastavení tisku dokladů"
 
-#: models/leprikonsite.py:35 models/subjects.py:66 models/subjects.py:186
+#: models/leprikonsite.py:33 models/subjects.py:66 models/subjects.py:186
 msgid "registration agreement"
 msgstr "souhlas na přihlášce"
 
-#: models/leprikonsite.py:37 models/subjects.py:68 models/subjects.py:188
+#: models/leprikonsite.py:35 models/subjects.py:68 models/subjects.py:188
 msgid "registration print setup"
 msgstr "nastavení tisku přihlášek"
 
-#: models/leprikonsite.py:43
+#: models/leprikonsite.py:41
 msgid "leprikon site"
 msgstr "nastavení Leprikónu"
 
-#: models/leprikonsite.py:44
+#: models/leprikonsite.py:42
 msgid "leprikon sites"
 msgstr "nastavení Leprikónu"
 
@@ -1790,11 +1790,19 @@ msgstr "Upravit"
 msgid "Change password"
 msgstr "Změnit heslo"
 
-#: templates/leprikon/base.html:105
+#: templates/leprikon/base.html:70
+msgid "Link with your Google account"
+msgstr "Propojit s účtem Google"
+
+#: templates/leprikon/base.html:80
+msgid "Link with your Facebook account"
+msgstr "Propojit s účtem Facebook"
+
+#: templates/leprikon/base.html:109
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:126
+#: templates/leprikon/base.html:130
 msgid "Powered by Leprikón Information System"
 msgstr "Informační systém Leprikón"
 
@@ -2011,8 +2019,8 @@ msgid "Other options"
 msgstr "Další možnosti"
 
 #: templates/leprikon/login.html:35
-msgid "Log in with Google+"
-msgstr "Přihlásit se přes Google+"
+msgid "Log in with Google"
+msgstr "Přihlásit se přes Google"
 
 #: templates/leprikon/login.html:43
 msgid "Log in with Facebook"
@@ -2484,9 +2492,9 @@ msgid "Events count"
 msgstr "Počet akci"
 
 #: templates/leprikon/reports/index.html:36 views/reports/courses.py:26
-#: views/reports/courses.py:46 views/reports/courses.py:97
+#: views/reports/courses.py:46 views/reports/courses.py:99
 #: views/reports/debtors.py:19 views/reports/events.py:26
-#: views/reports/events.py:46 views/reports/events.py:97
+#: views/reports/events.py:46 views/reports/events.py:99
 msgid "Show"
 msgstr "Zobrazit"
 
@@ -2679,11 +2687,11 @@ msgstr "Stav plateb za kurzy"
 msgid "Event payments status"
 msgstr "Stav plateb za akce"
 
-#: views/reports/__init__.py:53 views/reports/courses.py:96
+#: views/reports/__init__.py:53 views/reports/courses.py:98
 msgid "Course statistics"
 msgstr "Statistiky kurzů"
 
-#: views/reports/__init__.py:59 views/reports/events.py:96
+#: views/reports/__init__.py:59 views/reports/events.py:98
 msgid "Event statistics"
 msgstr "Statistiky akcí"
 
