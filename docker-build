@@ -1,7 +1,14 @@
 #!/bin/bash
 
-if [ -w /var/run/docker.sock ]; then
-    exec docker build "$@" --tag leprikon/leprikon:testing .
+# choose image tag
+if git symbolic-ref HEAD | grep -q refs/heads/master; then
+    TAG=latest
 else
-    exec sudo docker build "$@" --tag leprikon/leprikon:testing .
+    TAG=testing
+fi
+
+if [ -w /var/run/docker.sock ]; then
+    exec docker build "$@" --tag leprikon/leprikon:$TAG .
+else
+    exec sudo docker build "$@" --tag leprikon/leprikon:$TAG .
 fi
