@@ -155,7 +155,6 @@ class LeprikonMenu(CMSAttachMenu):
             return []
 
 
-
 @menu_pool.register_modifier
 class LeprikonModifier(Modifier):
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
