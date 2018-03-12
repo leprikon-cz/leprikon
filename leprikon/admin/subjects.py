@@ -23,6 +23,7 @@ from .filters import (
     SubjectListFilter, SubjectTypeListFilter,
 )
 from .messages import SendMessageAdminMixin
+from .pdf import PdfExportAdminMixin
 
 
 class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
@@ -393,7 +394,7 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     amount_html.allow_tags = True
 
 
-class SubjectPaymentAdmin(SubjectPaymentBaseAdmin):
+class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html',
                        'received_by', 'note')
     list_editable   = ('note',)

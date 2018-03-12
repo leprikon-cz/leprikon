@@ -26,6 +26,7 @@ from .filters import (
     CourseListFilter, CourseTypeListFilter, LeaderListFilter,
     ManagerListFilter, SchoolYearListFilter,
 )
+from .pdf import PdfExportAdminMixin
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin,
 )
@@ -164,7 +165,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
         return False
 
 
-class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
+class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     list_display    = (
         'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
@@ -254,7 +255,7 @@ class CourseRegistrationAdmin(SubjectRegistrationBaseAdmin):
 
 
 
-class CourseDiscountAdmin(SubjectPaymentBaseAdmin):
+class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     form            = CourseDiscountAdminForm
     list_display    = ('created', 'registration', 'subject', 'period', 'amount_html', 'explanation')
     list_export     = ('created', 'registration', 'subject', 'period', 'amount', 'explanation')

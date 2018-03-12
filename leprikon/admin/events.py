@@ -17,6 +17,7 @@ from .filters import (
     EventListFilter, EventTypeListFilter, LeaderListFilter, ManagerListFilter,
     SchoolYearListFilter,
 )
+from .pdf import PdfExportAdminMixin
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin,
 )
@@ -99,7 +100,7 @@ class EventAdmin(SubjectBaseAdmin):
 
 
 
-class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
+class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     list_display    = (
         'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
         'created', 'approved', 'cancel_request', 'canceled',
@@ -154,7 +155,7 @@ class EventRegistrationAdmin(SubjectRegistrationBaseAdmin):
 
 
 
-class EventDiscountAdmin(SubjectPaymentBaseAdmin):
+class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_display    = ('created', 'registration', 'subject', 'amount_html', 'explanation')
     list_export     = ('created', 'registration', 'subject', 'amount', 'explanation')
 

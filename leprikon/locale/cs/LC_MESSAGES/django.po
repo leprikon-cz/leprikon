@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-25 22:15+0100\n"
+"POT-Creation-Date: 2018-03-12 12:03+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -19,80 +19,80 @@ msgstr ""
 msgid "Leprikon administration"
 msgstr "Správa systému Leprikón"
 
-#: admin/courses.py:85
+#: admin/courses.py:86
 msgid "Selected courses were published."
 msgstr "Vybrané kurzy byly zveřejněny."
 
-#: admin/courses.py:86
+#: admin/courses.py:87
 msgid "Publish selected courses"
 msgstr "Zveřejnit vybrané kurzy"
 
-#: admin/courses.py:90
+#: admin/courses.py:91
 msgid "Selected courses were unpublished."
 msgstr "Vybrané kurzy byly skryty."
 
-#: admin/courses.py:91
+#: admin/courses.py:92
 msgid "Unpublish selected courses"
 msgstr "Skrýt vybrané kurzy"
 
-#: admin/courses.py:96 admin/events.py:67 admin/roles.py:38 admin/roles.py:133
+#: admin/courses.py:97 admin/events.py:68 admin/roles.py:38 admin/roles.py:133
 msgid "Target school year"
 msgstr "Cílový školní rok"
 
-#: admin/courses.py:97
+#: admin/courses.py:98
 msgid "All selected courses will be copied to selected school year."
 msgstr "Vybrané kurzy budou zkopírovány do vybraného školního roku."
 
-#: admin/courses.py:106
+#: admin/courses.py:107
 msgid "Selected courses were copied to school year {}."
 msgstr "Vybrané kurzy byly zkopírovány do školního roku {}."
 
-#: admin/courses.py:114 admin/events.py:85 admin/roles.py:53 admin/roles.py:148
+#: admin/courses.py:115 admin/events.py:86 admin/roles.py:53 admin/roles.py:148
 msgid "Select target school year"
 msgstr "Vyberte cílový školní rok"
 
-#: admin/courses.py:122
+#: admin/courses.py:123
 msgid "Copy selected courses to another school year"
 msgstr "Kopírovat vybrané kurzy do jiného školního roku"
 
-#: admin/courses.py:132
+#: admin/courses.py:133
 msgid "printable course journal"
 msgstr "tisknutelný deník kurzu"
 
-#: admin/courses.py:133 admin/courses.py:135
+#: admin/courses.py:134 admin/courses.py:136
 #: templates/leprikon/subject_preview.html:94
 msgid "journal"
 msgstr "deník"
 
-#: admin/courses.py:199 admin/events.py:129
+#: admin/courses.py:200 admin/events.py:130
 msgid "add discount"
 msgstr "přidat slevu"
 
-#: admin/courses.py:203
+#: admin/courses.py:204
 msgid "course discounts"
 msgstr "slevy na kurz"
 
-#: admin/courses.py:221 admin/events.py:149
+#: admin/courses.py:222 admin/events.py:150
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/courses.py:225
+#: admin/courses.py:226
 msgid "course payments"
 msgstr "platby za kurzy"
 
-#: admin/courses.py:229 admin/courses.py:243
+#: admin/courses.py:230 admin/courses.py:244
 msgid "actual balance"
 msgstr "aktuální zůstatek"
 
-#: admin/courses.py:233 admin/courses.py:253
+#: admin/courses.py:234 admin/courses.py:254
 msgid "total balance"
 msgstr "celkový zůstatek"
 
-#: admin/courses.py:318 admin/timesheets.py:63
+#: admin/courses.py:319 admin/timesheets.py:63
 msgid "update entry"
 msgstr "upravit záznam"
 
-#: admin/courses.py:319 admin/timesheets.py:64
+#: admin/courses.py:320 admin/timesheets.py:64
 #: templates/leprikon/course_journal.html:133
 #: templates/leprikon/course_journal.html:216
 #: templates/leprikon/course_journal.html:245
@@ -105,50 +105,50 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/courses.py:358 models/courses.py:36 models/courses.py:226
+#: admin/courses.py:359 models/courses.py:36 models/courses.py:226
 #: models/courses.py:363 models/courses.py:365 models/courses.py:432
 #: models/courses.py:550 models/courses.py:578 models/subjects.py:48
 #: templates/leprikon/course_alternating.html:15
 msgid "course"
 msgstr "kurz"
 
-#: admin/courses.py:363
+#: admin/courses.py:364
 msgid "agenda"
 msgstr "program"
 
-#: admin/events.py:56
+#: admin/events.py:57
 msgid "Selected events were published."
 msgstr "Vybrané akce byly zveřejněny."
 
-#: admin/events.py:57
+#: admin/events.py:58
 msgid "Publish selected events"
 msgstr "Zveřejnit vybrané akce"
 
-#: admin/events.py:61
+#: admin/events.py:62
 msgid "Selected events were unpublished."
 msgstr "Vybrané akce byly skryty."
 
-#: admin/events.py:62
+#: admin/events.py:63
 msgid "Unpublish selected events"
 msgstr "Skrýt vybrané akce"
 
-#: admin/events.py:68
+#: admin/events.py:69
 msgid "All selected events will be copied to selected school year."
 msgstr "Vybrané akce budou zkopírovány do vybraného školního roku."
 
-#: admin/events.py:77
+#: admin/events.py:78
 msgid "Selected events were copied to school year {}."
 msgstr "Vybrané akce byly zkopírovány do školního roku {}."
 
-#: admin/events.py:93
+#: admin/events.py:94
 msgid "Copy selected events to another school year"
 msgstr "Kopírovat vybrané akce do jiného školního roku"
 
-#: admin/events.py:133
+#: admin/events.py:134
 msgid "event discounts"
 msgstr "slevy na akce"
 
-#: admin/events.py:153
+#: admin/events.py:154
 msgid "event payments"
 msgstr "platby za akce"
 
@@ -260,6 +260,10 @@ msgstr "Odeslat e-mail vybraným příjemcům"
 msgid "Recipients of message {}"
 msgstr "Příjemci zprávy {}"
 
+#: admin/pdf.py:32
+msgid "Export selected items in single PDF."
+msgstr "Exportovat vybrané položky v jediném PDF."
+
 #: admin/roles.py:39
 msgid "All selected managers will be added to selected school year."
 msgstr "Vybraní manažeři budou přidáni do vybraného školního roku."
@@ -320,7 +324,7 @@ msgstr "Přidat vybrané vedoucí do jiného školního roku"
 msgid "contacts"
 msgstr "kontakty"
 
-#: admin/roles.py:216 admin/subjects.py:155 admin/subjects.py:211
+#: admin/roles.py:216 admin/subjects.py:156 admin/subjects.py:212
 #: models/roles.py:30 models/subjects.py:173
 msgid "photo"
 msgstr "fotka"
@@ -330,7 +334,7 @@ msgstr "fotka"
 msgid "address"
 msgstr "adresa"
 
-#: admin/roles.py:315 admin/subjects.py:132 models/subjects.py:473
+#: admin/roles.py:315 admin/subjects.py:133 models/subjects.py:473
 #: templates/leprikon/subject_preview.html:89
 msgid "registrations"
 msgstr "přihlášky"
@@ -340,71 +344,71 @@ msgstr "přihlášky"
 msgid "school"
 msgstr "škola"
 
-#: admin/subjects.py:114
+#: admin/subjects.py:115
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:116
+#: admin/subjects.py:117
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:118
+#: admin/subjects.py:119
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:137
+#: admin/subjects.py:138
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:141
+#: admin/subjects.py:142
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:146
+#: admin/subjects.py:147
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:168
+#: admin/subjects.py:169
 msgid "Registration dates were updated."
 msgstr "Datumy přihlašování byly uloženy."
 
-#: admin/subjects.py:173
+#: admin/subjects.py:174
 msgid "Select registration dates"
 msgstr "Vyberte datumy přihlašování"
 
-#: admin/subjects.py:181
+#: admin/subjects.py:182
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:262
+#: admin/subjects.py:263
 msgid "Selected registrations were approved."
 msgstr "Vybrané přihlášky byly schváleny."
 
-#: admin/subjects.py:263
+#: admin/subjects.py:264
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:268
+#: admin/subjects.py:269
 msgid "Selected registrations were canceled."
 msgstr "Vybrané přihlášky byly odhlášeny."
 
-#: admin/subjects.py:269
+#: admin/subjects.py:270
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:291 admin/subjects.py:383 models/messages.py:23
+#: admin/subjects.py:292 admin/subjects.py:384 models/messages.py:23
 #: models/roles.py:290 models/subjects.py:196 models/subjects.py:315
 #: models/subjects.py:417
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:295 admin/subjects.py:424
+#: admin/subjects.py:296 admin/subjects.py:425
 #: templates/leprikon/payments.html:22
 #: templates/leprikon/registration_preview.html:8
 msgid "download"
 msgstr "stažení"
 
-#: admin/subjects.py:391 models/subjects.py:725
+#: admin/subjects.py:392 models/subjects.py:725
 #: templates/leprikon/payment/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -480,10 +484,93 @@ msgstr "Sloučit vybrané uživatele"
 msgid "login"
 msgstr "přihlásit"
 
-#: apps.py:10 cms_apps.py:13 cms_plugins/base.py:9 cms_toolbars.py:17
-#: cms_toolbars.py:19 menu.py:16
+#: apps.py:10 cms_apps.py:10 cms_menus.py:16 cms_plugins/base.py:9
+#: cms_toolbars.py:17 cms_toolbars.py:19
 msgid "Leprikon"
 msgstr "Leprikón"
+
+#: cms_menus.py:25 templates/leprikon/login.html:19
+#: templates/leprikon/password_reset_complete.html:12
+msgid "Log in"
+msgstr "Přihlásit se"
+
+#: cms_menus.py:31 templates/leprikon/login.html:28 views/user.py:30
+msgid "Create account"
+msgstr "Vytvořit účet"
+
+#: cms_menus.py:37
+msgid "Reset password"
+msgstr "Reset hesla"
+
+#: cms_menus.py:43 templates/leprikon/leader_summary.html:6
+#: templates/leprikon/summary.html:6
+msgid "Summary"
+msgstr "Přehled"
+
+#: cms_menus.py:50 cms_plugins/leaders.py:14 forms/courses.py:92
+#: forms/subjects.py:26
+msgid "Leader"
+msgstr "Vedoucí"
+
+#: cms_menus.py:57
+#, python-brace-format
+msgid "My {subject_type}"
+msgstr "Moje {subject_type}"
+
+#: cms_menus.py:64
+msgid "Alternating"
+msgstr "Suplování"
+
+#: cms_menus.py:72 views/timesheets.py:21
+msgid "Timesheets"
+msgstr "Výkazy práce"
+
+#: cms_menus.py:79
+msgid "Add new entry"
+msgstr "Přidat nový záznam"
+
+#: cms_menus.py:86 templates/leprikon/reports/index.html:6
+msgid "Reports"
+msgstr "Reporty"
+
+#: cms_menus.py:93 views/messages.py:21
+msgid "Messages"
+msgstr "Zprávy"
+
+#: cms_menus.py:99 templates/leprikon/reports/course_stats.html:19
+#: templates/leprikon/reports/event_stats.html:19
+msgid "Registrations"
+msgstr "Přihlášky"
+
+#: cms_menus.py:105 templates/leprikon/registration_payments_presences.html:19
+#: views/subjects.py:252
+msgid "Payments"
+msgstr "Platby"
+
+#: cms_menus.py:112 templates/leprikon/course_journal.html:175
+msgid "Participants"
+msgstr "Účastníci"
+
+#: cms_menus.py:118
+msgid "Add participant"
+msgstr "Přidat účastníka"
+
+#: cms_menus.py:125
+msgid "Add parent"
+msgstr "Přidat zástupce"
+
+#: cms_menus.py:138 forms/courses.py:192
+#: templates/leprikon/course_journal.html:154
+msgid "Leaders"
+msgstr "Vedoucí"
+
+#: cms_menus.py:143 templates/leprikon/terms_conditions.html:6
+msgid "Terms and Conditions"
+msgstr "Obchodní podmínky"
+
+#: cms_menus.py:148 templates/leprikon/base.html:64
+msgid "Log out"
+msgstr "Odhlásit se"
 
 #: cms_plugins/courses.py:14 forms/courses.py:90 forms/courses.py:198
 #: templates/leprikon/reports/course_payments_status.html:14
@@ -510,11 +597,6 @@ msgstr "Výpis akcí"
 #: cms_plugins/events.py:34
 msgid "Event list with search form"
 msgstr "Výpis akcí s vyhledávacím formulářem"
-
-#: cms_plugins/leaders.py:14 forms/courses.py:92 forms/subjects.py:26
-#: menu.py:50
-msgid "Leader"
-msgstr "Vedoucí"
 
 #: cms_plugins/leaders.py:24
 msgid "Leader list"
@@ -621,10 +703,6 @@ msgstr "Některé odevzdané záznamy práce začínají v {start}"
 #, python-brace-format
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
-
-#: forms/courses.py:192 menu.py:138 templates/leprikon/course_journal.html:154
-msgid "Leaders"
-msgstr "Vedoucí"
 
 #: forms/courses.py:193
 msgid "Alternates"
@@ -769,79 +847,6 @@ msgstr ""
 #: gettext_overrides.py:9
 msgid "Publish page changes"
 msgstr "Publikovat změny"
-
-#: menu.py:25 templates/leprikon/login.html:19
-#: templates/leprikon/password_reset_complete.html:12
-msgid "Log in"
-msgstr "Přihlásit se"
-
-#: menu.py:31 templates/leprikon/login.html:28 views/user.py:30
-msgid "Create account"
-msgstr "Vytvořit účet"
-
-#: menu.py:37
-msgid "Reset password"
-msgstr "Reset hesla"
-
-#: menu.py:43 templates/leprikon/leader_summary.html:6
-#: templates/leprikon/summary.html:6
-msgid "Summary"
-msgstr "Přehled"
-
-#: menu.py:57
-#, python-brace-format
-msgid "My {subject_type}"
-msgstr "Moje {subject_type}"
-
-#: menu.py:64
-msgid "Alternating"
-msgstr "Suplování"
-
-#: menu.py:72 views/timesheets.py:21
-msgid "Timesheets"
-msgstr "Výkazy práce"
-
-#: menu.py:79
-msgid "Add new entry"
-msgstr "Přidat nový záznam"
-
-#: menu.py:86 templates/leprikon/reports/index.html:6
-msgid "Reports"
-msgstr "Reporty"
-
-#: menu.py:93 views/messages.py:21
-msgid "Messages"
-msgstr "Zprávy"
-
-#: menu.py:99 templates/leprikon/reports/course_stats.html:19
-#: templates/leprikon/reports/event_stats.html:19
-msgid "Registrations"
-msgstr "Přihlášky"
-
-#: menu.py:105 templates/leprikon/registration_payments_presences.html:19
-#: views/subjects.py:252
-msgid "Payments"
-msgstr "Platby"
-
-#: menu.py:112 templates/leprikon/course_journal.html:175
-msgid "Participants"
-msgstr "Účastníci"
-
-#: menu.py:118
-msgid "Add participant"
-msgstr "Přidat účastníka"
-
-#: menu.py:125
-msgid "Add parent"
-msgstr "Přidat zástupce"
-
-#: menu.py:143 templates/leprikon/terms_conditions.html:6
-msgid "Terms and Conditions"
-msgstr "Obchodní podmínky"
-
-#: menu.py:148 templates/leprikon/base.html:64
-msgid "Log out"
-msgstr "Odhlásit se"
 
 #: models/agegroup.py:12 models/insurance.py:11 models/place.py:10
 #: models/printsetup.py:15 models/question.py:18 models/school.py:11
