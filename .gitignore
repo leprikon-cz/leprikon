@@ -9,6 +9,7 @@
 /build
 /data
 /dist
+/docker-compose.*.yml
 /env
 /htdocs
-/mysql
+/mysql*
