@@ -7,8 +7,7 @@ django-countries
 django-excel
 django-filer
 django-ganalytics
-django-ganalytics
-django-haystack
+django-haystack<2.8
 django-localflavor<2
 django-staticfiles-downloader
 django-verified-email-field
@@ -19,7 +18,6 @@ djangocms-snippet
 djangocms-style
 djangocms-text-ckeditor
 djangocms-video
-djangocms_text_ckeditor
 ipython
 mysqlclient
 psycopg2
