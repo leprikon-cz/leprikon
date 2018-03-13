@@ -3,12 +3,10 @@ from __future__ import unicode_literals
 from json import dumps
 
 from django import forms
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -291,11 +289,6 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return obj.subject.name
     subject_name.short_description = _('subject')
 
-    def download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectregistration_pdf', args=(obj.id,)))
-    download_tag.short_description = _('download')
-    download_tag.allow_tags = True
-
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
             leprikon_registrations__in = queryset
@@ -331,24 +324,6 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 
     def get_actions(self, request):
         return {}
-
-    def get_urls(self):
-        urls = super(SubjectRegistrationAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<reg_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='leprikon_subjectregistration_pdf',
-        )] + urls
-
-    def pdf(self, request, reg_id):
-        registration = self.get_object(request, reg_id)
-
-        # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
-
-        # create basic pdf registration from rml template
-        return registration.write_pdf(response)
 
 
 class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
@@ -401,29 +376,6 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
     raw_id_fields   = ('related_payment',)
     exclude         = ('received_by',)
-
-    def get_urls(self):
-        urls = super(SubjectPaymentAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<reg_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='leprikon_subjectpayment_pdf',
-        )] + urls
-
-    def pdf(self, request, reg_id):
-        payment = self.get_object(request, reg_id)
-
-        # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(payment.pdf_filename)
-
-        # create basic pdf payment from rml template
-        return payment.write_pdf(response)
-
-    def download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse('admin:leprikon_subjectpayment_pdf', args=(obj.id,)))
-    download_tag.short_description = _('download')
-    download_tag.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         if not change:
