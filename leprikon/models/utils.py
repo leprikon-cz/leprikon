@@ -57,11 +57,9 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
 
 
 def generate_variable_symbol(registration):
-    # basic variable symbol consists of year number and last four (configurable) numbers of id
-    variable_symbol = (
-        registration.subject.school_year.year % 100 * settings.LEPRIKON_VARIABLE_SYMBOL_PER_YEAR +
-        registration.id % settings.LEPRIKON_VARIABLE_SYMBOL_PER_YEAR
-    )
+    # get base variable symol from the configured expression
+    variable_symbol = eval(settings.LEPRIKON_VARIABLE_SYMBOL_EXPRESSION, {'reg': registration})
+
     # add check digit
     odd_sum = 0
     even_sum = 0

@@ -158,6 +158,7 @@ class Subject(models.Model):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects', editable=False)
     subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
                                      related_name='subjects', on_delete=models.PROTECT)
+    code        = models.PositiveSmallIntegerField(_('accounting code'), blank=True, default=0)
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
     managers    = models.ManyToManyField(Manager, verbose_name=_('managers'), related_name='subjects', blank=True)

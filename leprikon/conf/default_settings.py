@@ -109,4 +109,5 @@ LEPRIKON_URL_STATS = 'statistiky'
 
 LEPRIKON_MENU_ADD_LOGOUT = True
 
-LEPRIKON_VARIABLE_SYMBOL_PER_YEAR = 10000
+# expression to create variable symbol (subject.code + last two digits of year + last four digits of id)
+LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = 'reg.subject.code * 1000000 + (reg.created.year % 100) * 10000 + (reg.id % 10000)'
