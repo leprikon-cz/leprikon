@@ -347,6 +347,13 @@ class CourseRegistration(SubjectRegistration):
             d = date.today()
         return sum(p.amount for p in self.get_discounts(d) if p.period.start <= d)
 
+    def get_current_receivable(self):
+        d = date.today()
+        price = self.price * (len(tuple(p for p in self.all_periods if p.start <= d)) or 1)
+        discount = self.get_discounted(d)
+        paid = self.get_paid(d)
+        return max(price - discount - paid, 0)
+
 
 
 class CourseDiscount(SubjectDiscount):

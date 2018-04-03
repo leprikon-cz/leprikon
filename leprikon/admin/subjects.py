@@ -213,8 +213,8 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_export     = (
-        'id', 'variable_symbol', 'slug', 'created', 'approved', 'user', 'subject', 'price', 'answers',
-        'cancel_request', 'canceled',
+        'id', 'variable_symbol', 'slug', 'created', 'payment_requested', 'approved', 'user', 'subject', 'price',
+        'answers', 'cancel_request', 'canceled',
         'participant_gender', 'participant_first_name', 'participant_last_name', 'participant_birth_num',
         'participant_age_group', 'participant_street', 'participant_city', 'participant_postal_code',
         'participant_citizenship', 'participant_insurance', 'participant_phone', 'participant_email',
@@ -233,7 +233,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         ('subject',                 SubjectListFilter),
         ('subject__leaders',        LeaderListFilter),
     )
-    actions         = ('approve', 'cancel')
+    actions         = ('approve', 'request_payment', 'cancel')
     search_fields   = (
         'variable_symbol', 'participant_birth_num',
         'participant_first_name', 'participant_last_name',
@@ -260,6 +260,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             registration.approve()
         self.message_user(request, _('Selected registrations were approved.'))
     approve.short_description = _('Approve selected registrations')
+
+    def request_payment(self, request, queryset):
+        for registration in queryset.all():
+            registration.request_payment()
+        self.message_user(request, _('Payment was requested for selected registrations.'))
+    request_payment.short_description = _('Request payment for selected registrations')
 
     def cancel(self, request, queryset):
         for registration in queryset.all():

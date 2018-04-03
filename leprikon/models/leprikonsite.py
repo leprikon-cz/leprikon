@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 from django.contrib.sites.models import Site, clear_site_cache
 from django.db import models
 from django.db.models.signals import pre_delete, pre_save
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.models import BICField, IBANField
 
 from .fields import PostalCodeField
 from .printsetup import PrintSetup
+from .utils import BankAccount
 
 
 class LeprikonSiteManager(models.Manager):
@@ -43,6 +45,10 @@ class LeprikonSite(Site):
 
     def get_company_name(self):
         return self.company_name or self.name
+
+    @cached_property
+    def bank_account(self):
+        return self.iban and BankAccount(self.iban)
 
 
 pre_save.connect(clear_site_cache, sender=LeprikonSite)

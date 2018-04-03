@@ -1,0 +1,16 @@
+{% load i18n leprikon_tags %}{% blocktrans %}Hello,
+
+thank You for submitting registration.{% endblocktrans %}
+
+{% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}
+
+{{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}
+{% trans 'Participant' %}: {{ object.participant }}
+{% trans 'Price' %}: {{ object.get_current_receivable | currency }}
+{% trans 'Bank account' %}: {{ site.bank_account }}
+{% trans 'Variable symbol' %}: {{ object.variable_symbol }}
+
+{% trans 'Use the link below to see and manage your registrations:' %}
+https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+
+{{ site.name }}

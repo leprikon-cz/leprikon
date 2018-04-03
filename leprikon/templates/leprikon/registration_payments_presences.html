@@ -36,6 +36,13 @@
             {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
             <br />
             {% endfor %}
+            {% if reg.payment_requested %}
+            <p>
+                {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
+                {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+                {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
+            </p>
+            {% endif %}
         </div>
         {% endif %}
     </div>

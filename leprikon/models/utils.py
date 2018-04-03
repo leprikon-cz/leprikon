@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 from collections import namedtuple
 
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
@@ -54,6 +56,37 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
         )
 
     __radd__ = __add__
+
+
+@python_2_unicode_compatible
+class BankAccount:
+    def __init__(self, iban):
+        self.iban = iban
+
+    @cached_property
+    def country_code(self):
+        return self.iban[:2]
+
+    @cached_property
+    def bank_code(self):
+        return self.iban[4:8]
+
+    @cached_property
+    def account_prefix(self):
+        return self.iban[8:14].lstrip('0')
+
+    @cached_property
+    def account_number(self):
+        return self.iban[14:].lstrip('0')
+
+    def __str__(self):
+        return '%s%s%s/%s' % (
+            self.account_prefix,
+            self.account_prefix and '-',
+            self.account_number,
+            self.bank_code,
+        )
+
 
 
 def generate_variable_symbol(registration):

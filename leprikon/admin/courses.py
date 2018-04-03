@@ -169,7 +169,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     list_display    = (
         'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
-        'created', 'approved', 'cancel_request', 'canceled',
+        'created', 'approved', 'payment_requested', 'cancel_request', 'canceled',
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),

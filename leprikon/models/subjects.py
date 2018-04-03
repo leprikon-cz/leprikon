@@ -335,7 +335,6 @@ class PdfExportMixin(object):
         return reverse('leprikon:{}_pdf'.format(self.pdf_export), kwargs={'pk': self.pk, 'slug': self.slug})
 
     def send_mail(self):
-        # get plain pdf from rml
         template_txt = select_template([
             'leprikon/{}-mail/{}.txt'.format(self.pdf_export, self.subject.subject_type.slug),
             'leprikon/{}-mail/{}.txt'.format(self.pdf_export, self.subject.subject_type.subject_type),
@@ -421,6 +420,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
     approved        = models.DateTimeField(_('time of approval'), editable=False, null=True)
+    payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
     canceled        = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
 
@@ -504,6 +504,13 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             }
 
     @cached_property
+    def subjectregistration(self):
+        if self.subject.subject_type.subject_type == self.subject.subject_type.COURSE:
+            return self.courseregistration
+        else:
+            return self.eventregistration
+
+    @cached_property
     def participant(self):
         return self.Person(self, 'participant')
     participant.short_description = _('participant')
@@ -568,10 +575,25 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     def get_paid(self, d=None):
         return sum(p.amount for p in self.get_payments(d))
 
+    def get_current_receivable(self):
+        return self.subjectregistration.get_current_receivable()
+
     def approve(self):
         if self.approved is None:
             self.approved = timezone.now()
             self.save()
+
+    def request_payment(self):
+        if self.payment_requested is None:
+            self.payment_requested = timezone.now()
+            self.save()
+            try:
+                self.send_payment_request()
+            except:
+                import traceback
+                from raven.contrib.django.models import client
+                traceback.print_exc()
+                client.captureException()
 
     def cancel(self):
         if self.canceled is None:
@@ -636,6 +658,39 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         return _('Registration for {subject_type} accepted').format(
             subject_type=self.subject.subject_type.name_akuzativ
         )
+
+    @cached_property
+    def payment_request_subject(self):
+        return _('Registration for {subject_type} - payment information').format(
+            subject_type=self.subject.subject_type.name_akuzativ
+        )
+
+    def send_payment_request(self):
+        template_txt = select_template([
+            'leprikon/payment-request-mail/{}.txt'.format(self.subject.subject_type.slug),
+            'leprikon/payment-request-mail/{}.txt'.format(self.subject.subject_type.subject_type),
+            'leprikon/payment-request-mail/subject.txt',
+        ])
+        template_html = select_template([
+            'leprikon/payment-request-mail/{}.html'.format(self.subject.subject_type.slug),
+            'leprikon/payment-request-mail/{}.html'.format(self.subject.subject_type.subject_type),
+            'leprikon/payment-request-mail/subject.html',
+        ])
+        context = {
+            'object': self,
+            'site': LeprikonSite.objects.get_current(),
+        }
+        content_txt = template_txt.render(context)
+        content_html = template_html.render(context)
+        msg = EmailMultiAlternatives(
+            subject = self.payment_request_subject,
+            body        = content_txt,
+            from_email  = settings.SERVER_EMAIL,
+            to          = self.all_recipients,
+            headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+        )
+        msg.attach_alternative(content_html, 'text/html')
+        msg.send()
 
     @python_2_unicode_compatible
     class Person:
@@ -720,7 +775,8 @@ class SubjectPayment(PdfExportMixin, models.Model):
     ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT,
-                                        limit_choices_to={'approved__isnull': False})
+                                        limit_choices_to={'approved__isnull': False,
+                                                          'payment_requested__isnull': False})
     created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
