@@ -155,8 +155,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     def set_registration_dates(self, request, queryset):
         class RegistrationDatesForm(forms.Form):
-            reg_from = self.formfield_for_dbfield(Subject._meta.get_field('reg_from'), request)
-            reg_to = self.formfield_for_dbfield(Subject._meta.get_field('reg_to'), request)
+            reg_from = self.formfield_for_dbfield(Subject._meta.get_field('reg_from'), request=request)
+            reg_to = self.formfield_for_dbfield(Subject._meta.get_field('reg_to'), request=request)
         if request.POST.get('post', 'no') == 'yes':
             form = RegistrationDatesForm(request.POST)
             if form.is_valid():
