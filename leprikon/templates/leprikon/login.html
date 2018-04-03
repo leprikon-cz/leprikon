@@ -30,16 +30,16 @@
     </div>
     {% if 'google-plus' in backends.not_associated %}
     <div class="form-group">
-        <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
-            <i class="fa fa-google pull-left"></i>
+        <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
+            <i class="fa fa-google"></i>
             {% trans 'Log in with Google' %}
         </a>
     </div>
     {% endif %}
     {% if 'facebook' in backends.not_associated %}
     <div class="form-group">
-        <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
-            <i class="fa fa-facebook pull-left"></i>
+        <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
+            <i class="fa fa-facebook"></i>
             {% trans 'Log in with Facebook' %}
         </a>
     </div>
