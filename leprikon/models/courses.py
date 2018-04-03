@@ -327,7 +327,7 @@ class CourseRegistration(SubjectRegistration):
             d = date.today()
         if self.approved:
             if self.approved.date() <= d:
-                partial_price = self.price * len(list(p for p in self.all_periods if p.start <= d))
+                partial_price = self.price * (len(tuple(p for p in self.all_periods if p.start <= d)) or 1)
             else:
                 partial_price = 0
             total_price = self.price * len(self.all_periods)
