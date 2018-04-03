@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-03 11:32+0200\n"
+"POT-Creation-Date: 2018-04-03 11:37+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -2032,6 +2032,11 @@ msgstr "Přihlášky na akci %(name)s"
 msgid "There are no active registrations for this event."
 msgstr "Na tuto akci nejsou žádné aktivní přihlášky."
 
+#: templates/leprikon/form.html:15
+#: templates/leprikon/subject_registration_form.html:15
+msgid "Please correct the highlighted errors below."
+msgstr "Opravte prosím níže uvedené chyby."
+
 #: templates/leprikon/leader_summary.html:11
 msgid "Timesheets to be submitted"
 msgstr "Výkazy práce k odevzdání"
@@ -2118,7 +2123,7 @@ msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
 #: templates/leprikon/participants.html:7
 #: templates/leprikon/registration/subject.rml:135
 #: templates/leprikon/registration_preview.html:34
-#: templates/leprikon/subject_registration_form.html:47
+#: templates/leprikon/subject_registration_form.html:50
 msgid "Parents"
 msgstr "Zástupci"
 
@@ -2206,7 +2211,7 @@ msgstr "Pro platbu převodem prosím použijte následující údaje:"
 #: templates/leprikon/payment-request-mail/subject.html:9
 #: templates/leprikon/registration/subject.rml:62
 #: templates/leprikon/registration_preview.html:28
-#: templates/leprikon/subject_registration_form.html:19
+#: templates/leprikon/subject_registration_form.html:22
 msgid "Participant"
 msgstr "Účastník"
 
@@ -2557,7 +2562,7 @@ msgstr ""
 "Vaše přihláška nemusí být schválena. O jejím zpracování Vás budeme dále "
 "informovat."
 
-#: templates/leprikon/subject_registration_form.html:83
+#: templates/leprikon/subject_registration_form.html:86
 msgid "Legal Agreement"
 msgstr "Právní ujednání"
 
