@@ -27,5 +27,5 @@ sudo docker-compose logs -f leprikon
 # you should be able to open http://127.0.0.1:8000/ in your favorite browser.
 
 # when finished stop the appliaction containers
-sudo docker compose down
+sudo docker-compose down
 ```
