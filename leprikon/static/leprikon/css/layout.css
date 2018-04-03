@@ -156,6 +156,10 @@ img.right {
     font-weight: bold;
 }
 
+.form-group.required label:after {
+  content:"*"; color:red;
+}
+
 input.form-control[type="checkbox"] {
     width: auto;
 }
