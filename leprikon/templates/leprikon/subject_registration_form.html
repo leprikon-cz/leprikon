@@ -19,6 +19,60 @@
 {% endfor %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
+
+    <h3>{% trans 'Price' %}</h3>
+    {% if form.subject_variant %}
+    <div class="form-group {{ form.subject_variant.css_classes }}">
+        <label class="control-label col-md-3">
+            {{ form.subject_variant.label }}
+        </label>
+        <div class="col-md-9{% if form.subject_variant.errors %} alert alert-danger{% endif %}">
+            {% for variant in form.instance.subject.all_variants %}
+                <div class="row select">
+                    <div class="col-md-1 right">
+                        <input class="form-control" data-type="ChoiceField"
+                               {% if variant.id == form.subject_variant.value|add:0 %}checked="checked"{% endif %}
+                               id="{{ form.subject_variant.id_for_label }}_{{ variant.id }}"
+                               name="{{ form.subject_variant.html_name }}" value="{{ variant.id }}" type="radio">
+                    </div>
+                    <div class="col-md-11">
+                        <label class="form-control" style="font-weight:normal" for="{{ form.subject_variant.id_for_label }}_{{ variant.id }}">
+                            <strong>{{ variant.name }}</strong><br/>
+                        </label>
+                        {{ variant.description | safe }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            {% for error in form.subject_variant.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+
+            {% if form.subject_variant.help_text %}
+                <span class="help-block">{{ form.subject_variant.help_text | safe }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label class="control-label col-md-3">{% trans 'Price' %}</label>
+        <div class="col-md-9">
+            <label class="form-control" style="font-weight:normal">
+                <span id="price">
+                {% if form.subject_variant.value %}
+                    {% for variant in form.instance.subject.all_variants %}
+                        {% if variant.id == form.subject_variant.value|add:0 %}{{ variant.price | currency }}{% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{ form.instance.subject.price | currency }}
+                {% endif %}
+                </span>
+                {% if form.instance.subject.course.unit %} / {{ form.instance.subject.course.unit }}{% endif %}
+            </label>
+        </div>
+    </div>
+
     <h3>{% trans 'Participant' %}</h3>
     {% if form.participants %}
     {% include 'leprikon/form_item.html' with item=form.participant_select_form.participant %}
@@ -130,6 +184,14 @@ function changedBirthNum() {
 }
 
 $(document).ready(function() {
+    /* Show price for selected variant */
+    $('input[type=radio][name={{ form.subject_variant.html_name }}]').change(function() {
+        {% for variant in form.instance.subject.all_variants %}
+        if (this.value == {{ variant.id }}) {
+            $('#price').text('{{ variant.price | currency | escapejs }}');
+        }{% endfor %}
+    });
+
     /* Select participant */
     $('input[type=radio][name=participant_select-participant]').change(function() {
         if (this.value == 'new') {

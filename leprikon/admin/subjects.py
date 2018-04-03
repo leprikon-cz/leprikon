@@ -12,7 +12,9 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import RegistrationAdminForm
-from ..models.subjects import Subject, SubjectAttachment, SubjectTypeAttachment
+from ..models.subjects import (
+    Subject, SubjectAttachment, SubjectTypeAttachment, SubjectVariant,
+)
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -55,6 +57,12 @@ class SubjectAttachmentInlineAdmin(admin.TabularInline):
 
 
 
+class SubjectVariantInlineAdmin(admin.TabularInline):
+    model   = SubjectVariant
+    extra   = 0
+
+
+
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     subject_type    = None
     registration_model = None
@@ -67,6 +75,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         ('leaders',         LeaderListFilter),
     )
     inlines         = (
+        SubjectVariantInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ('age_groups', 'groups', 'leaders', 'managers', 'questions')

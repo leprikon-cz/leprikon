@@ -201,6 +201,10 @@ class Subject(models.Model):
         return '{} {}'.format(self.school_year, self.name)
 
     @cached_property
+    def all_variants(self):
+        return list(self.variants.all())
+
+    @cached_property
     def all_managers(self):
         return list(self.managers.all())
 
@@ -312,6 +316,25 @@ class Subject(models.Model):
 
 
 @python_2_unicode_compatible
+class SubjectVariant(models.Model):
+    subject     = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='variants')
+    name        = models.CharField(_('variant name'), max_length=150)
+    description = HTMLField(_('variant description'), blank=True, default='')
+    price       = PriceField(_('price'), blank=True, null=True)
+    order       = models.IntegerField(_('order'), blank=True, default=0)
+
+    class Meta:
+        app_label           = 'leprikon'
+        ordering            = ('order',)
+        verbose_name        = _('variant')
+        verbose_name_plural = _('variants')
+
+    def __str__(self):
+        return self.name
+
+
+
+@python_2_unicode_compatible
 class SubjectAttachment(models.Model):
     subject = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='attachments')
     file    = FilerFileField(related_name='+')
@@ -415,6 +438,8 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                                         related_name='leprikon_registrations', on_delete=models.PROTECT)
     subject         = models.ForeignKey(Subject, verbose_name=_('subject'),
+                                        related_name='registrations', on_delete=models.PROTECT)
+    subject_variant = models.ForeignKey(SubjectVariant, null=True, verbose_name=_('variant'),
                                         related_name='registrations', on_delete=models.PROTECT)
     price           = PriceField(_('price'), editable=False)
     answers         = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)

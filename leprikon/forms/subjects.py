@@ -120,6 +120,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         )
         self.parents = user.leprikon_parents.all()
 
+        # choices for subject_variant
+        if self.instance.subject.all_variants:
+            self.fields['subject_variant'].widget.choices.queryset = self.instance.subject.variants
+        else:
+            del self.fields['subject_variant']
+
         self.fields['participant_age_group'].widget.choices.queryset = self.instance.subject.age_groups
 
         # dynamically required fields
@@ -186,7 +192,11 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         )
 
     def save(self, commit=True):
-        self.instance.price = self.instance.subject.price
+        self.instance.price = (
+            self.instance.subject_variant.price
+            if self.instance.subject_variant
+            else self.instance.subject.price
+        )
         self.instance.answers = dumps(self.questions_form.cleaned_data)
         super(RegistrationForm, self).save(commit)
 
@@ -265,6 +275,7 @@ class RegistrationAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super(RegistrationAdminForm, self).__init__(data, *args, **kwargs)
+        self.fields['subject_variant'].widget.choices.queryset = kwargs['instance'].subject.variants
         self.fields['participant_age_group'].widget.choices.queryset = kwargs['instance'].subject.age_groups
 
         try:

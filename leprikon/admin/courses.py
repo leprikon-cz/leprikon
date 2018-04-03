@@ -62,7 +62,7 @@ class CourseAdmin(SubjectBaseAdmin):
     )
     inlines         = (
         CourseTimeInlineAdmin,
-    )
+    ) + SubjectBaseAdmin.inlines
     actions         = (
         'publish', 'unpublish',
         'copy_to_school_year',

@@ -40,6 +40,16 @@
                 <td>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Name of {{ subject_type }}{% endblocktrans %}</td>
                 <td><para style="para">{{ object.subject.name }}</para></td>
             </tr>
+            <tr>
+                <td>{% trans 'Price' %}</td>
+                <td>
+                    <para style="para">
+                        {{ object.price | currency }}
+                        {% if object.subject.course.unit %} / {{ object.subject.course.unit }}{% endif %}
+                        {% if object.subject_variant %}({{ object.subject_variant.name }}){% endif %}
+                    </para>
+                </td>
+            </tr>
             {% if object.subject.event.start_date %}
             <tr>
                 <td>{% trans 'Dates of event' %}</td>

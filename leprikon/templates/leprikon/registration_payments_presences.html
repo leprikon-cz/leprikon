@@ -1,5 +1,13 @@
 {% load i18n leprikon_tags %}
 
+<div class="row">
+    <label class="col-sm-4">{% trans 'Price' %}:</label>
+    <div class="col-sm-8">
+        {{ reg.price | currency }}
+        {% if reg.subject.course.unit %} / {{ reg.subject.course.unit }}{% endif %}
+        {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
+    </div>
+</div>
 {% if reg.subject.subject_type.subject_type == 'event' %}{# events #}
 <div class="row">
     <label class="col-sm-4">{% trans 'Discount' %}:</label>
