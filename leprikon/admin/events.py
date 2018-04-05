@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.utils.html import format_html
@@ -117,39 +118,33 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
     def event_discounts(self, obj):
         status = obj.get_payment_status()
-        html = format_html(
-            '<a target="_blank" href="{href_list}"><b>{amount}</b></a>',
+        return format_html(
+            '<a class="popup-link" href="{href_list}"><b>{amount}</b></a>'
+            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+            '<img src="{icon_add}" alt="+"/></a>',
             href_list   = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
             amount      = currency(status.discount),
+            href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
+            icon_add    = static('admin/img/icon-addlink.svg'),
+            title_add   = _('add discount'),
         )
-        if obj.approved:
-            html += format_html(
-                ' &nbsp; <a target="_blank" class="addlink" href="{href_add}" '
-                'style="background-position: 0 0" title="{add}"></a>',
-                href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
-                add         = _('add discount'),
-            )
-        return html
     event_discounts.allow_tags = True
     event_discounts.short_description = _('event discounts')
 
     def event_payments(self, obj):
         status = obj.get_payment_status()
-        html = format_html(
-            '<a target="_blank" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>',
+        return format_html(
+            '<a class="popup-link" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
+            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+            '<img src="{icon_add}" alt="+"/></a>',
             color       = status.color,
             href_list   = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
             title       = status.title,
             amount      = currency(status.paid),
+            href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+            icon_add    = static('admin/img/icon-addlink.svg'),
+            title_add   = _('add payment'),
         )
-        if obj.approved:
-            html += format_html(
-                ' &nbsp; <a target="_blank" class="addlink" href="{href_add}" '
-                'style="background-position: 0 0" title="{add}"></a>',
-                href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-                add         = _('add payment'),
-            )
-        return html
     event_payments.allow_tags = True
     event_payments.short_description = _('event payments')
 

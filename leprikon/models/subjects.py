@@ -778,6 +778,10 @@ class SubjectDiscount(models.Model):
     def __str__(self):
         return currency(self.amount)
 
+    def save(self, *args, **kwargs):
+        self.registration.approve()
+        super(SubjectDiscount, self).save(*args, **kwargs)
+
 
 
 @python_2_unicode_compatible
@@ -799,9 +803,7 @@ class SubjectPayment(PdfExportMixin, models.Model):
         (RETURN_TRANSFER, _('return - transfer to payment')),
     ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
-                                        related_name='payments', on_delete=models.PROTECT,
-                                        limit_choices_to={'approved__isnull': False,
-                                                          'payment_requested__isnull': False})
+                                        related_name='payments', on_delete=models.PROTECT)
     created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
@@ -878,4 +880,5 @@ class SubjectPayment(PdfExportMixin, models.Model):
 
     def save(self, *args, **kwargs):
         self.validate()
+        self.registration.approve()
         super(SubjectPayment, self).save(*args, **kwargs)

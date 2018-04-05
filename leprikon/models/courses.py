@@ -358,8 +358,7 @@ class CourseRegistration(SubjectRegistration):
 
 class CourseDiscount(SubjectDiscount):
     registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
-                                        related_name='discounts', on_delete=models.PROTECT,
-                                        limit_choices_to={'approved__isnull': False})
+                                        related_name='discounts', on_delete=models.PROTECT)
     period          = models.ForeignKey(SchoolYearPeriod, verbose_name=_('period'),
                                         related_name='discounts', on_delete=models.PROTECT)
 

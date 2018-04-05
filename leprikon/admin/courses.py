@@ -4,6 +4,7 @@ from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
@@ -186,19 +187,19 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         html = []
         for period in obj.get_period_payment_statuses():
             html.append(format_html(
-                '{period}: <a target="_blank" href="{href}"><b>{amount}</b></a>',
+                '{period}: <a class="popup-link" href="{href}"><b>{amount}</b></a>',
                 period  = period.period.name,
                 href    = (reverse('admin:leprikon_coursediscount_changelist') +
                            '?registration={}&period={}'.format(obj.id, period.period.id)),
                 amount  = currency(period.status.discount),
             ))
-        if obj.approved:
-            html.append(format_html(
-                ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
-                ' style="background-position: 0 0" title="{title}"></a>',
-                href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
-                title   = _('add discount'),
-            ))
+        html.append(format_html(
+            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
+            '<img src="{icon}" alt="+"/></a>',
+            href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
+            title   = _('add discount'),
+            icon    = static('admin/img/icon-addlink.svg'),
+        ))
         return '<br/>'.join(html)
     course_discounts.allow_tags = True
     course_discounts.short_description = _('course discounts')
@@ -207,20 +208,21 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         html = []
         for period in obj.get_period_payment_statuses():
             html.append(format_html(
-                '{period}: <a target="_blank" style="color: {color}" href="{href}" title="{title}"><b>{amount}</b></a>',
+                '{period}: <a class="popup-link" style="color: {color}" href="{href}" title="{title}">'
+                '<b>{amount}</b></a>',
                 period  = period.period.name,
                 color   = period.status.color,
                 href    = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
                 title   = period.status.title,
                 amount  = currency(period.status.paid),
             ))
-        if obj.approved:
-            html.append(format_html(
-                ' &nbsp; <a target="_blank" class="addlink" href="{href}"'
-                ' style="background-position: 0 0" title="{title}"></a>',
-                href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-                title   = _('add payment'),
-            ))
+        html.append(format_html(
+            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
+            '<img src="{icon}" alt="+"/></a>',
+            href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+            title   = _('add payment'),
+            icon    = static('admin/img/icon-addlink.svg'),
+        ))
         return '<br/>'.join(html)
     course_payments.allow_tags = True
     course_payments.short_description = _('course payments')

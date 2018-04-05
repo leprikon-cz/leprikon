@@ -252,6 +252,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     ordering        = ('-cancel_request', '-created')
     raw_id_fields   = ('subject',)
 
+    @property
+    def media(self):
+        m = super(SubjectRegistrationBaseAdmin, self).media
+        m.add_js(['leprikon/js/Popup.js'])
+        return m
+
     def has_add_permission(self, request):
         return False
 
@@ -389,7 +395,7 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
                        'received_by', 'note')
     list_editable   = ('note',)
     list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
-    raw_id_fields   = ('related_payment',)
+    raw_id_fields   = ('registration', 'related_payment',)
     exclude         = ('received_by',)
 
     def save_model(self, request, obj, form, change):
