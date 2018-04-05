@@ -184,6 +184,7 @@ function changedBirthNum() {
 }
 
 $(document).ready(function() {
+    {% if form.subject_variant %}
     /* Show price for selected variant */
     $('input[type=radio][name={{ form.subject_variant.html_name }}]').change(function() {
         {% for variant in form.instance.subject.all_variants %}
@@ -191,6 +192,7 @@ $(document).ready(function() {
             $('#price').text('{{ variant.price | currency | escapejs }}');
         }{% endfor %}
     });
+    {% endif %}
 
     /* Select participant */
     $('input[type=radio][name=participant_select-participant]').change(function() {
