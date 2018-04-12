@@ -152,11 +152,11 @@ img.right {
     font-weight: normal;
 }
 
-.form-group.required label {
+.form-group.required > label {
     font-weight: bold;
 }
 
-.form-group.required label:after {
+.form-group.required > label:after {
   content:"*"; color:red;
 }
 
