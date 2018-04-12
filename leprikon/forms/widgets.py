@@ -1,9 +1,6 @@
 from __future__ import unicode_literals
 
-from django.forms.widgets import (
-    CheckboxFieldRenderer, CheckboxSelectMultiple, RadioFieldRenderer,
-    RadioSelect,
-)
+from django.forms.widgets import CheckboxSelectMultiple, RadioSelect
 from django.utils.safestring import mark_safe
 
 
@@ -12,12 +9,6 @@ class BootstrapRenderer:
     def render_option(self, value, label, i):
         widget = self.choice_input_class(self.name, self.value, self.attrs.copy(), (value, label), i)
         row    = (
-            '<div class="row select">'
-            '    <div class="col-md-1 right">{tag}</div>'
-            '    <div class="col-md-11">'
-            '        <label class="form-control" style="font-weight:normal" for="{id}">{label}</label>'
-            '    </div>'
-            '</div>'
         )
         return row.format(
             tag     = widget.tag(),
@@ -39,21 +30,11 @@ class BootstrapRenderer:
         return mark_safe('\n'.join(rows))
 
 
-
-class RadioFieldRendererBootstrap(BootstrapRenderer, RadioFieldRenderer):
-    ''' Renders RadioSelect in a nice table '''
-
-
-
-class CheckboxFieldRendererBootstrap(BootstrapRenderer, CheckboxFieldRenderer):
-    ''' Renders CheckboxSelectMultiple in a nice table '''
-
-
-
 class RadioSelectBootstrap(RadioSelect):
-    renderer = RadioFieldRendererBootstrap
-
+    template_name = 'leprikon/widgets/multiple_input.html'
+    option_template_name = 'leprikon/widgets/input_option.html'
 
 
 class CheckboxSelectMultipleBootstrap(CheckboxSelectMultiple):
-    renderer = CheckboxFieldRendererBootstrap
+    template_name = 'leprikon/widgets/multiple_input.html'
+    option_template_name = 'leprikon/widgets/input_option.html'

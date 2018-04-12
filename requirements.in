@@ -1,5 +1,5 @@
 # Requirements of leprikon
-Django<1.10
+Django
 PyPDF2
 cmsplugin-filer
 django-cms
@@ -11,7 +11,6 @@ django-haystack<2.8
 django-localflavor<2
 django-staticfiles-downloader
 django-verified-email-field
-djangocms-column
 djangocms-googlemap
 djangocms-link
 djangocms-snippet

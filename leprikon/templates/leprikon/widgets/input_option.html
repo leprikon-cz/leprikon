@@ -1,0 +1,6 @@
+<div class="row select">
+    <div class="col-md-1 right">{% include "django/forms/widgets/input.html" %}</div>
+    <div class="col-md-11">
+        <label class="form-control"{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %}>{{ widget.label }}</label>
+    </div>
+</div>
