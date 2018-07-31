@@ -488,7 +488,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     parent2_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
     parent2_email       = models.EmailField(_('email address'),               blank=True, null=True)
 
-    variable_symbol     = models.IntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
+    variable_symbol     = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
 
     class Meta:
         app_label           = 'leprikon'
