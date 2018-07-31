@@ -10,7 +10,6 @@ from ..models.courses import (
     CourseRegistration,
 )
 from ..models.events import Event, EventDiscount, EventRegistration
-from ..models.insurance import Insurance
 from ..models.leprikonsite import LeprikonSite
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
@@ -29,7 +28,6 @@ from .courses import (
     CourseJournalLeaderEntryAdmin, CourseRegistrationAdmin,
 )
 from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
-from .insurance import InsuranceAdmin
 from .leprikonsite import LeprikonSiteAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
@@ -53,7 +51,6 @@ admin.site.site_header = _('Leprikon administration')
 admin.site.site_title = _('Leprikon administration')
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
-admin.site.register(Insurance,                  InsuranceAdmin)
 admin.site.register(LeprikonSite,               LeprikonSiteAdmin)
 admin.site.register(Place,                      PlaceAdmin)
 admin.site.register(PrintSetup,                 PrintSetupAdmin)

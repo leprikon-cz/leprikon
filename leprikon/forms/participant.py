@@ -16,7 +16,7 @@ class ParticipantForm(FormMixin, forms.ModelForm):
         model = Participant
         fields = [
             'first_name', 'last_name', 'birth_num', 'age_group',
-            'street', 'city', 'postal_code', 'citizenship', 'insurance',
+            'street', 'city', 'postal_code', 'citizenship',
             'email', 'phone',
             'school', 'school_other', 'school_class',
             'health',

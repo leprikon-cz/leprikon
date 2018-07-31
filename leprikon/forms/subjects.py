@@ -222,7 +222,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         else:
             participant = Participant.objects.get(id=self.participant_select_form.cleaned_data['participant'])
         for attr in ['first_name', 'last_name', 'birth_num', 'age_group', 'street', 'city', 'postal_code',
-                     'citizenship', 'insurance', 'phone', 'email', 'school', 'school_other', 'school_class', 'health']:
+                     'citizenship', 'phone', 'email', 'school', 'school_other', 'school_class', 'health']:
             setattr(participant, attr, getattr(self.instance.participant, attr))
         participant.save()
 

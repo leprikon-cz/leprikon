@@ -95,10 +95,6 @@
                 <td><para style="para">{{ object.participant.citizenship }}</para></td>
             </tr>
             <tr>
-                <td>{% trans 'Insurance' %}</td>
-                <td><para style="para">{{ object.participant.insurance }}</para></td>
-            </tr>
-            <tr>
                 <td>{% trans 'Phone' %}</td>
                 <td><para style="para">{{ object.participant.phone }}</para></td>
             </tr>

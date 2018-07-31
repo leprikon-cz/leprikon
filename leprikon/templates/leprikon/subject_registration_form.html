@@ -88,7 +88,6 @@
     {% include 'leprikon/form_item.html' with item=form.participant_city %}
     {% include 'leprikon/form_item.html' with item=form.participant_postal_code %}
     {% include 'leprikon/form_item.html' with item=form.participant_citizenship %}
-    {% include 'leprikon/form_item.html' with item=form.participant_insurance %}
     <div id="participant_contact">
     {% include 'leprikon/form_item.html' with item=form.participant_phone %}
     {% include 'leprikon/form_item.html' with item=form.participant_email %}
@@ -205,7 +204,6 @@ $(document).ready(function() {
             $('#id_participant_city').val('');
             $('#id_participant_postal_code').val('');
             $('#id_participant_citizenship').val('');
-            $('#id_participant_insurance').val('');
             $('#id_participant_phone').val('');
             $('#id_participant_email').val('');
             $('#id_participant_school').val('');
@@ -221,7 +219,6 @@ $(document).ready(function() {
             $('#id_participant_city').val('{{ participant.city | escapejs }}');
             $('#id_participant_postal_code').val('{{ participant.postal_code | escapejs }}');
             $('#id_participant_citizenship').val('{{ participant.citizenship }}');
-            $('#id_participant_insurance').val('{{ participant.insurance_id }}');
             $('#id_participant_phone').val('{{ participant.phone | escapejs }}');
             $('#id_participant_email').val('{{ participant.email | escapejs }}');
             $('#id_participant_school').val('{{ participant.school_id }}');

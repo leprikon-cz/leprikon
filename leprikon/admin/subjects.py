@@ -226,7 +226,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'answers', 'cancel_request', 'canceled',
         'participant_gender', 'participant_first_name', 'participant_last_name', 'participant_birth_num',
         'participant_age_group', 'participant_street', 'participant_city', 'participant_postal_code',
-        'participant_citizenship', 'participant_insurance', 'participant_phone', 'participant_email',
+        'participant_citizenship', 'participant_phone', 'participant_email',
         'participant_school', 'participant_school_other', 'participant_school_class', 'participant_health',
         'has_parent1', 'parent1_first_name', 'parent1_last_name', 'parent1_street', 'parent1_city',
         'parent1_postal_code', 'parent1_phone', 'parent1_email',

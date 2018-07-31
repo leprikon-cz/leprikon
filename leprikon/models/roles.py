@@ -17,7 +17,6 @@ from ..conf import settings
 from ..forms.leaders import LeaderFilterForm
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, PostalCodeField
-from .insurance import Insurance
 from .school import School
 from .schoolyear import SchoolYear
 
@@ -202,8 +201,6 @@ class Participant(models.Model):
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = CountryField(_('citizenship'))
-    insurance       = models.ForeignKey(Insurance, verbose_name=_('insurance'), null=True,
-                                        related_name='+', on_delete=models.PROTECT)
     school          = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
                                         related_name='participants', on_delete=models.PROTECT)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')

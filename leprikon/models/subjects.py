@@ -29,7 +29,6 @@ from ..conf import settings
 from ..utils import comma_separated, currency, get_birth_date
 from .agegroup import AgeGroup
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
-from .insurance import Insurance
 from .leprikonsite import LeprikonSite
 from .place import Place
 from .printsetup import PrintSetup
@@ -462,8 +461,6 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     participant_city        = models.CharField(_('city'),         max_length=150)
     participant_postal_code = PostalCodeField(_('postal code'))
     participant_citizenship = CountryField(_('citizenship'))
-    participant_insurance   = models.ForeignKey(Insurance, verbose_name=_('insurance'), null=True,
-                                                related_name='+', on_delete=models.PROTECT)
     participant_phone       = models.CharField(_('phone'),        max_length=30, blank=True, default='')
     participant_email       = models.EmailField(_('email address'),              blank=True, default='')
 
