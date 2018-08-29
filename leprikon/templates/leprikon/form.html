@@ -1,5 +1,5 @@
 {% extends 'leprikon/base.html' %}
-{% load i18n cms_tags %}
+{% load i18n cms_tags sekizai_tags %}
 
 {% block content %}
 
@@ -43,5 +43,13 @@
         </div>
     </div>
 </form>
+
+{% addtoblock 'css' %}
+{{ form.media.css }}
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+{{ form.media.js }}
+{% endaddtoblock %}
 
 {% endblock %}
