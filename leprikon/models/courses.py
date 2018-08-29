@@ -18,7 +18,7 @@ from ..utils import comma_separated
 from .agegroup import AgeGroup
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .roles import Leader, Manager
-from .schoolyear import SchoolYear, SchoolYearPeriod
+from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
@@ -27,8 +27,8 @@ from .utils import PaymentStatus
 
 
 class Course(Subject):
-    unit    = models.CharField(_('unit'), max_length=150)
-    periods = models.ManyToManyField(SchoolYearPeriod, verbose_name=_('periods'), related_name='courses')
+    school_year_division = models.ForeignKey(SchoolYearDivision, verbose_name=_('school year division'),
+                                             related_name='courses')
 
     class Meta:
         app_label           = 'leprikon'
@@ -42,7 +42,7 @@ class Course(Subject):
 
     @cached_property
     def all_periods(self):
-        return list(self.periods.all())
+        return list(self.school_year_division.periods.all())
 
     @cached_property
     def all_journal_periods(self):
@@ -52,8 +52,15 @@ class Course(Subject):
     def all_journal_entries(self):
         return list(self.journal_entries.all())
 
+    @cached_property
+    def has_discounts(self):
+        return CourseDiscount.objects.filter(registration__subject_id=self.id).exists()
+
     def get_current_period(self):
-        return self.periods.filter(end__gte=date.today()).first() or self.periods.last()
+        return (
+            self.school_year_division.periods.filter(end__gte=date.today()).first() or
+            self.school_year_division.periods.last()
+        )
 
     def get_times_list(self):
         return comma_separated(self.all_times)
@@ -90,6 +97,13 @@ class Course(Subject):
         new.public      = False
         new.evaluation  = ''
         new.note        = ''
+        try:
+            new.school_year_division = SchoolYearDivision.objects.get(
+                school_year=school_year,
+                name=old.school_year_division.name,
+            )
+        except:
+            new.school_year_division = old.school_year_division.copy_to_school_year(school_year)
         new.save()
         new.managers    = old.managers.all()
         new.groups      = old.groups.all()
@@ -139,20 +153,6 @@ class Course(Subject):
                     new.reg_to.minute,
                     new.reg_to.second,
                 )
-        for period in old.all_periods:
-            try:
-                start = date(period.start.year + year_offset, period.start.month, period.start.day)
-            except ValueError:
-                # handle leap-year
-                start = date(period.start.year + year_offset, period.start.month, period.start.day - 1)
-            try:
-                end   = date(period.end.year   + year_offset, period.end.month,   period.end.day)
-            except ValueError:
-                # handle leap-year
-                end   = date(period.end.year   + year_offset, period.end.month,   period.end.day - 1)
-            new.periods.add(SchoolYearPeriod.objects.get_or_create(
-                school_year=school_year, name=period.name, start=start, end=end
-            )[0])
         return new
 
 
@@ -281,10 +281,11 @@ class CourseRegistration(SubjectRegistration):
 
     @property
     def periods(self):
+        periods = self.subject.course.school_year_division.periods
         if self.canceled:
-            return self.subject.course.periods.filter(end__gt=self.created, start__lt=self.canceled)
+            return periods.filter(end__gt=self.created, start__lt=self.canceled)
         else:
-            return self.subject.course.periods.filter(end__gt=self.created)
+            return periods.filter(end__gt=self.created)
 
     @cached_property
     def all_periods(self):

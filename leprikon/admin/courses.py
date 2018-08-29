@@ -68,18 +68,25 @@ class CourseAdmin(SubjectBaseAdmin):
         'publish', 'unpublish',
         'copy_to_school_year',
     )
-    filter_horizontal = SubjectBaseAdmin.filter_horizontal + ('periods',)
+
+    def get_readonly_fields(self, request, obj=None):
+        return ('school_year_division',) if obj and obj.has_discounts else ()
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
-        if obj:
-            school_year = obj.school_year
-        else:
-            school_year = request.school_year
-        # periods choices
-        periods_choices = form.base_fields['periods'].widget.widget.choices
-        periods_choices.queryset = periods_choices.queryset.filter(school_year=school_year)
-        form.base_fields['periods'].choices = periods_choices
+        # school year division choices
+        if not obj or not obj.has_discounts:
+            # school year division can not be changed if there are discounts
+            # because discounts are related to school year periods
+            if obj:
+                school_year = obj.school_year
+            else:
+                school_year = request.school_year
+            school_year_division_choices = form.base_fields['school_year_division'].widget.widget.choices
+            school_year_division_choices.queryset = school_year_division_choices.queryset.filter(
+                school_year=school_year,
+            )
+            form.base_fields['school_year_division'].choices = school_year_division_choices
         return form
 
     def publish(self, request, queryset):

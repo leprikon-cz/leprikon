@@ -113,7 +113,10 @@ class ReportCourseStatsView(ReportBaseView):
         context         = form.cleaned_data
         context['form'] = form
 
-        courses = Course.objects.filter(periods__start__lte=d, periods__end__gte=d).distinct()
+        courses = Course.objects.filter(
+            school_year_division__periods__start__lte=d,
+            school_year_division__periods__end__gte=d,
+        ).distinct()
         context['courses_count'] = courses.count()
 
         registrations = CourseRegistration.objects.filter(subject__in=courses, approved__lte=d).exclude(canceled__lte=d)

@@ -17,7 +17,7 @@ from ..models.printsetup import PrintSetup
 from ..models.question import Question
 from ..models.roles import Leader, Manager, Parent, Participant
 from ..models.school import School
-from ..models.schoolyear import SchoolYear
+from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import (
     Subject, SubjectGroup, SubjectPayment, SubjectRegistration, SubjectType,
 )
@@ -35,7 +35,7 @@ from .printsetup import PrintSetupAdmin
 from .question import QuestionAdmin
 from .roles import LeaderAdmin, ManagerAdmin, ParentAdmin, ParticipantAdmin
 from .school import SchoolAdmin
-from .schoolyear import SchoolYearAdmin
+from .schoolyear import SchoolYearAdmin, SchoolYearDivisionAdmin
 from .subjects import (
     SubjectAdmin, SubjectGroupAdmin, SubjectPaymentAdmin,
     SubjectRegistrationAdmin, SubjectTypeAdmin,
@@ -56,6 +56,7 @@ admin.site.register(Place,                      PlaceAdmin)
 admin.site.register(PrintSetup,                 PrintSetupAdmin)
 admin.site.register(School,                     SchoolAdmin)
 admin.site.register(SchoolYear,                 SchoolYearAdmin)
+admin.site.register(SchoolYearDivision,         SchoolYearDivisionAdmin)
 
 admin.site.register(Leader,                     LeaderAdmin)
 admin.site.register(Manager,                     ManagerAdmin)
