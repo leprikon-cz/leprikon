@@ -9,11 +9,11 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from . import ReportBaseView
-from ...conf import settings
 from ...forms.reports.courses import (
     CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm,
 )
 from ...models.agegroup import AgeGroup
+from ...models.citizenship import Citizenship
 from ...models.courses import Course, CourseRegistration
 from ...models.roles import Participant
 from ...models.subjects import SubjectPayment, SubjectType
@@ -99,13 +99,7 @@ class ReportCourseStatsView(ReportBaseView):
     submit_label    = _('Show')
     back_url        = reverse('leprikon:report_list')
 
-    ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'local', 'eu', 'noneu'))
-
-    all_EU_countries    = [
-        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
-        'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB',
-    ]
-    other_EU_countries = [country for country in all_EU_countries if country != settings.LEPRIKON_COUNTRY]
+    ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'citizenships'))
 
     def form_valid(self, form):
         d               = form.cleaned_data['date']
@@ -128,14 +122,18 @@ class ReportCourseStatsView(ReportBaseView):
         else:
             registrations = list(registrations)
 
+        citizenships = list(Citizenship.objects.all())
+        context['citizenships'] = citizenships
+
         context['registrations_counts'] = self.ReportItem(
             age_group=None,
             all=len(registrations),
             boys=len([r for r in registrations if r.participant_gender == Participant.MALE]),
             girls=len([r for r in registrations if r.participant_gender == Participant.FEMALE]),
-            local=len([r for r in registrations if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
-            eu=len([r for r in registrations if r.participant_citizenship in self.other_EU_countries]),
-            noneu=len([r for r in registrations if r.participant_citizenship not in self.all_EU_countries]),
+            citizenships=[
+                len([r for r in registrations if r.participant_citizenship_id == citizenship.id])
+                for citizenship in citizenships
+            ]
         )
         context['registrations_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
@@ -145,9 +143,10 @@ class ReportCourseStatsView(ReportBaseView):
                 all=len(regs),
                 boys=len([r for r in regs if r.participant_gender == Participant.MALE]),
                 girls=len([r for r in regs if r.participant_gender == Participant.FEMALE]),
-                local=len([r for r in regs if r.participant_citizenship == settings.LEPRIKON_COUNTRY]),
-                eu=len([r for r in regs if r.participant_citizenship in self.other_EU_countries]),
-                noneu=len([r for r in regs if r.participant_citizenship not in self.all_EU_countries]),
+                citizenships=[
+                    len([r for r in regs if r.participant_citizenship_id == citizenship.id])
+                    for citizenship in citizenships
+                ]
             ))
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))

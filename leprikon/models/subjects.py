@@ -19,7 +19,6 @@ from django.utils.encoding import (
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -28,6 +27,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 from ..conf import settings
 from ..utils import comma_separated, currency, get_birth_date
 from .agegroup import AgeGroup
+from .citizenship import Citizenship
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
 from .leprikonsite import LeprikonSite
 from .place import Place
@@ -460,7 +460,8 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     participant_street      = models.CharField(_('street'),       max_length=150)
     participant_city        = models.CharField(_('city'),         max_length=150)
     participant_postal_code = PostalCodeField(_('postal code'))
-    participant_citizenship = CountryField(_('citizenship'))
+    participant_citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
+                                                related_name='+', on_delete=models.PROTECT)
     participant_phone       = models.CharField(_('phone'),        max_length=30, blank=True, default='')
     participant_email       = models.EmailField(_('email address'),              blank=True, default='')
 

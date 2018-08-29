@@ -9,13 +9,13 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django_countries.fields import CountryField
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
 from ..conf import settings
 from ..forms.leaders import LeaderFilterForm
 from .agegroup import AgeGroup
+from .citizenship import Citizenship
 from .fields import BirthNumberField, PostalCodeField
 from .school import School
 from .schoolyear import SchoolYear
@@ -200,7 +200,8 @@ class Participant(models.Model):
     postal_code     = PostalCodeField(_('postal code'))
     email           = models.EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
-    citizenship     = CountryField(_('citizenship'))
+    citizenship     = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
+                                        related_name='+', on_delete=models.PROTECT)
     school          = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
                                         related_name='participants', on_delete=models.PROTECT)
     school_other    = models.CharField(_('other school'), max_length=150, blank=True, default='')

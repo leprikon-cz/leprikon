@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.agegroup import AgeGroup
+from ..models.citizenship import Citizenship
 from ..models.courses import (
     Course, CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
     CourseRegistration,
@@ -23,6 +24,7 @@ from ..models.subjects import (
 )
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .agegroup import AgeGroupAdmin
+from .citizenship import CitizenshipAdmin
 from .courses import (
     CourseAdmin, CourseDiscountAdmin, CourseJournalEntryAdmin,
     CourseJournalLeaderEntryAdmin, CourseRegistrationAdmin,
@@ -51,6 +53,7 @@ admin.site.site_header = _('Leprikon administration')
 admin.site.site_title = _('Leprikon administration')
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
+admin.site.register(Citizenship,                CitizenshipAdmin)
 admin.site.register(LeprikonSite,               LeprikonSiteAdmin)
 admin.site.register(Place,                      PlaceAdmin)
 admin.site.register(PrintSetup,                 PrintSetupAdmin)
