@@ -28,12 +28,13 @@ from ..conf import settings
 from ..utils import comma_separated, currency, get_birth_date
 from .agegroup import AgeGroup
 from .citizenship import Citizenship
+from .department import Department
 from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
 from .leprikonsite import LeprikonSite
 from .place import Place
 from .printsetup import PrintSetup
 from .question import Question
-from .roles import Leader, Manager
+from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .utils import generate_variable_symbol
@@ -160,11 +161,12 @@ class Subject(models.Model):
     code        = models.PositiveSmallIntegerField(_('accounting code'), blank=True, default=0)
     name        = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
-    managers    = models.ManyToManyField(Manager, verbose_name=_('managers'), related_name='subjects', blank=True)
+    department  = models.ForeignKey(Department, verbose_name=_('department'), blank=True, null=True,
+                                    related_name='subjects', on_delete=models.SET_NULL)
     groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
     place       = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
                                     related_name='subjects', on_delete=models.SET_NULL)
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects', blank=True)
+    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects')
     leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price       = PriceField(_('price'), blank=True, null=True)
     public      = models.BooleanField(_('public'), default=False)
@@ -192,7 +194,7 @@ class Subject(models.Model):
 
     class Meta:
         app_label           = 'leprikon'
-        ordering            = ('name',)
+        ordering            = ('code', 'name')
         verbose_name        = _('subject')
         verbose_name_plural = _('subjects')
 
@@ -202,10 +204,6 @@ class Subject(models.Model):
     @cached_property
     def all_variants(self):
         return list(self.variants.all())
-
-    @cached_property
-    def all_managers(self):
-        return list(self.managers.all())
 
     @cached_property
     def all_groups(self):
@@ -298,10 +296,6 @@ class Subject(models.Model):
     @cached_property
     def all_inactive_registrations(self):
         return list(self.inactive_registrations.all())
-
-    def get_managers_list(self):
-        return comma_separated(self.all_managers)
-    get_managers_list.short_description = _('managers list')
 
     def get_agreement(self):
         return (

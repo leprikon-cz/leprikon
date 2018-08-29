@@ -10,13 +10,14 @@ from ..models.courses import (
     Course, CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
     CourseRegistration,
 )
+from ..models.department import Department
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.leprikonsite import LeprikonSite
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
 from ..models.printsetup import PrintSetup
 from ..models.question import Question
-from ..models.roles import Leader, Manager, Parent, Participant
+from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import (
@@ -29,13 +30,14 @@ from .courses import (
     CourseAdmin, CourseDiscountAdmin, CourseJournalEntryAdmin,
     CourseJournalLeaderEntryAdmin, CourseRegistrationAdmin,
 )
+from .department import DepartmentAdmin
 from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
 from .leprikonsite import LeprikonSiteAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
 from .printsetup import PrintSetupAdmin
 from .question import QuestionAdmin
-from .roles import LeaderAdmin, ManagerAdmin, ParentAdmin, ParticipantAdmin
+from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
 from .school import SchoolAdmin
 from .schoolyear import SchoolYearAdmin, SchoolYearDivisionAdmin
 from .subjects import (
@@ -62,7 +64,6 @@ admin.site.register(SchoolYear,                 SchoolYearAdmin)
 admin.site.register(SchoolYearDivision,         SchoolYearDivisionAdmin)
 
 admin.site.register(Leader,                     LeaderAdmin)
-admin.site.register(Manager,                     ManagerAdmin)
 admin.site.register(Parent,                     ParentAdmin)
 admin.site.register(Participant,                ParticipantAdmin)
 
@@ -77,6 +78,8 @@ admin.site.register(CourseRegistration,         CourseRegistrationAdmin)
 admin.site.register(CourseDiscount,             CourseDiscountAdmin)
 admin.site.register(CourseJournalEntry,         CourseJournalEntryAdmin)
 admin.site.register(CourseJournalLeaderEntry,   CourseJournalLeaderEntryAdmin)
+
+admin.site.register(Department,                 DepartmentAdmin)
 
 admin.site.register(Event,                      EventAdmin)
 admin.site.register(EventRegistration,          EventRegistrationAdmin)

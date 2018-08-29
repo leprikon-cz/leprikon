@@ -16,8 +16,9 @@ from djangocms_text_ckeditor.fields import HTMLField
 from ..conf import settings
 from ..utils import comma_separated
 from .agegroup import AgeGroup
+from .department import Department
 from .fields import DAY_OF_WEEK, DayOfWeekField
-from .roles import Leader, Manager
+from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import (
@@ -32,7 +33,7 @@ class Course(Subject):
 
     class Meta:
         app_label           = 'leprikon'
-        ordering            = ('name',)
+        ordering            = ('code', 'name')
         verbose_name        = _('course')
         verbose_name_plural = _('courses')
 
@@ -105,7 +106,6 @@ class Course(Subject):
         except:
             new.school_year_division = old.school_year_division.copy_to_school_year(school_year)
         new.save()
-        new.managers    = old.managers.all()
         new.groups      = old.groups.all()
         new.age_groups  = old.age_groups.all()
         new.leaders     = old.leaders.all()
@@ -596,8 +596,8 @@ class CoursePlugin(CMSPlugin):
 class CourseListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
                                     related_name='+', blank=True, null=True)
-    managers    = models.ManyToManyField(Manager, verbose_name=_('managers'), blank=True, related_name='+',
-                                         help_text=_('Keep empty to skip searching by managers.'))
+    departments = models.ManyToManyField(Department, verbose_name=_('departments'), blank=True, related_name='+',
+                                         help_text=_('Keep empty to skip searching by departments.'))
     course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), blank=True, related_name='+',
                                           limit_choices_to={'subject_type': SubjectType.COURSE},
                                           help_text=_('Keep empty to skip searching by course types.'))
@@ -616,15 +616,15 @@ class CourseListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.managers       = oldinstance.managers.all()
+        self.departments    = oldinstance.departments.all()
         self.course_types   = oldinstance.course_types.all()
         self.groups         = oldinstance.groups.all()
         self.age_groups     = oldinstance.age_groups.all()
         self.leaders        = oldinstance.leaders.all()
 
     @cached_property
-    def all_managers(self):
-        return list(self.managers.all())
+    def all_departments(self):
+        return list(self.departments.all())
 
     @cached_property
     def all_course_types(self):
@@ -649,8 +649,8 @@ class CourseListPlugin(CMSPlugin):
                        SchoolYear.objects.get_current())
         courses = Course.objects.filter(school_year=school_year, public=True).distinct()
 
-        if self.all_managers:
-            courses = courses.filter(managers__in = self.all_managers)
+        if self.all_departments:
+            courses = courses.filter(department__in = self.all_departments)
         if self.all_course_types:
             courses = courses.filter(subject_type__in = self.all_course_types)
         if self.all_age_groups:

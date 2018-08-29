@@ -15,7 +15,7 @@ from ..models.subjects import SubjectType
 from ..utils import currency
 from .filters import (
     ApprovedListFilter, CanceledListFilter, EventGroupListFilter,
-    EventListFilter, EventTypeListFilter, LeaderListFilter, ManagerListFilter,
+    EventListFilter, EventTypeListFilter, LeaderListFilter,
     SchoolYearListFilter,
 )
 from .pdf import PdfExportAdminMixin
@@ -35,14 +35,14 @@ class EventAdmin(SubjectBaseAdmin):
         'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'get_managers_list', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
-        ('managers',        ManagerListFilter),
+        'department',
         ('subject_type',    EventTypeListFilter),
         ('groups',          EventGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -108,7 +108,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
-        ('subject__managers',       ManagerListFilter),
+        'subject__department',
         ('subject__subject_type',   EventTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,

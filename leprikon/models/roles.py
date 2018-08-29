@@ -113,39 +113,6 @@ class Contact(models.Model):
 
 
 @python_2_unicode_compatible
-class Manager(models.Model):
-    user            = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                                           related_name='leprikon_manager', on_delete=models.PROTECT)
-    school_years    = models.ManyToManyField(SchoolYear, verbose_name=_('school years'), related_name='managers')
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('user__first_name', 'user__last_name')
-        verbose_name        = _('manager')
-        verbose_name_plural = _('managers')
-
-    def __str__(self):
-        return self.full_name or self.user.username
-
-    @cached_property
-    def first_name(self):
-        return self.user.first_name
-
-    @cached_property
-    def last_name(self):
-        return self.user.last_name
-
-    @cached_property
-    def full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name).strip()
-
-    @cached_property
-    def all_school_years(self):
-        return list(self.school_years.all())
-
-
-
-@python_2_unicode_compatible
 class Parent(models.Model):
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                                         related_name='leprikon_parents')

@@ -25,7 +25,7 @@ from .export import AdminExportMixin
 from .filters import (
     ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
     CourseListFilter, CourseTypeListFilter, LeaderListFilter,
-    ManagerListFilter, SchoolYearListFilter,
+    SchoolYearListFilter,
 )
 from .pdf import PdfExportAdminMixin
 from .subjects import (
@@ -49,14 +49,14 @@ class CourseAdmin(SubjectBaseAdmin):
         'get_journal_link', 'icon', 'note',
     )
     list_export     = (
-        'id', 'name', 'get_managers_list', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'id', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
-        ('managers',        ManagerListFilter),
+        'department',
         ('subject_type',    CourseTypeListFilter),
         ('groups',          CourseGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -181,7 +181,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
-        ('subject__managers',       ManagerListFilter),
+        'subject__department',
         ('subject__subject_type',   CourseTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,

@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import Course, CourseRegistration
+from ..models.department import Department
 from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
 from ..models.place import Place
@@ -20,17 +21,19 @@ from .widgets import RadioSelectBootstrap
 
 
 class SubjectFilterForm(FormMixin, forms.Form):
-    q           = forms.CharField(label=_('Search term'), required=False)
-    event_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
-    groups      = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
-    leaders     = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
-    places      = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
-    age_groups  = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
-    days_of_week = forms.MultipleChoiceField(label=_('Day of week'),
-                                             choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
-    past        = forms.BooleanField(label=_('Include past subjects'), required=False)
-    reg_active  = forms.BooleanField(label=_('Available for registration'), required=False)
-    invisible   = forms.BooleanField(label=_('Show invisible'), required=False)
+    q               = forms.CharField(label=_('Search term'), required=False)
+    course_types    = forms.ModelMultipleChoiceField(queryset=None, label=_('Course type'), required=False)
+    event_types     = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
+    departments     = forms.ModelMultipleChoiceField(queryset=None, label=_('Department'), required=False)
+    groups          = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
+    leaders         = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
+    places          = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
+    age_groups      = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    days_of_week    = forms.MultipleChoiceField(label=_('Day of week'),
+                                                choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
+    past            = forms.BooleanField(label=_('Include past subjects'), required=False)
+    reg_active      = forms.BooleanField(label=_('Available for registration'), required=False)
+    invisible       = forms.BooleanField(label=_('Show invisible'), required=False)
 
     _models = {
         SubjectType.COURSE: Course,
@@ -51,17 +54,39 @@ class SubjectFilterForm(FormMixin, forms.Form):
             qs = qs.filter(public=True)
         self.qs = qs
 
-        subject_ids = set(qs.order_by().values_list('id', flat=True))
+        subject_ids = tuple(qs.order_by('id').values_list('id', flat=True).distinct())
         if len(subject_types) == 1:
+            del self.fields['course_types']
             del self.fields['event_types']
-        else:
-            self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=[st.id for st in subject_types])
+        elif subject_type_type == SubjectType.COURSE:
+            del self.fields['event_types']
+            self.fields['course_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
+        elif subject_type_type == SubjectType.EVENT:
+            del self.fields['course_types']
+            self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
+
+        self.fields['departments'].queryset  = Department.objects.filter(subjects__id__in=subject_ids).distinct()
+        if self.fields['departments'].queryset.count() == 0:
+            del self.fields['departments']
+
         self.fields['groups'].queryset  = SubjectGroup.objects.filter(subject_types__in=subject_types,
-                                                                      subjects__id__in = subject_ids).distinct()
+                                                                      subjects__id__in=subject_ids).distinct()
+        if self.fields['groups'].queryset.count() == 0:
+            del self.fields['groups']
+
         self.fields['leaders'].queryset = (Leader.objects.filter(subjects__id__in=subject_ids).distinct()
                                            .order_by('user__first_name', 'user__last_name'))
+        if self.fields['leaders'].queryset.count() == 0:
+            del self.fields['leaders']
+
         self.fields['places'].queryset  = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        if self.fields['places'].queryset.count() == 0:
+            del self.fields['places']
+
         self.fields['age_groups'].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        if self.fields['age_groups'].queryset.count() <= 1:
+            del self.fields['age_groups']
+
         if subject_type_type != SubjectType.COURSE:
             del self.fields['days_of_week']
         if subject_type_type != SubjectType.EVENT:
@@ -81,17 +106,21 @@ class SubjectFilterForm(FormMixin, forms.Form):
                 Q(name__icontains = word) |
                 Q(description__icontains = word)
             )
-        if self.cleaned_data.get('event_types'):
+        if self.cleaned_data.get('course_types'):
+            qs = qs.filter(subject_type__in = self.cleaned_data['course_types'])
+        elif self.cleaned_data.get('event_types'):
             qs = qs.filter(subject_type__in = self.cleaned_data['event_types'])
-        if self.cleaned_data['groups']:
+        if self.cleaned_data.get('departments'):
+            qs = qs.filter(department__in = self.cleaned_data['departments'])
+        if self.cleaned_data.get('groups'):
             qs = qs.filter(groups__in = self.cleaned_data['groups'])
-        if self.cleaned_data['places']:
+        if self.cleaned_data.get('places'):
             qs = qs.filter(place__in = self.cleaned_data['places'])
-        if self.cleaned_data['leaders']:
+        if self.cleaned_data.get('leaders'):
             qs = qs.filter(leaders__in = self.cleaned_data['leaders'])
-        if self.cleaned_data['age_groups']:
+        if self.cleaned_data.get('age_groups'):
             qs = qs.filter(age_groups__in = self.cleaned_data['age_groups'])
-        if self.subject_type_type == SubjectType.COURSE and self.cleaned_data['days_of_week']:
+        if self.cleaned_data.get('days_of_week'):
             qs = qs.filter(times__day_of_week__in = self.cleaned_data['days_of_week'])
         if self.subject_type_type == SubjectType.EVENT and not self.cleaned_data['past']:
             qs = qs.filter(end_date__gte = now())

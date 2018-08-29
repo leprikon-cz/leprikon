@@ -2,7 +2,7 @@
 
 <div class="box box-{{ object.subject_type.subject_type }} box-{{ object.subject_type.slug }}">
     <div class="box-header">
-        <strong>{{ object.name }}</strong>
+        <strong>{% if object.code %}{{ object.code }} &ndash; {% endif %}{{ object.name }}</strong>
         {% for group in object.all_groups %}
         <small class="tag" style="color: {{ group.font_color }}; border-color: {{ group.font_color }}; background-color: {{ group.color }}">
             {{ group.name }}

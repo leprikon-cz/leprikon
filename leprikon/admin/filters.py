@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.courses import Course
 from ..models.events import Event
-from ..models.roles import Leader, Manager
+from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import Subject, SubjectGroup, SubjectType
 
@@ -178,13 +178,3 @@ class LeaderListFilter(admin.RelatedFieldListFilter):
 
     def field_choices(self, field, request, model_admin):
         return [(leader.id, leader) for leader in self.leaders]
-
-
-
-class ManagerListFilter(admin.RelatedFieldListFilter):
-    def __init__(self, field, request, params, model, model_admin, field_path):
-        self.managers = Manager.objects.filter(school_years=request.school_year)
-        super(ManagerListFilter, self).__init__(field, request, params, model, model_admin, field_path)
-
-    def field_choices(self, field, request, model_admin):
-        return [(manager.id, manager) for manager in self.managers]

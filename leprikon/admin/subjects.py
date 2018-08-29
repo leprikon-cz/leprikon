@@ -19,8 +19,8 @@ from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
     ApprovedListFilter, CanceledListFilter, LeaderListFilter,
-    ManagerListFilter, SchoolYearListFilter, SubjectGroupListFilter,
-    SubjectListFilter, SubjectTypeListFilter,
+    SchoolYearListFilter, SubjectGroupListFilter, SubjectListFilter,
+    SubjectTypeListFilter,
 )
 from .messages import SendMessageAdminMixin
 from .pdf import PdfExportAdminMixin
@@ -69,7 +69,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     list_editable   = ('public', 'note')
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
-        ('managers',        ManagerListFilter),
+        'department',
         ('subject_type',    SubjectTypeListFilter),
         ('groups',          SubjectGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -78,7 +78,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         SubjectVariantInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders', 'managers', 'questions')
+    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
     actions         = ('set_registration_dates',)
     search_fields   = ('name', 'description')
     save_as         = True
@@ -98,9 +98,6 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         leaders_choices = form.base_fields['leaders'].widget.widget.choices
         leaders_choices.queryset = leaders_choices.queryset.filter(school_years = request.school_year)
         form.base_fields['leaders'].choices = leaders_choices
-        managers_choices = form.base_fields['managers'].widget.widget.choices
-        managers_choices.queryset = managers_choices.queryset.filter(school_years = request.school_year)
-        form.base_fields['managers'].choices = managers_choices
         return form
 
     def save_form(self, request, form, change):
@@ -197,7 +194,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
-        ('managers',        ManagerListFilter),
+        'department',
         ('subject_type',    SubjectTypeListFilter),
         ('groups',          SubjectGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -235,7 +232,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
-        ('subject__managers',       ManagerListFilter),
+        'subject__department',
         ('subject__subject_type',   SubjectTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
@@ -324,7 +321,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
-        ('subject__managers',       ManagerListFilter),
+        'subject__department',
         ('subject__subject_type',   SubjectTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
@@ -350,7 +347,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.Mo
 class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     list_filter     = (
         ('registration__subject__school_year',  SchoolYearListFilter),
-        ('registration__subject__managers',     ManagerListFilter),
+        'registration__subject__department',
         ('registration__subject__subject_type', SubjectTypeListFilter),
         ('registration__subject',               SubjectListFilter),
         ('registration__subject__leaders',      LeaderListFilter),
