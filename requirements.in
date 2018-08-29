@@ -19,7 +19,7 @@ djangocms-text-ckeditor
 djangocms-video
 ipython
 mysqlclient
-psycopg2
+psycopg2-binary
 pyexcel-xlsxw
 python-memcached
 raven
