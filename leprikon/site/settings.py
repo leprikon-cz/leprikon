@@ -294,7 +294,9 @@ CACHES = {
         'KEY_PREFIX': os.environ.get('MEMCACHED_KEY_PREFIX', 'leprikon'),
     }
 }
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Login / logout urls
 LOGIN_URL = 'leprikon:user_login'
