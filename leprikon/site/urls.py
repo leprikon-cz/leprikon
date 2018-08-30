@@ -20,16 +20,22 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sites.models import Site
 
-urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^social/', include('social_django.urls')),
-    url(r'^verified-email-field/', include('verified_email_field.urls')),
-    url(r'^', include('cms.urls')),
-    # this won't work for displaying pages,
-    # but allows reverse resolving before leprikon apphook is attached to any page
-    url(r'^leprikon', include('leprikon.urls')),
-]
+try:
+    urlpatterns = [
+        url(r'^admin/', include(admin.site.urls)),
+        url(r'^social/', include('social_django.urls')),
+        url(r'^verified-email-field/', include('verified_email_field.urls')),
+        url(r'^', include('cms.urls')),
+        # this won't work for displaying pages,
+        # but allows reverse resolving before leprikon apphook is attached to any page
+        url(r'^leprikon', include('leprikon.urls')),
+    ]
+except Site.DoesNotExist:
+    # this may happen during data migration
+    print('Failed to load urls, because there is no Site.')
+    urlpatterns = []
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
