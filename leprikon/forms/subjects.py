@@ -305,6 +305,8 @@ class RegistrationAdminForm(forms.ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super(RegistrationAdminForm, self).__init__(data, *args, **kwargs)
         self.fields['subject_variant'].widget.choices.queryset = kwargs['instance'].subject.variants
+        if not kwargs['instance'].subject.variants.exists():
+            self.fields['subject_variant'].required = False
         self.fields['participant_age_group'].widget.choices.queryset = kwargs['instance'].subject.age_groups
 
         try:
