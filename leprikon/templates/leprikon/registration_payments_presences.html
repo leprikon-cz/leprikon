@@ -4,7 +4,7 @@
     <label class="col-sm-4">{% trans 'Price' %}:</label>
     <div class="col-sm-8">
         {{ reg.price | currency }}
-        {% if reg.subject.course.unit %} / {{ reg.subject.course.unit }}{% endif %}
+        {% if reg.subject.course.school_year_division.period_name %} / {{ reg.subject.course.school_year_division.period_name }}{% endif %}
         {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
     </div>
 </div>
