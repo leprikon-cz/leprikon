@@ -247,7 +247,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'parent2_first_name', 'parent2_last_name',
     )
     ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('subject',)
+    raw_id_fields   = ('subject', 'user',)
 
     @property
     def media(self):
