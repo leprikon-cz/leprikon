@@ -63,7 +63,7 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
-    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
@@ -185,7 +185,7 @@ class Subject(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                                          related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
-    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',

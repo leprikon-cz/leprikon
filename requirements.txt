@@ -4,6 +4,7 @@
 #
 #    pip-compile --no-index --output-file requirements.txt requirements.in
 #
+-e git+https://github.com/misli/trml2pdf.git@registerFontFamily#egg=trml2pdf
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 certifi==2018.4.16        # via requests
 chardet==3.0.4            # via requests
@@ -37,6 +38,7 @@ djangocms-text-ckeditor==3.6.0
 djangocms-video==2.0.4
 easy-thumbnails==2.5      # via cmsplugin-filer, django-filer
 enum34==1.1.6             # via traitlets
+html2rml==0.3.0
 html5lib==0.9999999       # via djangocms-text-ckeditor
 idna==2.6                 # via requests
 ipython-genutils==0.2.0   # via traitlets
@@ -49,7 +51,7 @@ pexpect==4.5.0            # via ipython
 pickleshare==0.7.4        # via ipython
 pillow==5.1.0             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
 prompt-toolkit==1.0.15    # via ipython
-psycopg2==2.7.4
+psycopg2-binary==2.7.5
 ptyprocess==0.5.2         # via pexpect
 pyexcel-io==0.5.7         # via pyexcel, pyexcel-xlsxw
 pyexcel-webio==0.1.4      # via django-excel
@@ -62,17 +64,16 @@ python-memcached==1.59
 python-openid==2.2.5      # via social-auth-core
 pytz==2018.4              # via django, django-staticfiles-downloader
 raven==6.7.0
-reportlab==3.4.0          # via trml2pdf
+reportlab==3.4.0
 requests-oauthlib==0.8.0  # via social-auth-core
 requests==2.18.4          # via requests-oauthlib, social-auth-core
 scandir==1.7              # via pathlib2
 simplegeneric==0.8.1      # via ipython
-six==1.11.0               # via html5lib, pathlib2, prompt-toolkit, python-memcached, social-auth-app-django, social-auth-core, traitlets, trml2pdf
+six==1.11.0               # via html5lib, pathlib2, prompt-toolkit, python-memcached, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0   # via social-auth-app-django
 texttable==1.2.1          # via pyexcel
 traitlets==4.3.2          # via ipython
-trml2pdf==0.4.3
 unidecode==0.4.21         # via django-filer
 urllib3==1.22             # via requests
 uwsgi==2.0.17

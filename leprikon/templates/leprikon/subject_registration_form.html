@@ -140,9 +140,7 @@
 
     <h3>{% trans 'Legal Agreement' %}</h3>
 
-    {% for line in form.instance.agreement|lines %}
-    <p>{{ line }}</p>
-    {% endfor %}
+    {{ form.instance.agreement|safe }}
 
     {% for item in form.agreement_form %}
         {% include 'leprikon/form_item.html' %}

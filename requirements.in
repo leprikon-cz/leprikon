@@ -17,6 +17,7 @@ djangocms-snippet
 djangocms-style
 djangocms-text-ckeditor
 djangocms-video
+html2rml
 ipython
 mysqlclient
 psycopg2-binary
@@ -24,5 +25,5 @@ pyexcel-xlsxw
 python-memcached
 raven
 social-auth-app-django
-trml2pdf
 uwsgi
+-e git+https://github.com/misli/trml2pdf.git@registerFontFamily#egg=trml2pdf

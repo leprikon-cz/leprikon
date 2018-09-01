@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-{% load i18n leprikon_tags %}
+{% load i18n html2rml leprikon_tags %}
 <!DOCTYPE document SYSTEM "rml.dtd">
 <document filename="{{ object.pdf_filename }}">
 
     <docinit>
         <registerFont fontName="DejaVuSans" fontFile="{% font 'leprikon/fonts/DejaVuSans.ttf' %}"/>
         <registerFont fontName="DejaVuSans-Bold" fontFile="{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Oblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-BoldOblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}"/>
+        <registerFontFamily normal="DejaVuSans" bold="DejaVuSans-Bold" italic="DejaVuSans-Oblique" boldItalic="DejaVuSans-BoldOblique"/>
     </docinit>
 
     <template showBoundary="0">
@@ -19,7 +22,10 @@
         <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
         <paraStyle name="subtitle" fontName="DejaVuSans-Bold" fontSize="10" alignment="CENTER"/>
         <paraStyle name="para" fontName="DejaVuSans" fontSize="10"/>
-        <paraStyle name="agreement" fontName="DejaVuSans" fontSize="10"/>
+        <paraStyle name="p" fontName="DejaVuSans" fontSize="10" spaceBefore="0.2 cm"/>
+        <paraStyle name="li" fontName="DejaVuSans" fontSize="10" spaceBefore="0.2 cm"/>
+        <listStyle name="ul" bulletType='bullet' start='•' bulletFontSize='10'/>
+        <listStyle name="ol" bulletFontSize='10'/>
         <blockTableStyle id="myBlockTableStyle">
             <!-- Set fonts -->
             <blockFont name="DejaVuSans" size="10"/>
@@ -165,9 +171,7 @@
 
         <spacer length="1cm"/>
 
-        {% for line in object.agreement|lines %}
-        <para style="agreement">{{ line }}</para>
-        {% endfor %}
+        {{ object.agreement|html2rml }}
 
         <spacer length="1cm"/>
 

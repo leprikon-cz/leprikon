@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, pre_save
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from djangocms_text_ckeditor.fields import HTMLField
 from localflavor.generic.models import BICField, IBANField
 
 from .fields import PostalCodeField
@@ -32,7 +33,7 @@ class LeprikonSite(Site):
     bic             = BICField(_('BIC (SWIFT)'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                          verbose_name=_('bill print setup'), blank=True, null=True)
-    agreement       = models.TextField(_('registration agreement'), blank=True, null=True)
+    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
 
