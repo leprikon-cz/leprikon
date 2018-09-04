@@ -11,7 +11,7 @@ WORKDIR /app
 # install requirements and generate czech locale
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get -y install locales supervisor nginx memcached sqlite3 libmysqlclient-dev mariadb-client postgresql-client python-dev python-pip \
+ && apt-get -y install git locales supervisor nginx memcached sqlite3 libmysqlclient-dev mariadb-client postgresql-client python-dev python-pip \
  && apt-get -y autoremove \
  && apt-get -y clean \
  && pip install --upgrade pip \
