@@ -23,8 +23,7 @@ class UserFormMixin(FormMixin):
     def clean_email(self):
         if self.cleaned_data['email'] and User.objects.filter(email=self.cleaned_data['email']).first():
             raise ValidationError(
-                _('User with this email already exists. '
-                  'You may use password reset form if You have forgotten your user name or password.'),
+                _('User with this email already exists.'),
                 code='exists',
                 params={'email': self.cleaned_data['email']},
             )
@@ -74,7 +73,7 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
 
 
 
-class UserUpdateForm(FormMixin, forms.ModelForm):
+class UserUpdateForm(UserFormMixin, forms.ModelForm):
 
     def __init__(self, **kwargs):
         super(UserUpdateForm, self).__init__(**kwargs)
