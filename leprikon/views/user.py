@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..conf import settings
 from ..forms.user import (
     PasswordResetForm, SetPasswordForm, UserAgreementForm, UserCreateForm,
-    UserLoginForm, UserPasswordForm, UserUpdateForm,
+    UserEmailForm, UserLoginForm, UserPasswordForm, UserUpdateForm,
 )
 from ..models.roles import Parent
 from ..models.useragreement import UserAgreement
@@ -95,6 +95,11 @@ class UserUpdateView(UpdateView):
 
     def get_message(self):
         return _('User account {} has been updated.').format(self.object)
+
+
+class UserEmailView(UserUpdateView):
+    form_class  = UserEmailForm
+    title       = _('Change e-mail address')
 
 
 def user_password(request):

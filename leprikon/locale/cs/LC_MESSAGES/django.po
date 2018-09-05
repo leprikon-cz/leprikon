@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-05 15:02+0200\n"
+"POT-Creation-Date: 2018-09-05 15:27+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -576,7 +576,7 @@ msgstr "Vedoucí"
 msgid "Terms and Conditions"
 msgstr "Obchodní podmínky"
 
-#: cms_menus.py:148 templates/leprikon/base.html:64
+#: cms_menus.py:148 templates/leprikon/base.html:65
 msgid "Log out"
 msgstr "Odhlásit se"
 
@@ -851,11 +851,15 @@ msgstr "Váš výkaz práce za {period} byl již odevzdán."
 msgid "An overlaping entry has already been added in the timesheet."
 msgstr "Ve výkazu práce už je kolidující záznam."
 
-#: forms/user.py:24
+#: forms/user.py:28
 msgid "User with this email already exists."
 msgstr "Uživatel s touto e-mailovou adresou již existuje."
 
-#: forms/user.py:48 forms/user.py:62
+#: forms/user.py:52 templates/leprikon/registration/subject.rml:108
+msgid "E-mail"
+msgstr "E-mail"
+
+#: forms/user.py:53 forms/user.py:66
 msgid "I agree with the terms."
 msgstr "Souhlasím s podmínkami."
 
@@ -1852,7 +1856,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:81
-#: views/user.py:108
+#: views/user.py:113
 msgid "Back"
 msgstr "Zpět"
 
@@ -1860,23 +1864,27 @@ msgstr "Zpět"
 msgid "Edit"
 msgstr "Upravit"
 
-#: templates/leprikon/base.html:63 views/user.py:107
+#: templates/leprikon/base.html:63
+msgid "Change e-mail"
+msgstr "Změnit e-mail"
+
+#: templates/leprikon/base.html:64 views/user.py:112
 msgid "Change password"
 msgstr "Změnit heslo"
 
-#: templates/leprikon/base.html:70
+#: templates/leprikon/base.html:71
 msgid "Link with your Google account"
 msgstr "Propojit s účtem Google"
 
-#: templates/leprikon/base.html:80
+#: templates/leprikon/base.html:81
 msgid "Link with your Facebook account"
 msgstr "Propojit s účtem Facebook"
 
-#: templates/leprikon/base.html:109
+#: templates/leprikon/base.html:110
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:130
+#: templates/leprikon/base.html:131
 msgid "Powered by Leprikón Information System"
 msgstr "Informační systém Leprikón"
 
@@ -2354,10 +2362,6 @@ msgstr "Státní občanství"
 #: templates/leprikon/registration/subject.rml:104
 msgid "Phone"
 msgstr "Telefon"
-
-#: templates/leprikon/registration/subject.rml:108
-msgid "E-mail"
-msgstr "E-mail"
 
 #: templates/leprikon/registration/subject.rml:116
 msgid "Class"
@@ -2875,23 +2879,27 @@ msgstr "Aktualizace údajů o uživateli"
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:133
+#: views/user.py:102
+msgid "Change e-mail address"
+msgstr "Změna e-mailové adresy"
+
+#: views/user.py:138
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:135
+#: views/user.py:140
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:153
+#: views/user.py:158
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:155
+#: views/user.py:160
 msgid "Set my password"
 msgstr "Nastavit heslo"

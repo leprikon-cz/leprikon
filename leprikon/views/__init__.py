@@ -55,6 +55,7 @@ summary                         = login_required(summaries.SummaryView.as_view()
 user_create                     = user.UserCreateView.as_view()
 user_agreement                  = login_required(user.UserAgreementView.as_view())
 user_update                     = login_required(user.UserUpdateView.as_view())
+user_email                      = login_required(user.UserEmailView.as_view())
 user_login                      = user.user_login
 user_logout                     = user.user_logout
 user_password                   = user.user_password
