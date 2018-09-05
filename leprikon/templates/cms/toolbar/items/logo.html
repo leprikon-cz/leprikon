@@ -1,0 +1,5 @@
+{% load i18n staticfiles %}
+<div class="cms-toolbar-item cms-toolbar-item-logo">
+    <img alt="Leprikón" src="{% static 'leprikon/img/logo-horizontal.png' %}" height="45"
+         title="{% trans 'Version' %}: {{ request.leprikon_version }}"/>
+</div>

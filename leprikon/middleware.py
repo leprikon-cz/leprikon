@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.views import redirect_to_login
 from django.core.urlresolvers import reverse_lazy
 
+from . import __version__
 from .conf import settings
 from .models.leprikonsite import LeprikonSite
 from .models.roles import Leader
@@ -55,6 +56,9 @@ class LeprikonMiddleware(object):
 
         # add leprikon site to request
         request.leprikon_site = LeprikonSite.objects.get_current()
+
+        # add leprikon version to request
+        request.leprikon_version = __version__
 
         # check user agreement
         if (
