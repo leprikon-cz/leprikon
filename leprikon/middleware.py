@@ -31,40 +31,19 @@ class school_year(object):
             del(request._leprikon_school_year)
 
 
-
-class leader(object):
-    def __get__(self, request, type=None):
-        if request is None:
-            return self
-        try:
-            return request._leprikon_leader
-        except AttributeError:
-            try:
-                request._leprikon_leader = request.user.leprikon_leader
-            except (AttributeError, Leader.DoesNotExist):
-                request._leprikon_leader = None
-        return request._leprikon_leader
-
-    def __set__(self, request, leader):
-        pass
-
-    def __delete__(self, request):
-        if request:
-            del(request._leprikon_leader)
-
-
-
 class LeprikonMiddleware(object):
 
-    def __init__(self, get_response=None):
+    def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        # add school_year property to request
         type(request).school_year = school_year()
-        type(request).leader = leader()
-        return self.get_response(request)
 
-    # django<1.10 method
-    def process_request(self, request):
-        type(request).school_year = school_year()
-        type(request).leader = leader()
+        # add leprikon leader to request
+        try:
+            request.leader = request.user.leprikon_leader
+        except (AttributeError, Leader.DoesNotExist):
+            request.leader = None
+
+        return self.get_response(request)
