@@ -1,0 +1,4 @@
+{% if item.name == 'agreement' %}
+{{ request.leprikon_site.user_agreement|safe }}
+{% endif %}
+{% include 'leprikon/form_item.html' %}

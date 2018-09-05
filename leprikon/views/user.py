@@ -7,14 +7,17 @@ from django.contrib.auth.views import (
     password_reset_confirm as pr_confirm, password_reset_done as pr_done,
 )
 from django.core.urlresolvers import reverse_lazy as reverse
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
 from ..forms.user import (
-    PasswordResetForm, SetPasswordForm, UserCreateForm, UserLoginForm,
-    UserPasswordForm, UserUpdateForm,
+    PasswordResetForm, SetPasswordForm, UserAgreementForm, UserCreateForm,
+    UserLoginForm, UserPasswordForm, UserUpdateForm,
 )
-from .generic import CreateView, UpdateView
+from ..models.roles import Parent
+from ..models.useragreement import UserAgreement
+from .generic import CreateView, FormView, UpdateView
 
 __all__ = [
     'UserCreateView', 'UserUpdateView',
@@ -28,19 +31,58 @@ class UserCreateView(CreateView):
     model       = get_user_model()
     form_class  = UserCreateForm
     title       = _('Create account')
+    form_item_template_name = 'leprikon/user_create_form_item.html'
 
     def get_message(self):
         return _('User account {} has been created.').format(self.object)
 
     def form_valid(self, form):
         response = super(UserCreateView, self).form_valid(form)
+
+        # first user is superuser
         if self.model.objects.count() == 1:
             self.object.is_staff = True
             self.object.is_superuser = True
             self.object.save()
+
+        # save agreement
+        UserAgreement.objects.create(
+            user=self.object,
+            granted=now(),
+        )
+
+        # create default parent
+        parent = Parent()
+        parent.first_name = self.object.first_name
+        parent.last_name = self.object.last_name
+        parent.email = self.object.email
+        parent.user = self.object
+        parent.save()
+
+        # login
         self.object.backend = 'django.contrib.auth.backends.ModelBackend'
         auth_login(self.request, self.object)
         return response
+
+
+class UserAgreementView(FormView):
+    form_class  = UserAgreementForm
+    title       = _('Agreement with the terms of use')
+    form_item_template_name = 'leprikon/user_create_form_item.html'
+
+    def get_message(self):
+        return _('The agreement has been saved.')
+
+    def form_valid(self, form):
+        try:
+            self.request.user.agreement.granted = now()
+            self.request.user.agreement.save()
+        except UserAgreement.DoesNotExist:
+            UserAgreement.objects.create(
+                user=self.request.user,
+                granted=now(),
+            )
+        return super(UserAgreementView, self).form_valid(form)
 
 
 class UserUpdateView(UpdateView):

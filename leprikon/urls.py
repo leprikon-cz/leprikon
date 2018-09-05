@@ -26,6 +26,7 @@ urlpatterns = [
     d_url(r'^{summary}/$',          'summary'),
 
     d_url(r'^{create_account}/$',           'user_create'),
+    d_url(r'^{user}/{agreement}/$',         'user_agreement'),
     d_url(r'^{user}/$',                     'user_update'),
     d_url(r'^{user}/{password}/$',          'user_password'),
     d_url(r'^{login}/$',                    'user_login'),

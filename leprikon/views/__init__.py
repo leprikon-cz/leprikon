@@ -53,6 +53,7 @@ staff_required = user_passes_test(
 summary                         = login_required(summaries.SummaryView.as_view())
 
 user_create                     = user.UserCreateView.as_view()
+user_agreement                  = login_required(user.UserAgreementView.as_view())
 user_update                     = login_required(user.UserUpdateView.as_view())
 user_login                      = user.user_login
 user_logout                     = user.user_logout

@@ -1,8 +1,13 @@
 from __future__ import unicode_literals
 
+from django.contrib.auth.views import redirect_to_login
+from django.core.urlresolvers import reverse_lazy
+
 from .conf import settings
+from .models.leprikonsite import LeprikonSite
 from .models.roles import Leader
 from .models.schoolyear import SchoolYear
+from .models.useragreement import UserAgreement
 
 
 class school_year(object):
@@ -33,6 +38,7 @@ class school_year(object):
 
 
 class LeprikonMiddleware(object):
+    user_agreement_url = reverse_lazy('leprikon:user_agreement')
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -46,6 +52,27 @@ class LeprikonMiddleware(object):
             request.leader = request.user.leprikon_leader
         except (AttributeError, Leader.DoesNotExist):
             request.leader = None
+
+        # add leprikon site to request
+        request.leprikon_site = LeprikonSite.objects.get_current()
+
+        # check user agreement
+        if (
+            request.leprikon_site.user_agreement_changed and
+            request.user.is_authenticated() and
+            not request.session.get('user_agreement_ok')
+        ):
+            if UserAgreement.objects.filter(
+                user=request.user,
+                granted__gt=request.leprikon_site.user_agreement_changed,
+            ).exists():
+                request.session['user_agreement_ok'] = 1
+            elif request.path != self.user_agreement_url:
+                return redirect_to_login(
+                    request.path,
+                    login_url=self.user_agreement_url,
+                    redirect_field_name=settings.LEPRIKON_PARAM_BACK,
+                )
 
         # set session expiry
         if request.user.is_authenticated():

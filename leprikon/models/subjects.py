@@ -301,7 +301,7 @@ class Subject(models.Model):
         return (
             self.agreement or
             self.subject_type.agreement or
-            LeprikonSite.objects.get_current().agreement or
+            LeprikonSite.objects.get_current().registration_agreement or
             _('I confirm that I have read, understood and agree with the Terms and Conditions. '
               'The terms and conditions are available on the web.')
         )

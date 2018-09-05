@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-05 14:40+0200\n"
+"POT-Creation-Date: 2018-09-05 15:02+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -502,7 +502,7 @@ msgstr "Leprikón"
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: cms_menus.py:31 templates/leprikon/login.html:28 views/user.py:30
+#: cms_menus.py:31 templates/leprikon/login.html:28 views/user.py:33
 msgid "Create account"
 msgstr "Vytvořit účet"
 
@@ -851,9 +851,13 @@ msgstr "Váš výkaz práce za {period} byl již odevzdán."
 msgid "An overlaping entry has already been added in the timesheet."
 msgstr "Ve výkazu práce už je kolidující záznam."
 
-#: forms/user.py:26
+#: forms/user.py:24
 msgid "User with this email already exists."
 msgstr "Uživatel s touto e-mailovou adresou již existuje."
+
+#: forms/user.py:48 forms/user.py:62
+msgid "I agree with the terms."
+msgstr "Souhlasím s podmínkami."
 
 #: gettext_overrides.py:9
 msgid "Publish page changes"
@@ -1195,11 +1199,19 @@ msgstr "souhlas na přihlášce"
 msgid "registration print setup"
 msgstr "nastavení tisku přihlášek"
 
-#: models/leprikonsite.py:44
+#: models/leprikonsite.py:39
+msgid "user agreement"
+msgstr "souhlas uživatele"
+
+#: models/leprikonsite.py:40
+msgid "last time user agreement changed"
+msgstr "čas poslední změny souhlasu uživatele"
+
+#: models/leprikonsite.py:46
 msgid "leprikon site"
 msgstr "nastavení Leprikónu"
 
-#: models/leprikonsite.py:45
+#: models/leprikonsite.py:47
 msgid "leprikon sites"
 msgstr "nastavení Leprikónu"
 
@@ -1761,6 +1773,10 @@ msgstr "záznam výkazu práce"
 msgid "timesheet entries"
 msgstr "záznamy výkazu práce"
 
+#: models/useragreement.py:10
+msgid "time of agreement"
+msgstr "čas souhlasu"
+
 #: models/utils.py:37
 msgid "{} let to pay"
 msgstr "zbývá doplatit {}"
@@ -1836,7 +1852,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:81
-#: views/user.py:66
+#: views/user.py:108
 msgid "Back"
 msgstr "Zpět"
 
@@ -1844,7 +1860,7 @@ msgstr "Zpět"
 msgid "Edit"
 msgstr "Upravit"
 
-#: templates/leprikon/base.html:63 views/user.py:65
+#: templates/leprikon/base.html:63 views/user.py:107
 msgid "Change password"
 msgstr "Změnit heslo"
 
@@ -2839,35 +2855,43 @@ msgstr "Nový záznam výkazu práce"
 msgid "New timesheet entry has been created."
 msgstr "Nový záznam výkazu práce byl vytvořen."
 
-#: views/user.py:33
+#: views/user.py:37
 msgid "User account {} has been created."
 msgstr "Uživatel {} byl vytvořen."
 
-#: views/user.py:49
+#: views/user.py:70
+msgid "Agreement with the terms of use"
+msgstr "Souhlas s podmínkami užití"
+
+#: views/user.py:74
+msgid "The agreement has been saved."
+msgstr "Váš souhlas byl uložen."
+
+#: views/user.py:91
 msgid "Change user"
 msgstr "Aktualizace údajů o uživateli"
 
-#: views/user.py:55
+#: views/user.py:97
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:91
+#: views/user.py:133
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:93
+#: views/user.py:135
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:111
+#: views/user.py:153
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:113
+#: views/user.py:155
 msgid "Set my password"
 msgstr "Nastavit heslo"

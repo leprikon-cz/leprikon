@@ -33,9 +33,11 @@ class LeprikonSite(Site):
     bic             = BICField(_('BIC (SWIFT)'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                          verbose_name=_('bill print setup'), blank=True, null=True)
-    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
+    registration_agreement  = HTMLField(_('registration agreement'), blank=True, default='')
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
+    user_agreement  = HTMLField(_('user agreement'), blank=True, default='')
+    user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
 
     objects = LeprikonSiteManager()
 

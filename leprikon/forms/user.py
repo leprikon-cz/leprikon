@@ -11,11 +11,9 @@ from django.contrib.auth.forms import (
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.roles import Parent
 from .form import FormMixin
 
 User = get_user_model()
-
 
 
 class UserFormMixin(FormMixin):
@@ -29,7 +27,6 @@ class UserFormMixin(FormMixin):
             )
         else:
             return self.cleaned_data['email']
-
 
 
 class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
@@ -47,9 +44,8 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email']
 
 
-
-
 class UserCreateForm(UserFormMixin, _UserCreationForm):
+    agreement = forms.BooleanField(label=_('I agree with the terms.'), required=True)
 
     def __init__(self, **kwargs):
         super(UserCreateForm, self).__init__(**kwargs)
@@ -57,20 +53,13 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
         self.fields['email'].required = True
         self.fields['password1'].help_text = password_validation.password_validators_help_text_html()
 
-    def save(self, commit=True):
-        user = super(UserCreateForm, self).save()
-        parent = Parent()
-        parent.first_name = user.first_name
-        parent.last_name = user.last_name
-        parent.email = user.email
-        parent.user = user
-        parent.save()
-        return user
-
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
 
+
+class UserAgreementForm(FormMixin, forms.Form):
+    agreement = forms.BooleanField(label=_('I agree with the terms.'), required=True)
 
 
 class UserUpdateForm(UserFormMixin, forms.ModelForm):
@@ -84,20 +73,16 @@ class UserUpdateForm(UserFormMixin, forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email']
 
 
-
 class UserLoginForm(FormMixin, _AuthenticationForm):
     pass
-
 
 
 class UserPasswordForm(FormMixin, _PasswordChangeForm):
     pass
 
 
-
 class PasswordResetForm(FormMixin, _PasswordResetForm):
     pass
-
 
 
 class SetPasswordForm(FormMixin, _SetPasswordForm):
