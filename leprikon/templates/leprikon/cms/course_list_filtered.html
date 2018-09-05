@@ -1,21 +1,6 @@
 {% load i18n sekizai_tags staticfiles %}
 
-<form class="form-horizontal" method="get" id="list_filter_form">
-    <div class="form-group">
-        {% for item in form %}
-        <label class="control-label col-sm-6 col-md-2" for="{{ item.id_for_label }}">
-            {{ item.label }}
-        </label>
-        <div class="col-sm-6 col-md-4{% if item.errors %} alert alert-danger{% endif %}">
-            {{ item }}
-        </div>
-        {% endfor %}
-        <div class="col-xs-12 right">
-            <button class="btn btn-primary" type="submit">{% trans 'search' %}</button>
-            <a class="btn btn-default" href="{{ request.path }}">{% trans 'cancel search' %}</a>
-        </div>
-    </div>
-</form>
+{% include 'leprikon/filter_form.html' %}
 
 {% for course in courses %}
 {% include 'leprikon/course_preview.html' %}
