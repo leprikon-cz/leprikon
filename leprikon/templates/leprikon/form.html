@@ -30,7 +30,7 @@
     {% endfor %}
 
     {% for item in form %}
-        {% include form_item_template %}
+        {% if form_item_template %}{% include form_item_template %}{% else %}{% include 'leprikon/form_item.html' %}{% endif %}
     {% endfor %}
 
     <!-- SUBMIT -->
