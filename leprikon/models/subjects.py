@@ -241,7 +241,7 @@ class Subject(models.Model):
 
     @property
     def full(self):
-        return self.max_count and self.approved_registrations_count >= self.max_count
+        return self.max_count and self.active_registrations_count >= self.max_count
 
     def get_absolute_url(self):
         return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
@@ -264,6 +264,10 @@ class Subject(models.Model):
     @property
     def active_registrations(self):
         return self.registrations.filter(canceled=None)
+
+    @cached_property
+    def active_registrations_count(self):
+        return self.active_registrations.count()
 
     @property
     def approved_registrations(self):
