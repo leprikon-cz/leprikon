@@ -111,3 +111,5 @@ LEPRIKON_MENU_ADD_LOGOUT = True
 
 # expression to create variable symbol (subject.code + last two digits of year + last four digits of id)
 LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = 'reg.subject.code * 1000000 + (reg.created.year % 100) * 10000 + (reg.id % 10000)'
+
+SESSION_STAFF_COOKIE_AGE = 60 * 60 * 10

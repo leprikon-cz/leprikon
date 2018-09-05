@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from .conf import settings
 from .models.roles import Leader
 from .models.schoolyear import SchoolYear
 
@@ -45,5 +46,12 @@ class LeprikonMiddleware(object):
             request.leader = request.user.leprikon_leader
         except (AttributeError, Leader.DoesNotExist):
             request.leader = None
+
+        # set session expiry
+        if request.user.is_authenticated():
+            if request.user.is_staff:
+                request.session.set_expiry(settings.SESSION_STAFF_COOKIE_AGE)
+            else:
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
 
         return self.get_response(request)

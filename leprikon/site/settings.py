@@ -297,7 +297,10 @@ CACHES = {
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+if 'SESSION_COOKIE_AGE' in os.environ:
+    SESSION_COOKIE_AGE = int(os.environ['SESSION_COOKIE_AGE'])
+if 'SESSION_STAFF_COOKIE_AGE' in os.environ:
+    SESSION_STAFF_COOKIE_AGE = int(os.environ['SESSION_STAFF_COOKIE_AGE'])
 
 # Login / logout urls
 LOGIN_URL = 'leprikon:user_login'
