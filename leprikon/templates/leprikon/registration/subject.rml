@@ -21,14 +21,14 @@
     <stylesheet>
         <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
         <paraStyle name="subtitle" fontName="DejaVuSans-Bold" fontSize="10" alignment="CENTER"/>
-        <paraStyle name="para" fontName="DejaVuSans" fontSize="10"/>
-        <paraStyle name="p" fontName="DejaVuSans" fontSize="10" spaceBefore="0.2 cm"/>
-        <paraStyle name="li" fontName="DejaVuSans" fontSize="10" spaceBefore="0.2 cm"/>
-        <listStyle name="ul" bulletType='bullet' start='•' bulletFontSize='10'/>
-        <listStyle name="ol" bulletFontSize='10'/>
+        <paraStyle name="para" fontName="DejaVuSans" fontSize="8"/>
+        <paraStyle name="p" fontName="DejaVuSans" fontSize="8" spaceBefore="0.2 cm"/>
+        <paraStyle name="li" fontName="DejaVuSans" fontSize="8" spaceBefore="0.2 cm"/>
+        <listStyle name="ul" bulletType='bullet' start='•' bulletFontSize='8'/>
+        <listStyle name="ol" bulletFontSize='8'/>
         <blockTableStyle id="myBlockTableStyle">
             <!-- Set fonts -->
-            <blockFont name="DejaVuSans" size="10"/>
+            <blockFont name="DejaVuSans" size="8"/>
             <blockTextColor colorName="black"/>
             <blockAlignment value="LEFT"/>
             <blockValign value="TOP"/>
