@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import colorsys
 from collections import OrderedDict
 from io import BytesIO
@@ -580,13 +578,13 @@ class SubjectRegistration(PdfExportMixin, models.Model):
 
     def get_discounts(self, d):
         if d:
-            return list(filter(lambda p: p.created.date() <= d, self.all_discounts))
+            return [p for p in self.all_discounts if p.created.date() <= d]
         else:
             return self.all_discounts
 
     def get_payments(self, d):
         if d:
-            return list(filter(lambda p: p.created.date() <= d, self.all_payments))
+            return [p for p in self.all_payments if p.created.date() <= d]
         else:
             return self.all_payments
 

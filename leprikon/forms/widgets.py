@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.forms.widgets import CheckboxSelectMultiple, RadioSelect
 from django.utils.safestring import mark_safe
 

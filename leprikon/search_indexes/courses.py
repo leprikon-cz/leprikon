@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from ..models.courses import Course
 from .base import BaseIndex
 

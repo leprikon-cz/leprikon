@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from ..models.events import Event
 from .base import BaseIndex
 

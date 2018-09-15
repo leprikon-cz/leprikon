@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from cms.menu_bases import CMSAttachMenu
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models.signals import post_delete, post_save

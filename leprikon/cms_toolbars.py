@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from cms.cms_toolbars import ADMIN_MENU_IDENTIFIER
 from cms.toolbar.items import SubMenu
 from cms.toolbar_base import CMSToolbar

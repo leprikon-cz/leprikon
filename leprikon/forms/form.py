@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-
-
 class FormMixin(object):
     required_css_class = 'required'
     use_get = False

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from django.conf import settings as wrapped_settings
 
 from . import default_settings as default_settings

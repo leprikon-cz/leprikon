@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.sites.models import Site, clear_site_cache
 from django.db import models
 from django.db.models.signals import pre_delete, pre_save

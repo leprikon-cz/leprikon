@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """leprikon.site URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

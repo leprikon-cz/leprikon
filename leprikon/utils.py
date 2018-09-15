@@ -1,9 +1,8 @@
-from __future__ import unicode_literals
-
 import locale
 import os
 import string
 from datetime import date
+from urllib.parse import urlencode
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy as reverse
@@ -12,11 +11,6 @@ from django.utils.encoding import iri_to_uri, smart_text
 from django.utils.translation import ugettext_lazy as _
 
 from .conf import settings
-
-try:
-    from urllib import urlencode
-except ImportError:
-    from urllib.parse import urlencode
 
 
 def _get_localeconv(languages):

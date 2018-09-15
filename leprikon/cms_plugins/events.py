@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 

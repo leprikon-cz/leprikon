@@ -1,13 +1,10 @@
-from __future__ import unicode_literals
-
 import csv
 from datetime import datetime
 from functools import partial
 
 import django_excel
-import six
 from django.http import HttpResponse
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -90,9 +87,6 @@ class AdminExportMixin:
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(self.model._meta.model_name)
         data = self.get_export_data(request, queryset)
-        # convert data to bytes
-        if six.PY2:
-            data = map(lambda row: map(lambda value: value and force_bytes(value), row), data)
         # write data to response (use all to evaluate the map generator)
         csv.writer(response).writerows(data)
         return response

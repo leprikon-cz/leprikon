@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import (
     login, logout, password_change, password_reset as pr,

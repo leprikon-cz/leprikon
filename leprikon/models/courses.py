@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from collections import namedtuple
 from datetime import date, datetime, timedelta
 
@@ -302,10 +300,8 @@ class CourseRegistration(SubjectRegistration):
         for counter, period in enumerate(self.all_periods, start=1):
             discount = sum(
                 discount.amount
-                for discount in filter(
-                    lambda discount: discount.period == period and (d is None or discount.created <= d),
-                    self.all_discounts
-                )
+                for discount in self.all_discounts
+                if discount.period == period and (d is None or discount.created <= d)
             )
             yield self.PeriodPaymentStatus(
                 period  = period,

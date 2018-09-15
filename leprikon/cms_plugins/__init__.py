@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from . import courses, events, leaders
 
 __all__ = [

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.views.decorators.csrf import csrf_exempt

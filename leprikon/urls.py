@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import include, url
 from django.db import transaction
 from django.views.generic.base import RedirectView

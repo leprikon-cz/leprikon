@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from ..models.leprikonsite import LeprikonSite

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import calendar
 from collections import namedtuple
 from datetime import date, datetime, timedelta
@@ -131,7 +129,7 @@ class Timesheet(models.Model):
                     entries = [],
                 )
             gs[entry.group].entries.append(entry)
-        return gs.values()
+        return list(gs.values())
 
 
 
