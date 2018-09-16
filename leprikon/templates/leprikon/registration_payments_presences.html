@@ -1,4 +1,4 @@
-{% load i18n leprikon_tags %}
+{% load i18n leprikon_tags qr_code %}
 
 <div class="row">
     <label class="col-sm-4">{% trans 'Price' %}:</label>
@@ -44,14 +44,18 @@
             {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
             <br />
             {% endfor %}
-            {% if reg.payment_requested %}
-            <p>
-                {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
-                {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
-                {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
-            </p>
-            {% endif %}
         </div>
+        {% endif %}
+        {% if reg.payment_requested and reg.current_receivable %}
+        <p>
+            {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
+            {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+            {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
+        </p>
+        <p>
+            {% blocktrans %}Or You may use following QR code to scan the payment details to your mobile banking application:{% endblocktrans %}<br/>
+            {% qr_from_text reg.spayd border=1 %}
+        </p>
         {% endif %}
     </div>
 </div>

@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'ganalytics',
     'html2rml',
+    'qr_code',
     'raven.contrib.django.raven_compat',
     'social_django',
     'verified_email_field',

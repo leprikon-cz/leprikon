@@ -1,4 +1,4 @@
-{% load i18n leprikon_tags %}
+{% load i18n leprikon_tags qr_code %}
 
 <p>{% blocktrans %}Hello,<br/>
 thank You for submitting registration.{% endblocktrans %}</p>
@@ -7,9 +7,13 @@ thank You for submitting registration.{% endblocktrans %}</p>
     {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
     {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>
     {% trans 'Participant' %}: {{ object.participant }}<br/>
-    {% trans 'Price' %}: {{ object.get_current_receivable | currency }}<br/>
+    {% trans 'Price' %}: {{ object.current_receivable | currency }}<br/>
     {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
     {% trans 'Variable symbol' %}: {{ object.variable_symbol }}<br/>
+</p>
+<p>
+    {% blocktrans %}Or You may use following QR code to scan the payment details to your mobile banking application:{% endblocktrans %}<br/>
+    <img src="cid:qr_code"/>
 </p>
 
 <p>

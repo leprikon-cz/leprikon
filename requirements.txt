@@ -23,6 +23,7 @@ django-haystack==2.7.0
 django-localflavor==1.6.2
 django-mptt==0.8.7        # via django-filer
 django-polymorphic==2.0.3  # via django-filer
+django-qr-code==1.0.0
 django-sekizai==0.10.0    # via cmsplugin-filer, django-cms
 django-staticfiles-downloader==0.1.5
 django-treebeard==4.3     # via django-cms
@@ -63,12 +64,13 @@ pypdf2==1.26.0
 python-memcached==1.59
 python3-openid==3.1.0     # via social-auth-core
 pytz==2018.5              # via django, django-staticfiles-downloader
+qrcode==6.0               # via django-qr-code
 raven==6.9.0
 reportlab==3.5.6
 requests-oauthlib==1.0.0  # via social-auth-core
 requests==2.19.1          # via requests-oauthlib, social-auth-core
 simplegeneric==0.8.1      # via ipython
-six==1.11.0               # via html5lib, prompt-toolkit, python-memcached, social-auth-app-django, social-auth-core, traitlets
+six==1.11.0               # via html5lib, prompt-toolkit, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0   # via social-auth-app-django
 texttable==1.4.0          # via pyexcel

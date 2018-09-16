@@ -1,6 +1,8 @@
 import locale
 import os
 import string
+import unicodedata
+import zlib
 from datetime import date
 from urllib.parse import urlencode
 
@@ -13,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from .conf import settings
 
 
-def _get_localeconv(languages):
+def _get_localeconv():
     """
     This function loads localeconv during module load.
     It is necessary, because using locale.setlocale later may be dangerous
@@ -27,7 +29,7 @@ def _get_localeconv(languages):
     return lc
 
 
-localeconv = _get_localeconv(settings.LANGUAGE_CODE)
+localeconv = _get_localeconv()
 
 
 # This function is inspired by python's standard locale.currency().
@@ -217,3 +219,12 @@ def merge_users(source, target):
         pass
 
     source.delete()
+
+
+def spayd(*items):
+    s = 'SPD*1.0*' + '*'.join(
+        '%s:%s' % (k, unicodedata.normalize('NFKD', str(v).replace('*', '')).encode('ascii', 'ignore').upper().decode())
+        for k, v in sorted(items)
+    )
+    s += '*CRC32:%x' % zlib.crc32(s.encode())
+    return s.upper()

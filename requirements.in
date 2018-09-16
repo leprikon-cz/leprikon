@@ -9,6 +9,7 @@ django-filer
 django-ganalytics
 django-haystack<2.8
 django-localflavor<2
+django-qr-code
 django-staticfiles-downloader
 django-verified-email-field
 djangocms-googlemap

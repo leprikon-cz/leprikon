@@ -6,7 +6,7 @@ thank You for submitting registration.{% endblocktrans %}
 
 {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}
 {% trans 'Participant' %}: {{ object.participant }}
-{% trans 'Price' %}: {{ object.get_current_receivable | currency }}
+{% trans 'Price' %}: {{ object.current_receivable | currency }}
 {% trans 'Bank account' %}: {{ site.bank_account }}
 {% trans 'Variable symbol' %}: {{ object.variable_symbol }}
 

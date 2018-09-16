@@ -1,8 +1,10 @@
 import colorsys
 from collections import OrderedDict
+from email.mime.image import MIMEImage
 from io import BytesIO
 from json import loads
 
+import qrcode
 import trml2pdf
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
@@ -23,7 +25,9 @@ from filer.fields.image import FilerImageField
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
-from ..utils import comma_separated, currency, get_birth_date
+from ..utils import (
+    comma_separated, currency, get_birth_date, localeconv, spayd,
+)
 from .agegroup import AgeGroup
 from .citizenship import Citizenship
 from .department import Department
@@ -576,6 +580,22 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     def all_payments(self):
         return list(self.payments.all())
 
+    @cached_property
+    def current_receivable(self):
+        return self.subjectregistration.current_receivable
+
+    @cached_property
+    def spayd(self):
+        leprikon_site = LeprikonSite.objects.get_current()
+        return spayd(
+            ('ACC', ('%s+%s' % (leprikon_site.iban, leprikon_site.bic)) if leprikon_site.bic else leprikon_site.iban),
+            ('AM', self.current_receivable),
+            ('CC', localeconv['int_curr_symbol']),
+            ('MSG', '%s, %s' % (self.subject.name[:29], self.participant.full_name[:29])),
+            ('RN', slugify(leprikon_site.company_name).replace('*', '')[:35]),
+            ('X-VS', self.variable_symbol),
+        )
+
     def get_discounts(self, d):
         if d:
             return [p for p in self.all_discounts if p.created.date() <= d]
@@ -594,8 +614,11 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     def get_paid(self, d=None):
         return sum(p.amount for p in self.get_payments(d))
 
-    def get_current_receivable(self):
-        return self.subjectregistration.get_current_receivable()
+    def get_qr_code(self):
+        output = BytesIO()
+        qrcode.make(self.spayd, border=1).save(output)
+        output.seek(0)
+        return output.read()
 
     def approve(self):
         if self.approved is None:
@@ -709,6 +732,9 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
         )
         msg.attach_alternative(content_html, 'text/html')
+        qr_code = MIMEImage(self.get_qr_code())
+        qr_code.add_header('Content-ID', '<qr_code>')
+        msg.attach(qr_code)
         msg.send()
 
     @python_2_unicode_compatible

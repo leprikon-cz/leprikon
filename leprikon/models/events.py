@@ -135,7 +135,8 @@ class EventRegistration(SubjectRegistration):
             paid        = self.get_paid(d),
         )
 
-    def get_current_receivable(self):
+    @cached_property
+    def current_receivable(self):
         d = date.today()
         price = self.price
         discount = self.get_discounted(d)
