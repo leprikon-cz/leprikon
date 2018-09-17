@@ -2,15 +2,16 @@
 
 thank You for submitting registration.{% endblocktrans %}
 
-{% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}
-
 {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}
 {% trans 'Participant' %}: {{ object.participant }}
 {% trans 'Price' %}: {{ object.current_receivable | currency }}
+
+{% if site.bank_account %}{% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}
 {% trans 'Bank account' %}: {{ site.bank_account }}
 {% trans 'Variable symbol' %}: {{ object.variable_symbol }}
+{% else %}{% trans 'Currently we only accept payments in cash.' %}{% endif %}
 
-{% trans 'Use the link below to see and manage your registrations:' %}
+{% trans 'Use the link below to see and manage your registrations and payments:' %}
 https://{{ site.domain }}{% url 'leprikon:registration_list' %}
 
 {{ site.name }}

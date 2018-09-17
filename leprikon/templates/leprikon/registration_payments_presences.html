@@ -47,15 +47,19 @@
         </div>
         {% endif %}
         {% if reg.payment_requested and reg.current_receivable %}
-        <p>
-            {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
-            {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
-            {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
-        </p>
-        <p>
-            {% blocktrans %}Or You may use following QR code to scan the payment details to your mobile banking application:{% endblocktrans %}<br/>
-            {% qr_from_text reg.spayd border=1 %}
-        </p>
+            {% if site.bank_account %}
+            <p>
+                {% trans 'Please, use following information for bank transfer' %}:<br/>
+                {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+                {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
+            </p>
+            <p>
+                {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
+                {% qr_from_text reg.spayd border=1 %}
+            </p>
+            {% else %}
+            <p>{% trans 'Currently we only accept payments in cash.' %}</p>
+            {% endif %}
         {% endif %}
     </div>
 </div>

@@ -697,14 +697,16 @@ class SubjectRegistration(PdfExportMixin, models.Model):
 
     @cached_property
     def mail_subject(self):
-        return _('Registration for {subject_type} accepted').format(
-            subject_type=self.subject.subject_type.name_akuzativ
+        return _('Registration for {subject_type} {subject}').format(
+            subject_type=self.subject.subject_type.name_akuzativ,
+            subject=self.subject.name,
         )
 
     @cached_property
     def payment_request_subject(self):
-        return _('Registration for {subject_type} - payment information').format(
-            subject_type=self.subject.subject_type.name_akuzativ
+        return _('Registration for {subject_type} {subject} - payment request').format(
+            subject_type=self.subject.subject_type.name_akuzativ,
+            subject=self.subject.name,
         )
 
     def send_payment_request(self):
@@ -718,9 +720,10 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             'leprikon/payment-request-mail/{}.html'.format(self.subject.subject_type.subject_type),
             'leprikon/payment-request-mail/subject.html',
         ])
+        site = LeprikonSite.objects.get_current()
         context = {
             'object': self,
-            'site': LeprikonSite.objects.get_current(),
+            'site': site,
         }
         content_txt = template_txt.render(context)
         content_html = template_html.render(context)
@@ -732,9 +735,10 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
         )
         msg.attach_alternative(content_html, 'text/html')
-        qr_code = MIMEImage(self.get_qr_code())
-        qr_code.add_header('Content-ID', '<qr_code>')
-        msg.attach(qr_code)
+        if site.bank_account:
+            qr_code = MIMEImage(self.get_qr_code())
+            qr_code.add_header('Content-ID', '<qr_code>')
+            msg.attach(qr_code)
         msg.send()
 
     @python_2_unicode_compatible
@@ -875,8 +879,9 @@ class SubjectPayment(PdfExportMixin, models.Model):
 
     @cached_property
     def mail_subject(self):
-        return _('Registration for {subject_type} accepted').format(
-            subject_type=self.subject.subject_type.name_akuzativ
+        return _('Registration for {subject_type} {subject} - payment confirmation').format(
+            subject_type=self.subject.subject_type.name_akuzativ,
+            subject=self.subject.name,
         )
 
     def validate(self):

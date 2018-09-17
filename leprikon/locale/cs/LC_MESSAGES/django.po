@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-16 23:01+0200\n"
+"POT-Creation-Date: 2018-09-18 21:17+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -416,7 +416,7 @@ msgstr "Odhlásit vybrané přihlášky"
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:383 models/subjects.py:829
+#: admin/subjects.py:383 models/subjects.py:833
 #: templates/leprikon/payment/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -953,7 +953,7 @@ msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
 #: models/courses.py:358 models/events.py:149 models/subjects.py:496
-#: models/subjects.py:825
+#: models/subjects.py:829
 msgid "registration"
 msgstr "přihláška"
 
@@ -1556,7 +1556,7 @@ msgstr "plán"
 msgid "evaluation"
 msgstr "evaluace"
 
-#: models/subjects.py:186 models/subjects.py:830
+#: models/subjects.py:186 models/subjects.py:834
 msgid "note"
 msgstr "poznámka"
 
@@ -1637,99 +1637,104 @@ msgstr "{participant} ({birth_num})"
 msgid "Participant with this birth number has already been registered."
 msgstr "Účastník s tímto rodným číslem je již přihlášený."
 
-#: models/subjects.py:700 models/subjects.py:878
+#: models/subjects.py:700 views/subjects.py:159
 #, python-brace-format
-msgid "Registration for {subject_type} accepted"
-msgstr "Přihláška na {subject_type} přijata"
+msgid "Registration for {subject_type} {subject}"
+msgstr "Přihláška na {subject_type} {subject}"
 
-#: models/subjects.py:706
+#: models/subjects.py:707
 #, python-brace-format
-msgid "Registration for {subject_type} - payment information"
-msgstr "Přihláška na {subject_type} - výzva k platbě"
+msgid "Registration for {subject_type} {subject} - payment request"
+msgstr "Přihláška na {subject_type} {subject} - výzva k platbě"
 
-#: models/subjects.py:787
+#: models/subjects.py:791
 msgid "time of discount"
 msgstr "čas vytvoření slevy"
 
-#: models/subjects.py:788 models/subjects.py:794
+#: models/subjects.py:792 models/subjects.py:798
 #: templates/leprikon/registration_payments_presences.html:44
 msgid "discount"
 msgstr "sleva"
 
-#: models/subjects.py:789
+#: models/subjects.py:793
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:795 templates/leprikon/summary.html:15
+#: models/subjects.py:799 templates/leprikon/summary.html:15
 msgid "discounts"
 msgstr "slevy"
 
-#: models/subjects.py:817
+#: models/subjects.py:821
 msgid "payment - cash"
 msgstr "platba v hotovosti"
 
-#: models/subjects.py:818
+#: models/subjects.py:822
 msgid "payment - bank"
 msgstr "platba na bankovní účet"
 
-#: models/subjects.py:819
+#: models/subjects.py:823
 msgid "payment - online"
 msgstr "platba online"
 
-#: models/subjects.py:820
+#: models/subjects.py:824
 msgid "payment - transfer from return"
 msgstr "platba z přeplatku"
 
-#: models/subjects.py:821
+#: models/subjects.py:825
 msgid "return - cash"
 msgstr "navrácení přeplatku v hotovosti"
 
-#: models/subjects.py:822
+#: models/subjects.py:826
 msgid "return - bank"
 msgstr "navrácení přeplatku na bankovní účet"
 
-#: models/subjects.py:823
+#: models/subjects.py:827
 msgid "return - transfer to payment"
 msgstr "navrácení přeplatku převodem na platbu"
 
-#: models/subjects.py:827
+#: models/subjects.py:831
 msgid "payment time"
 msgstr "čas platby"
 
-#: models/subjects.py:828 models/subjects.py:855
+#: models/subjects.py:832 models/subjects.py:859
 #: templates/leprikon/payment/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
 
-#: models/subjects.py:829
+#: models/subjects.py:833
 msgid "positive value for payment, negative value for return"
 msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 
-#: models/subjects.py:831
+#: models/subjects.py:835
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:833
+#: models/subjects.py:837
 msgid "received by"
 msgstr "přijal(a)"
 
-#: models/subjects.py:841
+#: models/subjects.py:845
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:842
+#: models/subjects.py:846
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:885
+#: models/subjects.py:882
+#, python-brace-format
+msgid "Registration for {subject_type} {subject} - payment confirmation"
+msgstr "Přihláška na {subject_type} {subject} - potvrzení platby"
+
+#: models/subjects.py:890
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:890
+#: models/subjects.py:895
 msgid "Select one of the payments or use negative amount."
 msgstr "Vyberte některou z plateb nebo použijte zápornou částku."
 
-#: models/subjects.py:894
+#: models/subjects.py:899
 msgid "Select one of the returns or use positive amount."
 msgstr "Vyberte formu navrácení přeplatku nebo použijte kladnou částku."
 
@@ -1923,7 +1928,8 @@ msgstr "vybraných"
 
 #: templates/leprikon/cms/event_list/default.html:38
 #: templates/leprikon/cms/event_list/grouped.html:40
-#: templates/leprikon/payment-request-mail/subject.html:10
+#: templates/leprikon/payment-request-mail/subject.html:9
+#: templates/leprikon/payment-request-mail/subject.txt:7
 #: templates/leprikon/registration/subject.rml:50
 #: templates/leprikon/registration_payments_presences.html:4
 #: templates/leprikon/reports/course_payments_status.html:15
@@ -2130,7 +2136,7 @@ msgstr "Přihlásit se přes Google"
 msgid "Log in with Facebook"
 msgstr "Přihlásit se přes Facebook"
 
-#: templates/leprikon/message_mail.html:7
+#: templates/leprikon/message_mail.html:7 templates/leprikon/message_mail.txt:6
 #, python-format
 msgid "Show this message on site %(name)s:"
 msgstr "Zobrazit tuto zprávu na webu %(name)s:"
@@ -2262,7 +2268,6 @@ msgid "The %(site_name)s team"
 msgstr "Tým %(site_name)s"
 
 #: templates/leprikon/payment-request-mail/subject.html:3
-#: templates/leprikon/registration-mail/subject.html:3
 msgid ""
 "Hello,<br/>\n"
 "thank You for submitting registration."
@@ -2270,41 +2275,67 @@ msgstr ""
 "Dobrý den,<br/>\n"
 "děkujeme Vám za vyplnění přihlášky."
 
-#: templates/leprikon/payment-request-mail/subject.html:7
-#: templates/leprikon/registration_payments_presences.html:51
-msgid "Please, use following information for bank transfer:"
-msgstr "Pro platbu převodem prosím použijte následující údaje:"
-
-#: templates/leprikon/payment-request-mail/subject.html:9
+#: templates/leprikon/payment-request-mail/subject.html:8
+#: templates/leprikon/payment-request-mail/subject.txt:6
 #: templates/leprikon/registration/subject.rml:78
 #: templates/leprikon/registration_preview.html:28
 #: templates/leprikon/subject_registration_form.html:78
 msgid "Participant"
 msgstr "Účastník"
 
-#: templates/leprikon/payment-request-mail/subject.html:11
+#: templates/leprikon/payment-request-mail/subject.html:14
 #: templates/leprikon/registration_payments_presences.html:52
+msgid "Please, use following information for bank transfer"
+msgstr "Pro platbu převodem prosím použijte následující údaje"
+
+#: templates/leprikon/payment-request-mail/subject.html:15
+#: templates/leprikon/payment-request-mail/subject.txt:10
+#: templates/leprikon/registration_payments_presences.html:53
 msgid "Bank account"
 msgstr "Číslo účtu"
 
-#: templates/leprikon/payment-request-mail/subject.html:12
-#: templates/leprikon/registration_payments_presences.html:53
+#: templates/leprikon/payment-request-mail/subject.html:16
+#: templates/leprikon/payment-request-mail/subject.txt:11
+#: templates/leprikon/registration_payments_presences.html:54
 msgid "Variable symbol"
 msgstr "Variabilní symbol"
 
-#: templates/leprikon/payment-request-mail/subject.html:15
-#: templates/leprikon/registration_payments_presences.html:56
+#: templates/leprikon/payment-request-mail/subject.html:19
+#: templates/leprikon/registration_payments_presences.html:57
 msgid ""
 "Or You may use following QR code to scan the payment details to your mobile "
-"banking application:"
+"banking application"
 msgstr ""
 "Případně můžete použít následující QR kód pro načtení platebních informací "
-"do své mobilní bankovní aplikace:"
+"do své mobilní bankovní aplikace"
 
-#: templates/leprikon/payment-request-mail/subject.html:20
-#: templates/leprikon/registration-mail/subject.html:11
-msgid "Use the link below to see and manage your registrations:"
-msgstr "Pomocí následujícího odkazu můžete spravovat své přihlášky:"
+#: templates/leprikon/payment-request-mail/subject.html:23
+#: templates/leprikon/payment-request-mail/subject.txt:12
+#: templates/leprikon/registration_payments_presences.html:61
+msgid "Currently we only accept payments in cash."
+msgstr "Momentálně přijímáme platby pouze v hotovosti."
+
+#: templates/leprikon/payment-request-mail/subject.html:27
+#: templates/leprikon/payment-request-mail/subject.txt:14
+#: templates/leprikon/registration-mail/subject.html:15
+#: templates/leprikon/registration-mail/subject.txt:9
+msgid "Use the link below to see and manage your registrations and payments:"
+msgstr "Pomocí následujícího odkazu můžete spravovat své přihlášky a platby:"
+
+#: templates/leprikon/payment-request-mail/subject.txt:1
+#: templates/leprikon/registration-mail/subject.txt:1
+msgid ""
+"Hello,\n"
+"\n"
+"thank You for submitting registration."
+msgstr ""
+"Dobrý den,\n"
+"\n"
+"děkujeme Vám za vyplnění přihlášky."
+
+#: templates/leprikon/payment-request-mail/subject.txt:9
+msgid "Please, use following information for bank transfer:"
+msgstr "Pro platbu převodem prosím použijte následující údaje:"
 
 #: templates/leprikon/payment/recipe.rml:5
 msgid "Receipt for payment"
@@ -2337,14 +2368,30 @@ msgstr "Typ platby"
 msgid "Amount"
 msgstr "Částka"
 
-#: templates/leprikon/registration-mail/subject.html:7
+#: templates/leprikon/registration-mail/subject.html:4
+msgid "Hello,<br/>thank You for submitting registration."
+msgstr "Dobrý den,<br/>děkujeme Vám za vyplnění přihlášky."
+
+#: templates/leprikon/registration-mail/subject.html:6
+#: templates/leprikon/registration-mail/subject.txt:4
 #, python-format
 msgid ""
 "Unfortunately, the capacity of this %(subject_type)s has already been "
-"filled. The registration may not be approved. We will inform You."
+"filled.\n"
+"The registration may not be approved."
 msgstr ""
 "Bohužel, kapacita %(subject_type)s je již naplněna. Vaše přihláška nemusí "
-"být schválena. O jejím zpracování Vás budeme dále informovat."
+"být schválena."
+
+#: templates/leprikon/registration-mail/subject.html:9
+#: templates/leprikon/registration-mail/subject.txt:6
+msgid "We will inform you about its further processing."
+msgstr "O jejím dalším zpracování Vás budeme dále informovat."
+
+#: templates/leprikon/registration-mail/subject.html:12
+#: templates/leprikon/registration-mail/subject.txt:7
+msgid "See attached files for futher information."
+msgstr "Další informace najdete v přiložených souborech."
 
 #: templates/leprikon/registration/subject.rml:39
 #, python-format
@@ -2436,7 +2483,7 @@ msgstr "Kapacita je naplněna."
 msgid "Discount"
 msgstr "Sleva"
 
-#: templates/leprikon/registration_payments_presences.html:64
+#: templates/leprikon/registration_payments_presences.html:68
 msgid "Presence"
 msgstr "Docházka"
 
@@ -2843,13 +2890,11 @@ msgid "Submit registration"
 msgstr "Odeslat přihlášku"
 
 #: views/subjects.py:141
-msgid "The registration has been accepted."
-msgstr "Přihláška byla přijata."
-
-#: views/subjects.py:159
-#, python-brace-format
-msgid "Registration for {subject_type} {subject}"
-msgstr "Přihláška na {subject_type} {subject}"
+msgid ""
+"The registration has been saved. We will inform you about its further "
+"processing."
+msgstr ""
+"Přihláška byla uložena. O jejím dalším zpracování Vás budeme informovat."
 
 #: views/subjects.py:223
 msgid "Registration cancellation request"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pushd leprikon
-    django-admin makemessages -l cs -e py,html,rml
+    django-admin makemessages -l cs -e html,py,rml,txt
     vim locale/cs/LC_MESSAGES/django.po
     django-admin compilemessages
 popd

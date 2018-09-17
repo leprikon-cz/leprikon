@@ -4,20 +4,27 @@
 thank You for submitting registration.{% endblocktrans %}</p>
 
 <p>
-    {% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}<br/>
     {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>
     {% trans 'Participant' %}: {{ object.participant }}<br/>
     {% trans 'Price' %}: {{ object.current_receivable | currency }}<br/>
+</p>
+
+{% if site.bank_account %}
+<p>
+    {% trans 'Please, use following information for bank transfer' %}:<br/>
     {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
     {% trans 'Variable symbol' %}: {{ object.variable_symbol }}<br/>
 </p>
 <p>
-    {% blocktrans %}Or You may use following QR code to scan the payment details to your mobile banking application:{% endblocktrans %}<br/>
+    {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
     <img src="cid:qr_code"/>
 </p>
+{% else %}
+<p>{% trans 'Currently we only accept payments in cash.' %}</p>
+{% endif %}
 
 <p>
-    {% trans 'Use the link below to see and manage your registrations:' %}<br/>
+    {% trans 'Use the link below to see and manage your registrations and payments:' %}<br/>
     <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
         https://{{ site.domain }}{% url 'leprikon:registration_list' %}
     </a>

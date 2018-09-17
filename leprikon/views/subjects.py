@@ -138,7 +138,7 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
 class SubjectRegistrationFormView(CreateView):
     back_url        = reverse('leprikon:registration_list')
     submit_label    = _('Submit registration')
-    message         = _('The registration has been accepted.')
+    message         = _('The registration has been saved. We will inform you about its further processing.')
     _models = {
         SubjectType.COURSE: Course,
         SubjectType.EVENT:  Event,

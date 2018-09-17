@@ -1,9 +1,12 @@
 {% load i18n %}{% blocktrans %}Hello,
 
-thank You for submitting registration.{% endblocktrans %}{% if self.all_attachments %}
+thank You for submitting registration.{% endblocktrans %}{% if object.subject.full %}
+{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
+The registration may not be approved.{% endblocktrans %}{% endif %}
+{% blocktrans %}We will inform you about its further processing.{% endblocktrans %}{% if self.all_attachments %}
 {% trans 'See attached files for futher information.' %}{% endif %}
 
-{% trans 'Use the link below to see and manage your registrations:' %}
+{% trans 'Use the link below to see and manage your registrations and payments:' %}
 https://{{ site.domain }}{% url 'leprikon:registration_list' %}
 
 {{ site.name }}
