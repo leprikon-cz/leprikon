@@ -47,7 +47,7 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
 
 
 class UserCreateForm(UserFormMixin, _UserCreationForm):
-    email = VerifiedEmailField(label=_('E-mail'), required=True)
+    email = VerifiedEmailField(label=_('E-mail'), fieldsetup_id='UserCreateForm', required=True)
     agreement = forms.BooleanField(label=_('I agree with the terms.'), required=True)
 
     def __init__(self, **kwargs):
@@ -65,7 +65,7 @@ class UserAgreementForm(FormMixin, forms.Form):
 
 
 class UserEmailForm(UserFormMixin, forms.ModelForm):
-    email = VerifiedEmailField(label='email', required=True)
+    email = VerifiedEmailField(label='email', fieldsetup_id='UserEmailForm', required=True)
 
     class Meta:
         model = User

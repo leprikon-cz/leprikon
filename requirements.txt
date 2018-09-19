@@ -27,7 +27,7 @@ django-qr-code==1.0.0
 django-sekizai==0.10.0    # via cmsplugin-filer, django-cms
 django-staticfiles-downloader==0.1.5
 django-treebeard==4.3     # via django-cms
-django-verified-email-field==1.4.2
+django-verified-email-field==1.5.1
 django==1.11.15
 djangocms-admin-style==1.2.8  # via django-cms
 djangocms-attributes-field==0.3.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
