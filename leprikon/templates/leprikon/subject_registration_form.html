@@ -75,6 +75,11 @@
         </div>
     </div>
 
+    {% if form.email_form %}
+    <h3>{% trans 'User' %}</h3>
+    {% include 'leprikon/form_item.html' with item=form.email_form.email %}
+    {% endif %}
+
     <h3>{% trans 'Participant' %}</h3>
     {% if form.participants %}
     {% include 'leprikon/form_item.html' with item=form.participant_select_form.participant %}
@@ -158,6 +163,8 @@
 </form>
 
 {% addtoblock "js" %}
+{{ form.email_form.media.js }}
+
 <script type="text/javascript">
 
 function getAge(birthNum) {

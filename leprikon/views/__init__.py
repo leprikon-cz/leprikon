@@ -88,7 +88,7 @@ coursejournalleaderentry_delete = leader_or_staff_required(courses.CourseJournal
 subject_list                    = subjects.SubjectListView.as_view()
 subject_list_mine               = leader_required(subjects.SubjectListMineView.as_view())
 subject_detail                  = subjects.SubjectDetailView.as_view()
-subject_registration_form       = login_required(subjects.SubjectRegistrationFormView.as_view())
+subject_registration_form       = subjects.SubjectRegistrationFormView.as_view()
 subject_update                  = leader_or_staff_required(subjects.SubjectUpdateView.as_view())
 subject_registrations           = leader_or_staff_required(subjects.SubjectRegistrationsView.as_view())
 

@@ -1,9 +1,13 @@
 from json import dumps
 
 from django import forms
+from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.db.utils import IntegrityError
+from django.utils.crypto import get_random_string
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from verified_email_field.forms import VerifiedEmailField
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import Course, CourseRegistration
@@ -16,6 +20,8 @@ from ..models.subjects import Subject, SubjectGroup, SubjectType
 from ..utils import get_age, get_birth_date
 from .form import FormMixin
 from .widgets import RadioSelectBootstrap
+
+User = get_user_model()
 
 
 class SubjectFilterForm(FormMixin, forms.Form):
@@ -140,12 +146,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def __init__(self, subject, user, **kwargs):
         super(RegistrationForm, self).__init__(**kwargs)
+        self.user = user
         self.instance.subject = subject
-        self.instance.user = user
         self.participants = user.leprikon_participants.exclude(
             birth_num__in=self.instance.subject.active_registrations.values_list('participant_birth_num', flat=True)
-        )
-        self.parents = user.leprikon_parents.all()
+        ) if user.is_authenticated() else []
+        self.parents = user.leprikon_parents.all() if user.is_authenticated() else []
 
         # choices for subject_variant
         if self.instance.subject.all_variants:
@@ -177,6 +183,10 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         # sub forms
 
         del kwargs['instance']
+
+        if not user.is_authenticated():
+            kwargs['prefix'] = 'email'
+            self.email_form = self.EmailForm(**kwargs)
 
         class ParticipantSelectForm(FormMixin, forms.Form):
             participant = forms.ChoiceField(
@@ -210,6 +220,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def is_valid(self):
         return (
+            (self.user.is_authenticated or self.email_form.is_valid()) and
             self.participant_select_form.is_valid() and
             self.questions_form.is_valid() and
             self.parent1_select_form.is_valid() and
@@ -219,6 +230,26 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         )
 
     def save(self, commit=True):
+        # set user
+        if self.user.is_authenticated():
+            self.instance.user = self.user
+        else:
+            user = User.objects.filter(
+                email=self.email_form.cleaned_data['email'],
+            ).first() or User(
+                email=self.email_form.cleaned_data['email'],
+            )
+            while not user.pk:
+                user.username = get_random_string()
+                user.set_password(get_random_string())
+                try:
+                    user.save()
+                except IntegrityError:
+                    # on duplicit username try again
+                    pass
+            self.instance.user = user
+
+        # set price
         self.instance.price = (
             self.instance.subject_variant.price
             if self.instance.subject_variant
@@ -276,10 +307,10 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             parent.save()
 
     class AgreementForm(FormMixin, forms.Form):
-        agreement = forms.BooleanField(
-            label       = _('Terms and Conditions agreement'),
-        )
+        agreement = forms.BooleanField(label = _('Terms and Conditions agreement'))
 
+    class EmailForm(FormMixin, forms.Form):
+        email = VerifiedEmailField(label=_('Your email'), fieldsetup_id='RegistrationEmailForm')
 
 
 class CourseRegistrationForm(RegistrationForm):
