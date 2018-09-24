@@ -17,6 +17,7 @@ RUN apt-get update \
     git \
     libmysqlclient-dev \
     locales \
+    libicu-dev \
     mariadb-client \
     memcached \
     nginx \

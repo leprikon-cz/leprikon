@@ -59,6 +59,7 @@ pyexcel-webio==0.1.4      # via django-excel
 pyexcel-xlsxw==0.4.2
 pyexcel==0.5.9.1          # via django-excel, pyexcel-webio
 pygments==2.2.0           # via ipython
+pyicu==2.1
 pyjwt==1.6.4              # via social-auth-core
 pypdf2==1.26.0
 python-memcached==1.59

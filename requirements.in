@@ -23,6 +23,7 @@ ipython
 mysqlclient
 psycopg2-binary
 pyexcel-xlsxw
+pyicu
 python-memcached
 raven
 social-auth-app-django
