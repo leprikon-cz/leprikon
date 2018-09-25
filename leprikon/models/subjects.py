@@ -803,10 +803,6 @@ class SubjectDiscount(models.Model):
     def __str__(self):
         return currency(self.amount)
 
-    def save(self, *args, **kwargs):
-        self.registration.approve()
-        super(SubjectDiscount, self).save(*args, **kwargs)
-
 
 
 @python_2_unicode_compatible
@@ -906,5 +902,4 @@ class SubjectPayment(PdfExportMixin, models.Model):
 
     def save(self, *args, **kwargs):
         self.validate()
-        self.registration.approve()
         super(SubjectPayment, self).save(*args, **kwargs)
