@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.utils.html import format_html
@@ -81,6 +82,12 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     search_fields   = ('name', 'description')
     save_as         = True
 
+    @property
+    def media(self):
+        m = super(SubjectBaseAdmin, self).media
+        m.add_js(['leprikon/js/Popup.js'])
+        return m
+
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
         if obj:
@@ -122,7 +129,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         else:
             icon = True
             title = ''
-        return '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>'.format(
+        return format_html(
+            '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>',
             url     = reverse('admin:{}_{}_changelist'.format(
                 self.registration_model._meta.app_label,
                 self.registration_model._meta.model_name,
@@ -130,7 +138,16 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             title       = title,
             icon        = _boolean_icon(icon),
             approved    = approved_registrations_count,
-            unapproved = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
+            unapproved  = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
+        ) + format_html(
+            '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
+            '<img src="{icon}" alt="+"/></a>',
+            url     = reverse('admin:{}_{}_add'.format(
+                self.registration_model._meta.app_label,
+                self.registration_model._meta.model_name,
+            )) + '?subject={}'.format(obj.id),
+            title   = _('add registration'),
+            icon    = static('admin/img/icon-addlink.svg'),
         )
     get_registrations_link.short_description = _('registrations')
     get_registrations_link.allow_tags = True
@@ -253,9 +270,6 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         m.add_js(['leprikon/js/Popup.js'])
         return m
 
-    def has_add_permission(self, request):
-        return False
-
     def has_delete_permission(self, request, obj=None):
         return obj and obj.approved is None and obj.payments.count() == 0
 
@@ -284,16 +298,41 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     cancel.short_description = _('Cancel selected registrations')
 
     def get_form(self, request, obj, **kwargs):
-        questions       = obj.subject.all_questions
-        answers         = obj.get_answers()
-        kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
-            ('q_' + q.name, q.get_field(initial=answers.get(q.name, None)))
-            for q in questions
-        ))
-        request._leprikon_registration = obj
+        try:
+            # first try request.POST (user may want to change the subject)
+            subject = Subject.objects.get(id=int(request.POST.get('subject')))
+        except (Subject.DoesNotExist, TypeError, ValueError):
+            if obj:
+                # use subject from object
+                subject = obj.subject
+            else:
+                # try to get subject from request.GET
+                try:
+                    subject = Subject.objects.get(id=int(request.GET.get('subject')))
+                except (Subject.DoesNotExist, TypeError, ValueError):
+                    subject = None
+        if subject:
+            questions       = subject.all_questions
+            answers         = obj.get_answers() if obj else {}
+            kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
+                ('q_' + q.name, q.get_field(initial=answers.get(q.name)))
+                for q in questions
+            ))
+        else:
+            kwargs['fields'] = ['subject']
         return super(SubjectRegistrationBaseAdmin, self).get_form(request, obj, **kwargs)
 
+    def get_inline_instances(self, request, obj=None):
+        return super(SubjectRegistrationBaseAdmin, self).get_inline_instances(request, obj) if obj else []
+
     def save_form(self, request, form, change):
+        # set price
+        if not form.instance.id:
+            form.instance.price = (
+                form.instance.subject_variant.price
+                if form.instance.subject_variant
+                else form.instance.subject.price
+            )
         questions   = form.instance.subject.all_questions
         answers     = {}
         for q in questions:

@@ -1,3 +1,4 @@
+from datetime import date
 from json import dumps
 
 from django import forms
@@ -333,15 +334,27 @@ class RegistrationAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super(RegistrationAdminForm, self).__init__(data, *args, **kwargs)
-        self.fields['subject_variant'].widget.choices.queryset = kwargs['instance'].subject.variants
-        if not kwargs['instance'].subject.variants.exists():
+        instance = kwargs.get('instance')
+        initial = kwargs.get('initial')
+        try:
+            subject = Subject.objects.get(id=int(data['subject']))
+        except (Subject.DoesNotExist, TypeError, KeyError, ValueError):
+            subject = instance.subject if instance else Subject.objects.get(id=initial['subject'])
+        self.fields['subject_variant'].widget.choices.queryset = subject.variants
+        if not subject.variants.exists():
             self.fields['subject_variant'].required = False
-        self.fields['participant_age_group'].widget.choices.queryset = kwargs['instance'].subject.age_groups
+        self.fields['participant_age_group'].widget.choices.queryset = subject.age_groups
 
         try:
-            age = get_age(get_birth_date(data['participant_birth_num']), kwargs['instance'].created.date())
+            age = get_age(
+                get_birth_date(data['participant_birth_num']),
+                instance.created.date() if instance else date.today(),
+            )
         except:
-            age = get_age(get_birth_date(kwargs['instance'].participant.birth_num), kwargs['instance'].created.date())
+            age = get_age(
+                get_birth_date(instance.participant.birth_num),
+                instance.created.date(),
+            ) if instance else 18
         if age < 18:
             self.fields['has_parent1'].required = True
         else:
@@ -351,7 +364,7 @@ class RegistrationAdminForm(forms.ModelForm):
         try:
             has_parent = ['has_parent1' in data, 'has_parent2' in data]
         except:
-            has_parent = [kwargs['instance'].has_parent1, kwargs['instance'].has_parent2]
+            has_parent = [instance.has_parent1, instance.has_parent2] if instance else [False, False]
         for n in range(2):
             if has_parent[n]:
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:

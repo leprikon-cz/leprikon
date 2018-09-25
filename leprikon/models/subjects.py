@@ -512,7 +512,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     def validate_unique(self, exclude=None):
         super(SubjectRegistration, self).validate_unique(None)
         qs = SubjectRegistration.objects.filter(
-            subject=self.subject,
+            subject_id=self.subject_id,
             participant_birth_num=self.participant_birth_num,
             canceled=None)
         if self.pk:
