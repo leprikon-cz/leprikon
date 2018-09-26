@@ -37,6 +37,12 @@ ENV LC_ALL cs_CZ.UTF-8
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 
+# patch installed packages
+COPY patch /app/patch
+RUN patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
+ && patch /usr/local/lib/python3.6/dist-packages/filer/admin/imageadmin.py patch/filer-admin-imageadmin.patch \
+ && rm -r patch
+
 # install leprikon
 COPY . /src
 RUN pip install --no-cache-dir /src \
@@ -46,9 +52,5 @@ RUN pip install --no-cache-dir /src \
  && mkdir -p data htdocs/media htdocs/static run \
  && leprikon collectstatic --no-input \
  && chown www-data:www-data data htdocs/media run
-
-# fix bug in cmsplugin-filer
-RUN sed -i 's/BaseImage.objects.none/File.objects.none/' \
-    /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py
 
 CMD ["/app/bin/run-supervisord"]
