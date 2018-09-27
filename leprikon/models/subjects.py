@@ -890,7 +890,7 @@ class SubjectPayment(PdfExportMixin, models.Model):
             raise ValidationError({
                 'amount': [_('Amount can not be zero.')]
             })
-        if self.payment_type:
+        if self.payment_type and self.amount:
             if self.amount > 0 and self.payment_type not in self.payments:
                 raise ValidationError({
                     'payment_type': [_('Select one of the payments or use negative amount.')],
