@@ -3,6 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 PRICE_DECIMAL_PLACES  = 2
 PRICE_MAX_DIGITS      = 10
 
+LEPRIKON_SHOW_SUBJECT_CODE = False
+
 LEPRIKON_COUNTRY = 'CZ'
 
 LEPRIKON_CONTACT_TYPES = (

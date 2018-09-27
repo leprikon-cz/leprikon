@@ -188,7 +188,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
     list_display    = (
-        'id', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list', 'icon',
+        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list', 'icon',
     )
     list_filter     = (
         ('school_year',     SchoolYearListFilter),

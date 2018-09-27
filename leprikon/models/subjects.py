@@ -201,7 +201,14 @@ class Subject(models.Model):
         verbose_name_plural = _('subjects')
 
     def __str__(self):
-        return '{} {}'.format(self.school_year, self.name)
+        return '{} {}'.format(self.school_year, self.display_name)
+
+    @cached_property
+    def display_name(self):
+        if settings.LEPRIKON_SHOW_SUBJECT_CODE and self.code:
+            return '{} – {}'.format(self.code, self.name)
+        else:
+            return self.name
 
     @cached_property
     def all_variants(self):
