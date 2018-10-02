@@ -590,7 +590,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         return spayd(
             ('ACC', ('%s+%s' % (leprikon_site.iban, leprikon_site.bic)) if leprikon_site.bic else leprikon_site.iban),
             ('AM', self.current_receivable),
-            ('CC', localeconv['int_curr_symbol']),
+            ('CC', localeconv['int_curr_symbol'].strip()),
             ('MSG', '%s, %s' % (self.subject.name[:29], self.participant.full_name[:29])),
             ('RN', slugify(leprikon_site.company_name).replace('*', '')[:35]),
             ('X-VS', self.variable_symbol),
