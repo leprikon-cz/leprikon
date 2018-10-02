@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 21:17+0200\n"
+"POT-Creation-Date: 2018-10-02 21:05+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -416,7 +416,7 @@ msgstr "Odhlásit vybrané přihlášky"
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:383 models/subjects.py:833
+#: admin/subjects.py:383 models/subjects.py:834
 #: templates/leprikon/payment/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -516,7 +516,7 @@ msgid "Summary"
 msgstr "Přehled"
 
 #: cms_menus.py:48 cms_plugins/leaders.py:12 forms/courses.py:90
-#: forms/subjects.py:27
+#: forms/subjects.py:33
 msgid "Leader"
 msgstr "Vedoucí"
 
@@ -737,7 +737,7 @@ msgstr[1] ""
 msgstr[2] ""
 "Náhradní vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 
-#: forms/leaders.py:9 forms/messages.py:12 forms/subjects.py:22
+#: forms/leaders.py:9 forms/messages.py:12 forms/subjects.py:28
 msgid "Search term"
 msgstr "Hledaný výraz"
 
@@ -770,64 +770,68 @@ msgstr "Započítat pouze zaplacené přihlášky"
 msgid "School year"
 msgstr "Školní rok"
 
-#: forms/subjects.py:23
+#: forms/subjects.py:29
 msgid "Course type"
 msgstr "Typ kurzu"
 
-#: forms/subjects.py:24
+#: forms/subjects.py:30
 msgid "Event type"
 msgstr "Druh akce"
 
-#: forms/subjects.py:25
+#: forms/subjects.py:31
 msgid "Department"
 msgstr "Oddělení"
 
-#: forms/subjects.py:26
+#: forms/subjects.py:32
 msgid "Group"
 msgstr "Skupina"
 
-#: forms/subjects.py:28 templates/leprikon/subject_preview.html:43
+#: forms/subjects.py:34 templates/leprikon/subject_preview.html:43
 #: templates/leprikon/subject_preview.html:50
 msgid "Place"
 msgstr "Místo"
 
-#: forms/subjects.py:29 templates/leprikon/participant_preview.html:23
+#: forms/subjects.py:35 templates/leprikon/participant_preview.html:23
 #: templates/leprikon/registration/subject.rml:88
 #: templates/leprikon/registration_details.html:16
 msgid "Age group"
 msgstr "Věková skupina"
 
-#: forms/subjects.py:30
+#: forms/subjects.py:36
 msgid "Day of week"
 msgstr "Den v týdnu"
 
-#: forms/subjects.py:32
+#: forms/subjects.py:38
 msgid "Include past subjects"
 msgstr "Zobrazit i proběhlé akce"
 
-#: forms/subjects.py:33
+#: forms/subjects.py:39
 msgid "Available for registration"
 msgstr "Povoleno přihlašování"
 
-#: forms/subjects.py:34
+#: forms/subjects.py:40
 msgid "Show invisible"
 msgstr "Zobrazit neviditelné"
 
-#: forms/subjects.py:183 forms/subjects.py:193
+#: forms/subjects.py:193 forms/subjects.py:203
 msgid "Choose"
 msgstr "Vyberte"
 
-#: forms/subjects.py:184
+#: forms/subjects.py:194
 msgid "new participant"
 msgstr "nový účastník"
 
-#: forms/subjects.py:194
+#: forms/subjects.py:204
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/subjects.py:280
+#: forms/subjects.py:310
 msgid "Terms and Conditions agreement"
 msgstr "Souhlas s podmínkami"
+
+#: forms/subjects.py:313
+msgid "Your email"
+msgstr "Váš e-mail"
 
 #: forms/timesheets.py:32
 msgid "Entry type"
@@ -953,7 +957,7 @@ msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
 #: models/courses.py:358 models/events.py:149 models/subjects.py:496
-#: models/subjects.py:829
+#: models/subjects.py:830
 msgid "registration"
 msgstr "přihláška"
 
@@ -1556,7 +1560,7 @@ msgstr "plán"
 msgid "evaluation"
 msgstr "evaluace"
 
-#: models/subjects.py:186 models/subjects.py:834
+#: models/subjects.py:186 models/subjects.py:835
 msgid "note"
 msgstr "poznámka"
 
@@ -1637,104 +1641,104 @@ msgstr "{participant} ({birth_num})"
 msgid "Participant with this birth number has already been registered."
 msgstr "Účastník s tímto rodným číslem je již přihlášený."
 
-#: models/subjects.py:700 views/subjects.py:159
+#: models/subjects.py:701 views/subjects.py:159
 #, python-brace-format
 msgid "Registration for {subject_type} {subject}"
 msgstr "Přihláška na {subject_type} {subject}"
 
-#: models/subjects.py:707
+#: models/subjects.py:708
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment request"
 msgstr "Přihláška na {subject_type} {subject} - výzva k platbě"
 
-#: models/subjects.py:791
+#: models/subjects.py:792
 msgid "time of discount"
 msgstr "čas vytvoření slevy"
 
-#: models/subjects.py:792 models/subjects.py:798
+#: models/subjects.py:793 models/subjects.py:799
 #: templates/leprikon/registration_payments_presences.html:44
 msgid "discount"
 msgstr "sleva"
 
-#: models/subjects.py:793
+#: models/subjects.py:794
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:799 templates/leprikon/summary.html:15
+#: models/subjects.py:800 templates/leprikon/summary.html:15
 msgid "discounts"
 msgstr "slevy"
 
-#: models/subjects.py:821
+#: models/subjects.py:822
 msgid "payment - cash"
 msgstr "platba v hotovosti"
 
-#: models/subjects.py:822
+#: models/subjects.py:823
 msgid "payment - bank"
 msgstr "platba na bankovní účet"
 
-#: models/subjects.py:823
+#: models/subjects.py:824
 msgid "payment - online"
 msgstr "platba online"
 
-#: models/subjects.py:824
+#: models/subjects.py:825
 msgid "payment - transfer from return"
 msgstr "platba z přeplatku"
 
-#: models/subjects.py:825
+#: models/subjects.py:826
 msgid "return - cash"
 msgstr "navrácení přeplatku v hotovosti"
 
-#: models/subjects.py:826
+#: models/subjects.py:827
 msgid "return - bank"
 msgstr "navrácení přeplatku na bankovní účet"
 
-#: models/subjects.py:827
+#: models/subjects.py:828
 msgid "return - transfer to payment"
 msgstr "navrácení přeplatku převodem na platbu"
 
-#: models/subjects.py:831
+#: models/subjects.py:832
 msgid "payment time"
 msgstr "čas platby"
 
-#: models/subjects.py:832 models/subjects.py:859
+#: models/subjects.py:833 models/subjects.py:860
 #: templates/leprikon/payment/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
 
-#: models/subjects.py:833
+#: models/subjects.py:834
 msgid "positive value for payment, negative value for return"
 msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 
-#: models/subjects.py:835
+#: models/subjects.py:836
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:837
+#: models/subjects.py:838
 msgid "received by"
 msgstr "přijal(a)"
 
-#: models/subjects.py:845
+#: models/subjects.py:846
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:846
+#: models/subjects.py:847
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:882
+#: models/subjects.py:883
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment confirmation"
 msgstr "Přihláška na {subject_type} {subject} - potvrzení platby"
 
-#: models/subjects.py:890
+#: models/subjects.py:891
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:895
+#: models/subjects.py:896
 msgid "Select one of the payments or use negative amount."
 msgstr "Vyberte některou z plateb nebo použijte zápornou částku."
 
-#: models/subjects.py:899
+#: models/subjects.py:900
 msgid "Select one of the returns or use positive amount."
 msgstr "Vyberte formu navrácení přeplatku nebo použijte kladnou částku."
 
@@ -2196,7 +2200,7 @@ msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
 #: templates/leprikon/participants.html:7
 #: templates/leprikon/registration/subject.rml:147
 #: templates/leprikon/registration_preview.html:34
-#: templates/leprikon/subject_registration_form.html:105
+#: templates/leprikon/subject_registration_form.html:110
 msgid "Parents"
 msgstr "Zástupci"
 
@@ -2279,7 +2283,7 @@ msgstr ""
 #: templates/leprikon/payment-request-mail/subject.txt:6
 #: templates/leprikon/registration/subject.rml:78
 #: templates/leprikon/registration_preview.html:28
-#: templates/leprikon/subject_registration_form.html:78
+#: templates/leprikon/subject_registration_form.html:83
 msgid "Participant"
 msgstr "Účastník"
 
@@ -2666,7 +2670,11 @@ msgstr ""
 "Vaše přihláška nemusí být schválena. O jejím zpracování Vás budeme dále "
 "informovat."
 
-#: templates/leprikon/subject_registration_form.html:141
+#: templates/leprikon/subject_registration_form.html:79
+msgid "User"
+msgstr "Uživatel"
+
+#: templates/leprikon/subject_registration_form.html:146
 msgid "Legal Agreement"
 msgstr "Právní ujednání"
 
