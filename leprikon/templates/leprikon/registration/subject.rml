@@ -61,11 +61,17 @@
                 <td>{% trans 'Dates of event' %}</td>
                 <td><para style="para">{{ object.subject.event.get_times_list }}</para></td>
             </tr>
-            {% elif object.subject.course.all_times %}
+            {% else %}
+            <tr>
+                <td>{% trans 'Periods' %}</td>
+                <td><para style="para">{% for period in object.all_periods %}{{ period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
+            </tr>
+            {% if object.subject.course.all_times %}
             <tr>
                 <td>{% trans 'Times' %}</td>
                 <td><para style="para">{{ object.subject.course.get_times_list }}</para></td>
             </tr>
+            {% endif %}
             {% endif %}
             <tr>
                 <td>{% trans 'Registration number (variable symbol)' %}</td>
