@@ -9,6 +9,7 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
+from ..models.leprikonsite import LeprikonSite
 from ..models.subjects import (
     Subject, SubjectPayment, SubjectRegistration, SubjectType,
 )
@@ -110,6 +111,10 @@ class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
             qs = qs.filter(leaders=self.request.leader)
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super(SubjectRegistrationsView, self).get_context_data(**kwargs)
+        context['site'] = LeprikonSite.objects.get_current()
+        return context
 
 
 class SubjectUpdateView(SubjectTypeMixin, UpdateView):
