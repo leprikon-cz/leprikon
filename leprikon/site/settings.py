@@ -44,6 +44,7 @@ ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split('
 INSTALLED_APPS = [
     'leprikon.site',
     'leprikon',
+    'bankreader',
     'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',

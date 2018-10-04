@@ -6,11 +6,14 @@ from json import loads
 
 import qrcode
 import trml2pdf
+from bankreader.models import Transaction
+from bankreader.readers.best import BestReader  # noqa
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.dispatch import receiver
 from django.template.loader import select_template
 from django.utils import timezone
 from django.utils.encoding import (
@@ -838,6 +841,8 @@ class SubjectPayment(PdfExportMixin, models.Model):
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
     related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
                                         related_name='related_payments', on_delete=models.PROTECT)
+    bankreader_transaction = models.OneToOneField(Transaction, verbose_name=_('transaction'), blank=True, null=True,
+                                                  related_name='subject_payments', on_delete=models.PROTECT)
     received_by     = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_('received by'),
                                         related_name='+', on_delete=models.PROTECT)
 
@@ -910,3 +915,19 @@ class SubjectPayment(PdfExportMixin, models.Model):
     def save(self, *args, **kwargs):
         self.validate()
         super(SubjectPayment, self).save(*args, **kwargs)
+
+
+@receiver(models.signals.post_save, sender=Transaction)
+def create_order_payment(instance, **kwargs):
+    transaction = instance
+    if transaction.variable_symbol:
+        registration = SubjectRegistration.objects.filter(variable_symbol=transaction.variable_symbol).first()
+        if registration:
+            SubjectPayment.objects.create(
+                registration=registration,
+                created=transaction.accounted_date,
+                payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
+                amount=transaction.amount,
+                note=_('imported from account statement'),
+                bankreader_transaction=transaction,
+            )
