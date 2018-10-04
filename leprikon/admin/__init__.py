@@ -1,7 +1,6 @@
 import locale
 
 import icu
-from django.apps import apps
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.http import Http404
@@ -109,10 +108,9 @@ def app_index(self, request, app_label, extra_context=None):
     # Sort the models alphabetically within each app.
     collator = icu.Collator.createInstance(icu.Locale('.'.join(locale.getlocale())))
     app_dict['models'].sort(key=lambda x: collator.getSortKey(x['name'].lower()))
-    app_name = apps.get_app_config(app_label).verbose_name
     context = dict(
         self.each_context(request),
-        title=_('%(app)s administration') % {'app': app_name},
+        title=_('Leprikon administration'),
         app_list=[app_dict],
         app_label=app_label,
     )
