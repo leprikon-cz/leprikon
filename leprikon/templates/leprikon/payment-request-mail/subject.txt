@@ -1,5 +1,4 @@
 {% load i18n leprikon_tags %}{% blocktrans %}Hello,
-
 thank You for submitting registration.{% endblocktrans %}
 
 {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}

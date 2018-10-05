@@ -1,7 +1,9 @@
 {% load i18n leprikon_tags qr_code %}
 
-<p>{% blocktrans %}Hello,<br/>
-thank You for submitting registration.{% endblocktrans %}</p>
+<p>
+{% blocktrans asvar text %}Hello,
+thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
+</p>
 
 <p>
     {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>

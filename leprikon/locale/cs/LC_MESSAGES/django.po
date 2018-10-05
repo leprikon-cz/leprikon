@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-11 14:08+0200\n"
+"POT-Creation-Date: 2018-10-11 14:16+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1944,8 +1944,8 @@ msgstr "vybraných"
 
 #: templates/leprikon/cms/event_list/default.html:38
 #: templates/leprikon/cms/event_list/grouped.html:40
-#: templates/leprikon/payment-request-mail/subject.html:9
-#: templates/leprikon/payment-request-mail/subject.txt:7
+#: templates/leprikon/payment-request-mail/subject.html:11
+#: templates/leprikon/payment-request-mail/subject.txt:6
 #: templates/leprikon/registration/subject.rml:50
 #: templates/leprikon/registration_payments_presences.html:4
 #: templates/leprikon/reports/course_payments_status.html:15
@@ -2283,40 +2283,43 @@ msgstr "Děkujeme, že používáte naše stránky!"
 msgid "The %(site_name)s team"
 msgstr "Tým %(site_name)s"
 
-#: templates/leprikon/payment-request-mail/subject.html:3
+#: templates/leprikon/payment-request-mail/subject.html:4
+#: templates/leprikon/payment-request-mail/subject.txt:1
+#: templates/leprikon/registration-mail/subject.html:4
+#: templates/leprikon/registration-mail/subject.txt:1
 msgid ""
-"Hello,<br/>\n"
+"Hello,\n"
 "thank You for submitting registration."
 msgstr ""
-"Dobrý den,<br/>\n"
+"Dobrý den,\n"
 "děkujeme Vám za vyplnění přihlášky."
 
-#: templates/leprikon/payment-request-mail/subject.html:8
-#: templates/leprikon/payment-request-mail/subject.txt:6
+#: templates/leprikon/payment-request-mail/subject.html:10
+#: templates/leprikon/payment-request-mail/subject.txt:5
 #: templates/leprikon/registration/subject.rml:84
 #: templates/leprikon/registration_preview.html:28
 #: templates/leprikon/subject_registration_form.html:83
 msgid "Participant"
 msgstr "Účastník"
 
-#: templates/leprikon/payment-request-mail/subject.html:14
+#: templates/leprikon/payment-request-mail/subject.html:16
 #: templates/leprikon/registration_payments_presences.html:52
 msgid "Please, use following information for bank transfer"
 msgstr "Pro platbu převodem prosím použijte následující údaje"
 
-#: templates/leprikon/payment-request-mail/subject.html:15
-#: templates/leprikon/payment-request-mail/subject.txt:10
+#: templates/leprikon/payment-request-mail/subject.html:17
+#: templates/leprikon/payment-request-mail/subject.txt:9
 #: templates/leprikon/registration_payments_presences.html:53
 msgid "Bank account"
 msgstr "Číslo účtu"
 
-#: templates/leprikon/payment-request-mail/subject.html:16
-#: templates/leprikon/payment-request-mail/subject.txt:11
+#: templates/leprikon/payment-request-mail/subject.html:18
+#: templates/leprikon/payment-request-mail/subject.txt:10
 #: templates/leprikon/registration_payments_presences.html:54
 msgid "Variable symbol"
 msgstr "Variabilní symbol"
 
-#: templates/leprikon/payment-request-mail/subject.html:19
+#: templates/leprikon/payment-request-mail/subject.html:21
 #: templates/leprikon/registration_payments_presences.html:57
 msgid ""
 "Or You may use following QR code to scan the payment details to your mobile "
@@ -2325,23 +2328,23 @@ msgstr ""
 "Případně můžete použít následující QR kód pro načtení platebních informací "
 "do své mobilní bankovní aplikace"
 
-#: templates/leprikon/payment-request-mail/subject.html:23
-#: templates/leprikon/payment-request-mail/subject.txt:12
+#: templates/leprikon/payment-request-mail/subject.html:25
+#: templates/leprikon/payment-request-mail/subject.txt:11
 #: templates/leprikon/registration_payments_presences.html:61
 msgid "Currently we only accept payments in cash."
 msgstr "Momentálně přijímáme platby pouze v hotovosti."
 
-#: templates/leprikon/payment-request-mail/subject.html:27
-#: templates/leprikon/payment-request-mail/subject.txt:14
+#: templates/leprikon/payment-request-mail/subject.html:29
+#: templates/leprikon/payment-request-mail/subject.txt:13
 msgid ""
 "If You have already made the payment recently, please ignore this message."
 msgstr ""
 "Pokud jste již platbu v nedávné době provedli, můžete tuto zprávu ignorovat."
 
-#: templates/leprikon/payment-request-mail/subject.html:28
-#: templates/leprikon/payment-request-mail/subject.txt:15
-#: templates/leprikon/registration-mail/subject.html:15
-#: templates/leprikon/registration-mail/subject.txt:9
+#: templates/leprikon/payment-request-mail/subject.html:30
+#: templates/leprikon/payment-request-mail/subject.txt:14
+#: templates/leprikon/registration-mail/subject.html:16
+#: templates/leprikon/registration-mail/subject.txt:8
 msgid ""
 "You may check the current status of your registrations and payments using "
 "following link:"
@@ -2349,18 +2352,7 @@ msgstr ""
 "Aktuální stav svých přihlášek a plateb můžete zkontrolovat pomocí "
 "následujícího odkazu:"
 
-#: templates/leprikon/payment-request-mail/subject.txt:1
-#: templates/leprikon/registration-mail/subject.txt:1
-msgid ""
-"Hello,\n"
-"\n"
-"thank You for submitting registration."
-msgstr ""
-"Dobrý den,\n"
-"\n"
-"děkujeme Vám za vyplnění přihlášky."
-
-#: templates/leprikon/payment-request-mail/subject.txt:9
+#: templates/leprikon/payment-request-mail/subject.txt:8
 msgid "Please, use following information for bank transfer:"
 msgstr "Pro platbu převodem prosím použijte následující údaje:"
 
@@ -2395,12 +2387,8 @@ msgstr "Typ platby"
 msgid "Amount"
 msgstr "Částka"
 
-#: templates/leprikon/registration-mail/subject.html:4
-msgid "Hello,<br/>thank You for submitting registration."
-msgstr "Dobrý den,<br/>děkujeme Vám za vyplnění přihlášky."
-
-#: templates/leprikon/registration-mail/subject.html:6
-#: templates/leprikon/registration-mail/subject.txt:4
+#: templates/leprikon/registration-mail/subject.html:7
+#: templates/leprikon/registration-mail/subject.txt:3
 #, python-format
 msgid ""
 "Unfortunately, the capacity of this %(subject_type)s has already been "
@@ -2410,13 +2398,13 @@ msgstr ""
 "Bohužel, kapacita %(subject_type)s je již naplněna. Vaše přihláška nemusí "
 "být schválena."
 
-#: templates/leprikon/registration-mail/subject.html:9
-#: templates/leprikon/registration-mail/subject.txt:6
+#: templates/leprikon/registration-mail/subject.html:10
+#: templates/leprikon/registration-mail/subject.txt:5
 msgid "We will inform you about its further processing."
 msgstr "O jejím dalším zpracování Vás budeme dále informovat."
 
-#: templates/leprikon/registration-mail/subject.html:12
-#: templates/leprikon/registration-mail/subject.txt:7
+#: templates/leprikon/registration-mail/subject.html:13
+#: templates/leprikon/registration-mail/subject.txt:6
 msgid "See attached files for futher information."
 msgstr "Další informace najdete v přiložených souborech."
 
