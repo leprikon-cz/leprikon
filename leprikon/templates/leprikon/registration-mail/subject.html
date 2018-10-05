@@ -12,7 +12,7 @@ The registration may not be approved.{% endblocktrans %}
 {% if self.all_attachments %}<p>{% trans 'See attached files for futher information.' %}</p>{% endif %}
 
 <p>
-    {% trans 'Use the link below to see and manage your registrations and payments:' %}<br/>
+    {% trans 'You may check the current status of your registrations and payments using following link:' %}<br/>
     <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
         https://{{ site.domain }}{% url 'leprikon:registration_list' %}
     </a>

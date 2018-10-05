@@ -11,7 +11,8 @@ thank You for submitting registration.{% endblocktrans %}
 {% trans 'Variable symbol' %}: {{ object.variable_symbol }}
 {% else %}{% trans 'Currently we only accept payments in cash.' %}{% endif %}
 
-{% trans 'Use the link below to see and manage your registrations and payments:' %}
+{% trans 'If You have already made the payment recently, please ignore this message.' %}
+{% trans 'You may check the current status of your registrations and payments using following link:' %}
 https://{{ site.domain }}{% url 'leprikon:registration_list' %}
 
 {{ site.name }}

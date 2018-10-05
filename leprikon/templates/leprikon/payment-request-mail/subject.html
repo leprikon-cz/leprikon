@@ -24,7 +24,8 @@ thank You for submitting registration.{% endblocktrans %}</p>
 {% endif %}
 
 <p>
-    {% trans 'Use the link below to see and manage your registrations and payments:' %}<br/>
+    {% trans 'If You have already made the payment recently, please ignore this message.' %}
+    {% trans 'You may check the current status of your registrations and payments using following link:' %}<br/>
     <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
         https://{{ site.domain }}{% url 'leprikon:registration_list' %}
     </a>
