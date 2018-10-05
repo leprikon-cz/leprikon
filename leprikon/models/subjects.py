@@ -635,12 +635,14 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         if self.approved is None:
             self.approved = timezone.now()
             self.save()
-        self.request_payment()
+        if self.payment_requested is None:
+            self.request_payment()
 
     def request_payment(self):
         if self.payment_requested is None:
             self.payment_requested = timezone.now()
             self.save()
+        if self.current_receivable:
             try:
                 self.send_payment_request()
             except:
