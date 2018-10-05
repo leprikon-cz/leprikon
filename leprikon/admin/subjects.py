@@ -429,7 +429,7 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
                        'received_by', 'note')
     list_editable   = ('note',)
     list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
-    raw_id_fields   = ('registration', 'related_payment',)
+    raw_id_fields   = ('bankreader_transaction', 'registration', 'related_payment',)
     exclude         = ('received_by',)
 
     def save_model(self, request, obj, form, change):
