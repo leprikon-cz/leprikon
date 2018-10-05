@@ -7,7 +7,6 @@ from json import loads
 import qrcode
 import trml2pdf
 from bankreader.models import Transaction
-from bankreader.readers.best import BestReader  # noqa
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
