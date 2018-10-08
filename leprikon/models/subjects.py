@@ -33,7 +33,9 @@ from ..utils import (
 from .agegroup import AgeGroup
 from .citizenship import Citizenship
 from .department import Department
-from .fields import BirthNumberField, ColorField, PostalCodeField, PriceField
+from .fields import (
+    BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField,
+)
 from .leprikonsite import LeprikonSite
 from .place import Place
 from .printsetup import PrintSetup
@@ -472,7 +474,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     participant_citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
                                                 related_name='+', on_delete=models.PROTECT)
     participant_phone       = models.CharField(_('phone'),        max_length=30, blank=True, default='')
-    participant_email       = models.EmailField(_('email address'),              blank=True, default='')
+    participant_email       = EmailField(_('email address'),              blank=True, default='')
 
     participant_school          = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
                                                     related_name='+', on_delete=models.PROTECT)
@@ -487,7 +489,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     parent1_city        = models.CharField(_('city'),         max_length=150, blank=True, null=True)
     parent1_postal_code = PostalCodeField(_('postal code'),                   blank=True, null=True)
     parent1_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
-    parent1_email       = models.EmailField(_('email address'),               blank=True, null=True)
+    parent1_email       = EmailField(_('email address'),               blank=True, null=True)
 
     has_parent2         = models.BooleanField(_('second parent'), default=False)
     parent2_first_name  = models.CharField(_('first name'),   max_length=30,  blank=True, null=True)
@@ -496,7 +498,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     parent2_city        = models.CharField(_('city'),         max_length=150, blank=True, null=True)
     parent2_postal_code = PostalCodeField(_('postal code'),                   blank=True, null=True)
     parent2_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
-    parent2_email       = models.EmailField(_('email address'),               blank=True, null=True)
+    parent2_email       = EmailField(_('email address'),               blank=True, null=True)
 
     variable_symbol     = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
 

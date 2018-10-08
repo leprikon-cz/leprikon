@@ -18,17 +18,18 @@ User = get_user_model()
 class UserFormMixin(FormMixin):
 
     def clean_email(self):
-        user_qs = User.objects.filter(email=self.cleaned_data['email'])
+        email = self.cleaned_data['email'].lower()
+        user_qs = User.objects.filter(email=email)
         if self.instance.pk:
             user_qs = user_qs.exclude(pk=self.instance.pk)
-        if self.cleaned_data['email'] and user_qs.exists():
+        if email and user_qs.exists():
             raise ValidationError(
                 _('User with this email already exists.'),
                 code='exists',
-                params={'email': self.cleaned_data['email']},
+                params={'email': email},
             )
         else:
-            return self.cleaned_data['email']
+            return email
 
 
 class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
@@ -40,6 +41,13 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
         user.set_password(User.objects.make_random_password())
         user.save()
         return user
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+
+class UserAdminChangeForm(UserFormMixin, forms.ModelForm):
 
     class Meta:
         model = User

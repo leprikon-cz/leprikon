@@ -14,7 +14,7 @@ from ..conf import settings
 from ..forms.leaders import LeaderFilterForm
 from .agegroup import AgeGroup
 from .citizenship import Citizenship
-from .fields import BirthNumberField, PostalCodeField
+from .fields import BirthNumberField, EmailField, PostalCodeField
 from .school import School
 from .schoolyear import SchoolYear
 
@@ -119,7 +119,7 @@ class Parent(models.Model):
     street          = models.CharField(_('street'),       max_length=150)
     city            = models.CharField(_('city'),         max_length=150)
     postal_code     = PostalCodeField(_('postal code'))
-    email           = models.EmailField(_('email address'), blank=True, default='')
+    email           = EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'), max_length=30)
 
     class Meta:
@@ -163,7 +163,7 @@ class Participant(models.Model):
     street          = models.CharField(_('street'),       max_length=150)
     city            = models.CharField(_('city'),         max_length=150)
     postal_code     = PostalCodeField(_('postal code'))
-    email           = models.EmailField(_('email address'), blank=True, default='')
+    email           = EmailField(_('email address'), blank=True, default='')
     phone           = models.CharField(_('phone'),        max_length=30,  blank=True, default='')
     citizenship     = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
                                         related_name='+', on_delete=models.PROTECT)

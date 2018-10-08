@@ -236,9 +236,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             self.instance.user = self.user
         else:
             user = User.objects.filter(
-                email=self.email_form.cleaned_data['email'],
+                email=self.email_form.cleaned_data['email'].lower(),
             ).first() or User(
-                email=self.email_form.cleaned_data['email'],
+                email=self.email_form.cleaned_data['email'].lower(),
             )
             while not user.pk:
                 user.username = get_random_string()

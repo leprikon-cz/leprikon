@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.user import UserAdminCreateForm
+from ..forms.user import UserAdminChangeForm, UserAdminCreateForm
 from ..utils import merge_users
 from .messages import SendMessageAdminMixin
 
@@ -24,6 +24,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
             'fields': ('username', 'first_name', 'last_name', 'email'),
         }),
     )
+    form = UserAdminChangeForm
 
     def merge(self, request, queryset):
         class MergeForm(forms.Form):

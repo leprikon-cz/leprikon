@@ -31,6 +31,10 @@ class ColorField(models.CharField):
         return super(ColorField, self).formfield(**kwargs)
 
 
+class EmailField(models.EmailField):
+    def to_python(self, value):
+        return super(EmailField, self).to_python(value).lower()
+
 
 class PriceField(models.DecimalField):
     def __init__(self, *args, **kwargs):
