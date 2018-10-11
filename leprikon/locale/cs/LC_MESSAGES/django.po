@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-11 14:17+0200\n"
+"POT-Creation-Date: 2018-10-11 15:31+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -404,7 +404,7 @@ msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
 #: admin/subjects.py:292
 msgid "Request payment for selected registrations"
-msgstr "Odeslat výzvů k platbě pro vybrané přihlášky"
+msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
 #: admin/subjects.py:297
 msgid "Selected registrations were canceled."
