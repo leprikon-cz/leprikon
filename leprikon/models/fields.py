@@ -33,7 +33,8 @@ class ColorField(models.CharField):
 
 class EmailField(models.EmailField):
     def to_python(self, value):
-        return super(EmailField, self).to_python(value).lower()
+        v = super(EmailField, self).to_python(value)
+        return v and v.lower()
 
 
 class PriceField(models.DecimalField):
