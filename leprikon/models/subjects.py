@@ -1,4 +1,5 @@
 import colorsys
+import logging
 from collections import OrderedDict
 from email.mime.image import MIMEImage
 from io import BytesIO
@@ -44,6 +45,8 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .utils import generate_variable_symbol
+
+logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -635,6 +638,10 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         if self.approved is None:
             self.approved = timezone.now()
             self.save()
+        try:
+            self.send_registration_approval()
+        except Exception as e:
+            logger.exception(e)
         if self.payment_requested is None:
             self.request_payment()
 
@@ -645,11 +652,8 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         if self.current_receivable:
             try:
                 self.send_payment_request()
-            except:
-                import traceback
-                from raven.contrib.django.models import client
-                traceback.print_exc()
-                client.captureException()
+            except Exception as e:
+                logger.exception(e)
 
     def cancel(self):
         if self.canceled is None:
@@ -723,6 +727,13 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             subject=self.subject.name,
         )
 
+    @cached_property
+    def registration_approval_subject(self):
+        return _('Registration for {subject_type} {subject} - approved').format(
+            subject_type=self.subject.subject_type.name_akuzativ,
+            subject=self.subject.name,
+        )
+
     def send_payment_request(self):
         template_txt = select_template([
             'leprikon/payment-request-mail/{}.txt'.format(self.subject.subject_type.slug),
@@ -753,6 +764,34 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             qr_code = MIMEImage(self.get_qr_code())
             qr_code.add_header('Content-ID', '<qr_code>')
             msg.attach(qr_code)
+        msg.send()
+
+    def send_registration_approval(self):
+        template_txt = select_template([
+            'leprikon/registration-approved-mail/{}.txt'.format(self.subject.subject_type.slug),
+            'leprikon/registration-approved-mail/{}.txt'.format(self.subject.subject_type.subject_type),
+            'leprikon/registration-approved-mail/subject.txt',
+        ])
+        template_html = select_template([
+            'leprikon/registration-approved-mail/{}.html'.format(self.subject.subject_type.slug),
+            'leprikon/registration-approved-mail/{}.html'.format(self.subject.subject_type.subject_type),
+            'leprikon/registration-approved-mail/subject.html',
+        ])
+        site = LeprikonSite.objects.get_current()
+        context = {
+            'object': self,
+            'site': site,
+        }
+        content_txt = template_txt.render(context)
+        content_html = template_html.render(context)
+        msg = EmailMultiAlternatives(
+            subject = self.registration_approval_subject,
+            body        = content_txt,
+            from_email  = settings.SERVER_EMAIL,
+            to          = self.all_recipients,
+            headers     = {'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+        )
+        msg.attach_alternative(content_html, 'text/html')
         msg.send()
 
     @python_2_unicode_compatible

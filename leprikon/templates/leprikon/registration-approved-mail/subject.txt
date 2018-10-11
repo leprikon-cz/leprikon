@@ -1,0 +1,9 @@
+{% load i18n %}{% blocktrans %}Hello,
+we are pleased to inform You, that your registration was approved.{% endblocktrans %}
+
+{% trans 'We are looking forward to see You.' %}
+
+{% trans 'You may check the current status of your registrations and payments using following link:' %}
+https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+
+{{ site.name }}

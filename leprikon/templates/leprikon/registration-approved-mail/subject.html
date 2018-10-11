@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<p>
+{% blocktrans asvar text %}Hello,
+we are pleased to inform You, that your registration was approved.{% endblocktrans %}{{ text|linebreaks }}
+</p>
+
+<p>
+{% trans 'We are looking forward to see You.' %}
+</p>
+
+<p>
+    {% trans 'You may check the current status of your registrations and payments using following link:' %}<br/>
+    <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
+        https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+    </a>
+</p>
+
+<p>{{ site.name }}</p>
