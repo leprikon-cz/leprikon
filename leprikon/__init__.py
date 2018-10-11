@@ -1,5 +1,3 @@
-from . import bankreaders  # noqa
-
 __version__ = '1.14.3'
 default_app_config = 'leprikon.apps.LeprikonConfig'
 
