@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'cms',
     'menus',
     'sekizai',
+    'template_admin',
     'treebeard',
     'filer',
     'easy_thumbnails',
@@ -118,9 +119,11 @@ TEMPLATES = [
                 'social_django.context_processors.login_redirect',
             ],
             'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
+                ('template_admin.loader.Loader', [
+                    ('django.template.loaders.cached.Loader', [
+                        'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
+                    ]),
                 ]),
             ]
         },

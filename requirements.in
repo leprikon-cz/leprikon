@@ -12,6 +12,7 @@ django-haystack<2.8
 django-localflavor<2
 django-qr-code
 django-staticfiles-downloader
+django-template-admin
 django-verified-email-field
 djangocms-googlemap
 djangocms-link
