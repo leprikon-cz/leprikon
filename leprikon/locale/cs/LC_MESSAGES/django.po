@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-11 15:31+0200\n"
+"POT-Creation-Date: 2018-10-24 20:00+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -190,75 +190,75 @@ msgstr "odhlášeno"
 msgid "active"
 msgstr "aktivní"
 
-#: admin/messages.py:21
+#: admin/messages.py:22
 msgid "Sending emails"
 msgstr "Odesílání e-mailů"
 
-#: admin/messages.py:42 templates/leprikon/admin/send_message.html:11
+#: admin/messages.py:43 templates/leprikon/admin/send_message.html:11
 msgid "Send message"
 msgstr "Poslat zprávu"
 
-#: admin/messages.py:48
+#: admin/messages.py:55
 msgid "Target message"
 msgstr "Cílová zpráva"
 
-#: admin/messages.py:49
+#: admin/messages.py:56
 msgid "Recipients will be added to selected message."
 msgstr "Příjemci budou přidáni k vybarané zprávě."
 
-#: admin/messages.py:67
+#: admin/messages.py:75
 msgid "Select target message"
 msgstr "Vyberte cílovou zprávu"
 
-#: admin/messages.py:74
+#: admin/messages.py:82
 msgid "Add recipients to existing message"
 msgstr "Přidat příjemce k existující zprávě"
 
-#: admin/messages.py:107
+#: admin/messages.py:115
 msgid "recipients count"
 msgstr "počet příjemců"
 
-#: admin/messages.py:108
+#: admin/messages.py:116
 msgid "sent mail"
 msgstr "odesláno e-mailem"
 
-#: admin/messages.py:109 models/messages.py:50
+#: admin/messages.py:117 models/messages.py:50
 msgid "viewed on site"
 msgstr "zobrazeno na webu"
 
-#: admin/messages.py:115 admin/messages.py:123 models/messages.py:56
+#: admin/messages.py:123 admin/messages.py:131 models/messages.py:56
 msgid "recipients"
 msgstr "příjemci"
 
-#: admin/messages.py:124
+#: admin/messages.py:132
 msgid "show recipients details"
 msgstr "zobrazit podrobnosti o příjemcích"
 
-#: admin/messages.py:127
+#: admin/messages.py:135
 msgid "send mails"
 msgstr "odeslat e-maily"
 
-#: admin/messages.py:128
+#: admin/messages.py:136
 msgid "send mail to all recipients"
 msgstr "odeslat e-mail všem příjemcům"
 
-#: admin/messages.py:130
+#: admin/messages.py:138
 msgid "send unsent"
 msgstr "odeslat neodeslané"
 
-#: admin/messages.py:131
+#: admin/messages.py:139
 msgid "send mails to new recipients only"
 msgstr "odeslat e-maily pouze novým příjemcům"
 
-#: admin/messages.py:135
+#: admin/messages.py:143
 msgid "actions"
 msgstr "akce"
 
-#: admin/messages.py:176
+#: admin/messages.py:184
 msgid "Send email to selected recipients"
 msgstr "Odeslat e-mail vybraným příjemcům"
 
-#: admin/messages.py:183
+#: admin/messages.py:191
 msgid "Recipients of message {}"
 msgstr "Příjemci zprávy {}"
 
@@ -1816,7 +1816,7 @@ msgstr "zbývá doplatit {}"
 msgid "{} overpaid"
 msgstr "přeplaceno {}"
 
-#: site/settings.py:194
+#: site/settings.py:197
 msgid "Czech"
 msgstr "Čeština"
 
@@ -1833,7 +1833,7 @@ msgid "Documentation"
 msgstr "Dokumentace"
 
 #: templates/admin/inc/branding.html:23 templates/leprikon/base.html:64
-#: views/user.py:110
+#: views/user.py:115
 msgid "Change password"
 msgstr "Změnit heslo"
 
@@ -1904,7 +1904,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:79
-#: views/user.py:111
+#: views/user.py:116
 msgid "Back"
 msgstr "Zpět"
 
@@ -2995,27 +2995,31 @@ msgstr "Aktualizace údajů o uživateli"
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:100
+#: views/user.py:103
 msgid "Change e-mail address"
 msgstr "Změna e-mailové adresy"
 
-#: views/user.py:136
+#: views/user.py:105
+msgid "Set e-mail address"
+msgstr "Nastavení e-mailové adresy"
+
+#: views/user.py:141
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:138
+#: views/user.py:143
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:156
+#: views/user.py:161
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:158
+#: views/user.py:163
 msgid "Set my password"
 msgstr "Nastavit heslo"

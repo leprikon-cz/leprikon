@@ -97,7 +97,12 @@ class UserUpdateView(UpdateView):
 
 class UserEmailView(UserUpdateView):
     form_class  = UserEmailForm
-    title       = _('Change e-mail address')
+
+    def get_title(self):
+        if self.request.user.email:
+            return _('Change e-mail address')
+        else:
+            return _('Set e-mail address')
 
 
 def user_password(request):
