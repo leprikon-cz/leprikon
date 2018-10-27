@@ -27,7 +27,7 @@ django-polymorphic==2.0.3  # via django-filer
 django-qr-code==1.0.0
 django-sekizai==0.10.0    # via cmsplugin-filer, django-cms
 django-staticfiles-downloader==0.1.5
-django-template-admin==1.0.1
+django-template-admin==1.0.2
 django-treebeard==4.3     # via django-cms
 django-verified-email-field==1.5.1
 django==1.11.16
