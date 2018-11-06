@@ -4,7 +4,8 @@ from django.contrib.auth.forms import (
     AuthenticationForm as _AuthenticationForm,
     PasswordChangeForm as _PasswordChangeForm,
     PasswordResetForm as _PasswordResetForm,
-    SetPasswordForm as _SetPasswordForm, UserCreationForm as _UserCreationForm,
+    SetPasswordForm as _SetPasswordForm, UserChangeForm as _UserChangeForm,
+    UserCreationForm as _UserCreationForm,
 )
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -47,11 +48,8 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email']
 
 
-class UserAdminChangeForm(UserFormMixin, forms.ModelForm):
-
-    class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email']
+class UserAdminChangeForm(UserFormMixin, _UserChangeForm):
+    pass
 
 
 class UserCreateForm(UserFormMixin, _UserCreationForm):
