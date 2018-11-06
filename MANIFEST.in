@@ -1,5 +1,5 @@
 include LICENSE
-include requirements.txt
+include requirements.in
 include bin/leprikon
 recursive-exclude * *.py[co]
 recursive-include leprikon/locale *
