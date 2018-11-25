@@ -109,6 +109,8 @@ LEPRIKON_URL_EMAIL = 'email'
 
 LEPRIKON_MENU_ADD_LOGOUT = True
 
+LEPRIKON_SITE_CACHE_MAX_AGE = 5
+
 # expression to create variable symbol (subject.code + last two digits of year + last four digits of id)
 LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = 'reg.subject.code * 1000000 + (reg.created.year % 100) * 10000 + (reg.id % 10000)'
 

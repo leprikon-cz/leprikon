@@ -1,21 +1,37 @@
-from django.contrib.sites.models import Site, clear_site_cache
+from time import time
+
+from django.contrib.sites.models import Site
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from localflavor.generic.models import BICField, IBANField
 
+from ..conf import settings
 from .fields import EmailField, PostalCodeField
 from .printsetup import PrintSetup
 from .utils import BankAccount
 
 
 class LeprikonSiteManager(models.Manager):
+    _cached_site = None
+    _cache_timestamp = None
 
-    def get_current(self, request=None):
-        current_site = Site.objects.get_current(request)
-        return self.get_or_create(site_ptr=current_site)[0]
+    def get_current(self):
+        now = time()
+        if not self._cached_site or now - self._cache_timestamp > settings.LEPRIKON_SITE_CACHE_MAX_AGE:
+            lookup_kwargs = {}
+            if getattr(settings, 'SITE_ID', ''):
+                lookup_kwargs['pk'] = settings.SITE_ID
+            self._cached_site = self.get(**lookup_kwargs)
+            self._cache_timestamp = now
+        return self._cached_site
+
+    def get_queryset(self):
+        return super(LeprikonSiteManager, self).get_queryset().select_related(
+            'bill_print_setup',
+            'reg_print_setup',
+        )
 
 
 class LeprikonSite(Site):
@@ -50,7 +66,3 @@ class LeprikonSite(Site):
     @cached_property
     def bank_account(self):
         return self.iban and BankAccount(self.iban)
-
-
-pre_save.connect(clear_site_cache, sender=LeprikonSite)
-pre_delete.connect(clear_site_cache, sender=LeprikonSite)
