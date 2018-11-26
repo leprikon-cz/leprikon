@@ -118,6 +118,7 @@ class Event(Subject):
 
 
 class EventRegistration(SubjectRegistration):
+    subject_type = SubjectType.EVENT
 
     class Meta:
         app_label           = 'leprikon'

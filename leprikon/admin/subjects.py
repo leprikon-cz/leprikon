@@ -210,6 +210,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
         'department',
+        'subject_type__subject_type',
         ('subject_type',    SubjectTypeListFilter),
         ('groups',          SubjectGroupListFilter),
         ('leaders',         LeaderListFilter),
@@ -296,6 +297,14 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             registration.cancel()
         self.message_user(request, _('Selected registrations were canceled.'))
     cancel.short_description = _('Cancel selected registrations')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        formfield = super(SubjectRegistrationBaseAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == 'subject':
+            limit_choices_to = {'subject_type__subject_type__exact': self.model.subject_type}
+            formfield.limit_choices_to = limit_choices_to
+            formfield.widget.rel.limit_choices_to = limit_choices_to
+        return formfield
 
     def get_form(self, request, obj, **kwargs):
         try:

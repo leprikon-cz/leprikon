@@ -271,6 +271,7 @@ class CourseTime(StartEndMixin, models.Model):
 
 
 class CourseRegistration(SubjectRegistration):
+    subject_type = SubjectType.COURSE
 
     class Meta:
         app_label           = 'leprikon'
