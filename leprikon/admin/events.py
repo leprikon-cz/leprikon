@@ -149,8 +149,8 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
 
 class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    list_display    = ('created', 'registration', 'subject', 'amount_html', 'explanation')
-    list_export     = ('created', 'registration', 'subject', 'amount', 'explanation')
+    list_display    = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
+    list_export     = ('accounted', 'registration', 'subject', 'amount', 'explanation')
 
     def get_model_perms(self, request):
         return {}

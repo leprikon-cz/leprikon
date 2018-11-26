@@ -264,15 +264,12 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
 class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     form            = CourseDiscountAdminForm
-    list_display    = ('created', 'registration', 'subject', 'period', 'amount_html', 'explanation')
-    list_export     = ('created', 'registration', 'subject', 'period', 'amount', 'explanation')
+    list_display    = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
+    list_export     = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')
+    closed_fields   = ('accounted', 'registration', 'period', 'amount')
 
     def get_model_perms(self, request):
         return {}
-
-    def get_readonly_fields(self, request, obj=None):
-        return ('registration', 'period', 'amount') if obj else ()
-
 
 
 class CourseJournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):

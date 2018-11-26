@@ -8,6 +8,7 @@ from djangocms_text_ckeditor.fields import HTMLField
 from localflavor.generic.models import BICField, IBANField
 
 from ..conf import settings
+from .account import AccountClosure
 from .fields import EmailField, PostalCodeField
 from .printsetup import PrintSetup
 from .utils import BankAccount
@@ -66,3 +67,7 @@ class LeprikonSite(Site):
     @cached_property
     def bank_account(self):
         return self.iban and BankAccount(self.iban)
+
+    @cached_property
+    def max_closure_date(self):
+        return AccountClosure.objects.max_closure_date()

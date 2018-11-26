@@ -7,6 +7,7 @@ from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 
+from ..models.account import AccountClosure
 from ..models.agegroup import AgeGroup
 from ..models.citizenship import Citizenship
 from ..models.courses import (
@@ -27,6 +28,7 @@ from ..models.subjects import (
     Subject, SubjectGroup, SubjectPayment, SubjectRegistration, SubjectType,
 )
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
+from .account import AccountClosureAdmin
 from .agegroup import AgeGroupAdmin
 from .citizenship import CitizenshipAdmin
 from .courses import (
@@ -56,6 +58,8 @@ User = get_user_model()
 
 admin.site.site_header = _('Leprikon administration')
 admin.site.site_title = _('Leprikon administration')
+
+admin.site.register(AccountClosure,             AccountClosureAdmin)
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
 admin.site.register(Citizenship,                CitizenshipAdmin)

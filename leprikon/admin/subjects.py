@@ -393,15 +393,32 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
         'registration__subject__name', 'registration__participant_first_name', 'registration__participant_last_name',
         'registration__participant_birth_num',
     )
-    date_hierarchy  = 'created'
-    ordering        = ('-created',)
+    date_hierarchy  = 'accounted'
+    ordering        = ('-accounted',)
     raw_id_fields   = ('registration',)
+    closed_fields   = ('accounted', 'registration', 'amount')
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        if (
+            obj and request.leprikon_site.max_closure_date and
+            request.leprikon_site.max_closure_date > obj.accounted.date()
+        ):
+            return False
+        else:
+            return super(SubjectPaymentBaseAdmin, self).has_delete_permission(request, obj)
 
     def get_readonly_fields(self, request, obj=None):
-        return obj and ('registration', 'amount') or ()
+        if obj:
+            # it is strange, but obj given to this method contains values from request.POST
+            # but we need to decide according to current state in database
+            obj = self.model.objects.get(pk=obj.pk)
+        if (
+            obj and request.leprikon_site.max_closure_date and
+            request.leprikon_site.max_closure_date > obj.accounted.date()
+        ):
+            return self.closed_fields
+        else:
+            return ()
 
     def get_actions(self, request):
         actions = super(SubjectPaymentBaseAdmin, self).get_actions(request)
@@ -425,10 +442,10 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    list_display    = ('created', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html',
+    list_display    = ('accounted', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html',
                        'received_by', 'note')
     list_editable   = ('note',)
-    list_export     = ('created', 'registration', 'subject', 'payment_type_label', 'amount')
+    list_export     = ('accounted', 'registration', 'subject', 'payment_type_label', 'amount')
     raw_id_fields   = ('bankreader_transaction', 'registration', 'related_payment',)
     exclude         = ('received_by',)
 

@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
 from django.template.loader import select_template
-from django.utils import timezone
+from django.utils import formats, timezone
 from django.utils.encoding import (
     force_text, python_2_unicode_compatible, smart_text,
 )
@@ -612,13 +612,13 @@ class SubjectRegistration(PdfExportMixin, models.Model):
 
     def get_discounts(self, d):
         if d:
-            return [p for p in self.all_discounts if p.created.date() <= d]
+            return [p for p in self.all_discounts if p.accounted.date() <= d]
         else:
             return self.all_discounts
 
     def get_payments(self, d):
         if d:
-            return [p for p in self.all_payments if p.created.date() <= d]
+            return [p for p in self.all_payments if p.accounted.date() <= d]
         else:
             return self.all_payments
 
@@ -838,10 +838,34 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             return get_birth_date(self.birth_num)
 
 
+class TransactionMixin(object):
+
+    def clean_fields(self, exclude=None):
+        super(TransactionMixin, self).clean_fields(exclude)
+        self.validate()
+
+    def save(self, *args, **kwargs):
+        self.validate()
+        super(TransactionMixin, self).save(*args, **kwargs)
+
+    def validation_errors(self):
+        errors = {}
+        if self.amount == 0:
+            errors['amount'] = [_('Amount can not be zero.')]
+        if self.accounted:
+            max_closure_date = LeprikonSite.objects.get_current().max_closure_date
+            if max_closure_date and self.accounted.date() <= max_closure_date:
+                errors['accounted'] = [
+                    _('Date must be after the last account closure ({}).').format(
+                        formats.date_format(max_closure_date)
+                    )
+                ]
+        return errors
+
 
 @python_2_unicode_compatible
-class SubjectDiscount(models.Model):
-    created     = models.DateTimeField(_('time of discount'), editable=False, auto_now_add=True)
+class SubjectDiscount(TransactionMixin, models.Model):
+    accounted   = models.DateTimeField(_('accounted time'))
     amount      = PriceField(_('discount'), default=0)
     explanation = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
 
@@ -850,15 +874,19 @@ class SubjectDiscount(models.Model):
         app_label           = 'leprikon'
         verbose_name        = _('discount')
         verbose_name_plural = _('discounts')
-        ordering            = ('created',)
+        ordering            = ('accounted',)
 
     def __str__(self):
         return currency(self.amount)
 
+    def validate(self):
+        errors = self.validation_errors()
+        if errors:
+            raise ValidationError(errors)
 
 
 @python_2_unicode_compatible
-class SubjectPayment(PdfExportMixin, models.Model):
+class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
     PAYMENT_CASH = 'PAYMENT_CASH'
     PAYMENT_BANK = 'PAYMENT_BANK'
     PAYMENT_ONLINE = 'PAYMENT_ONLINE'
@@ -877,7 +905,7 @@ class SubjectPayment(PdfExportMixin, models.Model):
     ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
-    created         = models.DateTimeField(_('payment time'), editable=False, auto_now_add=True)
+    accounted       = models.DateTimeField(_('accounted time'))
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
@@ -895,7 +923,7 @@ class SubjectPayment(PdfExportMixin, models.Model):
         app_label           = 'leprikon'
         verbose_name        = _('payment')
         verbose_name_plural = _('payments')
-        ordering            = ('created',)
+        ordering            = ('accounted',)
 
     def __str__(self):
         return '{registration}, {payment_type} {amount}'.format(
@@ -936,40 +964,36 @@ class SubjectPayment(PdfExportMixin, models.Model):
         )
 
     def validate(self):
-        if self.amount == 0:
-            raise ValidationError({
-                'amount': [_('Amount can not be zero.')]
-            })
-        if self.payment_type and self.amount:
+        errors = self.validation_errors()
+        if self.amount and self.payment_type:
             if self.amount > 0 and self.payment_type not in self.payments:
-                raise ValidationError({
-                    'payment_type': [_('Select one of the payments or use negative amount.')],
-                })
-            if self.amount < 0 and self.payment_type not in self.returns:
-                raise ValidationError({
-                    'payment_type': [_('Select one of the returns or use positive amount.')],
-                })
-
-    def clean_fields(self, exclude=None):
-        super(SubjectPayment, self).clean_fields(exclude)
-        self.validate()
-
-    def save(self, *args, **kwargs):
-        self.validate()
-        super(SubjectPayment, self).save(*args, **kwargs)
+                errors['payment_type'] = [_('Select one of the payments or use negative amount.')]
+            elif self.amount < 0 and self.payment_type not in self.returns:
+                errors['payment_type'] = [_('Select one of the returns or use positive amount.')]
+        if errors:
+            raise ValidationError(errors)
 
 
 @receiver(models.signals.post_save, sender=Transaction)
 def create_order_payment(instance, **kwargs):
     transaction = instance
-    if transaction.variable_symbol:
-        registration = SubjectRegistration.objects.filter(variable_symbol=transaction.variable_symbol).first()
-        if registration:
-            SubjectPayment.objects.create(
-                registration=registration,
-                created=transaction.accounted_date,
-                payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
-                amount=transaction.amount,
-                note=_('imported from account statement'),
-                bankreader_transaction=transaction,
-            )
+    # check variable symbol
+    if not transaction.variable_symbol:
+        return
+    # check closure date (use closure date from cached leprikon site)
+    max_closure_date = LeprikonSite.objects.get_current().max_closure_date
+    if max_closure_date and transaction.accounted_date <= max_closure_date:
+        return
+    # check registration
+    registration = SubjectRegistration.objects.filter(variable_symbol=transaction.variable_symbol).first()
+    if not registration:
+        return
+    # create payment
+    SubjectPayment.objects.create(
+        registration=registration,
+        accounted=transaction.accounted_date,
+        payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
+        amount=transaction.amount,
+        note=_('imported from account statement'),
+        bankreader_transaction=transaction,
+    )
