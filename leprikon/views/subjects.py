@@ -244,7 +244,7 @@ class UserPaymentMixin(object):
     def get_queryset(self):
         return super(UserPaymentMixin, self).get_queryset().filter(
             registration__user=self.request.user
-        ).order_by('-created')
+        ).order_by('-accounted')
 
 
 class SubjectPaymentsListView(UserPaymentMixin, ListView):

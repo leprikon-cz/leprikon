@@ -32,7 +32,7 @@
                 </tr>
                 <tr>
                     <td><para style="left">{% trans 'payment date' %}</para></td>
-                    <td><para style="left">{{ object.created.date }}</para></td>
+                    <td><para style="left">{{ object.accounted.date }}</para></td>
                 </tr>
                 <tr>
                     <td><para style="left">{% trans 'amount' %}</para></td>

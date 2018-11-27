@@ -302,7 +302,7 @@ class CourseRegistration(SubjectRegistration):
             discount = sum(
                 discount.amount
                 for discount in self.all_discounts
-                if discount.period == period and (d is None or discount.created <= d)
+                if discount.period == period and (d is None or discount.accounted <= d)
             )
             yield self.PeriodPaymentStatus(
                 period  = period,

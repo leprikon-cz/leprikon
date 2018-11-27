@@ -12,7 +12,7 @@
     </tr>
 {% for payment in object_list %}
     <tr>
-        <td>{{ payment.created.date }}</td>
+        <td>{{ payment.accounted.date }}</td>
         <td>{{ payment.registration.subject }}, {{ payment.registration.participant }}</td>
         <td>{{ payment.payment_type_label }}</td>
         <td>{{ payment.amount | currency }}</td>

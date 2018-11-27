@@ -17,7 +17,7 @@
     </tr>
     {% for payment in payments %}
     <tr id="report-{{ payment.id }}">
-        <th>{{ payment.created }}</th>
+        <th>{{ payment.accounted }}</th>
         <th>{{ payment.registration }}</th>
         <th class="right">{{ payment.amount | currency }}</th>
     </tr>
