@@ -41,7 +41,6 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 # patch installed packages
 COPY patch /app/patch
 RUN patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
- && patch /usr/local/lib/python3.6/dist-packages/filer/admin/imageadmin.py patch/filer-admin-imageadmin.patch \
  && rm -r patch
 
 # install leprikon
