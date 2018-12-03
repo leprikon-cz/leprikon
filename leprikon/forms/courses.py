@@ -23,7 +23,7 @@ class CourseDiscountAdminForm(forms.ModelForm):
 
     class Meta:
         model = CourseDiscount
-        fields = ['registration', 'period', 'amount', 'explanation']
+        fields = ['registration', 'period', 'accounted', 'amount', 'explanation']
 
     def __init__(self, *args, **kwargs):
         super(CourseDiscountAdminForm, self).__init__(*args, **kwargs)
