@@ -21,6 +21,7 @@ from django.utils.encoding import (
 )
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
@@ -866,7 +867,7 @@ class TransactionMixin(object):
 
 @python_2_unicode_compatible
 class SubjectDiscount(TransactionMixin, models.Model):
-    accounted   = models.DateTimeField(_('accounted time'))
+    accounted   = models.DateTimeField(_('accounted time'), default=now)
     amount      = PriceField(_('discount'), default=0)
     explanation = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
 
@@ -906,7 +907,7 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
     ])
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
-    accounted       = models.DateTimeField(_('accounted time'))
+    accounted       = models.DateTimeField(_('accounted time'), default=now)
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')

@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.utils.timezone import now
 
 
 class Migration(migrations.Migration):
@@ -54,16 +55,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='coursediscount',
             name='accounted',
-            field=models.DateTimeField(verbose_name='accounted time'),
+            field=models.DateTimeField(default=now, verbose_name='accounted time'),
         ),
         migrations.AlterField(
             model_name='eventdiscount',
             name='accounted',
-            field=models.DateTimeField(verbose_name='accounted time'),
+            field=models.DateTimeField(default=now, verbose_name='accounted time'),
         ),
         migrations.AlterField(
             model_name='subjectpayment',
             name='accounted',
-            field=models.DateTimeField(verbose_name='accounted time'),
+            field=models.DateTimeField(default=now, verbose_name='accounted time'),
         ),
     ]
