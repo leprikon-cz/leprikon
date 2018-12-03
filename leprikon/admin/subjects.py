@@ -234,6 +234,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    list_editable   = ('note',)
     list_export     = (
         'id', 'variable_symbol', 'slug', 'created', 'payment_requested', 'approved', 'user', 'subject', 'price',
         'answers', 'cancel_request', 'canceled',
@@ -244,7 +245,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'has_parent1', 'parent1_first_name', 'parent1_last_name', 'parent1_street', 'parent1_city',
         'parent1_postal_code', 'parent1_phone', 'parent1_email',
         'has_parent2', 'parent2_first_name', 'parent2_last_name', 'parent2_street', 'parent2_city',
-        'parent2_postal_code', 'parent2_phone', 'parent2_email',
+        'parent2_postal_code', 'parent2_phone', 'parent2_email', 'note',
     )
     list_filter     = (
         ('subject__school_year',    SchoolYearListFilter),
@@ -335,18 +336,20 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return super(SubjectRegistrationBaseAdmin, self).get_inline_instances(request, obj) if obj else []
 
     def save_form(self, request, form, change):
-        # set price
-        if not form.instance.id:
-            form.instance.price = (
-                form.instance.subject_variant.price
-                if form.instance.subject_variant
-                else form.instance.subject.price
-            )
-        questions   = form.instance.subject.all_questions
-        answers     = {}
-        for q in questions:
-            answers[q.name] = form.cleaned_data['q_' + q.name]
-        form.instance.answers = dumps(answers)
+        # only override this method for change form (not changelist form)
+        if not form.prefix:
+            # set price
+            if not form.instance.id:
+                form.instance.price = (
+                    form.instance.subject_variant.price
+                    if form.instance.subject_variant
+                    else form.instance.subject.price
+                )
+            questions   = form.instance.subject.all_questions
+            answers     = {}
+            for q in questions:
+                answers[q.name] = form.cleaned_data['q_' + q.name]
+            form.instance.answers = dumps(answers)
         return super(SubjectRegistrationBaseAdmin, self).save_form(request, form, change)
 
     def subject_name(self, obj):

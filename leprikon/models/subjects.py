@@ -461,6 +461,7 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
     canceled        = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
     cancel_request  = models.BooleanField(_('cancel request'), default=False)
+    note            = models.CharField(_('note'), max_length=300, blank=True, default='')
 
     MALE = 'm'
     FEMALE = 'f'
