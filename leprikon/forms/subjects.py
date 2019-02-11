@@ -216,8 +216,25 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             (q.name, q.get_field()) for q in self.instance.subject.all_questions
         ))(**kwargs)
 
-        kwargs['prefix'] = 'agreement'
-        self.agreement_form = self.AgreementForm(**kwargs)
+        self.agreement_forms = []
+        for agreement in self.instance.subject.all_registration_agreements:
+            kwargs['prefix'] = 'agreement_%s' % agreement.id
+            form_attributes = {
+                'agreement': agreement,
+                'options': {},
+            }
+            for option in agreement.all_options:
+                option_id = 'option_%s' % option.id
+                form_attributes[option_id] = forms.BooleanField(
+                    label=option.option,
+                    required=option.required,
+                )
+                form_attributes['options'][option_id] = option
+            AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
+            self.agreement_forms.append(AgreementForm(**kwargs))
+
+        kwargs['prefix'] = 'old_agreement'
+        self.old_agreement_form = self.OldAgreementForm(**kwargs)
 
     def is_valid(self):
         return (
@@ -226,7 +243,8 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             self.questions_form.is_valid() and
             self.parent1_select_form.is_valid() and
             self.parent2_select_form.is_valid() and
-            self.agreement_form.is_valid() and
+            (not self.instance.old_registration_agreement or self.old_agreement_form.is_valid()) and
+            all(agreement_form.is_valid() for agreement_form in self.agreement_forms) and
             super(RegistrationForm, self).is_valid()
         )
 
@@ -307,7 +325,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 setattr(parent, attr, getattr(self.instance.parent2, attr))
             parent.save()
 
-    class AgreementForm(FormMixin, forms.Form):
+        for agreement_form in self.agreement_forms:
+            for option_id, checked in agreement_form.cleaned_data.items():
+                if checked:
+                    self.instance.agreement_options.add(agreement_form.options[option_id])
+
+    class OldAgreementForm(FormMixin, forms.Form):
         agreement = forms.BooleanField(label = _('Terms and Conditions agreement'))
 
     class EmailForm(FormMixin, forms.Form):
@@ -369,3 +392,9 @@ class RegistrationAdminForm(forms.ModelForm):
             if has_parent[n]:
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
                     self.fields['parent{}_{}'.format(n + 1, field)].required = True
+
+        # choices for subject_variant
+        self.fields['agreement_options'].widget.choices = tuple(
+            (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
+            for agreement in subject.all_registration_agreements
+        )

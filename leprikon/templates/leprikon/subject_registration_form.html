@@ -143,13 +143,28 @@
         {% include 'leprikon/form_item.html' with item=form.parent2_email %}
     </div>
 
+    {% for agreement_form in form.agreement_forms %}
+        {% if agreement_form.agreement.heading %}
+            <h3>{{ agreement_form.agreement.heading }}</h3>
+        {% endif %}
+
+        {{ agreement_form.agreement.agreement|safe }}
+
+        {% for item in agreement_form %}
+            {% include 'leprikon/form_item_checkbox.html' %}
+        {% endfor %}
+    {% endfor %}
+
+    {# old agreement #}
+    {% if form.instance.old_registration_agreement %}
     <h3>{% trans 'Legal Agreement' %}</h3>
 
-    {{ form.instance.agreement|safe }}
+    {{ form.instance.old_registration_agreement|safe }}
 
-    {% for item in form.agreement_form %}
+    {% for item in form.old_agreement_form %}
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
+    {% endif %}
 
     <!-- SUBMIT -->
     <div class="form-group">

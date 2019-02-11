@@ -22,17 +22,25 @@
         <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="16" alignment="CENTER"/>
         <paraStyle name="subtitle" fontName="DejaVuSans-Bold" fontSize="10" alignment="CENTER"/>
         <paraStyle name="para" fontName="DejaVuSans" fontSize="8"/>
+        <paraStyle name="ballot" fontName="DejaVuSans" fontSize="12"/>
         <paraStyle name="p" fontName="DejaVuSans" fontSize="8" spaceBefore="0.2 cm"/>
         <paraStyle name="li" fontName="DejaVuSans" fontSize="8" spaceBefore="0.2 cm"/>
         <listStyle name="ul" bulletType='bullet' start='•' bulletFontSize='8'/>
         <listStyle name="ol" bulletFontSize='8'/>
-        <blockTableStyle id="myBlockTableStyle">
+        <blockTableStyle id="blocktable">
             <!-- Set fonts -->
             <blockFont name="DejaVuSans" size="8"/>
             <blockTextColor colorName="black"/>
             <blockAlignment value="LEFT"/>
             <blockValign value="TOP"/>
             <lineStyle kind="GRID" colorName="silver"/>
+        </blockTableStyle>
+        <blockTableStyle id="options">
+            <!-- Set fonts -->
+            <blockFont name="DejaVuSans" size="8"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
         </blockTableStyle>
     </stylesheet>
     <story>
@@ -41,7 +49,7 @@
 
         <spacer length="2mm"/>
 
-        <blockTable style="myBlockTableStyle">
+        <blockTable style="blocktable">
             <tr>
                 <td>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Name of {{ subject_type }}{% endblocktrans %}</td>
                 <td><para style="para">{{ object.subject.name }}</para></td>
@@ -85,7 +93,7 @@
 
         <spacer length="2mm"/>
 
-        <blockTable style="myBlockTableStyle">
+        <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'Full name' %}</td>
                 <td><para style="para">{{ object.participant.full_name }}</para></td>
@@ -130,7 +138,7 @@
             {% endfor %}
         </blockTable>
 
-        <blockTable style="myBlockTableStyle">
+        <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'Health' %}</td>
             </tr>
@@ -158,7 +166,7 @@
 
         <spacer length="{% if forloop.first %}2{% else %}8{% endif %}mm"/>
 
-        <blockTable style="myBlockTableStyle">
+        <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'Full name' %}</td>
                 <td><para style="para">{{ parent.full_name }}</para></td>
@@ -177,7 +185,26 @@
 
         <spacer length="1cm"/>
 
-        {{ object.agreement|html2rml }}
+        {% for agreement in object.subject.all_registration_agreements %}
+            {% if agreement.heading %}
+                <para style="subtitle">{{ agreement.heading }}</para>
+            {% endif %}
+            {{ agreement.agreement|html2rml }}
+            <blockTable style="options" colWidths="1cm,15cm">
+                {% for option in agreement.all_options %}
+                <tr>
+                    <td>
+                        <para style="ballot">
+                            {% if option.required or option in object.all_agreement_options %}☑{% else %}☐{% endif %}
+                        </para>
+                    </td>
+                    <td>{{ option.option|html2rml }}</td>
+                </tr>
+                {% endfor %}
+            </blockTable>
+        {% endfor %}
+
+        {{ object.old_registration_agreement|html2rml }}
 
         <spacer length="1cm"/>
 

@@ -9,6 +9,7 @@ from localflavor.generic.models import BICField, IBANField
 
 from ..conf import settings
 from .account import AccountClosure
+from .agreements import Agreement
 from .fields import EmailField, PostalCodeField
 from .printsetup import PrintSetup
 from .utils import BankAccount
@@ -48,11 +49,18 @@ class LeprikonSite(Site):
     bic             = BICField(_('BIC (SWIFT)'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                          verbose_name=_('bill print setup'), blank=True, null=True)
-    registration_agreement  = HTMLField(_('registration agreement'), blank=True, default='')
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     user_agreement  = HTMLField(_('user agreement'), blank=True, default='')
     user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
+    old_registration_agreement = HTMLField(
+        _('old registration agreement'), blank=True, default='',
+        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
+    )
+    registration_agreements = models.ManyToManyField(
+        Agreement, verbose_name=_('registration agreements'), blank=True, related_name='+',
+        help_text=_('Add legal agreements for the registration form.'),
+    )
 
     objects = LeprikonSiteManager()
 

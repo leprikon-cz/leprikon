@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.account import AccountClosure
 from ..models.agegroup import AgeGroup
+from ..models.agreements import Agreement
 from ..models.citizenship import Citizenship
 from ..models.courses import (
     Course, CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
@@ -30,6 +31,7 @@ from ..models.subjects import (
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .account import AccountClosureAdmin
 from .agegroup import AgeGroupAdmin
+from .agreements import AgreementAdmin
 from .citizenship import CitizenshipAdmin
 from .courses import (
     CourseAdmin, CourseDiscountAdmin, CourseJournalEntryAdmin,
@@ -62,6 +64,7 @@ admin.site.site_title = _('Leprikon administration')
 admin.site.register(AccountClosure,             AccountClosureAdmin)
 
 admin.site.register(AgeGroup,                   AgeGroupAdmin)
+admin.site.register(Agreement,                  AgreementAdmin)
 admin.site.register(Citizenship,                CitizenshipAdmin)
 admin.site.register(LeprikonSite,               LeprikonSiteAdmin)
 admin.site.register(Place,                      PlaceAdmin)

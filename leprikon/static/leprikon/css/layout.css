@@ -161,7 +161,14 @@ img.right {
 }
 
 input.form-control[type="checkbox"] {
-    width: auto;
+    width: unset;
+}
+
+.checkbox input.form-control[type="checkbox"] {
+    height: unset;
+    position: relative;
+    display: unset;
+    margin-left: unset;
 }
 
 /* do not show radio inputs in multiselect */

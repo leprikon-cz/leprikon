@@ -3,6 +3,7 @@ import logging
 from collections import OrderedDict
 from email.mime.image import MIMEImage
 from io import BytesIO
+from itertools import chain
 from json import loads
 
 import qrcode
@@ -33,6 +34,7 @@ from ..utils import (
     comma_separated, currency, get_birth_date, localeconv, spayd,
 )
 from .agegroup import AgeGroup
+from .agreements import Agreement, AgreementOption
 from .citizenship import Citizenship
 from .department import Department
 from .fields import (
@@ -73,7 +75,14 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
-    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
+    old_registration_agreement = HTMLField(
+        _('old registration agreement'), blank=True, default='',
+        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
+    )
+    registration_agreements = models.ManyToManyField(
+        Agreement, verbose_name=_('additional registration agreements'), blank=True, related_name='+',
+        help_text=_('Add additional legal agreements for the registration form.'),
+    )
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
@@ -195,7 +204,14 @@ class Subject(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                                          related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
-    agreement       = HTMLField(_('registration agreement'), blank=True, default='')
+    old_registration_agreement = HTMLField(
+        _('old registration agreement'), blank=True, default='',
+        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
+    )
+    registration_agreements = models.ManyToManyField(
+        Agreement, verbose_name=_('additional registration agreements'), blank=True, related_name='+',
+        help_text=_('Add additional legal agreements for the registration form.'),
+    )
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
@@ -318,13 +334,22 @@ class Subject(models.Model):
     def all_inactive_registrations(self):
         return list(self.inactive_registrations.all())
 
-    def get_agreement(self):
+    def get_old_registration_agreement(self):
         return (
-            self.agreement or
-            self.subject_type.agreement or
-            LeprikonSite.objects.get_current().registration_agreement or
-            _('I confirm that I have read, understood and agree with the Terms and Conditions. '
-              'The terms and conditions are available on the web.')
+            self.old_registration_agreement or
+            self.subject_type.old_registration_agreement or
+            LeprikonSite.objects.get_current().old_registration_agreement
+        )
+
+    @cached_property
+    def all_registration_agreements(self):
+        return sorted(
+            chain(
+                self.registration_agreements.all(),
+                self.subject_type.registration_agreements.all(),
+                LeprikonSite.objects.get_current().registration_agreements.all(),
+            ),
+            key=lambda agreement: agreement.order
         )
 
 
@@ -505,6 +530,8 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     parent2_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
     parent2_email       = EmailField(_('email address'),               blank=True, null=True)
 
+    agreement_options   = models.ManyToManyField(AgreementOption, blank=True)
+
     variable_symbol     = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
 
     class Meta:
@@ -573,6 +600,10 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         else:
             return None
     parent2.short_description = _('second parent')
+
+    @cached_property
+    def all_agreement_options(self):
+        return list(self.agreement_options.all())
 
     @cached_property
     def all_attachments(self):
@@ -701,8 +732,8 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             super(SubjectRegistration, self).save(*args, **kwargs)
 
     @cached_property
-    def agreement(self):
-        return self.subject.get_agreement()
+    def old_registration_agreement(self):
+        return self.subject.get_old_registration_agreement()
 
     pdf_export = 'registration'
 
