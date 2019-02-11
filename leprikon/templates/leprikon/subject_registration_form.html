@@ -95,7 +95,7 @@
     {% include 'leprikon/form_item.html' with item=form.participant_city %}
     {% include 'leprikon/form_item.html' with item=form.participant_postal_code %}
     {% include 'leprikon/form_item.html' with item=form.participant_citizenship %}
-    <div id="participant_contact">
+    <div id="participant_contact" class="hidden">
     {% include 'leprikon/form_item.html' with item=form.participant_phone %}
     {% include 'leprikon/form_item.html' with item=form.participant_email %}
     </div>
@@ -198,9 +198,11 @@ function changedBirthNum() {
     if (age < 18) {
         $('#parent1_switch .form-group').addClass('required');
         $('#participant_contact .form-group').removeClass('required');
+        $('#participant_contact').addClass('hidden');
     } else {
         $('#parent1_switch .form-group').removeClass('required');
         $('#participant_contact .form-group').addClass('required');
+        $('#participant_contact').removeClass('hidden');
     }
 }
 

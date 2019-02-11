@@ -197,6 +197,10 @@ input.form-control[type="checkbox"] {
     cursor: pointer;
 }
 
+.hidden {
+    display: none;
+}
+
 .line-through {
     text-decoration: line-through;
 }
