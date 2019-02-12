@@ -9,7 +9,7 @@ backcall==0.1.0           # via ipython
 certifi==2018.11.29       # via requests
 chardet==3.0.4            # via requests
 cmsplugin-filer==1.1.3
-decorator==4.3.0          # via ipython, traitlets
+decorator==4.3.2          # via ipython, traitlets
 defusedxml==0.5.0         # via python3-openid, social-auth-core
 django-appconf==1.0.2     # via cmsplugin-filer
 django-bankreader==0.2.5
@@ -17,11 +17,11 @@ django-classy-tags==0.8.0  # via django-cms, django-sekizai
 django-cms==3.5.3
 django-countries==5.3.2
 django-excel==0.0.10
-django-filer==1.4.0
+django-filer==1.4.4
 django-formtools==2.1     # via django-cms
 django-ganalytics==0.7.0
 django-haystack==2.7.0
-django-js-asset==1.1.0    # via django-mptt
+django-js-asset==1.2.1    # via django-mptt
 django-localflavor==1.6.2
 django-mptt==0.9.1        # via django-filer
 django-polymorphic==2.0.3  # via django-filer
@@ -31,56 +31,56 @@ django-staticfiles-downloader==0.1.5
 django-template-admin==1.0.2
 django-treebeard==4.3     # via django-cms
 django-verified-email-field==1.5.1
-django==1.11.16
-djangocms-admin-style==1.2.9  # via django-cms
-djangocms-attributes-field==0.4.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
+django==1.11.20
+djangocms-admin-style==1.3.0  # via django-cms
+djangocms-attributes-field==1.0.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
 djangocms-googlemap==1.2.0
-djangocms-link==2.2.1
+djangocms-link==2.3.1
 djangocms-snippet==2.1.0
 djangocms-style==2.1.0
-djangocms-text-ckeditor==3.6.1
-djangocms-video==2.1.0
-easy-thumbnails==2.5      # via cmsplugin-filer, django-filer
+djangocms-text-ckeditor==3.7.0
+djangocms-video==2.1.1
+easy-thumbnails==2.6      # via cmsplugin-filer, django-filer
 html2rml==0.3.0
 html5lib==1.0.1           # via djangocms-text-ckeditor
-idna==2.7                 # via requests
+idna==2.8                 # via requests
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.2.0
-jedi==0.13.1              # via ipython
-lml==0.0.7                # via pyexcel, pyexcel-io
-mysqlclient==1.3.13
-oauthlib==2.1.0           # via requests-oauthlib, social-auth-core
-parso==0.3.1              # via jedi
+jedi==0.13.2              # via ipython
+lml==0.0.9                # via pyexcel, pyexcel-io
+mysqlclient==1.4.2
+oauthlib==3.0.1           # via requests-oauthlib, social-auth-core
+parso==0.3.4              # via jedi
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.5        # via ipython
-pillow==5.3.0             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
-prompt-toolkit==2.0.7     # via ipython
-psycopg2-binary==2.7.6.1
+pillow==5.4.1             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
+prompt-toolkit==2.0.8     # via ipython
+psycopg2-binary==2.7.7
 ptyprocess==0.6.0         # via pexpect
-pyexcel-io==0.5.10        # via pyexcel, pyexcel-xlsxw
+pyexcel-io==0.5.13        # via pyexcel, pyexcel-xlsxw
 pyexcel-webio==0.1.4      # via django-excel
 pyexcel-xlsxw==0.4.2
-pyexcel==0.5.9.1          # via django-excel, pyexcel-webio
-pygments==2.3.0           # via ipython
+pyexcel==0.5.10           # via django-excel, pyexcel-webio
+pygments==2.3.1           # via ipython
 pyicu==2.2
-pyjwt==1.6.4              # via social-auth-core
+pyjwt==1.7.1              # via social-auth-core
 pypdf2==1.26.0
 python-memcached==1.59
 python3-openid==3.1.0     # via social-auth-core
-pytz==2018.7              # via django, django-staticfiles-downloader
-qrcode==6.0               # via django-qr-code
-raven==6.9.0
-reportlab==3.5.12
-requests-oauthlib==1.0.0  # via social-auth-core
-requests==2.20.1          # via requests-oauthlib, social-auth-core
-six==1.11.0               # via html5lib, prompt-toolkit, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
+pytz==2018.9              # via django, django-staticfiles-downloader
+qrcode==6.1               # via django-qr-code
+raven==6.10.0
+reportlab==3.5.13
+requests-oauthlib==1.2.0  # via social-auth-core
+requests==2.21.0          # via requests-oauthlib, social-auth-core
+six==1.12.0               # via html5lib, prompt-toolkit, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0
-social-auth-core==2.0.0   # via social-auth-app-django
-texttable==1.5.0          # via pyexcel
+social-auth-core==3.0.0   # via social-auth-app-django
+texttable==1.6.0          # via pyexcel
 traitlets==4.3.2          # via ipython
 unidecode==1.0.23         # via django-filer
 urllib3==1.24.1           # via requests
-uwsgi==2.0.17.1
+uwsgi==2.0.18
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
 xlsxwriter==0.9.3         # via pyexcel-xlsxw
