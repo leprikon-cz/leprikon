@@ -26,7 +26,7 @@ class Event(Subject):
 
     class Meta:
         app_label           = 'leprikon'
-        ordering            = ('-start_date', 'start_time')
+        ordering            = ('start_date', 'start_time')
         verbose_name        = _('event')
         verbose_name_plural = _('events')
 
