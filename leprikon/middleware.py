@@ -39,6 +39,8 @@ class school_year(object):
 class LeprikonMiddleware(object):
     user_agreement_url = reverse_lazy('leprikon:user_agreement')
     user_email_url = reverse_lazy('leprikon:user_email')
+    user_login_url = reverse_lazy('leprikon:user_login')
+    user_logout_url = reverse_lazy('leprikon:user_logout')
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -79,7 +81,11 @@ class LeprikonMiddleware(object):
 
         # check user email
         if request.user.is_authenticated() and not request.user.email:
-            if request.path != self.user_email_url:
+            if request.path not in (
+                self.user_email_url,
+                self.user_login_url,
+                self.user_logout_url,
+            ):
                 return redirect_to_login(
                     request.path,
                     login_url=self.user_email_url,
