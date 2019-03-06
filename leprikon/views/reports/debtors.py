@@ -4,10 +4,10 @@ from django.core.urlresolvers import reverse_lazy as reverse
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 
-from . import ReportBaseView
 from ...forms.reports.debtors import DebtorsForm
 from ...models.courses import CourseRegistration
 from ...models.events import EventRegistration
+from . import ReportBaseView
 
 
 class ReportDebtorsView(ReportBaseView):

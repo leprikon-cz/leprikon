@@ -6,7 +6,6 @@ from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from . import ReportBaseView
 from ...forms.reports.events import (
     EventPaymentsForm, EventPaymentsStatusForm, EventStatsForm,
 )
@@ -15,6 +14,7 @@ from ...models.citizenship import Citizenship
 from ...models.events import Event, EventRegistration
 from ...models.roles import Participant
 from ...models.subjects import SubjectPayment, SubjectType
+from . import ReportBaseView
 
 
 class ReportEventPaymentsView(ReportBaseView):

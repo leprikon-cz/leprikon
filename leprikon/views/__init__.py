@@ -2,11 +2,11 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.views.decorators.csrf import csrf_exempt
 
+from ..conf import settings
 from . import (
     courses, leaders, messages, parents, participants, registrations, reports,
     schoolyear, subjects, summaries, terms_conditions, timesheets, user,
 )
-from ..conf import settings
 from .reports import (
     courses as reports_courses, debtors as reports_debtors,
     events as reports_events,
