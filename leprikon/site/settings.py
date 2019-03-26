@@ -163,10 +163,9 @@ if DATABASES['default']['ENGINE'].endswith('mysql'):
         'init_command': (
             'ALTER DATABASE `{name}` DEFAULT CHARACTER SET utf8 COLLATE {collate}; '
             'SET default_storage_engine=INNODB; SET sql_mode=STRICT_TRANS_TABLES; '
-            'ALTER TABLE `leprikon_subject` MODIFY `name` varchar(150) COLLATE utf8_czech_ci NOT NULL; '
             .format(
                 name=DATABASES['default']['NAME'],
-                collate=os.environ.get('DATABASE_COLLATE', 'utf8_bin'),
+                collate=os.environ.get('DATABASE_COLLATE', 'utf8_czech_ci'),
             )
         )
     }
