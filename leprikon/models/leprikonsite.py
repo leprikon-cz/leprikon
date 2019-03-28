@@ -25,7 +25,7 @@ class LeprikonSiteManager(models.Manager):
             lookup_kwargs = {}
             if getattr(settings, 'SITE_ID', ''):
                 lookup_kwargs['pk'] = settings.SITE_ID
-            self._cached_site = self.get(**lookup_kwargs)
+            self._cached_site = self.get_or_create(**lookup_kwargs)[0]
             self._cache_timestamp = now
         return self._cached_site
 
