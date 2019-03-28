@@ -51,6 +51,7 @@ RUN pip install --no-cache-dir /src \
  && rm -r /src \
  && mkdir -p data htdocs/media htdocs/static run \
  && leprikon collectstatic --no-input \
+ && rm data/db.sqlite3 \
  && chown www-data:www-data data htdocs/media run
 
 CMD ["/app/bin/run-supervisord"]
