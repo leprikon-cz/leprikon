@@ -34,7 +34,7 @@ class LeprikonConfig(AppConfig):
                 in_navigation=True,
                 navigation_extenders='LeprikonMenu',
                 published=True,
-            )
+            ).set_as_homepage()
             menu_pool.clear()
         except:
             pass
