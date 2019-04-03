@@ -245,6 +245,21 @@ td.message-subject a {
     padding:   15px;
 }
 
+.loader {
+  border: 16px solid;
+  border-top: 16px solid;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media print {
     #cms-top,
     #header, #messages, #sidebar,

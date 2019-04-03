@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
-if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
-    su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
-fi
-
 # configure and run supervisord with components specified
 # in environment variable SUPERVISORD_RUN (space separated).
 # Runs all components (*) by default.

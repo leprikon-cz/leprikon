@@ -148,3 +148,8 @@ input.form-control[type="checkbox"] {
 .red {
     color: #e00;
 }
+
+.loader {
+  border-color: #f3f3f3;
+  border-top-color: #0a0;
+}

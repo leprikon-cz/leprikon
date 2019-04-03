@@ -2,7 +2,11 @@
 
 # run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
 if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
-    su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
+    if su -s /bin/bash -c 'exec leprikon migrate --no-input' www-data; then
+        touch .migrated
+    else
+        exit 1
+    fi
 fi
 
 # ensure ownership of likely mounted directory

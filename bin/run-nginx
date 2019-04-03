@@ -1,9 +1,4 @@
 #!/bin/bash
 
-# run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
-if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
-    su -s /bin/bash -c 'leprikon migrate --no-input' www-data && touch .migrated
-fi
-
 # run nginx server
 exec nginx -g "daemon off;" -c "${NGINX_CONF:-/app/conf/nginx.conf}"
