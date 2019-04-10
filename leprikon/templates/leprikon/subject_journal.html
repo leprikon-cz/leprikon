@@ -15,6 +15,9 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="{% static 'leprikon/lib/bootstrap/css/bootstrap.min.css' %}"/>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'leprikon/lib/font-awesome/css/all.min.css' %}"/>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -28,8 +31,10 @@
             padding: 10px;
         }
         .paper {
+            clear: both;
             background: white;
             margin: 20px auto;
+            padding-top: 15px;
             padding-bottom: 25px;
             font-size: 9pt;
         }
@@ -72,6 +77,7 @@
         }
         .btn {
             float: right;
+            margin-bottom: 5px;
         }
         @media print {
             html, body, .paper {
@@ -101,7 +107,7 @@
 <body>
     {% if not admin %}
     <div class="container noprint">
-        <a class="btn btn-default" href="{% url_back %}" title="{% trans 'back' %}">
+        <a class="btn btn-light" href="{% url_back %}" title="{% trans 'back' %}">
             &#x2716;
         </a>
     </div>
@@ -109,11 +115,11 @@
     {% if messages %}
     <div class="container noprint">
         {% for message in messages %}
-        <div class="alert alert-{{ message.level_tag }} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="zavřít">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
+        <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
             {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'close' %}">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         {% endfor %}
     </div>
@@ -131,7 +137,7 @@
                     <div>
                         {% if not admin %}
                         <a class="noprint" href="{% url_with_back 'leprikon:journalentry_update' entry.id %}" title="{% trans 'edit' %}">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            <i class="fas fa-edit" aria-hidden="true"></i>
                         </a>
                         {% endif %}
                         {{ entry.date }}
@@ -142,7 +148,7 @@
                 <th class="vertical">
                     <div>
                         <a class="noprint" href="{% url_with_back 'leprikon:journalentry_create' subject.id %}">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            <i class="fas fa-plus" aria-hidden="true"></i>
                             {% trans 'add entry' %}
                         </a>
                         &nbsp;
@@ -211,8 +217,8 @@
                 <td>{{ entry.all_participants|length }}</td>
                 <td>
                     {% if not admin %}
-                    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journalentry_update' entry.id %}">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:journalentry_update' entry.id %}">
+                        <i class="fas fa-edit" aria-hidden="true"></i>
                         {% trans 'edit' %}
                     </a>
                     {% endif %}
@@ -223,8 +229,8 @@
             {% if not admin %}
             <tr class="noprint">
                 <td colspan="6">
-                    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journalentry_create' subject.id %}">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:journalentry_create' subject.id %}">
+                        <i class="fas fa-plus" aria-hidden="true"></i>
                         {% trans 'add entry' %}
                     </a>
                 </td>
@@ -237,14 +243,15 @@
 
     <div class="container paper">
 
+        {% if not admin %}
+        <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+            <i class="fas fa-edit" aria-hidden="true"></i>
+            {% trans 'edit' %}
+        </a>
+        {% endif %}
+
         <h1>
             {% trans 'Risks' %}
-            {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                {% trans 'edit' %}
-            </a>
-            {% endif %}
         </h1>
 
         <table id="risks">
@@ -259,8 +266,8 @@
         <h1>
             {% trans 'Plan for the activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+                <i class="fas fa-edit" aria-hidden="true"></i>
                 {% trans 'edit' %}
             </a>
             {% endif %}
@@ -278,8 +285,8 @@
         <h1>
             {% trans 'Evaluation of the activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+                <i class="fas fa-edit" aria-hidden="true"></i>
                 {% trans 'edit' %}
             </a>
             {% endif %}
@@ -296,7 +303,7 @@
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="{% static 'leprikon/lib/jquery.min.js' %}"></script>
+    <script src="{% static 'leprikon/lib/jquery-3.3.1.min.js' %}"></script>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'leprikon/lib/bootstrap/js/bootstrap.min.js' %}"></script>

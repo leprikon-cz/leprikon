@@ -4,10 +4,6 @@
     border-color: #57340a;
 }
 
-#header a {
-    color: #008;
-}
-
 #body, html {
     background: #eefff8;
     color: 030;
@@ -53,16 +49,26 @@ a {
     background-color: #fff;
 }
 
-a.list-group-item {
+.list-group-item,
+.dropdown-item,
+.page-item {
     color: #030;
+    background-color: #fff;
     border-color: #277616;
 }
 
-a.list-group-item:hover, a.list-group-item:focus {
+.list-group-item:hover, .list-group-item:focus,
+.dropdown-item:hover, .dropdown-item:focus,
+.page-item:hover, .page-item:focus {
     background-color: #eeffe8;
+    color: #030;
+    text-decoration: none;
 }
 
-a.list-group-item.active, a.list-group-item.active:hover, a.list-group-item.active:focus {
+.dropdown-item.active, .dropdown-item.active:hover, .dropdown-item.active:focus,
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus,
+.page-item.active, .page-item.active:hover, .page-item.active:focus,
+a.page-item.active:not([href]):not([tabindex]) {
     color: #f8e713;
     border-color: #277616;
     background-color: #277616;
@@ -102,14 +108,23 @@ h1 {
     background-color: #378626;
 }
 
-.btn-default {
-    border-color: #277616;
+.btn-secondary,
+.show > .btn-secondary.dropdown-toggle {
     background-color: #fff;
+    border-color: #277616;
+    color: #000;
 }
 
-.btn-default:hover, .btn-default:focus, .btn-default:active {
-    border-color: #277616;
+.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active {
     background-color: #efe;
+    border-color: #277616;
+    color: #000;
+}
+
+.input-group-text {
+    background-color: #eefff8;
+    border-color: #277616;
+    color: #000;
 }
 
 .form-control,
@@ -135,10 +150,6 @@ input.form-control[type="checkbox"] {
 
 .alert-warning .close {
     color: #930;
-}
-
-.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
-    background-color: #277616;
 }
 
 .green {

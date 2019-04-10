@@ -7,8 +7,8 @@
 
 {% if not object.submitted %}
 <div class="right">
-    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
-        <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+    <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
+        <i class="fas fa-paper-plane" aria-hidden="true"></i>
         {% trans 'submit' %}
     </a>
 </div>
@@ -33,13 +33,13 @@
             <td>{{ entry.group.name }}</td>
             <td>{{ entry.description | safe }}</td>
             <td>
-                <a class="btn btn-primary btn-xs" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
-                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                <a class="btn btn-primary btn-sm" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
                     {% trans 'edit' %}
                 </a>
                 {% if not timesheet.submitted %}
-                <a class="btn btn-warning btn-xs" href="{{ entry.get_delete_url }}?{% param_back %}={% current_url %}">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                <a class="btn btn-warning btn-sm" href="{{ entry.get_delete_url }}?{% param_back %}={% current_url %}">
+                    <span aria-hidden="true">&times;</span>
                     {% trans 'delete' %}
                 </a>
                 {% endif %}

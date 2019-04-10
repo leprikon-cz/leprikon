@@ -1,0 +1,16 @@
+{% for subwidget in widget.subwidgets %}
+    {% if forloop.first %}
+        {% include subwidget.template_name with widget=subwidget %}
+        <button class="btn btn-secondary" type="button" 
+            onclick="send_verification_code('{{ subwidget.attrs.id }}', '{{ send_url|escapejs }}', '{{ sent_message|escapejs }}')">
+            {{ send_label }}
+        </button>
+    {% else %}
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-prepend input-group-text">{{ code_label }}:</span>
+            </div>
+            {% include subwidget.template_name with widget=subwidget %}
+        </div>
+    {% endif %}
+{% endfor %}

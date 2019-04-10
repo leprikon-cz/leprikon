@@ -5,52 +5,47 @@
 
 <h1>{% block title %}{% trans 'Login' %}{% endblock %}</h1>
 
-<div class="col-sm-6"><div class="col-md-offset-1 col-md-10">
-    <form action="" method="post">{% csrf_token %}
-        {% for item in form %}
-        <div class="form-group {{ item.css_classes }}">
-            <label for="{{ item.id_for_label }}" class="control-label">
-                {{ item.label }}
-            </label>
-            {{ item }}
-        </div>
-        {% endfor %}
-        <div class="form-group">
-            <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
-        </div>
-    </form>
-</div></div>
+<div class="row">
+    <div class="col-md-6"><div class="offset-lg-1 col-lg-10">
+        <form action="" method="post">{% csrf_token %}
+            {% for item in form %}
+            <div class="form-group {{ item.css_classes }}">
+                <label for="{{ item.id_for_label }}" class="col-form-label">
+                    {{ item.label }}
+                </label>
+                {{ item }}
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
+            </div>
+        </form>
+    </div></div>
 
-<div class="col-sm-6"><div class="col-md-offset-1 col-md-10">
-    <h2>{% trans 'Other options' %}</h2>
-    <div class="form-group">
-        <a class="btn btn-block btn-primary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
-            {% trans 'Create account' %}
-        </a>
-    </div>
-    {% if 'google-oauth2' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
-            <i class="fa fa-google"></i>
-            {% trans 'Log in with Google' %}
-        </a>
-    </div>
-    {% elif 'google-plus' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
-            <i class="fa fa-google"></i>
-            {% trans 'Log in with Google' %}
-        </a>
-    </div>
-    {% endif %}
-    {% if 'facebook' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
-            <i class="fa fa-facebook"></i>
-            {% trans 'Log in with Facebook' %}
-        </a>
-    </div>
-    {% endif %}
-</div></div>
+    <div class="col-md-6"><div class="offset-lg-1 col-lg-10">
+        <h2>{% trans 'Other options' %}</h2>
+        <div class="form-group">
+            <a class="btn btn-block btn-primary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
+                {% trans 'Create account' %}
+            </a>
+        </div>
+        {% if 'google-oauth2' in backends.not_associated %}
+        <div class="form-group">
+            <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
+                <i class="fab fa-google"></i>
+                {% trans 'Log in with Google' %}
+            </a>
+        </div>
+        {% endif %}
+        {% if 'facebook' in backends.not_associated %}
+        <div class="form-group">
+            <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
+                <i class="fab fa-facebook"></i>
+                {% trans 'Log in with Facebook' %}
+            </a>
+        </div>
+        {% endif %}
+    </div></div>
+</div>
 
 {% endblock %}

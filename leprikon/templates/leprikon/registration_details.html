@@ -7,55 +7,55 @@
     <div class="box-content">
         {% for participant in reg.all_participants %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Participant' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Participant' %}:</label>
+                <div class="col-md-8">
                     {{ participant.full_name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Birth date' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Birth date' %}:</label>
+                <div class="col-md-8">
                     {{ participant.birth_date }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Age group' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Age group' %}:</label>
+                <div class="col-md-8">
                     {{ participant.age_group }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Address' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Address' %}:</label>
+                <div class="col-md-8">
                     {{ participant.address }}
                 </div>
             </div>
             {% if participant.contact %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Contact' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Contact' %}:</label>
+                <div class="col-md-8">
                     {{ participant.contact }}
                 </div>
             </div>
             {% endif %}
             {% if participant.age_group.require_school %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'School' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'School' %}:</label>
+                <div class="col-md-8">
                     {{ participant.school_and_class }}
                 </div>
             </div>
             {% endif %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Health' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Health' %}:</label>
+                <div class="col-md-8">
                     {{ participant.health | linebreaks }}
                 </div>
             </div>
             {% for parent in participant.parents %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Parent' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Parent' %}:</label>
+                <div class="col-md-8">
                     {{ parent.full_name }}, {{ parent.address }}<br />
                     {{ parent.contact }}
                 </div>
@@ -63,8 +63,8 @@
             {% endfor %}
             {% for qa in participant.get_questions_and_answers %}
             <div class="row">
-                <label class="col-sm-4">{{ qa.question }}:</label>
-                <div class="col-sm-8">{{ qa.answer }}</div>
+                <label class="col-md-4">{{ qa.question }}:</label>
+                <div class="col-md-8">{{ qa.answer }}</div>
             </div>
             {% endfor %}
             {% include 'leprikon/registration_participant_presence.html' %}
@@ -72,56 +72,56 @@
 
         {% if reg.all_group_members %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group name' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Group name' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Target group' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Target group' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.target_group }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Contact person' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Contact person' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.full_name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Address' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Address' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.address }}
                 </div>
             </div>
             {% if reg.group.contact %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Contact' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Contact' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.contact }}
                 </div>
             </div>
             {% endif %}
             {% if reg.group.target_group.require_school %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'School' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'School' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.school_and_class }}
                 </div>
             </div>
             {% endif %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group members' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Group members' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group_members_list_html }}
                 </div>
             </div>
         {% endif %}
 
         <div class="row">
-            <label class="col-sm-4">{% trans 'Legal agreements' %}:</label>
-            <div class="col-sm-8">
+            <label class="col-md-4">{% trans 'Legal agreements' %}:</label>
+            <div class="col-md-8">
                 {% for agreement in reg.all_agreements %}
                     <strong>{{ agreement.name }}:</strong><br/>
                     {% for option in agreement.all_options %}

@@ -3,10 +3,6 @@ html {
     min-height: 100%;
 }
 
-.navbar {
-    margin-bottom: 0;
-}
-
 #header {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -147,17 +143,21 @@ img.right {
     margin-bottom: 15px;
 }
 
+.form-horizontal .col-form-label {
+    text-align: right;
+}
+
 .form-group label {
     font-weight: normal;
 }
 
-.form-group.required > .control-label {
+.form-group.required > .col-form-label {
     font-weight: bold;
     padding-right: 10px;
     position: relative;
 }
 
-.form-group.required > .control-label:after {
+.form-group.required > .col-form-label:after {
     color:red;
     content:"*";
     position: absolute;
@@ -177,8 +177,11 @@ input.form-control[type="checkbox"] {
 }
 
 /* do not show radio inputs in multiselect */
-.radio input {
+.multiselect-container .form-check-input {
     display: none;
+}
+.multiselect-container .form-check {
+    padding-left: 0;
 }
 
 .list-group .list-group {

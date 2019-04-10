@@ -3,15 +3,15 @@
     <div class="box-header">
         <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.subject.name }}{% if reg.canceled %}</s>{% endif %}</strong>
         <small>({% trans 'registration number' %}: {{ reg.variable_symbol }})</small>
-        <a class="btn btn-primary btn-xs" href="{{ reg.get_absolute_url }}">
-            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+        <a class="btn btn-primary btn-sm" href="{{ reg.get_absolute_url }}">
+            <i class="fas fa-download" aria-hidden="true"></i>
             {% trans 'download' %}
         </a>
         {% if not reg.canceled and not reg.cancel_request %}
-        <a class="btn btn-primary btn-xs"
+        <a class="btn btn-primary btn-sm"
             href="{% url_with_back 'leprikon:registration_cancel' reg.id %}"
             title="{% trans 'cancel registration' %}">
-            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            <span aria-hidden="true">&times;</span>
             {% trans 'cancel' %}
         </a>
         {% endif %}
@@ -19,20 +19,20 @@
 
     <div class="box-content">
         <div class="row">
-            <label class="col-sm-4">{{ reg.subject.subject_type.name | first_upper }}:</label>
-            <div class="col-sm-8">
+            <label class="col-md-4">{{ reg.subject.subject_type.name | first_upper }}:</label>
+            <div class="col-md-8">
                 <a href="{{ reg.subject.get_absolute_url }}">{{ reg.subject.name }}</a>
             </div>
         </div>
         <div class="row">
-            <label class="col-sm-4">{% trans 'Date and time of registration' %}:</label>
-            <div class="col-sm-8">
+            <label class="col-md-4">{% trans 'Date and time of registration' %}:</label>
+            <div class="col-md-8">
                 {{ reg.created }}
             </div>
         </div>
         <div class="row">
-            <label class="col-sm-4">{% trans 'Status' %}:</label>
-            <div class="col-sm-8">
+            <label class="col-md-4">{% trans 'Status' %}:</label>
+            <div class="col-md-8">
                 {% if reg.canceled %}
                     {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
                 {% elif reg.cancel_request %}
@@ -47,15 +47,15 @@
 
         {% for participant in reg.all_participants %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Participant' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Participant' %}:</label>
+                <div class="col-md-8">
                     {{ participant.full_name }}
                 </div>
             </div>
             {% if participant.parents %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Parents' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Parents' %}:</label>
+                <div class="col-md-8">
                     {{ participant.parents | comma_separated }}
                 </div>
             </div>
@@ -65,20 +65,20 @@
 
         {% if reg.all_group_members %}
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group name' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Group name' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Contact person' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Contact person' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group.full_name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group members' %}:</label>
-                <div class="col-sm-8">
+                <label class="col-md-4">{% trans 'Group members' %}:</label>
+                <div class="col-md-8">
                     {{ reg.group_members_list_html }}
                 </div>
             </div>

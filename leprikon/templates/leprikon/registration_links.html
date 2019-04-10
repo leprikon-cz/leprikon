@@ -1,11 +1,11 @@
 {% load i18n leprikon_tags %}
 
 {% for reg in registrations %}
-<a class="btn btn-default btn-xs" href="{% url 'leprikon:registration_list' %}#{{ reg.slug }}">{% trans 'registration' %}: {{ reg }}</a>
+<a class="btn btn-secondary btn-sm" href="{% url 'leprikon:registration_list' %}#{{ reg.slug }}">{% trans 'registration' %}: {{ reg }}</a>
 {% endfor %}
 
 {% if subject.registration_allowed %}
-    <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
+    <a href="{{ registration_url }}" class="btn btn-primary btn-sm">
         {% trans 'register' %}
     </a>
 {% else %}

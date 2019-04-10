@@ -4,8 +4,8 @@
     <div class="box-header">
         <a href="{% url 'leprikon:timesheet_detail' object.id %}?page={{ page_obj.number }}"><strong>{{ object.period.name }}</strong></a>
         {% if not object.submitted %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
-            <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+        <a class="btn btn-primary btn-sm" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
             {% trans 'submit' %}
         </a>
         {% endif %}
@@ -14,8 +14,8 @@
     <div class="box-content">
         {% for group in object.groups %}
         <div class="row">
-            <label class="col-sm-4">{{ group.name }}</label>
-            <div class="col-sm-8">
+            <label class="col-md-4">{{ group.name }}</label>
+            <div class="col-md-8">
                 {{ group.duration }}
             </div>
         </div>

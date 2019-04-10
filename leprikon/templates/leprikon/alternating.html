@@ -24,12 +24,12 @@
         <td>{{ entry.start }}</td>
         <td>{{ entry.end }}</td>
         <td>
-            <a class="btn btn-primary btn-xs" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn btn-primary btn-sm" href="{{ entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                <i class="fas fa-edit" aria-hidden="true"></i>
                 {% trans 'edit timesheet entry' %}
             </a>
-            <a class="btn btn-primary btn-xs" href="{{ entry.journal_entry.get_edit_url }}?{% param_back %}={% current_url %}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <a class="btn btn-primary btn-sm" href="{{ entry.journal_entry.get_edit_url }}?{% param_back %}={% current_url %}">
+                <i class="fas fa-edit" aria-hidden="true"></i>
                 {% trans 'edit course journal entry' %}
             </a>
         </td>

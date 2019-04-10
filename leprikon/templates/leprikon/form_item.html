@@ -1,8 +1,8 @@
-<div class="form-group {{ item.css_classes }}">
-    <label for="{{ item.id_for_label }}" class="control-label col-md-3">
+<div class="form-group row {{ item.css_classes }}">
+    <label for="{{ item.id_for_label }}" class="col-form-label col-lg-3">
         {{ item.label }}
     </label>
-    <div class="col-md-9{% if item.errors %} alert alert-danger{% endif %}">
+    <div class="col-lg-9{% if item.errors %} alert alert-danger{% endif %}">
         {{ item }}
         {% for error in item.errors %}
             <div>{{ error }}</div>

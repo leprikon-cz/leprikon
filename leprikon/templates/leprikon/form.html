@@ -21,9 +21,9 @@
 <form action="" method="{% if form.use_get %}get{% else %}post{% endif %}" class="form-horizontal">
     {% if not form.use_get %}{% csrf_token %}{% endif %}
     {% for ro in form.readonly_fields %}
-    <div class="form-group required">
-        <label class="control-label col-md-3">{{ ro.label }}</label>
-        <div class="col-md-9">
+    <div class="form-group row required">
+        <label class="col-form-label col-lg-3">{{ ro.label }}</label>
+        <div class="col-lg-9">
             <div class="form-control">{{ ro.value }}</div>
         </div>
     </div>
@@ -34,11 +34,11 @@
     {% endfor %}
 
     <!-- SUBMIT -->
-    <div class="form-group">
-        <div class="col-md-9 col-md-offset-3">
+    <div class="form-group row">
+        <div class="col-lg-9 offset-lg-3">
             <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
             {% if back_url %}
-            <a class="btn btn-default" href="{{ back_url }}">{{ back_label }}</a>
+            <a class="btn btn-secondary" href="{{ back_url }}">{{ back_label }}</a>
             {% endif %}
         </div>
     </div>

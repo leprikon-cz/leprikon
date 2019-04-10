@@ -7,7 +7,9 @@
             <div class="modal-body">
                 {% for message in messages %}
                 <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %}" role="alert">
-                    <span class="glyphicon glyphicon-{% if message.level_tag == 'error' %}exclamation{% else %}{{ message.level_tag }}{% endif %}-sign" aria-hidden="true"></span>
+                    {% if message.level_tag == 'error' %}<i class="fas fa-exclamation" aria-hidden="true"></i>{% endif %}
+                    {% if message.level_tag == 'success' %}<i class="fas fa-check" aria-hidden="true"></i>{% endif %}
+                    {% if message.level_tag == 'info' %}<i class="fas fa-info" aria-hidden="true"></i>{% endif %}
                     {{ message }}
                 </div>
                 {% endfor %}

@@ -1,8 +1,8 @@
-<div class="form-group checkbox {{ item.css_classes }}">
-    <label for="{{ item.id_for_label }}" class="col-xs-2 col-sm-offset-1{% if item.errors %} alert alert-danger{% endif %}">
+<div class="form-group row checkbox {{ item.css_classes }}">
+    <label for="{{ item.id_for_label }}" class="col-2 offset-md-1{% if item.errors %} alert alert-danger{% endif %}">
         {{ item }}
     </label>
-    <div class="col-xs-9 col-sm-8">
+    <div class="col-9 col-md-8">
         <label for="{{ item.id_for_label }}">
             {{ item.label }}
             {% for error in item.errors %}

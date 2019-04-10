@@ -1,14 +1,22 @@
 {% load i18n leprikon_tags %}
 {% if is_paginated %}
-<div class="btn-group">
-    <a class="btn btn-sm btn-default{% if page_obj.has_previous %}" href="?{% query_string 'page' page_obj.previous_page_number %}{% else %} disabled{% endif %}" title="{% trans 'previous' %}">
-        <span class="glyphicon glyphicon-chevron-left"></span>
-    </a>
-    <span class="btn btn-sm btn-default"><strong>{{ page_obj.number }}</strong></span>
-    <a class="btn btn-sm btn-default{% if page_obj.has_next %}" href="?{% query_string 'page' page_obj.next_page_number %}{% else %} disabled{% endif %}" title="{% trans 'next' %}">
-        <span class="glyphicon glyphicon-chevron-right"></span>
-    </a>
-</div>
+<nav aria-label="{% trans 'pagination' %}">
+    <div class="btn-group" role="group">
+        {% if page_obj.has_previous %}
+        <a class="btn page-item" href="?{% query_string 'page' page_obj.previous_page_number %}" aria-label="{% trans 'previous' %}">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+        {% endif %}
+        {% for p in paginator.page_range %}
+        <a class="btn page-item{% if page_obj.number == p %} active{% else %}" href="?{% query_string 'page' p %}{% endif %}">{{ p }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a class="btn page-item" href="?{% query_string 'page' page_obj.next_page_number %}" aria-label="{% trans 'next' %}">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+        {% endif %}
+    </ul>
+</nav>
 {% with from=page_obj.start_index until=page_obj.end_index count=page_obj.paginator.count %}
 {% blocktrans %}displaying {{ from }} – {{ until }} of {{ count }}{% endblocktrans %}
 {% endwith %}

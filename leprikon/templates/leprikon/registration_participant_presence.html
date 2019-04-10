@@ -1,8 +1,8 @@
 {% load i18n leprikon_tags qr_code %}
 
 <div class="row">
-    <label class="col-sm-4">{% trans 'Presence' %}:</label>
-    <div class="col-sm-8">
+    <label class="col-md-4">{% trans 'Presence' %}:</label>
+    <div class="col-md-8">
     {% if reg.subject.course %}
         {% for history in reg.course_history.all %}
         {% for entry in history.journal_entries.all %}

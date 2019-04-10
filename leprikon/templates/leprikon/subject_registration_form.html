@@ -22,20 +22,20 @@
 
     <h3>{% trans 'Price' %}</h3>
     {% if form.subject_variant %}
-    <div class="form-group {{ form.subject_variant.css_classes }}">
-        <label class="control-label col-md-3">
+    <div class="form-group row {{ form.subject_variant.css_classes }}">
+        <label class="col-form-label col-lg-3">
             {{ form.subject_variant.label }}
         </label>
-        <div class="col-md-9{% if form.subject_variant.errors %} alert alert-danger{% endif %}">
+        <div class="col-lg-9{% if form.subject_variant.errors %} alert alert-danger{% endif %}">
             {% for variant in form.instance.subject.all_variants %}
                 <div class="row select">
-                    <div class="col-md-1 right">
+                    <div class="col-lg-1 right">
                         <input class="form-control" data-type="ChoiceField"
                                {% if variant.id == form.subject_variant.value|add:0 %}checked="checked"{% endif %}
                                id="{{ form.subject_variant.id_for_label }}_{{ variant.id }}"
                                name="{{ form.subject_variant.html_name }}" value="{{ variant.id }}" type="radio">
                     </div>
-                    <div class="col-md-11">
+                    <div class="col-lg-11">
                         <label class="form-control" style="font-weight:normal" for="{{ form.subject_variant.id_for_label }}_{{ variant.id }}">
                             <strong>{{ variant.name }}</strong><br/>
                         </label>
@@ -55,9 +55,9 @@
     </div>
     {% endif %}
 
-    <div class="form-group">
-        <label class="control-label col-md-3">{% trans 'Price' %}</label>
-        <div class="col-md-9">
+    <div class="form-group row">
+        <label class="col-form-label col-lg-3">{% trans 'Price' %}</label>
+        <div class="col-lg-9">
             <label class="form-control" style="font-weight:normal">
                 <span id="price">
                 {% if form.subject_variant.value %}
@@ -219,11 +219,11 @@
     {% endfor %}
 
     <!-- SUBMIT -->
-    <div class="form-group">
-        <div class="col-md-9 col-md-offset-3">
+    <div class="form-group row">
+        <div class="col-lg-9 offset-lg-3">
             <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
             {% if back_url %}
-            <a class="btn btn-default" href="{{ back_url }}">{{ back_label }}</a>
+            <a class="btn btn-secondary" href="{{ back_url }}">{{ back_label }}</a>
             {% endif %}
         </div>
     </div>

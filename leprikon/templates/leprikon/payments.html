@@ -24,8 +24,8 @@
         <td>{{ payment.payment_type_label }}</td>
         <td>{{ payment.amount | currency }}</td>
         <td>
-            <a class="btn btn-primary btn-xs" href="{{ payment.get_absolute_url }}">
-                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+            <a class="btn btn-primary btn-sm" href="{{ payment.get_absolute_url }}">
+                <i class="fas fa-download" aria-hidden="true"></i>
                 {% trans 'download' %}
             </a>
         </td>
