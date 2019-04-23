@@ -43,6 +43,12 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 attr={'visible_for_anonymous': False},
             ))
+            nodes.append(NavigationNode(
+                _('Reports'),
+                reverse('leprikon:report_list'),
+                len(nodes),
+                attr={'require_staff': True},
+            ))
             leader = len(nodes)
             nodes.append(NavigationNode(
                 _('Leader'),
@@ -79,13 +85,6 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 parent_id=timesheets,
                 attr={'require_leader': True, 'add_url_back': True},
-            ))
-            nodes.append(NavigationNode(
-                _('Reports'),
-                reverse('leprikon:report_list'),
-                len(nodes),
-                parent_id=leader,
-                attr={'require_staff': True},
             ))
             nodes.append(NavigationNode(
                 _('Messages'),
