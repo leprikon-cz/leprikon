@@ -137,9 +137,22 @@ if DEBUG_TEMPLATE:
 
 WSGI_APPLICATION = os.environ.get('UWSGI_MODULE', 'leprikon.site.wsgi:application').replace(':', '.')
 
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.google.GooglePlusAuth',
+# Social configuration
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id,name,email'}
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
+
+SOCIAL_AUTH_GOOGLE_PLUS_SCOPE = ['profile', 'email']
+SOCIAL_AUTH_GOOGLE_PLUS_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_KEY')
+SOCIAL_AUTH_GOOGLE_PLUS_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_SECRET')
+
+# Authentication configuration
+AUTHENTICATION_BACKENDS = (
+    ['social_core.backends.facebook.FacebookOAuth2'] if SOCIAL_AUTH_FACEBOOK_KEY else []
+) + (
+    ['social_core.backends.google.GooglePlusAuth'] if SOCIAL_AUTH_GOOGLE_PLUS_KEY else []
+) + [
     'verified_email_field.auth.VerifiedEmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
@@ -355,16 +368,6 @@ ROCKETCHAT_URL = os.environ.get('ROCKETCHAT_URL')
 
 # Google Analytics configuration
 GANALYTICS_TRACKING_CODE = os.environ.get('GANALYTICS_TRACKING_CODE')
-
-# Social configuration
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id,name,email'}
-SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
-SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
-
-SOCIAL_AUTH_GOOGLE_PLUS_SCOPE = ['profile', 'email']
-SOCIAL_AUTH_GOOGLE_PLUS_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_KEY')
-SOCIAL_AUTH_GOOGLE_PLUS_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_SECRET')
 
 # Leprikon configuration
 PRICE_DECIMAL_PLACES = 0
