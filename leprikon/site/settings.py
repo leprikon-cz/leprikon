@@ -93,6 +93,7 @@ MIDDLEWARE = [
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
     'leprikon.middleware.LeprikonMiddleware',
 ]
 
@@ -323,6 +324,7 @@ if 'SESSION_STAFF_COOKIE_AGE' in os.environ:
 LOGIN_URL = 'leprikon:user_login'
 LOGOUT_URL = 'leprikon:user_logout'
 LOGIN_REDIRECT_URL = 'leprikon:summary'
+LOGIN_ERROR_URL = LOGIN_URL
 
 # Email configuration
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'leprikon@localhost')
