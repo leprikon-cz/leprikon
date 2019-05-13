@@ -61,8 +61,10 @@
             <para style="left">{{ object.subject.name }}</para>
         </td>
         <td>
+            {% if object.received_by %}
             <para style="small">{% trans 'payment received by' %}:</para>
             <para style="left">{{ object.received_by.get_full_name }}</para>
+            {% endif %}
         </td>
     </tr>
 </blockTable>

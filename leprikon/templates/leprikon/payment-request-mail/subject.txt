@@ -5,12 +5,16 @@ thank You for submitting registration.{% endblocktrans %}
 {% trans 'Participant' %}: {{ object.participant }}
 {% trans 'Price' %}: {{ object.current_receivable | currency }}
 
-{% if site.bank_account %}{% blocktrans %}Please, use following information for bank transfer:{% endblocktrans %}
+{% if site.payment_gateway %}{% trans 'Please, use following link to perform online payment' %}:
+{{ object.payment_url }}
+
+{% endif %}{% if site.bank_account %}{% trans 'Please, use following information for bank transfer' %}:
 {% trans 'Bank account' %}: {{ site.bank_account }}
 {% trans 'Variable symbol' %}: {{ object.variable_symbol }}
-{% else %}{% trans 'Currently we only accept payments in cash.' %}{% endif %}
 
-{% trans 'If You have already made the payment recently, please ignore this message.' %}
+{% endif %}{% if not site.payment_gateway and not site.bank_account %}{% trans 'Currently we only accept payments in cash.' %}
+
+{% endif %}{% trans 'If You have already made the payment recently, please ignore this message.' %}
 {% trans 'You may check the current status of your registrations and payments using following link:' %}
 https://{{ site.domain }}{% url 'leprikon:registration_list' %}
 

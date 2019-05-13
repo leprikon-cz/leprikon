@@ -8,7 +8,7 @@
         {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
     </div>
 </div>
-{% if reg.subject.subject_type.subject_type == 'event' %}{# events #}
+{% if reg.subject.subject_type.subject_type == 'event' and reg.all_discounts %}{# events #}
 <div class="row">
     <label class="col-sm-4">{% trans 'Discount' %}:</label>
     <div class="col-sm-8">
@@ -47,18 +47,24 @@
         </div>
         {% endif %}
         {% if reg.payment_requested and reg.current_receivable %}
+            {% if site.payment_gateway %}
+                <h4>{% trans 'Online payment' %}</h4>
+                <p><a class="btn btn-primary" href="{{ reg.payment_url }}">{% trans 'pay online' %}</a></p>
+            {% endif %}
             {% if site.bank_account %}
-            <p>
-                {% trans 'Please, use following information for bank transfer' %}:<br/>
-                {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
-                {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
-            </p>
-            <p>
-                {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
-                {% qr_from_text reg.spayd border=1 %}
-            </p>
-            {% else %}
-            <p>{% trans 'Currently we only accept payments in cash.' %}</p>
+                <h4>{% trans 'Bank transfer' %}</h4>
+                <p>
+                    {% trans 'Please, use following information for bank transfer' %}:<br/>
+                    {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+                    {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
+                </p>
+                <p>
+                    {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
+                    {% qr_from_text reg.spayd border=1 %}
+                </p>
+            {% endif %}
+            {% if not site.bank_account and not site.payment_gateway %}
+                <p>{% trans 'Currently we only accept payments in cash.' %}</p>
             {% endif %}
         {% endif %}
     </div>

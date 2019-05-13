@@ -11,6 +11,13 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
     {% trans 'Price' %}: {{ object.current_receivable | currency }}<br/>
 </p>
 
+{% if site.payment_gateway %}
+<p>
+    {% trans 'Please, use following link to perform online payment' %}:<br/>
+    <a href="{{ object.payment_url }}">{{ object.payment_url }}</a>
+</p>
+{% endif %}
+
 {% if site.bank_account %}
 <p>
     {% trans 'Please, use following information for bank transfer' %}:<br/>
@@ -21,7 +28,9 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
     {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
     <img src="cid:qr_code"/>
 </p>
-{% else %}
+{% endif %}
+
+{% if not site.payment_gateway and not site.bank_account %}
 <p>{% trans 'Currently we only accept payments in cash.' %}</p>
 {% endif %}
 

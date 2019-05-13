@@ -24,6 +24,8 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from django_pays import payment_url as pays_payment_url
+from django_pays.models import Payment
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -643,6 +645,16 @@ class SubjectRegistration(PdfExportMixin, models.Model):
             ('X-VS', self.variable_symbol),
         )
 
+    @cached_property
+    def payment_url(self):
+        leprikon_site = LeprikonSite.objects.get_current()
+        return pays_payment_url(
+            gateway=leprikon_site.payment_gateway,
+            order_id=self.variable_symbol,
+            amount=self.current_receivable,
+            email=self.user.email,
+        )
+
     def get_discounts(self, d):
         if d:
             return [p for p in self.all_discounts if p.accounted.date() <= d]
@@ -944,8 +956,10 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
     related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
                                         related_name='related_payments', on_delete=models.PROTECT)
-    bankreader_transaction = models.OneToOneField(Transaction, verbose_name=_('transaction'), blank=True, null=True,
-                                                  related_name='subject_payments', on_delete=models.PROTECT)
+    bankreader_transaction = models.OneToOneField(Transaction, verbose_name=_('bank account transaction'),
+                                                  blank=True, null=True, on_delete=models.PROTECT)
+    pays_payment    = models.OneToOneField(Payment, verbose_name=_('online payment'),
+                                           blank=True, null=True, on_delete=models.PROTECT)
     received_by     = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_('received by'),
                                         related_name='+', on_delete=models.PROTECT)
 
@@ -1007,8 +1021,30 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
             raise ValidationError(errors)
 
 
+@receiver(models.signals.post_save, sender=Payment)
+def payment_create_subject_payment(instance, **kwargs):
+    payment = instance
+    # check realized payment
+    if payment.status != Payment.REALIZED:
+        return
+    # check registration
+    try:
+        registration = SubjectRegistration.objects.get(variable_symbol=int(payment.order_id))
+    except (ValueError, SubjectRegistration.DoesNotExist):
+        return
+    # create payment
+    SubjectPayment.objects.create(
+        registration=registration,
+        accounted=payment.created,
+        payment_type=SubjectPayment.PAYMENT_ONLINE,
+        amount=payment.amount / payment.base_units,
+        note=_('received online payment'),
+        pays_payment=payment,
+    )
+
+
 @receiver(models.signals.post_save, sender=Transaction)
-def create_order_payment(instance, **kwargs):
+def transaction_create_subject_payment(instance, **kwargs):
     transaction = instance
     # check variable symbol
     if not transaction.variable_symbol:

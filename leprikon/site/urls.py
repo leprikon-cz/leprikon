@@ -23,6 +23,7 @@ from django.contrib.sites.models import Site
 try:
     urlpatterns = [
         url(r'^admin/', include(admin.site.urls)),
+        url(r'^pays/', include('django_pays.urls')),
         url(r'^social/', include('social_django.urls')),
         url(r'^verified-email-field/', include('verified_email_field.urls')),
         url(r'^', include('cms.urls')),

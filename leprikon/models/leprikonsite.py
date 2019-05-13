@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from django_pays.models import Gateway
 from djangocms_text_ckeditor.fields import HTMLField
 from localflavor.generic.models import BICField, IBANField
 
@@ -61,6 +62,8 @@ class LeprikonSite(Site):
         Agreement, verbose_name=_('registration agreements'), blank=True, related_name='+',
         help_text=_('Add legal agreements for the registration form.'),
     )
+    payment_gateway = models.ForeignKey(Gateway, on_delete=models.SET_NULL, related_name='+',
+                                        verbose_name=_('Payment Gateway'), blank=True, null=True)
 
     objects = LeprikonSiteManager()
 

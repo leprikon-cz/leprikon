@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subjectpayment',
             name='bankreader_transaction',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='subject_payments', to='bankreader.Transaction', verbose_name='transaction'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='bankreader.Transaction', verbose_name='bank account transaction'),
         ),
     ]

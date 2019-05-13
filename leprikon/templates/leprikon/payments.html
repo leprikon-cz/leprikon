@@ -2,6 +2,13 @@
 {% load cms_tags i18n leprikon_tags %}
 
 {% block list %}
+
+{% if request.GET.PaymentOrderStatusID.0 == '3' %}
+<div class="alert alert-success">{% trans 'Thank You, the online payment was successful. The confirmation will be available within several minutes.' %}</div>
+{% elif request.GET.PaymentOrderStatusID.0 == '2' %}
+<div class="alert alert-danger">{% trans 'Unfortunately, the online payment was not successful. Please, try it again or choose another payment method.' %}</div>
+{% endif %}
+
 <table class="table">
     <tr>
         <th>{% trans 'Date' %}</th>
