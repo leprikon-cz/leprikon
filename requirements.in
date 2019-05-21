@@ -23,12 +23,14 @@ djangocms-text-ckeditor
 djangocms-video
 html2rml
 ipython
+lxml
 mysqlclient
 psycopg2-binary
 pyexcel-xlsxw
 pyicu
 python-memcached
 raven
+requests
 social-auth-app-django
 uwsgi
 -e git+https://github.com/misli/trml2pdf.git@registerFontFamily#egg=trml2pdf

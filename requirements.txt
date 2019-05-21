@@ -49,6 +49,7 @@ ipython-genutils==0.2.0   # via traitlets
 ipython==7.4.0
 jedi==0.13.3              # via ipython
 lml==0.0.9                # via pyexcel, pyexcel-io
+lxml==4.3.3
 mysqlclient==1.4.2.post1
 oauthlib==3.0.1           # via requests-oauthlib, social-auth-core
 parso==0.4.0              # via jedi
@@ -73,7 +74,7 @@ qrcode==6.1               # via django-qr-code
 raven==6.10.0
 reportlab==3.5.19
 requests-oauthlib==1.2.0  # via social-auth-core
-requests==2.21.0          # via requests-oauthlib, social-auth-core
+requests==2.21.0
 six==1.12.0               # via django-appconf, html5lib, prompt-toolkit, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0
 social-auth-core==3.1.0   # via social-auth-app-django
