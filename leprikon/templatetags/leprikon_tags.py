@@ -82,7 +82,7 @@ def school_year_form(context):
 
 
 @register.simple_tag
-def upstream(url, xpath, index=0):
+def upstream(url, xpath):
     '''
     If Leprikón is intended to look like another website (the main website of the organization),
     use this tag to include html snippet from the other site to always stay aligned with it.
@@ -90,7 +90,7 @@ def upstream(url, xpath, index=0):
     Following example includes tag <nav> (with all it's content) from https://example.com:
 
         {% load cache leprikon_tags %}
-        {% cache menu 300 %}{% upstream https://example.com/ //nav %}{% endcache %}
+        {% cache 300 menu %}{% upstream 'https://example.com/' '//nav' %}{% endcache %}
     '''
     try:
         cache = caches['upstream_pages']
@@ -101,7 +101,10 @@ def upstream(url, xpath, index=0):
         if content is None:
             content = requests.get(url).content
             cache.set(url, content, 60)
-        return mark_safe(tostring(fromstring(content).xpath(xpath)[index]))
+        return mark_safe(b''.join(
+            tostring(node)
+            for node in fromstring(content).xpath(xpath)
+        ))
     except Exception:
         from traceback import print_exc
         print_exc()
