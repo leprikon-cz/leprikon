@@ -3,7 +3,7 @@ Django
 PyPDF2
 cmsplugin-filer
 django-bankreader
-django-cms<3.6
+django-cms<3.7
 django-countries
 django-excel
 django-filer
