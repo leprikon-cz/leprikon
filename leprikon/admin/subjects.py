@@ -35,11 +35,17 @@ class SubjectTypeAdmin(admin.ModelAdmin):
     list_display    = ('plural', 'order')
     list_editable   = ('order',)
     exclude         = ('order',)
-    filter_horizontal = ('questions',)
+    filter_horizontal = ('questions', 'registration_agreements')
     prepopulated_fields = {'slug': ('plural',)}
     inlines         = (
         SubjectTypeAttachmentInlineAdmin,
     )
+
+    def get_fields(self, request, obj=None):
+        fields = super(LeprikonSiteAdmin, self).get_fields(request, obj)
+        if not obj or not obj.old_registration_agreement:
+            fields.remove('old_registration_agreement')
+        return fields
 
 
 
@@ -77,7 +83,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         SubjectVariantInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions')
+    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions', 'registration_agreements')
     actions         = ('set_registration_dates',)
     search_fields   = ('name', 'description')
     save_as         = True
@@ -87,6 +93,12 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         m = super(SubjectBaseAdmin, self).media
         m.add_js(['leprikon/js/Popup.js'])
         return m
+
+    def get_fields(self, request, obj=None):
+        fields = super(LeprikonSiteAdmin, self).get_fields(request, obj)
+        if not obj or not obj.old_registration_agreement:
+            fields.remove('old_registration_agreement')
+        return fields
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
