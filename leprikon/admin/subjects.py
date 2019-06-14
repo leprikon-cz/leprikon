@@ -42,7 +42,7 @@ class SubjectTypeAdmin(admin.ModelAdmin):
     )
 
     def get_fields(self, request, obj=None):
-        fields = super(LeprikonSiteAdmin, self).get_fields(request, obj)
+        fields = super(SubjectTypeAdmin, self).get_fields(request, obj)
         if not obj or not obj.old_registration_agreement:
             fields.remove('old_registration_agreement')
         return fields
@@ -95,7 +95,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         return m
 
     def get_fields(self, request, obj=None):
-        fields = super(LeprikonSiteAdmin, self).get_fields(request, obj)
+        fields = super(SubjectBaseAdmin, self).get_fields(request, obj)
         if not obj or not obj.old_registration_agreement:
             fields.remove('old_registration_agreement')
         return fields
