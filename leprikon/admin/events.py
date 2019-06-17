@@ -117,7 +117,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     def event_discounts(self, obj):
         status = obj.get_payment_status()
         return format_html(
-            '<a class="popup-link" href="{href_list}"><b>{amount}</b></a>'
+            '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
             href_list   = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
@@ -151,6 +151,3 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_display    = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
     list_export     = ('accounted', 'registration', 'subject', 'amount', 'explanation')
-
-    def get_model_perms(self, request):
-        return {}

@@ -192,7 +192,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         html = []
         for period in obj.get_period_payment_statuses():
             html.append(format_html(
-                '{period}: <a class="popup-link" href="{href}"><b>{amount}</b></a>',
+                '{period}: <a href="{href}"><b>{amount}</b></a>',
                 period  = period.period.name,
                 href    = (reverse('admin:leprikon_coursediscount_changelist') +
                            '?registration={}&period={}'.format(obj.id, period.period.id)),
@@ -267,9 +267,6 @@ class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_display    = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
     list_export     = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')
     closed_fields   = ('accounted', 'registration', 'period', 'amount')
-
-    def get_model_perms(self, request):
-        return {}
 
 
 class CourseJournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
