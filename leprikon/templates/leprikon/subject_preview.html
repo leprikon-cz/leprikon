@@ -53,6 +53,11 @@
 
         {{ object.description | safe }}
 
+        <p>
+            {% blocktrans count counter=object.all_age_groups|length %}Věková skupina{% plural %}Věkové skupiny{% endblocktrans %}:
+            {{ object.all_age_groups|comma_separated }}
+        </p>
+
         {% if object.all_leaders %}
         <p>
             {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
