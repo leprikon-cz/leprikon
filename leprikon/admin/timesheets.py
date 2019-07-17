@@ -5,9 +5,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import TimesheetEntry
-from .journals import JournalLeaderEntryInlineAdmin
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
+from .journals import JournalLeaderEntryInlineAdmin
 
 
 class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):

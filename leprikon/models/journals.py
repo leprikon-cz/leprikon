@@ -1,4 +1,3 @@
-from collections import namedtuple
 from datetime import datetime, timedelta
 
 from django.core.urlresolvers import reverse_lazy as reverse

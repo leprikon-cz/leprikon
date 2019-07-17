@@ -6,9 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.journals import JournalEntryAdminForm, JournalLeaderEntryAdminForm
 from ..models.journals import JournalLeaderEntry
 from .export import AdminExportMixin
-from .filters import (
-    SubjectListFilter, LeaderListFilter, SchoolYearListFilter,
-)
+from .filters import LeaderListFilter, SchoolYearListFilter, SubjectListFilter
 
 
 class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
