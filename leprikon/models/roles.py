@@ -64,11 +64,11 @@ class Leader(models.Model):
         return list(self.school_years.all())
 
     def get_alternate_leader_entries(self, school_year):
-        from .courses import CourseJournalLeaderEntry
-        return CourseJournalLeaderEntry.objects.filter(
-            timesheet__leader                   = self,
-            course_entry__course__school_year   = school_year,
-        ).exclude(course_entry__course__in      = self.subjects.all())
+        from .journals import JournalLeaderEntry
+        return JournalLeaderEntry.objects.filter(
+            timesheet__leader=self,
+            journal_entry__subject__school_year=school_year,
+        ).exclude(journal_entry__subject__in=self.subjects.all())
 
     SubjectsGroup = namedtuple('SubjectsGroup', ('subject_type', 'subjects'))
 

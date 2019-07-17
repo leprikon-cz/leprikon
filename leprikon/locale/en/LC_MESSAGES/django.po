@@ -1734,9 +1734,9 @@ msgstr ""
 #: templates/leprikon/cms/course_list_filtered.html:45
 #: templates/leprikon/cms/event_list_filtered.html:35
 #: templates/leprikon/cms/leader_list_filtered.html:38
-#: templates/leprikon/coursejournalentry_form.html:22
-#: templates/leprikon/coursejournalentry_form.html:31
-#: templates/leprikon/coursejournalentry_form.html:41
+#: templates/leprikon/journalentry_form.html:22
+#: templates/leprikon/journalentry_form.html:31
+#: templates/leprikon/journalentry_form.html:41
 #: templates/leprikon/filtered_subject_list.html:36
 #: templates/leprikon/filtered_subject_list.html:46
 #: templates/leprikon/leader_list.html:18
@@ -1784,8 +1784,8 @@ msgid "Contact"
 msgstr ""
 
 #: templates/leprikon/cms/leader_list_filtered.html:34
-#: templates/leprikon/coursejournalentry_form.html:16
-#: templates/leprikon/coursejournalentry_form.html:36
+#: templates/leprikon/journalentry_form.html:16
+#: templates/leprikon/journalentry_form.html:36
 #: templates/leprikon/leader_list.html:14
 #: templates/leprikon/subject_list.html:14
 msgid "Search"
@@ -1892,9 +1892,9 @@ msgstr ""
 msgid "There are no inactive registrations for this course."
 msgstr ""
 
-#: templates/leprikon/coursejournalentry_form.html:19
-#: templates/leprikon/coursejournalentry_form.html:28
-#: templates/leprikon/coursejournalentry_form.html:38
+#: templates/leprikon/journalentry_form.html:19
+#: templates/leprikon/journalentry_form.html:28
+#: templates/leprikon/journalentry_form.html:38
 msgid "select all"
 msgstr ""
 

@@ -2,20 +2,19 @@ from collections import namedtuple
 from datetime import date, datetime, timedelta
 
 from cms.models import CMSPlugin
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.dispatch import receiver
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
 
 from ..conf import settings
 from ..utils import comma_separated
 from .agegroup import AgeGroup
 from .department import Department
 from .fields import DAY_OF_WEEK, DayOfWeekField
+from .journals import JournalEntry
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
@@ -42,10 +41,6 @@ class Course(Subject):
     @cached_property
     def all_periods(self):
         return list(self.school_year_division.periods.all())
-
-    @cached_property
-    def all_journal_periods(self):
-        return list(CourseJournalPeriod(self, period) for period in self.all_periods)
 
     @cached_property
     def all_journal_entries(self):
@@ -152,71 +147,6 @@ class Course(Subject):
                     new.reg_to.second,
                 )
         return new
-
-
-
-class CourseJournalPeriod:
-
-    def __init__(self, course, period):
-        self.course = course
-        self.period = period
-
-    @property
-    def journal_entries(self):
-        return self.course.journal_entries.filter(date__gte=self.period.start, date__lte=self.period.end)
-
-    @cached_property
-    def all_journal_entries(self):
-        return list(self.journal_entries.all())
-
-    @cached_property
-    def all_registrations(self):
-        return list(self.course.registrations_history_registrations.filter(created__lt=self.period.end))
-
-    @cached_property
-    def all_alternates(self):
-        alternates = set()
-        for entry in self.all_journal_entries:
-            for alternate in entry.all_alternates:
-                alternates.add(alternate)
-        return list(alternates)
-
-    PresenceRecord = namedtuple('PresenceRecord', ('name', 'presences'))
-
-    def get_participant_presences(self):
-        return [
-            self.PresenceRecord(
-                reg.participant,
-                [
-                    reg in entry.all_registrations
-                    for entry in self.all_journal_entries
-                ]
-            ) for reg in self.all_registrations
-        ]
-
-    def get_leader_presences(self):
-        return [
-            self.PresenceRecord(
-                leader,
-                [
-                    entry.all_leader_entries_by_leader.get(leader, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for leader in self.course.all_leaders
-        ]
-
-    def get_alternate_presences(self):
-        return [
-            self.PresenceRecord(
-                alternate,
-                [
-                    entry.all_leader_entries_by_leader.get(alternate, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for alternate in self.all_alternates
-        ]
-
-
 
 
 @python_2_unicode_compatible
@@ -386,8 +316,8 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
         )
 
     @property
-    def course_journal_entries(self):
-        qs = CourseJournalEntry.objects.filter(course=self.course, date__gte=self.start)
+    def journal_entries(self):
+        qs = JournalEntry.objects.filter(subject_id=self.course_id, date__gte=self.start)
         if self.end:
             return qs.filter(date__lte=self.end)
         else:
@@ -424,158 +354,6 @@ def update_course_registration_history(sender, instance, created, **kwargs):
                     registration_id=instance.id, course_id=instance.subject_id, start=d,
                 )
             )
-
-
-
-def get_default_agenda():
-    return '<p>{}</p>'.format(_('instruction on OSH'))
-
-
-
-@python_2_unicode_compatible
-class CourseJournalEntry(StartEndMixin, models.Model):
-    course      = models.ForeignKey(Course, verbose_name=_('course'), editable=False,
-                                    related_name='journal_entries', on_delete=models.PROTECT)
-    date        = models.DateField(_('date'))
-    start       = models.TimeField(_('start time'), blank=True, null=True,
-                                   help_text=_('Leave empty, if the course does not take place'))
-    end         = models.TimeField(_('end time'), blank=True, null=True,
-                                   help_text=_('Leave empty, if the course does not take place'))
-    agenda      = HTMLField(_('session agenda'), default=get_default_agenda)
-    registrations = models.ManyToManyField(CourseRegistration, verbose_name=_('participants'), blank=True,
-                                           related_name='journal_entries')
-
-    class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('date', 'start', 'end')
-        verbose_name        = _('journal entry')
-        verbose_name_plural = _('journal entries')
-
-    def __str__(self):
-        return '{course}, {date}'.format(
-            course  = self.course.name,
-            date    = self.date,
-        )
-
-    @cached_property
-    def datetime_start(self):
-        try:
-            return datetime.combine(self.date, self.start)
-        except:
-            return None
-
-    @cached_property
-    def datetime_end(self):
-        try:
-            return datetime.combine(self.date, self.end)
-        except:
-            return None
-
-    @cached_property
-    def duration(self):
-        try:
-            return self.datetime_end - self.datetime_start
-        except:
-            return timedelta()
-    duration.short_description = _('duration')
-
-    @cached_property
-    def all_registrations(self):
-        return list(self.registrations.all())
-
-    @cached_property
-    def all_leader_entries(self):
-        return list(self.leader_entries.all())
-
-    @cached_property
-    def all_leader_entries_by_leader(self):
-        return dict((e.timesheet.leader, e) for e in self.all_leader_entries)
-
-    @cached_property
-    def all_leaders(self):
-        return list(
-            le.timesheet.leader for le in self.all_leader_entries
-            if le.timesheet.leader in self.course.all_leaders
-        )
-
-    @cached_property
-    def all_alternates(self):
-        return list(
-            le.timesheet.leader for le in self.all_leader_entries
-            if le.timesheet.leader not in self.course.all_leaders
-        )
-
-    @property
-    def timesheets(self):
-        from .timesheets import Timesheet
-        return Timesheet.objects.by_date(self.start).filter(
-            leader__in = self.all_leaders + self.all_alternates,
-        )
-
-    def save(self, *args, **kwargs):
-        if self.end is None:
-            self.end = self.start
-        super(CourseJournalEntry, self).save(*args, **kwargs)
-
-    def get_edit_url(self):
-        return reverse('leprikon:coursejournalentry_update', args=(self.id,))
-
-    def get_delete_url(self):
-        return reverse('leprikon:coursejournalentry_delete', args=(self.id,))
-
-
-
-@python_2_unicode_compatible
-class CourseJournalLeaderEntry(StartEndMixin, models.Model):
-    course_entry = models.ForeignKey(CourseJournalEntry, verbose_name=_('course journal entry'),
-                                     related_name='leader_entries', editable=False)
-    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='course_entries',
-                                    editable=False, on_delete=models.PROTECT)
-    start       = models.TimeField(_('start time'))
-    end         = models.TimeField(_('end time'))
-
-    class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('course journal leader entry')
-        verbose_name_plural = _('course journal leader entries')
-        unique_together     = (('course_entry', 'timesheet'),)
-
-    def __str__(self):
-        return '{}'.format(self.duration)
-
-    @cached_property
-    def date(self):
-        return self.course_entry.date
-    date.short_description = _('date')
-    date.admin_order_field = 'course_entry__date'
-
-    @cached_property
-    def course(self):
-        return self.course_entry.course
-    course.short_description = _('course')
-
-    @cached_property
-    def datetime_start(self):
-        return datetime.combine(self.date, self.start)
-
-    @cached_property
-    def datetime_end(self):
-        return datetime.combine(self.date, self.end)
-
-    @cached_property
-    def duration(self):
-        return self.datetime_end - self.datetime_start
-    duration.short_description = _('duration')
-
-    @property
-    def group(self):
-        return self.course
-
-    def get_edit_url(self):
-        return reverse('leprikon:coursejournalleaderentry_update', args=(self.id,))
-
-    def get_delete_url(self):
-        return reverse('leprikon:coursejournalleaderentry_delete', args=(self.id,))
 
 
 

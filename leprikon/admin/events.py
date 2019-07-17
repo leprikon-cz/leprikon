@@ -25,13 +25,6 @@ from .subjects import (
 class EventAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.EVENT
     registration_model = EventRegistration
-    list_display    = (
-        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
-        'get_times_list',
-        'place', 'public', 'registration_allowed_icon',
-        'get_registrations_link',
-        'icon', 'note',
-    )
     list_export     = (
         'id', 'code', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',

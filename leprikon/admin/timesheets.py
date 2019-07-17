@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import TimesheetEntry
-from .courses import CourseJournalLeaderEntryInlineAdmin
+from .journals import JournalLeaderEntryInlineAdmin
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
 
@@ -65,16 +65,10 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
     edit_link.allow_tags = True
 
 
-
-class CJLEInlineAdmin(CourseJournalLeaderEntryInlineAdmin):
-    readonly_fields = ('date', 'start', 'end', 'course', 'edit_link')
-
-
-
 class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display    = ('leader', 'period', 'group_durations', 'submitted', 'paid')
     list_filter     = (('leader', LeaderListFilter), 'period')
-    inlines         = (TimesheetEntryInlineAdmin, CJLEInlineAdmin)
+    inlines         = (TimesheetEntryInlineAdmin, JournalLeaderEntryInlineAdmin)
     actions         = ('submit', 'set_paid')
 
     # do not allow to add timesheets in admin

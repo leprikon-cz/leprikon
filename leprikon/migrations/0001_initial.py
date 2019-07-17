@@ -8,8 +8,8 @@ import djangocms_text_ckeditor.fields
 import filer.fields.file
 import filer.fields.image
 from leprikon.conf import settings
-import leprikon.models.courses
 import leprikon.models.fields
+import leprikon.models.journals
 import leprikon.models.startend
 import localflavor.generic.models
 
@@ -74,9 +74,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField(verbose_name='date')),
-                ('start', models.TimeField(blank=True, help_text='Leave empty, if the course does not take place', null=True, verbose_name='start time')),
-                ('end', models.TimeField(blank=True, help_text='Leave empty, if the course does not take place', null=True, verbose_name='end time')),
-                ('agenda', djangocms_text_ckeditor.fields.HTMLField(default=leprikon.models.courses.get_default_agenda, verbose_name='session agenda')),
+                ('start', models.TimeField(blank=True, null=True, verbose_name='start time')),
+                ('end', models.TimeField(blank=True, null=True, verbose_name='end time')),
+                ('agenda', djangocms_text_ckeditor.fields.HTMLField(default=leprikon.models.journals.get_default_agenda, verbose_name='session agenda')),
             ],
             options={
                 'ordering': ('date', 'start', 'end'),

@@ -1,12 +1,13 @@
 from json import dumps
 
 from django import forms
+from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
@@ -71,6 +72,13 @@ class SubjectVariantInlineAdmin(admin.TabularInline):
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     subject_type    = None
     registration_model = None
+    list_display    = (
+        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'get_times_list',
+        'place', 'public', 'registration_allowed_icon',
+        'get_registrations_link',
+        'get_journal_link', 'icon', 'note',
+    )
     list_editable   = ('public', 'note')
     list_filter     = (
         ('school_year',     SchoolYearListFilter),
@@ -121,6 +129,15 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         obj = super(SubjectBaseAdmin, self).save_form(request, form, change)
         obj.school_year = request.school_year
         return obj
+
+    def get_journal_link(self, obj):
+        return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
+            url     = reverse('admin:leprikon_subject_journal', args=[obj.id]),
+            title   = _('printable journal'),
+            journal = _('journal'),
+        )
+    get_journal_link.short_description = _('journal')
+    get_journal_link.allow_tags = True
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
@@ -243,6 +260,19 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     icon.allow_tags = True
     icon.short_description = _('photo')
 
+    def get_urls(self):
+        urls = super(SubjectAdmin, self).get_urls()
+        return [urls_url(
+            r'(?P<subject_id>\d+)/journal/$',
+            self.admin_site.admin_view(self.journal),
+            name='leprikon_subject_journal',
+        )] + urls
+
+    def journal(self, request, subject_id):
+        return render(request, 'leprikon/subject_journal.html', {
+            'subject': get_object_or_404(Subject, id=subject_id),
+            'admin': True,
+        })
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):

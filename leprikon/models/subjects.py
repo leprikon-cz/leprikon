@@ -1,6 +1,6 @@
 import colorsys
 import logging
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
@@ -219,7 +219,6 @@ class Subject(models.Model):
     bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                          verbose_name=_('payment print setup'), blank=True, null=True)
 
-
     class Meta:
         app_label           = 'leprikon'
         ordering            = ('code', 'name')
@@ -228,6 +227,13 @@ class Subject(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.display_name)
+
+    @cached_property
+    def subject(self):
+        if self.subject_type.subject_type == self.subject_type.COURSE:
+            return self.course
+        else:
+            return self.event
 
     @cached_property
     def display_name(self):
@@ -316,6 +322,13 @@ class Subject(models.Model):
     def all_approved_registrations(self):
         return list(self.approved_registrations.all())
 
+    @cached_property
+    def all_journal_periods(self):
+        if self.subject_type.subject_type == self.subject_type.COURSE:
+            return [JournalPeriod(self.course, period) for period in self.course.all_periods]
+        else:
+            return [JournalPeriod(self.event)]
+
     @property
     def unapproved_registrations(self):
         return self.active_registrations.filter(approved=None)
@@ -354,6 +367,69 @@ class Subject(models.Model):
             key=lambda agreement: agreement.order
         )
 
+
+class JournalPeriod:
+    def __init__(self, subject, period=None):
+        self.subject = subject
+        self.period = period
+
+    @property
+    def all_journal_entries(self):
+        qs = self.subject.journal_entries.all()
+        if self.period:
+            qs = qs.filter(date__gte=self.period.start, date__lte=self.period.end)
+        return list(qs)
+
+    @cached_property
+    def all_registrations(self):
+        if self.period:  # course
+            qs = self.subject.registrations_history_registrations.filter(created__lt=self.period.end)
+        else:  # event
+            qs = self.subject.registrations.all()
+        return list(qs)
+
+    @cached_property
+    def all_alternates(self):
+        alternates = set()
+        for entry in self.all_journal_entries:
+            for alternate in entry.all_alternates:
+                alternates.add(alternate)
+        return list(alternates)
+
+    PresenceRecord = namedtuple('PresenceRecord', ('name', 'presences'))
+
+    def get_participant_presences(self):
+        return [
+            self.PresenceRecord(
+                reg.participant,
+                [
+                    reg.id in entry.all_registrations_idset
+                    for entry in self.all_journal_entries
+                ]
+            ) for reg in self.all_registrations
+        ]
+
+    def get_leader_presences(self):
+        return [
+            self.PresenceRecord(
+                leader,
+                [
+                    entry.all_leader_entries_by_leader.get(leader, None)
+                    for entry in self.all_journal_entries
+                ]
+            ) for leader in self.subject.all_leaders
+        ]
+
+    def get_alternate_presences(self):
+        return [
+            self.PresenceRecord(
+                alternate,
+                [
+                    entry.all_leader_entries_by_leader.get(alternate, None)
+                    for entry in self.all_journal_entries
+                ]
+            ) for alternate in self.all_alternates
+        ]
 
 
 @python_2_unicode_compatible

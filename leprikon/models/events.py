@@ -1,5 +1,5 @@
 from collections import namedtuple
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from cms.models import CMSPlugin
 from django.db import models
@@ -48,6 +48,23 @@ class Event(Subject):
                          if self.end_time else date_format(self.end_date, 'SHORT_DATE_FORMAT'))),
         )
     get_times_list.short_description = _('times')
+
+    Time = namedtuple('Time', ('date', 'start', 'end'))
+
+    def get_next_time(self, now=None):
+        if not now:
+            return self.Time(
+                date=self.start_date,
+                start=self.start_time,
+                end=(self.end_time if self.end_date == self.start_date else None),
+            )
+        else:
+            next_date = (now.date() if isinstance(now, datetime) else now) + timedelta(1)
+            return self.Time(
+                date=next_date,
+                start=None,
+                end=(self.end_time if self.end_date == next_date else None),
+            )
 
     def copy_to_school_year(old, school_year):
         new = Event.objects.get(id=old.id)

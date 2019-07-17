@@ -11,12 +11,10 @@ from ..models.account import AccountClosure
 from ..models.agegroup import AgeGroup
 from ..models.agreements import Agreement
 from ..models.citizenship import Citizenship
-from ..models.courses import (
-    Course, CourseDiscount, CourseJournalEntry, CourseJournalLeaderEntry,
-    CourseRegistration,
-)
+from ..models.courses import Course, CourseDiscount, CourseRegistration
 from ..models.department import Department
 from ..models.events import Event, EventDiscount, EventRegistration
+from ..models.journals import JournalEntry, JournalLeaderEntry
 from ..models.leprikonsite import LeprikonSite
 from ..models.messages import Message, MessageRecipient
 from ..models.place import Place
@@ -33,12 +31,10 @@ from .account import AccountClosureAdmin
 from .agegroup import AgeGroupAdmin
 from .agreements import AgreementAdmin
 from .citizenship import CitizenshipAdmin
-from .courses import (
-    CourseAdmin, CourseDiscountAdmin, CourseJournalEntryAdmin,
-    CourseJournalLeaderEntryAdmin, CourseRegistrationAdmin,
-)
+from .courses import CourseAdmin, CourseDiscountAdmin, CourseRegistrationAdmin
 from .department import DepartmentAdmin
 from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
+from .journals import JournalEntryAdmin, JournalLeaderEntryAdmin
 from .leprikonsite import LeprikonSiteAdmin
 from .messages import MessageAdmin, MessageRecipientAdmin
 from .place import PlaceAdmin
@@ -86,8 +82,8 @@ admin.site.register(SubjectPayment,             SubjectPaymentAdmin)
 admin.site.register(Course,                     CourseAdmin)
 admin.site.register(CourseRegistration,         CourseRegistrationAdmin)
 admin.site.register(CourseDiscount,             CourseDiscountAdmin)
-admin.site.register(CourseJournalEntry,         CourseJournalEntryAdmin)
-admin.site.register(CourseJournalLeaderEntry,   CourseJournalLeaderEntryAdmin)
+admin.site.register(JournalEntry,         JournalEntryAdmin)
+admin.site.register(JournalLeaderEntry,   JournalLeaderEntryAdmin)
 
 admin.site.register(Department,                 DepartmentAdmin)
 

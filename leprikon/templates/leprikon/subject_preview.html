@@ -94,15 +94,13 @@
                 {% trans 'registrations' %}
                 ({{ object.approved_registrations_count }}{% if object.unapproved_registrations_count %} + {{ object.unapproved_registrations_count }}{% endif %})
             </a>
-            {% if object.course %}
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:course_journal' object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:journal' object.id %}">
                 {% trans 'journal' %}
             </a>
-            <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:coursejournalentry_create' object.id %}">
+            <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:journalentry_create' object.id %}">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 {% trans 'add journal entry' %}
             </a>
-            {% endif %}
         </div>
         {% endif %}
     </div>

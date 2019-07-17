@@ -10,7 +10,6 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
-from .courses import CourseJournalLeaderEntry
 from .roles import Leader
 from .startend import StartEndMixin
 
@@ -91,17 +90,9 @@ class Timesheet(models.Model):
             period  = self.period.name,
         )
 
-    @property
-    def course_entries(self):
-        return CourseJournalLeaderEntry.objects.filter(
-            course_entry__date__gte = self.period.start,
-            course_entry__date__lte = self.period.end,
-            leader                  = self.leader,
-        )
-
     @cached_property
-    def all_course_entries(self):
-        return list(self.course_entries.all())
+    def all_journal_entries(self):
+        return list(self.journal_entries.all())
 
     @cached_property
     def all_timesheet_entries(self):
@@ -110,7 +101,7 @@ class Timesheet(models.Model):
     @cached_property
     def all_entries(self):
         return sorted(
-            self.all_timesheet_entries + self.all_course_entries,
+            self.all_timesheet_entries + self.all_journal_entries,
             key=lambda e: e.datetime_start,
         )
 

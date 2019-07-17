@@ -1,25 +1,19 @@
 from django import forms
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.courses import (
-    CourseDiscountAdminForm, CourseJournalEntryAdminForm,
-    CourseJournalLeaderEntryAdminForm,
-)
+from ..forms.courses import CourseDiscountAdminForm
 from ..models.courses import (
-    Course, CourseJournalLeaderEntry, CourseRegistration,
-    CourseRegistrationHistory, CourseTime,
+    Course, CourseRegistration, CourseRegistrationHistory, CourseTime,
 )
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
-from .export import AdminExportMixin
 from .filters import (
     ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
     CourseListFilter, CourseTypeListFilter, LeaderListFilter,
@@ -39,13 +33,6 @@ class CourseTimeInlineAdmin(admin.TabularInline):
 class CourseAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.COURSE
     registration_model = CourseRegistration
-    list_display    = (
-        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
-        'get_times_list',
-        'place', 'public', 'registration_allowed_icon',
-        'get_registrations_link',
-        'get_journal_link', 'icon', 'note',
-    )
     list_export     = (
         'id', 'code', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
@@ -132,31 +119,6 @@ class CourseAdmin(SubjectBaseAdmin):
         return get_user_model().objects.filter(
             leprikon_registrations__subject__in = queryset
         ).distinct()
-
-    def get_journal_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url     = reverse('admin:leprikon_course_journal', args=[obj.id]),
-            title   = _('printable course journal'),
-            journal = _('journal'),
-        )
-    get_journal_link.short_description = _('journal')
-    get_journal_link.allow_tags = True
-
-    def get_urls(self):
-        urls = super(CourseAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<course_id>\d+)/journal/$',
-            self.admin_site.admin_view(self.journal),
-            name='leprikon_course_journal',
-        )] + urls
-
-    def journal(self, request, course_id):
-        course = get_object_or_404(Course, id=course_id)
-        return render(request, 'leprikon/course_journal.html', {
-            'course': course,
-            'admin': True,
-        })
-
 
 
 class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
@@ -267,101 +229,3 @@ class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     list_display    = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
     list_export     = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')
     closed_fields   = ('accounted', 'registration', 'period', 'amount')
-
-
-class CourseJournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
-    form            = CourseJournalLeaderEntryAdminForm
-    list_display    = ('timesheet', 'date', 'start', 'end', 'duration', 'course')
-    list_filter     = (('timesheet__leader', LeaderListFilter),)
-    ordering        = ('-course_entry__date', '-start')
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.timesheet.submitted:
-            return False
-        return super(CourseJournalLeaderEntryAdmin, self).has_delete_permission(request, obj)
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj and obj.timesheet.submitted:
-            return ('start', 'end')
-        return self.readonly_fields
-
-
-
-class CourseJournalLeaderEntryInlineAdmin(admin.TabularInline):
-    class form(forms.ModelForm):
-        class Meta:
-            model = CourseJournalLeaderEntry
-            fields = []
-    model       = CourseJournalLeaderEntry
-    ordering        = ('course_entry__date', 'start')
-    readonly_fields = ('date', 'start', 'end', 'edit_link')
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        if obj:
-            # obj may be Timesheet or CourseJournalEntry
-            # this inline is used in both CourseJournalEntryAdmin and TimesheetAdmin
-            try:
-                entries = obj.leader_entries
-            except AttributeError:
-                entries = obj.course_entries
-            if entries.filter(timesheet__submitted=True).exists():
-                return False
-        return super(CourseJournalLeaderEntryInlineAdmin, self).has_delete_permission(request, obj)
-
-    def edit_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url     = reverse('admin:leprikon_coursejournalleaderentry_change', args=[obj.id]),
-            title   = _('update entry'),
-            edit    = _('edit'),
-        )
-    edit_link.short_description = ''
-    edit_link.allow_tags = True
-
-
-
-class CourseJournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
-    form            = CourseJournalEntryAdminForm
-    date_hierarchy  = 'date'
-    list_display    = ('id', 'course_name', 'date', 'start', 'end', 'duration', 'agenda_html')
-    list_filter     = (
-        ('course__school_year', SchoolYearListFilter),
-        ('course',              CourseListFilter),
-    )
-    filter_horizontal = ('registrations',)
-    inlines         = (CourseJournalLeaderEntryInlineAdmin,)
-    ordering        = ('-date', '-start')
-    readonly_fields = ('course_name', 'date',)
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        if obj:
-            if obj.leader_entries.filter(timesheet__submitted=True).exists():
-                return False
-            else:
-                return super(CourseJournalEntryAdmin, self).has_delete_permission(request, obj)
-        return False
-
-    def get_actions(self, request):
-        actions = super(CourseJournalEntryAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del(actions['delete_selected'])
-        return actions
-
-    def course_name(self, obj):
-        return obj.course.name
-    course_name.short_description = _('course')
-    course_name.admin_order_field = 'subject__name'
-
-    def agenda_html(self, obj):
-        return obj.agenda
-    agenda_html.short_description = _('agenda')
-    agenda_html.admin_order_field = 'agenda'
-    agenda_html.allow_tags = True

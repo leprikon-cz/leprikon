@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..conf import settings
 from . import (
-    courses, leaders, messages, parents, participants, registrations, reports,
+    journals, leaders, messages, parents, participants, registrations, reports,
     schoolyear, subjects, summaries, terms_conditions, timesheets, user,
 )
 from .reports import (
@@ -77,13 +77,13 @@ parent_create                   = login_required(parents.ParentCreateView.as_vie
 parent_update                   = login_required(parents.ParentUpdateView.as_view())
 
 leader_summary                  = leader_required(summaries.LeaderSummaryView.as_view())
-course_alternating              = leader_required(courses.CourseAlternatingView.as_view())
-course_journal                  = leader_or_staff_required(courses.CourseJournalView.as_view())
-coursejournalentry_create       = leader_or_staff_required(courses.CourseJournalEntryCreateView.as_view())
-coursejournalentry_update       = leader_or_staff_required(courses.CourseJournalEntryUpdateView.as_view())
-coursejournalentry_delete       = leader_or_staff_required(courses.CourseJournalEntryDeleteView.as_view())
-coursejournalleaderentry_update = leader_or_staff_required(courses.CourseJournalLeaderEntryUpdateView.as_view())
-coursejournalleaderentry_delete = leader_or_staff_required(courses.CourseJournalLeaderEntryDeleteView.as_view())
+alternating                     = leader_required(journals.AlternatingView.as_view())
+journal                         = leader_or_staff_required(journals.JournalView.as_view())
+journalentry_create             = leader_or_staff_required(journals.JournalEntryCreateView.as_view())
+journalentry_update             = leader_or_staff_required(journals.JournalEntryUpdateView.as_view())
+journalentry_delete             = leader_or_staff_required(journals.JournalEntryDeleteView.as_view())
+journalleaderentry_update       = leader_or_staff_required(journals.JournalLeaderEntryUpdateView.as_view())
+journalleaderentry_delete       = leader_or_staff_required(journals.JournalLeaderEntryDeleteView.as_view())
 
 subject_list                    = subjects.SubjectListView.as_view()
 subject_list_mine               = leader_required(subjects.SubjectListMineView.as_view())
