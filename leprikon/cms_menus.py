@@ -66,7 +66,7 @@ class LeprikonMenu(CMSAttachMenu):
                 ))
             nodes.append(NavigationNode(
                 _('Alternating'),
-                reverse('leprikon:course_alternating'),
+                reverse('leprikon:alternating'),
                 len(nodes),
                 parent_id=leader,
                 attr={'require_leader': True},
