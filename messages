@@ -1,7 +1,9 @@
 #!/bin/bash
 
+lang=${1:-cs}
+
 pushd leprikon
-    django-admin makemessages -l cs -e html,py,rml,txt
-    vim locale/cs/LC_MESSAGES/django.po
+    django-admin makemessages -l $lang -e html,py,rml,txt
+    vim locale/$lang/LC_MESSAGES/django.po
     django-admin compilemessages
 popd
