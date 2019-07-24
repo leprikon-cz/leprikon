@@ -174,8 +174,16 @@ def merge_objects(source, target, attributes=None, exclude=[]):
 @transaction.atomic
 def merge_users(source, target):
     target = merge_objects(source, target, ('first_name', 'last_name', 'email'))
-    target.date_joined = min(source.date_joined, target.date_joined)
-    target.last_login = max(source.last_login, target.last_login)
+    target.date_joined = (
+        min(source.date_joined, target.date_joined)
+        if source.date_joined and target.date_joined
+        else source.date_joined or target.date_joined
+    )
+    target.last_login = (
+        max(source.last_login, target.last_login)
+        if source.last_login and target.last_login
+        else source.last_login or target.last_login
+    )
 
     try:
         leader = source.leprikon_leader
