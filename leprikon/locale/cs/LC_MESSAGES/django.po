@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-17 17:40+0200\n"
+"POT-Creation-Date: 2019-07-24 11:49+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -153,11 +153,11 @@ msgstr "odhlášeno"
 msgid "active"
 msgstr "aktivní"
 
-#: admin/journals.py:61 admin/timesheets.py:61
+#: admin/journals.py:59 admin/timesheets.py:61
 msgid "update entry"
 msgstr "upravit záznam"
 
-#: admin/journals.py:62 admin/timesheets.py:62
+#: admin/journals.py:60 admin/timesheets.py:62
 #: templates/leprikon/participant_preview.html:8
 #: templates/leprikon/participant_preview.html:18
 #: templates/leprikon/subject_journal.html:133
@@ -170,15 +170,15 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:399 admin/subjects.py:485
-#: models/journals.py:21 models/journals.py:145 models/messages.py:21
+#: admin/journals.py:98 admin/subjects.py:399 admin/subjects.py:485
+#: models/journals.py:20 models/journals.py:144 models/messages.py:21
 #: models/roles.py:253 models/subjects.py:225 models/subjects.py:437
 #: models/subjects.py:456 models/subjects.py:557
 #: templates/leprikon/alternating.html:15
 msgid "subject"
 msgstr "předmět"
 
-#: admin/journals.py:105
+#: admin/journals.py:103
 msgid "agenda"
 msgstr "program"
 
@@ -459,7 +459,7 @@ msgstr "Uživatel {} byl sloučen do uživatele {}."
 
 #: admin/user.py:47
 msgid "Can not merge user {} into user {}."
-msgstr "Není možné sloučitu uživatele {} do uživatele {}."
+msgstr "Není možné sloučit uživatele {} do uživatele {}."
 
 #: admin/user.py:54
 msgid "Select target user for merge"
@@ -518,7 +518,7 @@ msgstr "Přehled"
 msgid "Reports"
 msgstr "Reporty"
 
-#: cms_menus.py:54 cms_plugins/leaders.py:12 forms/journals.py:65
+#: cms_menus.py:54 cms_plugins/leaders.py:12 forms/journals.py:64
 #: forms/subjects.py:34
 msgid "Leader"
 msgstr "Vedoucí"
@@ -566,7 +566,7 @@ msgstr "Přidat účastníka"
 msgid "Add parent"
 msgstr "Přidat zástupce"
 
-#: cms_menus.py:135 forms/journals.py:166
+#: cms_menus.py:135 forms/journals.py:163
 #: templates/leprikon/subject_journal.html:154
 msgid "Leaders"
 msgstr "Vedoucí"
@@ -668,12 +668,12 @@ msgstr "Záznam deníku začíná v {start}."
 msgid "The journal entry ends at {end}"
 msgstr "Záznam deníku končí v {end}."
 
-#: forms/journals.py:63 forms/journals.py:172
+#: forms/journals.py:62 forms/journals.py:169
 #: templates/leprikon/messages_table.html:6 templates/leprikon/payments.html:15
 msgid "Subject"
 msgstr "Předmět"
 
-#: forms/journals.py:64 forms/journals.py:90 forms/timesheets.py:29
+#: forms/journals.py:63 forms/journals.py:87 forms/timesheets.py:29
 #: templates/leprikon/messages_table.html:7 templates/leprikon/payments.html:14
 #: templates/leprikon/reports/course_payments.html:14
 #: templates/leprikon/reports/event_payments.html:14
@@ -681,47 +681,47 @@ msgstr "Předmět"
 msgid "Date"
 msgstr "Datum"
 
-#: forms/journals.py:69 forms/timesheets.py:30
+#: forms/journals.py:68 forms/timesheets.py:30
 #: templates/leprikon/cms/event_list/default.html:26
 #: templates/leprikon/cms/event_list/grouped.html:28
 #: templates/leprikon/subject_preview.html:31
 msgid "Start"
 msgstr "Začátek"
 
-#: forms/journals.py:70 forms/timesheets.py:31
+#: forms/journals.py:69 forms/timesheets.py:31
 #: templates/leprikon/cms/event_list/default.html:29
 #: templates/leprikon/cms/event_list/grouped.html:31
 #: templates/leprikon/subject_preview.html:34
 msgid "End"
 msgstr "Konec"
 
-#: forms/journals.py:124
+#: forms/journals.py:121
 msgid "If You fill in start time, You must fill end time too."
 msgstr "Pokud vyplníte čas začátku, musíte vyplnit také čas konce."
 
-#: forms/journals.py:126
+#: forms/journals.py:123
 msgid "If You fill in end time, You must fill start time too."
 msgstr "Pokud vyplníte čas konce, musíte vyplnit také čas začátku."
 
-#: forms/journals.py:139
+#: forms/journals.py:136
 msgid "An overlaping entry has already been added in the journal."
 msgstr "V deníku už je kolidující záznam."
 
-#: forms/journals.py:151
+#: forms/journals.py:148
 #, python-brace-format
 msgid "Some submitted timesheet entries start at {start}"
 msgstr "Některé odevzdané záznamy práce začínají v {start}"
 
-#: forms/journals.py:155
+#: forms/journals.py:152
 #, python-brace-format
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/journals.py:167
+#: forms/journals.py:164
 msgid "Alternates"
 msgstr "Náhradní vedoucí"
 
-#: forms/journals.py:260
+#: forms/journals.py:257
 #, python-brace-format
 msgid "Leader {leaders} has already submitted timesheet for {period}."
 msgid_plural "Leaders {leaders} have already submitted timesheet for {period}."
@@ -729,7 +729,7 @@ msgstr[0] "Vedoucí {leaders} má již odevzdaný výkaz práce za {period}."
 msgstr[1] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 msgstr[2] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 
-#: forms/journals.py:269
+#: forms/journals.py:266
 #, python-brace-format
 msgid "Alternate {leaders} has already submitted timesheet for {period}."
 msgid_plural ""
@@ -981,13 +981,13 @@ msgstr "časy"
 msgid "day of week"
 msgstr "den v týdnu"
 
-#: models/courses.py:156 models/events.py:24 models/journals.py:24
-#: models/journals.py:120 models/timesheets.py:150
+#: models/courses.py:156 models/events.py:24 models/journals.py:23
+#: models/journals.py:119 models/timesheets.py:150
 msgid "start time"
 msgstr "čas začátku"
 
-#: models/courses.py:157 models/events.py:25 models/journals.py:25
-#: models/journals.py:121 models/timesheets.py:151
+#: models/courses.py:157 models/events.py:25 models/journals.py:24
+#: models/journals.py:120 models/timesheets.py:151
 msgid "end time"
 msgstr "čas konce"
 
@@ -1157,47 +1157,47 @@ msgstr "neděle"
 msgid "Enter a valid birth number."
 msgstr "Zadejte platné rodné číslo."
 
-#: models/journals.py:16
+#: models/journals.py:15
 msgid "instruction on OSH"
 msgstr "poučení o BOZP"
 
-#: models/journals.py:23 models/journals.py:139 models/timesheets.py:149
+#: models/journals.py:22 models/journals.py:138 models/timesheets.py:149
 #: templates/leprikon/alternating.html:14
 #: templates/leprikon/registration/subject.rml:214
 #: templates/leprikon/timesheet_detail.html:20
 msgid "date"
 msgstr "datum"
 
-#: models/journals.py:26
+#: models/journals.py:25
 msgid "session agenda"
 msgstr "program schůzky"
 
-#: models/journals.py:27 models/roles.py:183
+#: models/journals.py:26 models/roles.py:183
 msgid "participants"
 msgstr "účastníci"
 
-#: models/journals.py:33 models/journals.py:116
+#: models/journals.py:32 models/journals.py:115
 msgid "journal entry"
 msgstr "záznam deníku"
 
-#: models/journals.py:34
+#: models/journals.py:33
 msgid "journal entries"
 msgstr "záznamy deníku"
 
-#: models/journals.py:63 models/journals.py:158 models/timesheets.py:174
+#: models/journals.py:62 models/journals.py:157 models/timesheets.py:174
 #: templates/leprikon/timesheet_detail.html:22
 msgid "duration"
 msgstr "doba trvání"
 
-#: models/journals.py:118 models/timesheets.py:84 models/timesheets.py:145
+#: models/journals.py:117 models/timesheets.py:84 models/timesheets.py:145
 msgid "timesheet"
 msgstr "výkaz práce"
 
-#: models/journals.py:125
+#: models/journals.py:124
 msgid "journal leader entry"
 msgstr "záznam vedoucího v deníku"
 
-#: models/journals.py:126
+#: models/journals.py:125
 msgid "journal leader entries"
 msgstr "záznamy vedoucích v deníku"
 
