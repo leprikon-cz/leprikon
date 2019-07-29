@@ -16,7 +16,7 @@
 
 {% if subjects.count %}
 {% for object in subjects %}
-{% include 'leprikon/subject_preview.html' %}
+{% include 'leprikon/subject_preview.html' with object=object.subject %}
 {% endfor %}
 {% endif %}
 
