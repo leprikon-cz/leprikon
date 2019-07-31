@@ -412,7 +412,7 @@ class Migration(migrations.Migration):
             name='SchoolYear',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.IntegerField(unique=True, verbose_name='year')),
+                ('year', models.IntegerField(help_text='Only the first of the two years.', unique=True, verbose_name='year')),
                 ('active', models.BooleanField(default=False, verbose_name='active')),
             ],
             options={

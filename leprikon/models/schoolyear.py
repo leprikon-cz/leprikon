@@ -27,7 +27,7 @@ class SchoolYearManager(models.Manager):
 
 @python_2_unicode_compatible
 class SchoolYear(models.Model):
-    year    = models.IntegerField(_('year'), unique=True)
+    year    = models.IntegerField(_('year'), unique=True, help_text=_('Only the first of the two years.'))
     active  = models.BooleanField(_('active'), default=False)
 
     objects = SchoolYearManager()

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-24 11:49+0200\n"
+"POT-Creation-Date: 2019-07-31 19:05+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -518,7 +518,7 @@ msgstr "Přehled"
 msgid "Reports"
 msgstr "Reporty"
 
-#: cms_menus.py:54 cms_plugins/leaders.py:12 forms/journals.py:64
+#: cms_menus.py:54 cms_plugins/leaders.py:12 forms/journals.py:65
 #: forms/subjects.py:34
 msgid "Leader"
 msgstr "Vedoucí"
@@ -566,7 +566,7 @@ msgstr "Přidat účastníka"
 msgid "Add parent"
 msgstr "Přidat zástupce"
 
-#: cms_menus.py:135 forms/journals.py:163
+#: cms_menus.py:135 forms/journals.py:166
 #: templates/leprikon/subject_journal.html:154
 msgid "Leaders"
 msgstr "Vedoucí"
@@ -668,12 +668,12 @@ msgstr "Záznam deníku začíná v {start}."
 msgid "The journal entry ends at {end}"
 msgstr "Záznam deníku končí v {end}."
 
-#: forms/journals.py:62 forms/journals.py:169
+#: forms/journals.py:63 forms/journals.py:172
 #: templates/leprikon/messages_table.html:6 templates/leprikon/payments.html:15
 msgid "Subject"
 msgstr "Předmět"
 
-#: forms/journals.py:63 forms/journals.py:87 forms/timesheets.py:29
+#: forms/journals.py:64 forms/journals.py:90 forms/timesheets.py:29
 #: templates/leprikon/messages_table.html:7 templates/leprikon/payments.html:14
 #: templates/leprikon/reports/course_payments.html:14
 #: templates/leprikon/reports/event_payments.html:14
@@ -681,47 +681,47 @@ msgstr "Předmět"
 msgid "Date"
 msgstr "Datum"
 
-#: forms/journals.py:68 forms/timesheets.py:30
+#: forms/journals.py:69 forms/timesheets.py:30
 #: templates/leprikon/cms/event_list/default.html:26
 #: templates/leprikon/cms/event_list/grouped.html:28
 #: templates/leprikon/subject_preview.html:31
 msgid "Start"
 msgstr "Začátek"
 
-#: forms/journals.py:69 forms/timesheets.py:31
+#: forms/journals.py:70 forms/timesheets.py:31
 #: templates/leprikon/cms/event_list/default.html:29
 #: templates/leprikon/cms/event_list/grouped.html:31
 #: templates/leprikon/subject_preview.html:34
 msgid "End"
 msgstr "Konec"
 
-#: forms/journals.py:121
+#: forms/journals.py:124
 msgid "If You fill in start time, You must fill end time too."
 msgstr "Pokud vyplníte čas začátku, musíte vyplnit také čas konce."
 
-#: forms/journals.py:123
+#: forms/journals.py:126
 msgid "If You fill in end time, You must fill start time too."
 msgstr "Pokud vyplníte čas konce, musíte vyplnit také čas začátku."
 
-#: forms/journals.py:136
+#: forms/journals.py:139
 msgid "An overlaping entry has already been added in the journal."
 msgstr "V deníku už je kolidující záznam."
 
-#: forms/journals.py:148
+#: forms/journals.py:151
 #, python-brace-format
 msgid "Some submitted timesheet entries start at {start}"
 msgstr "Některé odevzdané záznamy práce začínají v {start}"
 
-#: forms/journals.py:152
+#: forms/journals.py:155
 #, python-brace-format
 msgid "Some submitted timesheet entries end at {end}"
 msgstr "Některé odevzdané záznamy práce končí v {end}"
 
-#: forms/journals.py:164
+#: forms/journals.py:167
 msgid "Alternates"
 msgstr "Náhradní vedoucí"
 
-#: forms/journals.py:257
+#: forms/journals.py:260
 #, python-brace-format
 msgid "Leader {leaders} has already submitted timesheet for {period}."
 msgid_plural "Leaders {leaders} have already submitted timesheet for {period}."
@@ -729,7 +729,7 @@ msgstr[0] "Vedoucí {leaders} má již odevzdaný výkaz práce za {period}."
 msgstr[1] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 msgstr[2] "Vedoucí {leaders} již mají odevzdaný výkaz práce za {period}."
 
-#: forms/journals.py:266
+#: forms/journals.py:269
 #, python-brace-format
 msgid "Alternate {leaders} has already submitted timesheet for {period}."
 msgid_plural ""
@@ -1492,6 +1492,10 @@ msgstr "školy"
 #: models/schoolyear.py:30
 msgid "year"
 msgstr "rok"
+
+#: models/schoolyear.py:30
+msgid "Only the first of the two years."
+msgstr "Pouze první ze dvou roků."
 
 #: models/schoolyear.py:46
 msgid "Can not delete sclool year with courses or events."
