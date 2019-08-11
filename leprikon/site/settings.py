@@ -145,6 +145,10 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id,name,email'}
 SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['profile', 'email']
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
 SOCIAL_AUTH_GOOGLE_PLUS_SCOPE = ['profile', 'email']
 SOCIAL_AUTH_GOOGLE_PLUS_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_KEY')
 SOCIAL_AUTH_GOOGLE_PLUS_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_SECRET')
@@ -164,6 +168,8 @@ SOCIAL_AUTH_PIPELINE = (
 # Authentication configuration
 AUTHENTICATION_BACKENDS = (
     ['social_core.backends.facebook.FacebookOAuth2'] if SOCIAL_AUTH_FACEBOOK_KEY else []
+) + (
+    ['social_core.backends.google.GoogleOAuth2'] if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY else []
 ) + (
     ['social_core.backends.google.GooglePlusAuth'] if SOCIAL_AUTH_GOOGLE_PLUS_KEY else []
 ) + [

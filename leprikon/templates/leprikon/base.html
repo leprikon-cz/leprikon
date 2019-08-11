@@ -63,7 +63,16 @@
                         <li><a href="{% url_with_back 'leprikon:user_email' %}">{% trans 'Change e-mail' %}</a></li>
                         <li><a href="{% url_with_back 'leprikon:user_password' %}">{% trans 'Change password' %}</a></li>
                         <li><a href="{% url_with_back 'leprikon:user_logout' %}">{% trans 'Log out' %}</a></li>
-                        {% if 'google-plus' in backends.not_associated %}
+                        {% if 'google-oauth2' in backends.not_associated %}
+                        <li>
+                            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ next }}">
+                                <button class="btn btn-block btn-sm btn-social btn-google">
+                                    <i class="fa fa-google pull-left"></i>
+                                    {% trans 'Link with your Google account' %}
+                                </button>
+                            </a>
+                        </li>
+                        {% elif 'google-plus' in backends.not_associated %}
                         <li>
                             <a href="{% url 'social:begin' 'google-plus' %}?next={{ next }}">
                                 <button class="btn btn-block btn-sm btn-social btn-google">
