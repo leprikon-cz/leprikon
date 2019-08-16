@@ -29,7 +29,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
-    scripts=['bin/leprikon'],
+    entry_points={'console_scripts': ['leprikon = leprikon.__main__:main']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
