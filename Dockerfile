@@ -55,4 +55,6 @@ RUN pip install --no-cache-dir /src \
  && rm data/db.sqlite3 \
  && chown www-data:www-data data htdocs/media run
 
+VOLUME /app/data /app/htdocs/media
+
 CMD ["/app/bin/run-supervisord"]
