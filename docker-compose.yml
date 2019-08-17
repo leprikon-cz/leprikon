@@ -2,48 +2,55 @@ version: '3.4'
 services:
 
   leprikon:
-    image: leprikon/leprikon:testing
+    image: leprikon/leprikon:latest
+    build: .
     depends_on:
-      - db
       - memcached
+      - mysql
+      - smtp
     environment:
-      DEBUG: TEMPLATE
-      SECRET_KEY: secretkey
+      SECRET_KEY: SECRET_KEY
       DATABASE_ENGINE: django.db.backends.mysql
       DATABASE_HOST: ''
       DATABASE_NAME: leprikon
-      DATABASE_PASSWORD: leprikonpassword
       DATABASE_USER: leprikon
+      DATABASE_PASSWORD: DATABASE_PASSWORD
+      EMAIL_HOST: smtp
+      EMAIL_HOST_USER: leprikon
+      EMAIL_HOST_PASSWORD: EMAIL_HOST_PASSWORD
+      EMAIL_SUBJECT_PREFIX: '[Leprikón]'
       MEMCACHED_LOCATION: memcached:11211
+      SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
     ports:
-      - 127.0.0.1:8000:80
-    restart: unless-stopped
+      - 127.0.0.1:80:80
     volumes:
-      - ./leprikon:/app/leprikon:z
-      - ./leprikon_tests:/app/leprikon_tests:z
-      - ./bin:/app/bin:z
-      - ./conf:/app/conf:z
-      - ./data:/app/data:z
-      - ./htdocs/media:/app/htdocs/media:z
-      - db:/var/run/mysqld:z
-
-  db:
-    image: mariadb
-    environment:
-      MYSQL_DATABASE: leprikon
-      MYSQL_PASSWORD: leprikonpassword
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: leprikon
-    restart: unless-stopped
-    volumes:
-      - db:/var/run/mysqld:z
-      - ./mysql:/var/lib/mysql:z
+      - ./data:/app/data
+      - ./media:/app/htdocs/media
+      - mysql:/var/run/mysqld
 
   memcached:
     image: memcached
-    ports:
-      - 127.0.0.1:11211:11211
-    restart: unless-stopped
+
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_DATABASE: leprikon
+      MYSQL_USER: leprikon
+      MYSQL_PASSWORD: DATABASE_PASSWORD
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+    volumes:
+      - mysql:/var/run/mysqld
+      - ./mysql:/var/lib/mysql
+
+  smtp:
+    image: catatnight/postfix
+    environment:
+      maildomain: leprikon.cz
+      smtp_user: leprikon:EMAIL_HOST_PASSWORD
+    stdin_open: true
+    tty: true
+    volumes:
+    - ./dkim:/etc/opendkim/domainkeys
 
 volumes:
-  db:
+  mysql:
