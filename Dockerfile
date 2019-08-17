@@ -3,6 +3,7 @@ FROM ubuntu:bionic
 LABEL name="Leprikón"
 LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
 
+ENV IPYTHONDIR=/app/data/ipython
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED 1
 
@@ -49,7 +50,7 @@ RUN pip install --no-cache-dir /src \
  && cp -a /src/translations/* /usr/local/lib/python3.6/dist-packages/ \
  && cp -a /src/conf /src/bin /src/startup ./ \
  && rm -r /src \
- && mkdir -p data htdocs/media htdocs/static run \
+ && mkdir -p data/ipython htdocs/media htdocs/static run \
  && leprikon collectstatic --no-input \
  && rm data/db.sqlite3 \
  && chown www-data:www-data data htdocs/media run

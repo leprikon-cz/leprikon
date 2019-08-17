@@ -19,7 +19,6 @@ services:
       - 127.0.0.1:8000:80
     restart: unless-stopped
     volumes:
-      - ./.ipython:/root/.ipython:z
       - ./leprikon:/app/leprikon:z
       - ./leprikon_tests:/app/leprikon_tests:z
       - ./bin:/app/bin:z
