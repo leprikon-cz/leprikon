@@ -4,6 +4,7 @@
 *.swp
 *~
 /.coverage
+/.git
 /.ipython
 /.tox
 /build
