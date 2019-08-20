@@ -1,6 +1,13 @@
 from bankreader.readers import register_reader
 from bankreader.readers.best import BestReader
 from bankreader.readers.csv import CsvReader
+from bankreader.readers.gpc import GpcReader
+
+
+@register_reader
+class CZGpcReader(GpcReader):
+    label = 'Formát GPC'
+    encoding = 'cp1250'
 
 
 @register_reader
