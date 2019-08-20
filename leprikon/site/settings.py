@@ -257,6 +257,8 @@ STATICFILES_FINDERS = [
     'staticfiles_downloader.DownloaderFinder',
 ]
 
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')] if os.path.exists(os.path.join(BASE_DIR, 'locale')) else []
+
 # Logging
 # https://docs.djangoproject.com/en/1.11/topics/logging/
 
@@ -352,6 +354,11 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Leprikón] ').strip() + ' '
+EMAIL_BACKEND = (
+    'django.core.mail.backends.console.EmailBackend'
+    if 'EMAIL' in os.environ.get('DEBUG', '').split(',')
+    else 'django.core.mail.backends.smtp.EmailBackend'
+)
 
 # CMS configuration
 # http://djangocms.readthedocs.io/en/latest/reference/configuration/
@@ -375,7 +382,7 @@ CMS_PERMISSION = True
 
 CMS_PLACEHOLDER_CONF = {}
 
-THUMBNAIL_DEBUG = os.environ.get('DEBUG', False) == 'THUMBNAIL'
+THUMBNAIL_DEBUG = 'THUMBNAIL' in os.environ.get('DEBUG', '').split(',')
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
