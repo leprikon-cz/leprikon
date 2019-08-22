@@ -3,6 +3,7 @@ from json import dumps
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils.crypto import get_random_string
@@ -253,19 +254,25 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         if self.user.is_authenticated():
             self.instance.user = self.user
         else:
-            user = User.objects.filter(
-                email=self.email_form.cleaned_data['email'].lower(),
-            ).first() or User(
-                email=self.email_form.cleaned_data['email'].lower(),
-            )
-            while not user.pk:
-                user.username = get_random_string()
+            email = self.email_form.cleaned_data['email'].lower()
+            user = User.objects.filter(email=email).first()
+            if not user:
+                username_base = email.split('@')[0]
+                username_max_length = User._meta.get_field('username').max_length
+                user = User(
+                    username=username_base[:username_max_length],
+                    email=email,
+                )
                 user.set_password(get_random_string())
-                try:
-                    user.save()
-                except IntegrityError:
-                    # on duplicit username try again
-                    pass
+                while not user.pk:
+                    try:
+                        with transaction.atomic():
+                            user.save()
+                    except IntegrityError:
+                        user.username = '.'.join((
+                            username_base[:(username_max_length - 4)],
+                            get_random_string(3),
+                        ))
             self.instance.user = user
 
         # set price
