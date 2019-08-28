@@ -122,6 +122,7 @@
                 <td>{% trans 'E-mail' %}</td>
                 <td><para style="para">{{ object.participant.email }}</para></td>
             </tr>
+            {% if object.participant.age_group.require_school %}
             <tr>
                 <td>{% trans 'School' %}</td>
                 <td><para style="para">{{ object.participant.school_name }}</para></td>
@@ -130,6 +131,7 @@
                 <td>{% trans 'Class' %}</td>
                 <td><para style="para">{{ object.participant.school_class }}</para></td>
             </tr>
+            {% endif %}
             {% for qa in object.get_questions_and_answers %}
             <tr>
                 <td>{{ qa.question }}</td>

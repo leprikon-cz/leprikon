@@ -9,6 +9,7 @@ from ..utils import first_upper
 class AgeGroup(models.Model):
     name    = models.CharField(_('name'), max_length=50)
     order   = models.IntegerField(_('order'), blank=True, default=0)
+    require_school = models.BooleanField(_('require school'), default=True)
 
     class Meta:
         app_label           = 'leprikon'

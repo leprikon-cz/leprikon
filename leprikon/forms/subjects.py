@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils.crypto import get_random_string
+from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from verified_email_field.forms import VerifiedEmailField
@@ -18,6 +19,7 @@ from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
 from ..models.place import Place
 from ..models.roles import Leader, Parent, Participant
+from ..models.school import School
 from ..models.subjects import Subject, SubjectGroup, SubjectType
 from ..utils import get_age, get_birth_date
 from .form import FormMixin
@@ -145,6 +147,12 @@ class SubjectForm(FormMixin, forms.ModelForm):
 
 
 class RegistrationForm(FormMixin, forms.ModelForm):
+    participant_school = forms.ChoiceField(
+        label=_('School'),
+        choices=lambda: [('', '---------')] + [
+            (school.id, school) for school in School.objects.all()
+        ] + [('other', _('other school'))]
+    )
 
     def __init__(self, subject, user, **kwargs):
         super(RegistrationForm, self).__init__(**kwargs)
@@ -237,17 +245,66 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         kwargs['prefix'] = 'old_agreement'
         self.old_agreement_form = self.OldAgreementForm(**kwargs)
 
+    def _add_error_required(self, field_name):
+        self.add_error(field_name, forms.ValidationError(
+            self.fields[field_name].error_messages['required'],
+            code='required',
+        ))
+
+    def clean(self):
+        # check required school and class
+        if 'participant_age_group' in self.cleaned_data:
+            if self.cleaned_data['participant_age_group'].require_school:
+                # require school
+                participant_school = self.cleaned_data.get('participant_school')
+                if participant_school:
+                    if participant_school == 'other':
+                        self.cleaned_data['participant_school'] = None
+                        # require other school
+                        if not self.cleaned_data.get('participant_school_other'):
+                            self._add_error_required('participant_school_other')
+                    else:
+                        self.cleaned_data['participant_school'] = School.objects.get(
+                            id=int(self.cleaned_data['participant_school']),
+                        )
+                else:
+                    self._add_error_required('participant_school')
+                # require school class
+                if not self.cleaned_data.get('participant_school_class'):
+                    self._add_error_required('participant_school_class')
+            else:
+                # delete school and class
+                self.cleaned_data['participant_school'] = None
+                self.cleaned_data['participant_school_other'] = ''
+                self.cleaned_data['participant_school_class'] = ''
+        return self.cleaned_data
+
+    @cached_property
+    def required_forms(self):
+        required_forms = [
+            super(RegistrationForm, self),
+            self.participant_select_form,
+            self.questions_form,
+            self.parent1_select_form,
+            self.parent2_select_form,
+        ] + self.agreement_forms
+        if not self.user.is_authenticated:
+            required_forms.append(self.email_form)
+        if self.instance.old_registration_agreement:
+            required_forms.append(self.old_agreement_form)
+        return required_forms
+
     def is_valid(self):
-        return (
-            (self.user.is_authenticated or self.email_form.is_valid()) and
-            self.participant_select_form.is_valid() and
-            self.questions_form.is_valid() and
-            self.parent1_select_form.is_valid() and
-            self.parent2_select_form.is_valid() and
-            (not self.instance.old_registration_agreement or self.old_agreement_form.is_valid()) and
-            all(agreement_form.is_valid() for agreement_form in self.agreement_forms) and
-            super(RegistrationForm, self).is_valid()
-        )
+        # validate all required forms
+        results = [form.is_valid() for form in self.required_forms]
+        return all(results)
+
+    @cached_property
+    def errors(self):
+        return {
+            (form.prefix + field_name if form.prefix else field_name): error
+            for form in self.required_forms for field_name, error in form.errors.items()
+        }
 
     def save(self, commit=True):
         # set user

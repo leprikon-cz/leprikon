@@ -96,12 +96,16 @@
     {% include 'leprikon/form_item.html' with item=form.participant_postal_code %}
     {% include 'leprikon/form_item.html' with item=form.participant_citizenship %}
     <div id="participant_contact" class="hidden">
-    {% include 'leprikon/form_item.html' with item=form.participant_phone %}
-    {% include 'leprikon/form_item.html' with item=form.participant_email %}
+        {% include 'leprikon/form_item.html' with item=form.participant_phone %}
+        {% include 'leprikon/form_item.html' with item=form.participant_email %}
     </div>
-    {% include 'leprikon/form_item.html' with item=form.participant_school %}
-    {% include 'leprikon/form_item.html' with item=form.participant_school_other %}
-    {% include 'leprikon/form_item.html' with item=form.participant_school_class %}
+    <div id="participant_school_details" class="hidden">
+        {% include 'leprikon/form_item.html' with item=form.participant_school %}
+        <div id="participant_school_other" class="hidden">
+            {% include 'leprikon/form_item.html' with item=form.participant_school_other %}
+        </div>
+        {% include 'leprikon/form_item.html' with item=form.participant_school_class %}
+    </div>
     {% include 'leprikon/form_item.html' with item=form.participant_health %}
     {% for item in form.questions_form %}
         {% include 'leprikon/form_item.html' %}
@@ -192,17 +196,19 @@ function getAge(birthNum) {
     return today.getFullYear() - year - (new Date(today.getFullYear(), month-1, day) > today ? 1 : 0)
 }
 
-function changedBirthNum() {
-    age = getAge(this.value);
-    if (isNaN(age)) return;
-    if (age < 18) {
-        $('#parent1_switch .form-group').addClass('required');
-        $('#participant_contact .form-group').removeClass('required');
-        $('#participant_contact').addClass('hidden');
+var groups_requires_school = {{% for age_group in form.instance.subject.all_age_groups %}
+    {{ age_group.id }}: {% if age_group.require_school %}true{% else %}false{% endif %},{% endfor %}
+};
+
+function toggle_section(show, section_name) {
+    if (show) {
+        $('#' + section_name + ' .form-group').addClass('required');
+        $('#' + section_name + ' .form-control').attr('required', '');
+        $('#' + section_name + '').removeClass('hidden');
     } else {
-        $('#parent1_switch .form-group').removeClass('required');
-        $('#participant_contact .form-group').addClass('required');
-        $('#participant_contact').removeClass('hidden');
+        $('#' + section_name + ' .form-group').removeClass('required');
+        $('#' + section_name + ' .form-control').removeAttr('required');
+        $('#' + section_name + '').addClass('hidden');
     }
 }
 
@@ -254,23 +260,15 @@ $(document).ready(function() {
 
     /* Toggle first parent */
     $('#id_has_parent1').change(function() {
-        if (this.checked) {
-            $('#parent1_form').removeClass('hidden');
-            $('#parent1_form .form-group').addClass('required');
-        } else {
-            $('#parent1_form').addClass('hidden');
-        }
+        toggle_section(this.checked, 'parent1_form');
     });
+    $('#id_has_parent1').trigger('change');
 
     /* Toggle second parent */
     $('#id_has_parent2').change(function() {
-        if (this.checked) {
-            $('#parent2_form').removeClass('hidden');
-            $('#parent2_form .form-group').addClass('required');
-        } else {
-            $('#parent2_form').addClass('hidden');
-        }
+        toggle_section(this.checked, 'parent2_form');
     });
+    $('#id_has_parent2').trigger('change');
 
     /* Select first parent */
     $('input[type=radio][name=parent1_select-parent]').change(function() {
@@ -314,8 +312,31 @@ $(document).ready(function() {
         }{% endfor %}
     });
 
-    /* Select second parent */
-    $('#id_participant_birth_num').change(changedBirthNum);
+    /* Set callbeck on birth number change */
+    $('#id_participant_birth_num').change(function() {
+        age = getAge(this.value);
+        if (isNaN(age)) return;
+        if (age < 18) {
+            $('#parent1_switch .form-group').addClass('required');
+        } else {
+            $('#parent1_switch .form-group').removeClass('required');
+        }
+        toggle_section(age >= 18, 'participant_contact');
+    });
+    $('#id_participant_birth_num').trigger('change');
+
+    /* Set callbeck on school change */
+    $('#id_participant_school').change(function() {
+        toggle_section(this.selectedIndex == this.options.length - 1, 'participant_school_other');
+    });
+    $('#id_participant_school').trigger('change');
+
+    /* Set callbeck on age group change */
+    $('#id_participant_age_group').change(function() {
+        toggle_section(groups_requires_school[this.value], 'participant_school_details');
+        $('#id_participant_school').trigger('change');
+    });
+    $('#id_participant_age_group').trigger('change');
 });
 
 </script>
