@@ -288,6 +288,9 @@ LOGGING = {
             'level': 'DEBUG' if DBDEBUG else 'ERROR',
             'propagate': True,
         },
+        'parso': {
+            'level': 'INFO',
+        },
     },
 }
 if not DEBUG_LML:
