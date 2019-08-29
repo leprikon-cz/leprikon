@@ -33,4 +33,5 @@ raven
 requests
 social-auth-app-django
 uwsgi
+whoosh
 -e git+https://github.com/misli/trml2pdf.git@registerFontFamily#egg=trml2pdf

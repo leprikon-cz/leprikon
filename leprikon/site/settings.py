@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django_pays',
     'cms',
+    'haystack',
     'menus',
     'sekizai',
     'template_admin',
@@ -393,6 +394,16 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
+
+# Haystack configuration
+HAYSTACK_CONNECTIONS = {
+    'default': {'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine'},
+}
+for key, value in os.environ.items():
+    if key.startswith('HAYSTACK_'):
+        HAYSTACK_CONNECTIONS['default'][key[len('HAYSTACK_'):]] = value
+if HAYSTACK_CONNECTIONS['default']['ENGINE'] == 'haystack.backends.whoosh_backend.WhooshEngine':
+    HAYSTACK_CONNECTIONS['default'].setdefault('PATH', os.path.join(DATA_DIR, 'whoosh_index'))
 
 # Rocket.Chat URL
 ROCKETCHAT_URL = os.environ.get('ROCKETCHAT_URL')
