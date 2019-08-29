@@ -83,7 +83,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
         ]
 
     def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(UserAdmin, self).get_readonly_fields(self, request, obj)) + [
+        readonly_fields = list(super(UserAdmin, self).get_readonly_fields(request, obj)) + [
             'last_login',
             'date_joined',
         ]
