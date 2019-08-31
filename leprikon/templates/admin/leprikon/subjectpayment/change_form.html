@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+{{ block.super }}
+<script>
+
+(function($) {
+    function populate(data) {
+        $('#id_amount').val(data.amount);
+        $('#id_payment_type').val(data.payment_type);
+    }
+    $('#id_related_payment').change(function () {
+        $.getJSON(
+            '{% url 'admin:leprikon_subjectpayment_populate' %}',
+            {related_payment: this.value},
+            populate,
+        );
+    });
+    $('#id_bankreader_transaction').change(function () {
+        $.getJSON(
+            '{% url 'admin:leprikon_subjectpayment_populate' %}',
+            {bankreader_transaction: this.value},
+            populate,
+        );
+    });
+})(django.jQuery);
+</script>
+{% endblock %}

@@ -8,7 +8,7 @@ from json import loads
 
 import qrcode
 import trml2pdf
-from bankreader.models import Transaction
+from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
@@ -25,7 +25,7 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django_pays import payment_url as pays_payment_url
-from django_pays.models import Payment
+from django_pays.models import Payment as PaysPayment
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
@@ -961,15 +961,11 @@ class SubjectRegistration(PdfExportMixin, models.Model):
 
 class TransactionMixin(object):
 
-    def clean_fields(self, exclude=None):
-        super(TransactionMixin, self).clean_fields(exclude)
-        self.validate()
-
     def save(self, *args, **kwargs):
-        self.validate()
+        self.clean()
         super(TransactionMixin, self).save(*args, **kwargs)
 
-    def validation_errors(self):
+    def clean(self):
         errors = {}
         if self.amount == 0:
             errors['amount'] = [_('Amount can not be zero.')]
@@ -981,7 +977,8 @@ class TransactionMixin(object):
                         formats.date_format(max_closure_date)
                     )
                 ]
-        return errors
+        if errors:
+            raise ValidationError(errors)
 
 
 @python_2_unicode_compatible
@@ -999,11 +996,6 @@ class SubjectDiscount(TransactionMixin, models.Model):
 
     def __str__(self):
         return currency(self.amount)
-
-    def validate(self):
-        errors = self.validation_errors()
-        if errors:
-            raise ValidationError(errors)
 
 
 @python_2_unicode_compatible
@@ -1024,23 +1016,25 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
         (RETURN_BANK, _('return - bank')),
         (RETURN_TRANSFER, _('return - transfer to payment')),
     ])
+    payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
+    returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
+
     registration    = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                         related_name='payments', on_delete=models.PROTECT)
     accounted       = models.DateTimeField(_('accounted time'), default=now)
     payment_type    = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount          = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note            = models.CharField(_('note'), max_length=300, blank=True, default='')
-    related_payment = models.ForeignKey('self', verbose_name=_('related payment'), blank=True, null=True,
-                                        related_name='related_payments', on_delete=models.PROTECT)
-    bankreader_transaction = models.OneToOneField(Transaction, verbose_name=_('bank account transaction'),
+    related_payment = models.OneToOneField('self', verbose_name=_('related payment'), blank=True, null=True,
+                                           limit_choices_to={'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)},
+                                           related_name='related_payments', on_delete=models.PROTECT)
+    bankreader_transaction = models.OneToOneField(BankreaderTransaction, verbose_name=_('bank account transaction'),
                                                   blank=True, null=True, on_delete=models.PROTECT)
-    pays_payment    = models.OneToOneField(Payment, verbose_name=_('online payment'),
+    pays_payment    = models.OneToOneField(PaysPayment, editable=False, verbose_name=_('online payment'),
+                                           limit_choices_to={'status': PaysPayment.REALIZED},
                                            blank=True, null=True, on_delete=models.PROTECT)
     received_by     = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_('received by'),
                                         related_name='+', on_delete=models.PROTECT)
-
-    payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
-    returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
 
     class Meta:
         app_label           = 'leprikon'
@@ -1086,22 +1080,55 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
             subject=self.subject.name,
         )
 
-    def validate(self):
-        errors = self.validation_errors()
-        if self.amount and self.payment_type:
-            if self.amount > 0 and self.payment_type not in self.payments:
-                errors['payment_type'] = [_('Select one of the payments or use negative amount.')]
-            elif self.amount < 0 and self.payment_type not in self.returns:
-                errors['payment_type'] = [_('Select one of the returns or use positive amount.')]
+    def clean(self):
+        errors = {}
+        try:
+            super(SubjectPayment, self).clean()
+        except ValidationError as e:
+            errors = e.update_error_dict(errors)
+
+        # ensure at most one relation
+        if [self.related_payment, self.bankreader_transaction, self.pays_payment].count(None) < 2:
+            message = _('Payment can only have one relation.')
+            if self.related_payment:
+                errors['related_payment'] = message
+            if self.bankreader_transaction:
+                errors['bankreader_transaction'] = message
+        else:
+            if self.related_payment:
+                valid_payment_type = (
+                    SubjectPayment.PAYMENT_TRANSFER
+                    if self.related_payment.payment_type == SubjectPayment.RETURN_TRANSFER
+                    else SubjectPayment.RETURN_TRANSFER
+                )
+                valid_amount = -self.related_payment.amount
+            if self.bankreader_transaction:
+                valid_payment_type = (
+                    SubjectPayment.PAYMENT_BANK
+                    if self.bankreader_transaction.amount > 0
+                    else SubjectPayment.RETURN_BANK
+                )
+                valid_amount = self.bankreader_transaction.amount
+            if self.related_payment or self.bankreader_transaction:
+                if self.payment_type != valid_payment_type:
+                    errors.setdefault('related_payment', []).append(
+                        _('Payment type must be {valid_payment_type}.').format(
+                            valid_payment_type=self.payment_type_labels[valid_payment_type],
+                        )
+                    )
+                if self.amount != valid_amount:
+                    errors.setdefault('amount', []).append(
+                        _('Amount must be {valid_amount}.').format(valid_amount=valid_amount)
+                    )
         if errors:
             raise ValidationError(errors)
 
 
-@receiver(models.signals.post_save, sender=Payment)
+@receiver(models.signals.post_save, sender=PaysPayment)
 def payment_create_subject_payment(instance, **kwargs):
     payment = instance
     # check realized payment
-    if payment.status != Payment.REALIZED:
+    if payment.status != PaysPayment.REALIZED:
         return
     # check registration
     try:
@@ -1119,7 +1146,7 @@ def payment_create_subject_payment(instance, **kwargs):
     )
 
 
-@receiver(models.signals.post_save, sender=Transaction)
+@receiver(models.signals.post_save, sender=BankreaderTransaction)
 def transaction_create_subject_payment(instance, **kwargs):
     transaction = instance
     # check variable symbol

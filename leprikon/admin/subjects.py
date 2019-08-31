@@ -1,19 +1,23 @@
 from json import dumps
 
+from bankreader.models import Transaction as BankreaderTransaction
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import RegistrationAdminForm
 from ..models.subjects import (
-    Subject, SubjectAttachment, SubjectTypeAttachment, SubjectVariant,
+    Subject, SubjectAttachment, SubjectPayment, SubjectTypeAttachment,
+    SubjectVariant,
 )
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
@@ -458,11 +462,14 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     raw_id_fields   = ('registration',)
     closed_fields   = ('accounted', 'registration', 'amount')
 
-    def has_delete_permission(self, request, obj=None):
-        if (
+    def is_closed(self, request, obj):
+        return (
             obj and request.leprikon_site.max_closure_date and
             request.leprikon_site.max_closure_date > obj.accounted.date()
-        ):
+        )
+
+    def has_delete_permission(self, request, obj=None):
+        if self.is_closed(request, obj):
             return False
         else:
             return super(SubjectPaymentBaseAdmin, self).has_delete_permission(request, obj)
@@ -472,10 +479,7 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
             # it is strange, but obj given to this method contains values from request.POST
             # but we need to decide according to current state in database
             obj = self.model.objects.get(pk=obj.pk)
-        if (
-            obj and request.leprikon_site.max_closure_date and
-            request.leprikon_site.max_closure_date > obj.accounted.date()
-        ):
+        if self.is_closed(request, obj):
             return self.closed_fields
         else:
             return ()
@@ -506,8 +510,52 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
                        'received_by', 'note')
     list_editable   = ('note',)
     list_export     = ('accounted', 'registration', 'subject', 'payment_type_label', 'amount')
-    raw_id_fields   = ('bankreader_transaction', 'registration', 'related_payment',)
+    raw_id_fields   = ('registration', 'related_payment', 'bankreader_transaction', 'pays_payment')
     exclude         = ('received_by',)
+
+    def get_urls(self):
+        urls = super(SubjectPaymentAdmin, self).get_urls()
+        populate_view = self.admin_site.admin_view(permission_required('leprikon.add_subjectpayment')(self.populate))
+        return [
+            urls_url(r'populate.json$', populate_view, name='leprikon_subjectpayment_populate')
+        ] + urls
+
+    def populate(self, request):
+        if 'related_payment' in request.GET:
+            try:
+                related_payment = get_object_or_404(
+                    SubjectPayment,
+                    id=int(request.GET['related_payment']),
+                    payment_type__in=(SubjectPayment.PAYMENT_TRANSFER, SubjectPayment.RETURN_TRANSFER),
+                )
+            except ValueError:
+                return HttpResponseBadRequest()
+            return JsonResponse({
+                'amount': - related_payment.amount,
+                'payment_type': (
+                    SubjectPayment.RETURN_TRANSFER
+                    if related_payment.payment_type == SubjectPayment.PAYMENT_TRANSFER
+                    else SubjectPayment.PAYMENT_TRANSFER
+                )
+            })
+        elif 'bankreader_transaction' in request.GET:
+            try:
+                bankreader_transaction = get_object_or_404(
+                    BankreaderTransaction,
+                    id=int(request.GET['bankreader_transaction']),
+                )
+            except ValueError:
+                return HttpResponseBadRequest()
+            return JsonResponse({
+                'amount': bankreader_transaction.amount,
+                'payment_type': (
+                    SubjectPayment.PAYMENT_BANK
+                    if bankreader_transaction.amount > 0
+                    else SubjectPayment.RETURN_BANK
+                )
+            })
+        else:
+            return HttpResponseBadRequest()
 
     def save_model(self, request, obj, form, change):
         if not change:
