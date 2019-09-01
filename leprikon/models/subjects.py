@@ -1111,7 +1111,7 @@ class SubjectPayment(PdfExportMixin, TransactionMixin, models.Model):
                 valid_amount = self.bankreader_transaction.amount
             if self.related_payment or self.bankreader_transaction:
                 if self.payment_type != valid_payment_type:
-                    errors.setdefault('related_payment', []).append(
+                    errors.setdefault('payment_type', []).append(
                         _('Payment type must be {valid_payment_type}.').format(
                             valid_payment_type=self.payment_type_labels[valid_payment_type],
                         )
