@@ -219,6 +219,7 @@ $(document).ready(function() {
             $('#id_participant_last_name').val('');
             $('#id_participant_birth_num').val('');
             $('#id_participant_age_group').val('');
+            $('#id_participant_age_group').trigger('change');
             $('#id_participant_street').val('');
             $('#id_participant_city').val('');
             $('#id_participant_postal_code').val('');
@@ -226,6 +227,7 @@ $(document).ready(function() {
             $('#id_participant_phone').val('');
             $('#id_participant_email').val('');
             $('#id_participant_school').val('');
+            $('#id_participant_school').trigger('change');
             $('#id_participant_school_other').val('');
             $('#id_participant_school_class').val('');
             $('#id_participant_health').val('');
@@ -234,13 +236,15 @@ $(document).ready(function() {
             $('#id_participant_last_name').val('{{ participant.last_name | escapejs }}');
             $('#id_participant_birth_num').val('{{ participant.birth_num | escapejs }}').change();
             $('#id_participant_age_group').val('{{ participant.age_group_id }}');
+            $('#id_participant_age_group').trigger('change');
             $('#id_participant_street').val('{{ participant.street | escapejs }}');
             $('#id_participant_city').val('{{ participant.city | escapejs }}');
             $('#id_participant_postal_code').val('{{ participant.postal_code | escapejs }}');
             $('#id_participant_citizenship').val('{{ participant.citizenship_id }}');
             $('#id_participant_phone').val('{{ participant.phone | escapejs }}');
             $('#id_participant_email').val('{{ participant.email | escapejs }}');
-            $('#id_participant_school').val('{{ participant.school_id }}');
+            $('#id_participant_school').val('{% if participant.school_other %}other{% else %}{{ participant.school_id }}{% endif %}');
+            $('#id_participant_school').trigger('change');
             $('#id_participant_school_other').val('{{ participant.school_other | escapejs }}');
             $('#id_participant_school_class').val('{{ participant.school_class | escapejs }}');
             $('#id_participant_health').val('{{ participant.health | escapejs }}');
