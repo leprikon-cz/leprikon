@@ -72,7 +72,10 @@ class LeprikonMiddleware(object):
                 granted__gt=request.leprikon_site.user_agreement_changed,
             ).exists():
                 request.session['user_agreement_ok'] = 1
-            elif request.path != self.user_agreement_url:
+            elif request.path not in (
+                self.user_agreement_url,
+                self.user_logout_url,
+            ):
                 return redirect_to_login(
                     request.path,
                     login_url=self.user_agreement_url,
