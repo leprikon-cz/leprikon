@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-29 00:28+0200\n"
+"POT-Creation-Date: 2019-09-01 11:46+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -170,7 +170,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:98 admin/subjects.py:399 admin/subjects.py:485
+#: admin/journals.py:98 admin/subjects.py:403 admin/subjects.py:495
 #: models/journals.py:20 models/journals.py:144 models/messages.py:21
 #: models/roles.py:253 models/subjects.py:225 models/subjects.py:437
 #: models/subjects.py:456 models/subjects.py:557
@@ -308,7 +308,7 @@ msgstr "kurzy"
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:120 admin/subjects.py:204 admin/subjects.py:261
+#: admin/roles.py:120 admin/subjects.py:208 admin/subjects.py:265
 #: models/roles.py:27 models/subjects.py:196
 msgid "photo"
 msgstr "fotka"
@@ -318,7 +318,7 @@ msgstr "fotka"
 msgid "address"
 msgstr "adresa"
 
-#: admin/roles.py:219 admin/subjects.py:181 models/subjects.py:618
+#: admin/roles.py:219 admin/subjects.py:185 models/subjects.py:618
 #: templates/leprikon/subject_preview.html:94
 msgid "registrations"
 msgstr "přihlášky"
@@ -342,80 +342,80 @@ msgstr "Vybraná členění školního roku byla zkopírována do školního rok
 msgid "Copy selected school year divisions to another school year"
 msgstr "Kopírovat vybraná členění školního roku do jiného školního roku"
 
-#: admin/subjects.py:136
+#: admin/subjects.py:140
 msgid "printable journal"
 msgstr "tisknutelný deník"
 
-#: admin/subjects.py:137 admin/subjects.py:139
+#: admin/subjects.py:141 admin/subjects.py:143
 #: templates/leprikon/subject_preview.html:98
 msgid "journal"
 msgstr "deník"
 
-#: admin/subjects.py:153
+#: admin/subjects.py:157
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:155
+#: admin/subjects.py:159
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:157
+#: admin/subjects.py:161
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:178
+#: admin/subjects.py:182
 msgid "add registration"
 msgstr "vytvořit přihlášku"
 
-#: admin/subjects.py:186
+#: admin/subjects.py:190
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:190
+#: admin/subjects.py:194
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:195
+#: admin/subjects.py:199
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:217
+#: admin/subjects.py:221
 msgid "Registration dates were updated."
 msgstr "Datumy přihlašování byly uloženy."
 
-#: admin/subjects.py:222
+#: admin/subjects.py:226
 msgid "Select registration dates"
 msgstr "Vyberte datumy přihlašování"
 
-#: admin/subjects.py:230
+#: admin/subjects.py:234
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:329
+#: admin/subjects.py:333
 msgid "Selected registrations were approved."
 msgstr "Vybrané přihlášky byly schváleny."
 
-#: admin/subjects.py:330
+#: admin/subjects.py:334
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:335
+#: admin/subjects.py:339
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:336
+#: admin/subjects.py:340
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:341
+#: admin/subjects.py:345
 msgid "Selected registrations were canceled."
 msgstr "Vybrané přihlášky byly odhlášeny."
 
-#: admin/subjects.py:342
+#: admin/subjects.py:346
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:493 models/subjects.py:1031
+#: admin/subjects.py:503 models/subjects.py:1026
 #: templates/leprikon/payment/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -487,7 +487,7 @@ msgstr "Vyberte cílový uživatelský účet pro sloučení"
 msgid "Merge selected user accounts"
 msgstr "Sloučit vybrané uživatele"
 
-#: admin/user.py:98 admin/user.py:101
+#: admin/user.py:113 admin/user.py:116 admin/user.py:121 admin/user.py:124
 msgid "login"
 msgstr "přihlásit"
 
@@ -1026,7 +1026,7 @@ msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
 #: models/courses.py:289 models/events.py:167 models/subjects.py:617
-#: models/subjects.py:1027
+#: models/subjects.py:1022
 msgid "registration"
 msgstr "přihláška"
 
@@ -1648,7 +1648,7 @@ msgstr "plán"
 msgid "evaluation"
 msgstr "evaluace"
 
-#: models/subjects.py:205 models/subjects.py:568 models/subjects.py:1032
+#: models/subjects.py:205 models/subjects.py:568 models/subjects.py:1027
 msgid "note"
 msgstr "poznámka"
 
@@ -1736,110 +1736,116 @@ msgstr "Přihláška na {subject_type} {subject} - výzva k platbě"
 msgid "Registration for {subject_type} {subject} - approved"
 msgstr "Přihláška na {subject_type} {subject} - schváleno"
 
-#: models/subjects.py:975
+#: models/subjects.py:971
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:980
+#: models/subjects.py:976
 msgid "Date must be after the last account closure ({})."
 msgstr "Datum musí být vyšší než datum posledního uzavření účtu ({})."
 
-#: models/subjects.py:989 models/subjects.py:1029
+#: models/subjects.py:986 models/subjects.py:1024
 msgid "accounted time"
 msgstr "čas zaúčtování"
 
-#: models/subjects.py:990 models/subjects.py:996
+#: models/subjects.py:987 models/subjects.py:993
 #: templates/leprikon/registration_payments_presences.html:44
 msgid "discount"
 msgstr "sleva"
 
-#: models/subjects.py:991
+#: models/subjects.py:988
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:997 templates/leprikon/summary.html:15
+#: models/subjects.py:994 templates/leprikon/summary.html:15
 msgid "discounts"
 msgstr "slevy"
 
-#: models/subjects.py:1019
+#: models/subjects.py:1011
 msgid "payment - cash"
 msgstr "platba v hotovosti"
 
-#: models/subjects.py:1020
+#: models/subjects.py:1012
 msgid "payment - bank"
 msgstr "platba na bankovní účet"
 
-#: models/subjects.py:1021
+#: models/subjects.py:1013
 msgid "payment - online"
 msgstr "platba on-line"
 
-#: models/subjects.py:1022
+#: models/subjects.py:1014
 msgid "payment - transfer from return"
 msgstr "platba z přeplatku"
 
-#: models/subjects.py:1023
+#: models/subjects.py:1015
 msgid "return - cash"
 msgstr "navrácení přeplatku v hotovosti"
 
-#: models/subjects.py:1024
+#: models/subjects.py:1016
 msgid "return - bank"
 msgstr "navrácení přeplatku na bankovní účet"
 
-#: models/subjects.py:1025
+#: models/subjects.py:1017
 msgid "return - transfer to payment"
 msgstr "navrácení přeplatku převodem na platbu"
 
-#: models/subjects.py:1030 models/subjects.py:1061
+#: models/subjects.py:1025 models/subjects.py:1055
 #: templates/leprikon/payment/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
 
-#: models/subjects.py:1031
+#: models/subjects.py:1026
 msgid "positive value for payment, negative value for return"
 msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 
-#: models/subjects.py:1033
+#: models/subjects.py:1028
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:1035
+#: models/subjects.py:1031
 msgid "bank account transaction"
 msgstr "transakce na účtu"
 
-#: models/subjects.py:1037
+#: models/subjects.py:1033
 msgid "online payment"
 msgstr "platba on-line"
 
-#: models/subjects.py:1039
+#: models/subjects.py:1036
 msgid "received by"
 msgstr "přijal(a)"
 
-#: models/subjects.py:1047
+#: models/subjects.py:1041
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:1048
+#: models/subjects.py:1042
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:1084
+#: models/subjects.py:1078
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment confirmation"
 msgstr "Přihláška na {subject_type} {subject} - potvrzení platby"
 
-#: models/subjects.py:1093
-msgid "Select one of the payments or use negative amount."
-msgstr "Vyberte některou z plateb nebo použijte zápornou částku."
+#: models/subjects.py:1092
+msgid "Payment can only have one relation."
+msgstr "Platba může mít jen jeden související objekt."
 
-#: models/subjects.py:1095
-msgid "Select one of the returns or use positive amount."
-msgstr "Vyberte formu navrácení přeplatku nebo použijte kladnou částku."
+#: models/subjects.py:1115
+#, python-brace-format
+msgid "Payment type must be {valid_payment_type}."
+msgstr "Typ platby musí být {valid_payment_type}."
 
-#: models/subjects.py:1117
+#: models/subjects.py:1121
+#, python-brace-format
+msgid "Amount must be {valid_amount}."
+msgstr "Částka musí být {valid_amount}"
+
+#: models/subjects.py:1144
 msgid "received online payment"
 msgstr "přijatá on-line platba"
 
-#: models/subjects.py:1142
+#: models/subjects.py:1169
 msgid "imported from account statement"
 msgstr "imporováno z výpisu z účtu"
 
@@ -1900,7 +1906,7 @@ msgstr "zbývá doplatit {}"
 msgid "{} overpaid"
 msgstr "přeplaceno {}"
 
-#: site/settings.py:229
+#: site/settings.py:230
 msgid "Czech"
 msgstr "Čeština"
 
