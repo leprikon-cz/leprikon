@@ -1,8 +1,9 @@
 import csv
 
 from django.contrib import admin
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 from django.utils.encoding import force_text
+
 
 class SimpleTest(TestCase):
     def test_exports(self):
