@@ -57,6 +57,18 @@
             <div class="col-sm-8">{{ qa.answer }}</div>
         </div>
         {% endfor %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Legal agreements' %}:</label>
+            <div class="col-sm-8">
+                {% for agreement in reg.subject.all_registration_agreements %}
+                    <strong>{{ agreement.name }}:</strong><br/>
+                    {% for option in agreement.all_options %}
+                        {% if option.required or option in object.all_agreement_options %}☑{% else %}☐{% endif %}
+                        {{ option.name }}<br/>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
         {% include 'leprikon/registration_payments_presences.html' %}
     </div>
 </div>

@@ -22,6 +22,7 @@ from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
 from ..models.subjects import Subject, SubjectGroup, SubjectType
 from ..utils import get_age, get_birth_date
+from .fields import AgreementBooleanField
 from .form import FormMixin
 from .widgets import RadioSelectBootstrap
 
@@ -234,16 +235,13 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             }
             for option in agreement.all_options:
                 option_id = 'option_%s' % option.id
-                form_attributes[option_id] = forms.BooleanField(
+                form_attributes[option_id] = AgreementBooleanField(
                     label=option.option,
-                    required=option.required,
+                    allow_disagree=not option.required,
                 )
                 form_attributes['options'][option_id] = option
             AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
             self.agreement_forms.append(AgreementForm(**kwargs))
-
-        kwargs['prefix'] = 'old_agreement'
-        self.old_agreement_form = self.OldAgreementForm(**kwargs)
 
     def _add_error_required(self, field_name):
         self.add_error(field_name, forms.ValidationError(
@@ -290,8 +288,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         ] + self.agreement_forms
         if not self.user.is_authenticated:
             required_forms.append(self.email_form)
-        if self.instance.old_registration_agreement:
-            required_forms.append(self.old_agreement_form)
         return required_forms
 
     def is_valid(self):
@@ -393,9 +389,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             for option_id, checked in agreement_form.cleaned_data.items():
                 if checked:
                     self.instance.agreement_options.add(agreement_form.options[option_id])
-
-    class OldAgreementForm(FormMixin, forms.Form):
-        agreement = forms.BooleanField(label = _('Terms and Conditions agreement'))
 
     class EmailForm(FormMixin, forms.Form):
         email = VerifiedEmailField(label=_('Your email'), fieldsetup_id='RegistrationEmailForm')

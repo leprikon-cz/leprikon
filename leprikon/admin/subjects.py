@@ -46,11 +46,17 @@ class SubjectTypeAdmin(admin.ModelAdmin):
         SubjectTypeAttachmentInlineAdmin,
     )
 
-    def get_fields(self, request, obj=None):
-        fields = super(SubjectTypeAdmin, self).get_fields(request, obj)
-        if not obj or not obj.old_registration_agreement:
-            fields.remove('old_registration_agreement')
-        return fields
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(SubjectTypeAdmin, self).get_form(request, obj, **kwargs)
+
+        # limit choices of registration agreements
+        registration_agreements_choices = form.base_fields['registration_agreements'].widget.widget.choices
+        registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
+            id__in=request.leprikon_site.registration_agreements.values('id')
+        )
+        form.base_fields['registration_agreements'].choices = registration_agreements_choices
+
+        return form
 
 
 
@@ -106,27 +112,47 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         m.add_js(['leprikon/js/Popup.js'])
         return m
 
-    def get_fields(self, request, obj=None):
-        fields = super(SubjectBaseAdmin, self).get_fields(request, obj)
-        if not obj or not obj.old_registration_agreement:
-            fields.remove('old_registration_agreement')
-        return fields
-
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
         if obj:
             request.school_year = obj.school_year
 
+        # limit choices of subject type
         subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
         subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=self.subject_type)
         form.base_fields['subject_type'].choices = subject_type_choices
+
+        # limit choices of groups
         groups_choices = form.base_fields['groups'].widget.widget.choices
         groups_choices.queryset = groups_choices.queryset.filter(
-            subject_types__subject_type=self.subject_type).distinct()
+            subject_types__subject_type=self.subject_type
+        ).distinct()
         form.base_fields['groups'].choices = groups_choices
+
+        # limit choices of leaders
         leaders_choices = form.base_fields['leaders'].widget.widget.choices
         leaders_choices.queryset = leaders_choices.queryset.filter(school_years = request.school_year)
         form.base_fields['leaders'].choices = leaders_choices
+
+        # limit choices of questions
+        if obj:
+            questions_choices = form.base_fields['questions'].widget.widget.choices
+            questions_choices.queryset = questions_choices.queryset.exclude(
+                id__in=obj.subject_type.questions.values('id')
+            )
+            form.base_fields['questions'].choices = questions_choices
+
+        # limit choices of registration agreements
+        registration_agreements_choices = form.base_fields['registration_agreements'].widget.widget.choices
+        registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
+            id__in=request.leprikon_site.registration_agreements.values('id')
+        )
+        if obj:
+            registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
+                id__in=obj.subject_type.registration_agreements.values('id')
+            )
+        form.base_fields['registration_agreements'].choices = registration_agreements_choices
+
         return form
 
     def save_form(self, request, form, change):

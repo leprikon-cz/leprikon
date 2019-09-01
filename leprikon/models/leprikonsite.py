@@ -54,10 +54,6 @@ class LeprikonSite(Site):
                                         verbose_name=_('registration print setup'), blank=True, null=True)
     user_agreement  = HTMLField(_('user agreement'), blank=True, default='')
     user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
-    old_registration_agreement = HTMLField(
-        _('old registration agreement'), blank=True, default='',
-        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
-    )
     registration_agreements = models.ManyToManyField(
         Agreement, verbose_name=_('registration agreements'), blank=True, related_name='+',
         help_text=_('Add legal agreements for the registration form.'),

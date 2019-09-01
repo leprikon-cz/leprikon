@@ -206,8 +206,6 @@
             </blockTable>
         {% endfor %}
 
-        {{ object.old_registration_agreement|html2rml }}
-
         <spacer length="1cm"/>
 
         <blockTable>

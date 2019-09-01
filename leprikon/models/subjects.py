@@ -77,13 +77,9 @@ class SubjectType(models.Model):
         Question, verbose_name=_('additional questions'), blank=True, related_name='+',
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
-    old_registration_agreement = HTMLField(
-        _('old registration agreement'), blank=True, default='',
-        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
-    )
     registration_agreements = models.ManyToManyField(
-        Agreement, verbose_name=_('additional registration agreements'), blank=True, related_name='+',
-        help_text=_('Add additional legal agreements for the registration form.'),
+        Agreement, verbose_name=_('additional legal agreements'), blank=True, related_name='+',
+        help_text=_('Add additional legal agreements specific to this subject type.'),
     )
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
@@ -206,13 +202,9 @@ class Subject(models.Model):
     questions   = models.ManyToManyField(Question, verbose_name=_('additional questions'),
                                          related_name='+', blank=True,
                                          help_text=_('Add additional questions to be asked in the registration form.'))
-    old_registration_agreement = HTMLField(
-        _('old registration agreement'), blank=True, default='',
-        help_text=_('This agreement will be removed in future version. Please, use registration agreements below.'),
-    )
     registration_agreements = models.ManyToManyField(
-        Agreement, verbose_name=_('additional registration agreements'), blank=True, related_name='+',
-        help_text=_('Add additional legal agreements for the registration form.'),
+        Agreement, verbose_name=_('additional legal agreements'), blank=True, related_name='+',
+        help_text=_('Add additional legal agreements specific for this subject.'),
     )
     reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
                                         verbose_name=_('registration print setup'), blank=True, null=True)
@@ -348,13 +340,6 @@ class Subject(models.Model):
     @cached_property
     def all_inactive_registrations(self):
         return list(self.inactive_registrations.all())
-
-    def get_old_registration_agreement(self):
-        return (
-            self.old_registration_agreement or
-            self.subject_type.old_registration_agreement or
-            LeprikonSite.objects.get_current().old_registration_agreement
-        )
 
     @cached_property
     def all_registration_agreements(self):
@@ -818,10 +803,6 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         if not self.variable_symbol:
             self.variable_symbol = generate_variable_symbol(self)
             super(SubjectRegistration, self).save(*args, **kwargs)
-
-    @cached_property
-    def old_registration_agreement(self):
-        return self.subject.get_old_registration_agreement()
 
     pdf_export = 'registration'
 

@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='registration_agreements',
-            field=models.ManyToManyField(blank=True, help_text='Add additional legal agreements for the registration form.', related_name='_subject_registration_agreements_+', to='leprikon.Agreement', verbose_name='additional registration agreements'),
+            field=models.ManyToManyField(blank=True, help_text='Add additional legal agreements specific for this subject.', related_name='_subject_registration_agreements_+', to='leprikon.Agreement', verbose_name='additional legal agreements'),
         ),
         migrations.AddField(
             model_name='subjectregistration',
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subjecttype',
             name='registration_agreements',
-            field=models.ManyToManyField(blank=True, help_text='Add additional legal agreements for the registration form.', related_name='_subjecttype_registration_agreements_+', to='leprikon.Agreement', verbose_name='additional registration agreements'),
+            field=models.ManyToManyField(blank=True, help_text='Add additional legal agreements specific to this subject type.', related_name='_subjecttype_registration_agreements_+', to='leprikon.Agreement', verbose_name='additional legal agreements'),
         ),
         migrations.AlterUniqueTogether(
             name='agreementoption',
