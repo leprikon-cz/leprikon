@@ -284,7 +284,7 @@ class Subject(models.Model):
                        kwargs={'subject_type': self.subject_type.slug, 'pk': self.id})
 
     def get_edit_url(self):
-        return reverse('admin:leprikon_{}_change'.format(self._meta.model_name), args=(self.id,))
+        return reverse('admin:leprikon_{}_change'.format(self.subject._meta.model_name), args=(self.id,))
 
     def get_groups_list(self):
         return comma_separated(self.all_groups)
@@ -593,7 +593,9 @@ class SubjectRegistration(PdfExportMixin, models.Model):
     parent2_phone       = models.CharField(_('phone'),        max_length=30,  blank=True, null=True)
     parent2_email       = EmailField(_('email address'),               blank=True, null=True)
 
-    agreement_options   = models.ManyToManyField(AgreementOption, blank=True)
+    questions = models.ManyToManyField(Question, editable=False, related_name='registrations')
+    agreements = models.ManyToManyField(Agreement, editable=False, related_name='registrations')
+    agreement_options = models.ManyToManyField(AgreementOption, blank=True, verbose_name=_('legal agreements'))
 
     variable_symbol     = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
 
@@ -626,11 +628,14 @@ class SubjectRegistration(PdfExportMixin, models.Model):
 
     def get_questions_and_answers(self):
         answers = self.get_answers()
-        for q in self.subject.all_questions:
+        for q in self.all_questions:
             yield {
                 'question': q.question,
                 'answer': answers.get(q.name, ''),
             }
+
+    def get_edit_url(self):
+        return reverse('admin:leprikon_{}_change'.format(self.subjectregistration._meta.model_name), args=(self.id,))
 
     @cached_property
     def subjectregistration(self):
@@ -663,6 +668,14 @@ class SubjectRegistration(PdfExportMixin, models.Model):
         else:
             return None
     parent2.short_description = _('second parent')
+
+    @cached_property
+    def all_questions(self):
+        return list(self.questions.all())
+
+    @cached_property
+    def all_agreements(self):
+        return list(self.agreements.all())
 
     @cached_property
     def all_agreement_options(self):

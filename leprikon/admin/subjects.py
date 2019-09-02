@@ -5,11 +5,14 @@ from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
+from django.contrib.admin.utils import unquote
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import (
+    HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
+)
 from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -260,8 +263,17 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     set_registration_dates.short_description = _('Set registration dates')
 
 
+class ChangeformRedirectMixin:
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if object_id:
+            obj = self.get_object(request, unquote(object_id))
+            if obj:
+                return HttpResponseRedirect(obj.get_edit_url())
+        return super(ChangeformRedirectMixin, self).changeform_view(request, object_id, form_url, extra_context)
 
-class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+
+
+class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
     list_display    = (
         'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list', 'icon',
@@ -303,6 +315,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             'subject': get_object_or_404(Subject, id=subject_id),
             'admin': True,
         })
+
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
@@ -394,7 +407,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
                 except (Subject.DoesNotExist, TypeError, ValueError):
                     subject = None
         if subject:
-            questions       = subject.all_questions
+            questions       = obj.all_questions if obj else subject.all_questions
             answers         = obj.get_answers() if obj else {}
             kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
                 ('q_' + q.name, q.get_field(initial=answers.get(q.name)))
@@ -407,22 +420,27 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def get_inline_instances(self, request, obj=None):
         return super(SubjectRegistrationBaseAdmin, self).get_inline_instances(request, obj) if obj else []
 
-    def save_form(self, request, form, change):
-        # only override this method for change form (not changelist form)
-        if not form.prefix:
+    def save_model(self, request, obj, form, change):
+        if not change:
             # set price
-            if not form.instance.id:
-                form.instance.price = (
-                    form.instance.subject_variant.price
-                    if form.instance.subject_variant
-                    else form.instance.subject.price
-                )
-            questions   = form.instance.subject.all_questions
-            answers     = {}
-            for q in questions:
-                answers[q.name] = form.cleaned_data['q_' + q.name]
-            form.instance.answers = dumps(answers)
-        return super(SubjectRegistrationBaseAdmin, self).save_form(request, form, change)
+            obj.price = (
+                obj.subject_variant.price
+                if obj.subject_variant
+                else obj.subject.price
+            )
+
+        # save answers
+        obj.answers = dumps({
+            q.name: form.cleaned_data['q_' + q.name]
+            for q in (obj.all_questions if change else obj.subject.all_questions)
+        })
+
+        obj.save()
+
+        if not change:
+            # save questions and agreements
+            obj.questions.set(obj.subject.all_questions)
+            obj.agreements.set(obj.subject.all_registration_agreements)
 
     def subject_name(self, obj):
         return obj.subject.name
@@ -435,7 +453,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
 
 
-class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
     list_display    = (
         'id', 'variable_symbol', 'subject', 'participant', 'created', 'canceled',

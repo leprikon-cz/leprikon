@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subjectregistration',
             name='agreement_options',
-            field=models.ManyToManyField(blank=True, to='leprikon.AgreementOption'),
+            field=models.ManyToManyField(blank=True, to='leprikon.AgreementOption', verbose_name='legal agreements'),
         ),
         migrations.AddField(
             model_name='subjecttype',

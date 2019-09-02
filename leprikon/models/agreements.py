@@ -11,6 +11,7 @@ class Agreement(models.Model):
     order       = models.IntegerField(_('order'), blank=True, default=0)
     heading     = models.CharField(_('heading'), max_length=50, blank=True, default='')
     agreement   = HTMLField(_('agreement'), blank=True, default='')
+    active      = models.BooleanField(_('active'), default=True)
 
     class Meta:
         app_label           = 'leprikon'

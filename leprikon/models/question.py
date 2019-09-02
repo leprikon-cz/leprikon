@@ -22,6 +22,7 @@ class Question(models.Model):
     ))
     field_args  = models.TextField(_('field_args'), blank=True, default='{}',
                                    help_text=_('Enter valid JSON structure representing field configuration.'))
+    active      = models.BooleanField(_('active'), default=True)
 
     class Meta:
         app_label           = 'leprikon'

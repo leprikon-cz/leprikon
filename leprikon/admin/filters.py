@@ -35,6 +35,39 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
 
 
+class ActiveListFilter(admin.SimpleListFilter):
+    title = _('status')
+    parameter_name = 'status'
+
+    def lookups(self, request, model_admin):
+        return (
+            (None, _('active')),
+            ('inactive', _('inactive')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'inactive':
+            return queryset.filter(active=False)
+        else:
+            return queryset.filter(active=True)
+
+    def choices(self, cl):
+        value = self.value()
+        return [
+            {
+                'selected': value != 'inactive',
+                'query_string': cl.get_query_string({}, [self.parameter_name]),
+                'display': _('active'),
+            },
+            {
+                'selected': value == 'inactive',
+                'query_string': cl.get_query_string({self.parameter_name: 'inactive'}),
+                'display': _('inactive'),
+            },
+        ]
+
+
+
 class ApprovedListFilter(admin.SimpleListFilter):
     title = _('approval')
     parameter_name = 'approved'

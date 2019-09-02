@@ -187,7 +187,7 @@
 
         <spacer length="1cm"/>
 
-        {% for agreement in object.subject.all_registration_agreements %}
+        {% for agreement in object.all_agreements %}
             {% if agreement.heading %}
                 <para style="subtitle">{{ agreement.heading }}</para>
             {% endif %}

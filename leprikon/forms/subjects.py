@@ -334,17 +334,24 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             if self.instance.subject_variant
             else self.instance.subject.price
         )
+
+        # set answers
         self.instance.answers = dumps(self.questions_form.cleaned_data)
+
+        # create
         super(RegistrationForm, self).save(commit)
 
-        # send mail
-        try:
-            self.instance.send_mail()
-        except:
-            import traceback
-            from raven.contrib.django.models import client
-            traceback.print_exc()
-            client.captureException()
+        # save additional questions
+        self.instance.questions.set(self.instance.subject.all_questions)
+
+        # save legal agreements
+        self.instance.agreements.set(self.instance.subject.all_registration_agreements)
+
+        # save agreement options
+        for agreement_form in self.agreement_forms:
+            for option_id, checked in agreement_form.cleaned_data.items():
+                if checked:
+                    self.instance.agreement_options.add(agreement_form.options[option_id])
 
         # save / update participant
         if self.participant_select_form.cleaned_data['participant'] == 'new':
@@ -385,10 +392,14 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 setattr(parent, attr, getattr(self.instance.parent2, attr))
             parent.save()
 
-        for agreement_form in self.agreement_forms:
-            for option_id, checked in agreement_form.cleaned_data.items():
-                if checked:
-                    self.instance.agreement_options.add(agreement_form.options[option_id])
+        # send mail
+        try:
+            self.instance.send_mail()
+        except:
+            import traceback
+            from raven.contrib.django.models import client
+            traceback.print_exc()
+            client.captureException()
 
     class EmailForm(FormMixin, forms.Form):
         email = VerifiedEmailField(label=_('Your email'), fieldsetup_id='RegistrationEmailForm')
@@ -450,8 +461,8 @@ class RegistrationAdminForm(forms.ModelForm):
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
                     self.fields['parent{}_{}'.format(n + 1, field)].required = True
 
-        # choices for subject_variant
+        # choices for agreement options
         self.fields['agreement_options'].widget.choices = tuple(
             (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
-            for agreement in subject.all_registration_agreements
+            for agreement in (instance.all_agreements if instance else subject.all_registration_agreements)
         )
