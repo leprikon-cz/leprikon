@@ -54,49 +54,16 @@
             </div>
             <div class="col-sm-3">
                 {% school_year_form %}
-                {% if request.user.is_authenticated %}
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="user_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        {{ request.user.get_full_name | default:request.user.get_username }}
+                        {% if request.user.is_authenticated %}{{ request.user.get_full_name | default:request.user.get_username }}
+                        {% else %}{% trans 'Anonymous user' %}{% endif %}
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="user_menu">
-                        <li><a href="{% url_with_back 'leprikon:user_update' %}">{% trans 'Edit' %}</a></li>
-                        <li><a href="{% url_with_back 'leprikon:user_email' %}">{% trans 'Change e-mail' %}</a></li>
-                        <li><a href="{% url_with_back 'leprikon:user_password' %}">{% trans 'Change password' %}</a></li>
-                        <li><a href="{% url_with_back 'leprikon:user_logout' %}">{% trans 'Log out' %}</a></li>
-                        {% if 'google-oauth2' in backends.not_associated %}
-                        <li>
-                            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ next }}">
-                                <button class="btn btn-block btn-sm btn-social btn-google">
-                                    <i class="fa fa-google pull-left"></i>
-                                    {% trans 'Link with your Google account' %}
-                                </button>
-                            </a>
-                        </li>
-                        {% elif 'google-plus' in backends.not_associated %}
-                        <li>
-                            <a href="{% url 'social:begin' 'google-plus' %}?next={{ next }}">
-                                <button class="btn btn-block btn-sm btn-social btn-google">
-                                    <i class="fa fa-google pull-left"></i>
-                                    {% trans 'Link with your Google account' %}
-                                </button>
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if 'facebook' in backends.not_associated %}
-                        <li>
-                            <a href="{% url 'social:begin' 'facebook' %}?next={{ next }}">
-                                <button class="btn btn-social btn-sm btn-facebook">
-                                    <i class="fa fa-facebook pull-left"></i>
-                                    {% trans 'Link with your Facebook account' %}
-                                </button>
-                            </a>
-                        </li>
-                        {% endif %}
+                        {% show_menu 0 100 100 100 'leprikon/user_menu.html' 'UserMenu' %}
                     </ul>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>

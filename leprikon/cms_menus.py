@@ -2,8 +2,9 @@ from cms.menu_bases import CMSAttachMenu
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import ugettext_lazy as _
-from menus.base import Modifier, NavigationNode
+from menus.base import Menu, Modifier, NavigationNode
 from menus.menu_pool import menu_pool
+from social_django.context_processors import backends
 
 from .models.subjects import SubjectType
 from .utils import current_url, first_upper, url_with_back
@@ -19,24 +20,6 @@ class LeprikonMenu(CMSAttachMenu):
         """
         try:
             nodes = []
-            nodes.append(NavigationNode(
-                _('Log in'),
-                reverse('leprikon:user_login'),
-                len(nodes),
-                attr={'visible_for_authenticated': False, 'add_url_back': True},
-            ))
-            nodes.append(NavigationNode(
-                _('Create account'),
-                reverse('leprikon:user_create'),
-                len(nodes),
-                attr={'visible_for_authenticated': False},
-            ))
-            nodes.append(NavigationNode(
-                _('Reset password'),
-                reverse('leprikon:password_reset'),
-                len(nodes),
-                attr={'visible_for_authenticated': False},
-            ))
             nodes.append(NavigationNode(
                 _('Summary'),
                 reverse('leprikon:summary'),
@@ -141,15 +124,79 @@ class LeprikonMenu(CMSAttachMenu):
                 reverse('leprikon:terms_conditions'),
                 len(nodes),
             ))
-            nodes.append(NavigationNode(
-                _('Log out'),
-                reverse('leprikon:user_logout'),
-                len(nodes),
-                attr={'visible_for_anonymous': False},
-            ))
             return nodes
         except NoReverseMatch:
             return []
+
+
+@menu_pool.register_menu
+class UserMenu(Menu):
+    def get_nodes(self, request):
+        """
+        This method is used to build the menu tree.
+        """
+        nodes = []
+
+        # anonymous user
+        nodes.append(NavigationNode(
+            _('Log in'),
+            reverse('leprikon:user_login'),
+            len(nodes),
+            attr={'visible_for_authenticated': False, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
+            _('Create account'),
+            reverse('leprikon:user_create'),
+            len(nodes),
+            attr={'visible_for_authenticated': False, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
+            _('Reset password'),
+            reverse('leprikon:password_reset'),
+            len(nodes),
+            attr={'visible_for_authenticated': False, 'add_url_back': True},
+        ))
+
+        # user settings
+        nodes.append(NavigationNode(
+            _('Change user details'),
+            reverse('leprikon:user_update'),
+            len(nodes),
+            attr={'visible_for_anonymous': False, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
+            _('Change e-mail'),
+            reverse('leprikon:user_email'),
+            len(nodes),
+            attr={'visible_for_anonymous': False, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
+            _('Change password'),
+            reverse('leprikon:user_password'),
+            len(nodes),
+            attr={'visible_for_anonymous': False, 'add_url_back': True},
+        ))
+        nodes.append(NavigationNode(
+            _('Link with Google account'),
+            reverse('social:begin', args=('google-oauth2',)),
+            len(nodes),
+            attr={'visible_for_anonymous': False, 'add_url_back': True,
+                  'social_backend': 'google-oauth2', 'social_btn': 'google'},
+        ))
+        nodes.append(NavigationNode(
+            _('Link with Facebook account'),
+            reverse('social:begin', args=('facebook',)),
+            len(nodes),
+            attr={'visible_for_anonymous': False, 'add_url_back': True,
+                  'social_backend': 'facebook', 'social_btn': 'facebook'},
+        ))
+        nodes.append(NavigationNode(
+            _('Log out'),
+            reverse('leprikon:user_logout'),
+            len(nodes),
+            attr={'visible_for_anonymous': False},
+        ))
+        return nodes
 
 
 @menu_pool.register_modifier
@@ -158,10 +205,14 @@ class LeprikonModifier(Modifier):
         if post_cut or breadcrumb:
             return nodes
         final = []
+        backends_not_associated = backends(request)['backends']['not_associated']
         for node in nodes:
             if (
                 (node.attr.get('require_leader', False) and not request.leader) or
-                (node.attr.get('require_staff', False) and not request.user.is_staff)
+                (node.attr.get('require_staff', False) and not request.user.is_staff) or
+                (node.attr.get('social_backend') and (
+                    node.attr.get('social_backend') not in backends_not_associated
+                ))
             ):
                 if node.parent and node in node.parent.children:
                     node.parent.children.remove(node)
@@ -173,10 +224,20 @@ class LeprikonModifier(Modifier):
         return final
 
 
+@menu_pool.register_modifier
+class NamespaceModifier(Modifier):
+    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
+        if namespace and not (post_cut or breadcrumb):
+            namespaces = namespace.split(',')
+            return [node for node in nodes if node.namespace.split(':')[0] in namespaces]
+        else:
+            return nodes
+
+
 # clear menu cache with each reload
 try:
     menu_pool.clear()
-except:
+except Exception:
     # menu_pool.clear() uses database,
     # but this code may be executed
     # before the database is created

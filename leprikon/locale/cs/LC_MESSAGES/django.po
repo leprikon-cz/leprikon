@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-02 02:57+0200\n"
+"POT-Creation-Date: 2019-09-03 00:26+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -500,92 +500,111 @@ msgstr "Sloučit vybrané uživatele"
 msgid "login"
 msgstr "přihlásit"
 
-#: apps.py:9 cms_apps.py:8 cms_menus.py:14 cms_plugins/base.py:7
+#: apps.py:9 cms_apps.py:8 cms_menus.py:15 cms_plugins/base.py:7
 #: cms_toolbars.py:15 cms_toolbars.py:17
 msgid "Leprikon"
 msgstr "Leprikón"
 
-#: cms_menus.py:23 templates/leprikon/login.html:19
-#: templates/leprikon/password_reset_complete.html:12
-msgid "Log in"
-msgstr "Přihlásit se"
-
-#: cms_menus.py:29 templates/leprikon/login.html:28 views/user.py:31
-msgid "Create account"
-msgstr "Vytvořit účet"
-
-#: cms_menus.py:35
-msgid "Reset password"
-msgstr "Reset hesla"
-
-#: cms_menus.py:41 templates/leprikon/leader_summary.html:6
+#: cms_menus.py:24 templates/leprikon/leader_summary.html:6
 #: templates/leprikon/summary.html:6
 msgid "Summary"
 msgstr "Přehled"
 
-#: cms_menus.py:47 templates/leprikon/reports/index.html:6
+#: cms_menus.py:30 templates/leprikon/reports/index.html:6
 msgid "Reports"
 msgstr "Reporty"
 
-#: cms_menus.py:54 cms_plugins/leaders.py:12 forms/journals.py:65
+#: cms_menus.py:37 cms_plugins/leaders.py:12 forms/journals.py:65
 #: forms/subjects.py:38
 msgid "Leader"
 msgstr "Vedoucí"
 
-#: cms_menus.py:61
+#: cms_menus.py:44
 #, python-brace-format
 msgid "My {subject_type}"
 msgstr "Moje {subject_type}"
 
-#: cms_menus.py:68
+#: cms_menus.py:51
 msgid "Alternating"
 msgstr "Suplování"
 
-#: cms_menus.py:76 views/timesheets.py:19
+#: cms_menus.py:59 views/timesheets.py:19
 msgid "Timesheets"
 msgstr "Výkazy práce"
 
-#: cms_menus.py:83
+#: cms_menus.py:66
 msgid "Add new entry"
 msgstr "Přidat nový záznam"
 
-#: cms_menus.py:90 views/messages.py:19
+#: cms_menus.py:73 views/messages.py:19
 msgid "Messages"
 msgstr "Zprávy"
 
-#: cms_menus.py:96 templates/leprikon/reports/course_stats.html:19
+#: cms_menus.py:79 templates/leprikon/reports/course_stats.html:19
 #: templates/leprikon/reports/event_stats.html:19
 msgid "Registrations"
 msgstr "Přihlášky"
 
-#: cms_menus.py:102 templates/leprikon/registration_payments_presences.html:27
+#: cms_menus.py:85 templates/leprikon/registration_payments_presences.html:27
 #: views/subjects.py:255
 msgid "Payments"
 msgstr "Platby"
 
-#: cms_menus.py:109 templates/leprikon/subject_journal.html:175
+#: cms_menus.py:92 templates/leprikon/subject_journal.html:175
 msgid "Participants"
 msgstr "Účastníci"
 
-#: cms_menus.py:115
+#: cms_menus.py:98
 msgid "Add participant"
 msgstr "Přidat účastníka"
 
-#: cms_menus.py:122
+#: cms_menus.py:105
 msgid "Add parent"
 msgstr "Přidat zástupce"
 
-#: cms_menus.py:135 forms/journals.py:166
+#: cms_menus.py:118 forms/journals.py:166
 #: templates/leprikon/subject_journal.html:154
 msgid "Leaders"
 msgstr "Vedoucí"
 
-#: cms_menus.py:140 templates/leprikon/terms_conditions.html:6
+#: cms_menus.py:123 templates/leprikon/terms_conditions.html:6
 msgid "Terms and Conditions"
 msgstr "Obchodní podmínky"
 
-#: cms_menus.py:145 templates/admin/inc/branding.html:29
-#: templates/leprikon/base.html:65
+#: cms_menus.py:142 templates/leprikon/login.html:19
+#: templates/leprikon/password_reset_complete.html:12
+msgid "Log in"
+msgstr "Přihlásit se"
+
+#: cms_menus.py:148 templates/leprikon/login.html:28 views/user.py:31
+msgid "Create account"
+msgstr "Vytvořit účet"
+
+#: cms_menus.py:154
+msgid "Reset password"
+msgstr "Reset hesla"
+
+#: cms_menus.py:162
+msgid "Change user details"
+msgstr "Změnit údaje o uživateli"
+
+#: cms_menus.py:168
+msgid "Change e-mail"
+msgstr "Změnit e-mail"
+
+#: cms_menus.py:174 templates/admin/inc/branding.html:23 views/user.py:115
+msgid "Change password"
+msgstr "Změnit heslo"
+
+#: cms_menus.py:180
+msgid "Link with Google account"
+msgstr "Propojit s účtem Google"
+
+#: cms_menus.py:187
+msgid "Link with Facebook account"
+msgstr "Propojit s účtem Facebook"
+
+#: cms_menus.py:194 templates/admin/inc/branding.html:29
 msgid "Log out"
 msgstr "Odhlásit se"
 
@@ -1931,11 +1950,6 @@ msgstr "Správa systému Leprikón"
 msgid "Documentation"
 msgstr "Dokumentace"
 
-#: templates/admin/inc/branding.html:23 templates/leprikon/base.html:64
-#: views/user.py:115
-msgid "Change password"
-msgstr "Změnit heslo"
-
 #: templates/admin/inc/branding.html:37
 msgid "Open"
 msgstr "Otevřít"
@@ -2024,27 +2038,15 @@ msgstr "upravit záznam výkazu práce"
 msgid "edit course journal entry"
 msgstr "upravit záznam deníku"
 
-#: templates/leprikon/base.html:62
-msgid "Edit"
-msgstr "Upravit"
+#: templates/leprikon/base.html:60
+msgid "Anonymous user"
+msgstr "Nepřihlášený uživatel"
 
-#: templates/leprikon/base.html:63
-msgid "Change e-mail"
-msgstr "Změnit e-mail"
-
-#: templates/leprikon/base.html:71 templates/leprikon/base.html:80
-msgid "Link with your Google account"
-msgstr "Propojit s účtem Google"
-
-#: templates/leprikon/base.html:90
-msgid "Link with your Facebook account"
-msgstr "Propojit s účtem Facebook"
-
-#: templates/leprikon/base.html:119
+#: templates/leprikon/base.html:88
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:140
+#: templates/leprikon/base.html:109
 msgid "Powered by Leprikón Information System"
 msgstr "Informační systém Leprikón"
 
@@ -3153,3 +3155,6 @@ msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 #: views/user.py:163
 msgid "Set my password"
 msgstr "Nastavit heslo"
+
+#~ msgid "Edit"
+#~ msgstr "Upravit"

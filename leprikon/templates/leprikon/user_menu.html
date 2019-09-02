@@ -1,0 +1,17 @@
+{% load menu_tags %}
+
+{% for child in children %}
+<li>
+    <a class="{% if child.selected %} active{% endif %}{% if child.ancestor %} ancestor{% endif %}{% if child.sibling %} sibling{% endif %}{% if child.descendant %} descendant{% endif %}" href="{{ child.attr.redirect_url|default:child.get_absolute_url }}">
+        {% if child.attr.social_backend %}<button class="btn btn-block btn-sm btn-social btn-{{ child.attr.social_btn }}">
+            <i class="fa fa-{{ child.attr.social_btn }} pull-left"></i>
+            {{ child.get_menu_title }}
+        </button>{% else %}{{ child.get_menu_title }}{% endif %}
+    </a>
+    {% if child.children %}
+    <ul class="ul">
+        {% show_menu from_level to_level extra_inactive extra_active template namespace "" child %}
+    </ul>
+    {% endif %}
+</li>
+{% endfor %}
