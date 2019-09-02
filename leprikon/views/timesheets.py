@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,6 +15,7 @@ class TimesheetListView(ListView):
     preview_template    = 'leprikon/timesheet_preview.html'
     paginate_by         = 6
     add_label           = _('add entry')
+    add_url             = reverse_lazy('leprikon:timesheetentry_create')
 
     def get_title(self):
         return _('Timesheets')

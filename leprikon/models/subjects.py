@@ -277,11 +277,10 @@ class Subject(models.Model):
         return self.max_count and self.active_registrations_count >= self.max_count
 
     def get_absolute_url(self):
-        return reverse('leprikon:subject_detail', args=(self.subject_type.slug, self.id))
+        return reverse(self.subject_type.slug + ':subject_detail', args=(self.id,))
 
     def get_registration_url(self):
-        return reverse('leprikon:subject_registration_form',
-                       kwargs={'subject_type': self.subject_type.slug, 'pk': self.id})
+        return reverse(self.subject_type.slug + ':subject_registration_form', args=(self.id,))
 
     def get_edit_url(self):
         return reverse('admin:leprikon_{}_change'.format(self.subject._meta.model_name), args=(self.id,))

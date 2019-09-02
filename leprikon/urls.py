@@ -87,8 +87,4 @@ urlpatterns = [
     d_url(r'^{terms_conditions}/$',                         'terms_conditions'),
 
     url(r'^api/', include(api_urls, 'api')),
-
-    d_url(r'^(?P<subject_type>[^/]+)/$',                                 'subject_list'),
-    d_url(r'^(?P<subject_type>[^/]+)/(?P<pk>[0-9]+)/$',                  'subject_detail'),
-    d_url(r'^(?P<subject_type>[^/]+)/(?P<pk>[0-9]+)/{registration}/$',   'subject_registration_form'),
 ]

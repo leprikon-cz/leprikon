@@ -32,7 +32,6 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 attr={'require_staff': True},
             ))
-            leader = len(nodes)
             nodes.append(NavigationNode(
                 _('Leader'),
                 reverse('leprikon:leader_summary'),
@@ -44,30 +43,19 @@ class LeprikonMenu(CMSAttachMenu):
                     first_upper(_('My {subject_type}').format(subject_type=subject_type.plural)),
                     reverse('leprikon:subject_list_mine', kwargs={'subject_type': subject_type.slug}),
                     len(nodes),
-                    parent_id=leader,
                     attr={'require_leader': True},
                 ))
             nodes.append(NavigationNode(
                 _('Alternating'),
                 reverse('leprikon:alternating'),
                 len(nodes),
-                parent_id=leader,
                 attr={'require_leader': True},
             ))
-            timesheets = len(nodes)
             nodes.append(NavigationNode(
                 _('Timesheets'),
                 reverse('leprikon:timesheet_list'),
                 len(nodes),
-                parent_id=leader,
                 attr={'require_leader': True},
-            ))
-            nodes.append(NavigationNode(
-                _('Add new entry'),
-                reverse('leprikon:timesheetentry_create'),
-                len(nodes),
-                parent_id=timesheets,
-                attr={'require_leader': True, 'add_url_back': True},
             ))
             nodes.append(NavigationNode(
                 _('Messages'),
@@ -87,42 +75,11 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 attr={'visible_for_anonymous': False},
             ))
-            participants = len(nodes)
             nodes.append(NavigationNode(
                 _('Participants'),
                 reverse('leprikon:participant_list'),
                 len(nodes),
                 attr={'visible_for_anonymous': False},
-            ))
-            nodes.append(NavigationNode(
-                _('Add participant'),
-                reverse('leprikon:participant_create'),
-                len(nodes),
-                parent_id=participants,
-                attr={'visible_for_anonymous': False, 'add_url_back': True},
-            ))
-            nodes.append(NavigationNode(
-                _('Add parent'),
-                reverse('leprikon:parent_create'),
-                len(nodes),
-                parent_id=participants,
-                attr={'visible_for_anonymous': False, 'add_url_back': True},
-            ))
-            for subject_type in SubjectType.objects.all():
-                nodes.append(NavigationNode(
-                    first_upper(subject_type.plural),
-                    reverse('leprikon:subject_list', kwargs={'subject_type': subject_type.slug}),
-                    len(nodes),
-                ))
-            nodes.append(NavigationNode(
-                _('Leaders'),
-                reverse('leprikon:leader_list'),
-                len(nodes),
-            ))
-            nodes.append(NavigationNode(
-                _('Terms and Conditions'),
-                reverse('leprikon:terms_conditions'),
-                len(nodes),
             ))
             return nodes
         except NoReverseMatch:

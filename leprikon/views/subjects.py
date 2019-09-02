@@ -1,3 +1,4 @@
+from cms.views import details as cms_view_details
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -42,7 +43,21 @@ class SubjectTypeMixin(object):
 
 
 
-class SubjectListView(SubjectTypeMixin, FilteredListView):
+class CMSSubjectTypeMixin(SubjectTypeMixin):
+    def dispatch(self, request, *args, **kwargs):
+        # Get current CMS Page
+        cms_page = request.current_page.get_public_object()
+
+        # Check whether it really is a Leprikon subject type application.
+        # It might also be one of its sub-pages.
+        if cms_page.application_urls != 'LeprikonSubjectTypeApp':
+            # In such case show regular CMS Page
+            return cms_view_details(request, *args, **kwargs)
+        return super(CMSSubjectTypeMixin, self).dispatch(request, cms_page.application_namespace, **kwargs)
+
+
+
+class SubjectListBaseView(FilteredListView):
     form_class          = SubjectFilterForm
     preview_template    = 'leprikon/subject_preview.html'
     paginate_by         = 10
@@ -71,8 +86,11 @@ class SubjectListView(SubjectTypeMixin, FilteredListView):
         return self.get_form().get_queryset()
 
 
+class SubjectListView(CMSSubjectTypeMixin, SubjectListBaseView):
+    pass
 
-class SubjectListMineView(SubjectListView):
+
+class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
 
     def get_template_names(self):
         return [
@@ -92,7 +110,7 @@ class SubjectListMineView(SubjectListView):
 
 
 
-class SubjectDetailView(SubjectTypeMixin, DetailView):
+class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
 
     def get_queryset(self):
         qs = super(SubjectDetailView, self).get_queryset()
@@ -140,14 +158,22 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
 
 
 
-class SubjectRegistrationFormView(CreateView):
+class SubjectMixin(object):
+    def dispatch(self, request, pk, **kwargs):
+        lookup_kwargs = {'subject_type': self.subject_type, 'id': int(pk)}
+        if not self.request.user.is_staff:
+            lookup_kwargs['public'] = True
+        self.subject = get_object_or_404(Subject, **lookup_kwargs)
+        if not self.subject.registration_allowed:
+            return redirect(self.subject)
+        self.request.school_year = self.subject.school_year
+        return super(SubjectMixin, self).dispatch(request, **kwargs)
+
+
+class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, CreateView):
     back_url        = reverse('leprikon:registration_list')
     submit_label    = _('Submit registration')
     message         = _('The registration has been saved. We will inform you about its further processing.')
-    _models = {
-        SubjectType.COURSE: Course,
-        SubjectType.EVENT:  Event,
-    }
     _form_classes = {
         SubjectType.COURSE: CourseRegistrationForm,
         SubjectType.EVENT:  EventRegistrationForm,
@@ -166,23 +192,8 @@ class SubjectRegistrationFormView(CreateView):
             subject = self.subject.name,
         )
 
-    def dispatch(self, request, subject_type, pk, **kwargs):
-        self.subject_type = get_object_or_404(SubjectType, slug=subject_type)
-        lookup_kwargs = {
-            'subject_type': self.subject_type,
-            'id':           int(pk),
-        }
-        if not self.request.user.is_staff:
-            lookup_kwargs['public'] = True
-        self.subject = get_object_or_404(Subject, **lookup_kwargs)
-        if not self.subject.registration_allowed:
-            return redirect(self.subject)
-        self.request.school_year = self.subject.school_year
-        self.model = self._models[self.subject.subject_type.subject_type]
-        return super(SubjectRegistrationFormView, self).dispatch(request, **kwargs)
-
     def get_form_class(self):
-        return self._form_classes[self.subject.subject_type.subject_type]
+        return self._form_classes[self.subject_type.subject_type]
 
     def get_form_kwargs(self):
         kwargs  = super(SubjectRegistrationFormView, self).get_form_kwargs()
