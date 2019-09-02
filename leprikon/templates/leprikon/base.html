@@ -41,6 +41,8 @@
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/lib/font-awesome/css/font-awesome.min.css' %}"/>
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/lib/bootstrap-social.min.css' %}"/>
     {% endif %}
+
+    {% block extrahead %}{% endblock %}
 </head>
 
 <body>
@@ -131,7 +133,7 @@
                 </div>
                 <div class="col-sm-3" id="sidebar">
                     <nav class="list-group">
-                        {% show_menu_below_id 'leprikon' 0 100 0 1 'leprikon/menu.html' %}
+                        {% block menu %}{% show_menu_below_id 'leprikon' 0 100 0 1 'leprikon/menu.html' %}{% endblock %}
                     </nav>
                 </div>
             </div>
