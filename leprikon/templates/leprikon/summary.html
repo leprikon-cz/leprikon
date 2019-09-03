@@ -7,19 +7,21 @@
 
 {% static_placeholder "summary" %}
 
-{% if payment_status.price > 0 %}
-<h2>{% blocktrans with school_year=request.school_year %}Payment status for school year {{ school_year }}{% endblocktrans %}</h2>
+<h2>{% trans 'New messages' %}</h2>
+
+{% if new_messages.count %}
+{% include 'leprikon/messages_table.html' with object_list=new_messages %}
+{% else %}
+<p><i>{% trans 'You have no new messages.' %}</i></p>
+{% endif %}
+
+<h2>{% trans 'Registrations and payments overview' %}</h2>
 <p>
-    <a href="{% url 'leprikon:registration_list' %}"><strong style="color: {{ payment_status.color }}">{{ payment_status.title }}</strong></a>
-    ({% trans 'total price of all registrations' %}: {{ payment_status.price | currency }},
+    <strong style="color: {{ payment_status.color }}">{{ payment_status.title }}</strong>
+    ({% trans 'registrations count' %}: {{ registrations_count }},
+    {% trans 'total price of all registrations' %}: {{ payment_status.price | currency }},
     {% trans 'discounts' %}: {{ payment_status.discount | currency }},
     {% trans 'paid' %}: {{ payment_status.paid | currency }})
 </p>
-{% endif %}
-
-{% if new_messages.count %}
-<h2>{% trans 'New messages' %}</h2>
-{% include 'leprikon/messages_table.html' with object_list=new_messages %}
-{% endif %}
 
 {% endblock %}

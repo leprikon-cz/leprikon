@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-03 11:36+0200\n"
+"POT-Creation-Date: 2019-09-03 16:40+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1776,7 +1776,7 @@ msgstr "sleva"
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:987 templates/leprikon/summary.html:15
+#: models/subjects.py:987 templates/leprikon/summary.html:23
 msgid "discounts"
 msgstr "slevy"
 
@@ -1881,7 +1881,7 @@ msgid "submitted"
 msgstr "odevzdaný"
 
 #: models/timesheets.py:76 models/utils.py:33
-#: templates/leprikon/summary.html:16
+#: templates/leprikon/summary.html:24
 msgid "paid"
 msgstr "zaplaceno"
 
@@ -2833,18 +2833,25 @@ msgstr ""
 msgid "User"
 msgstr "Uživatel"
 
-#: templates/leprikon/summary.html:11
-#, python-format
-msgid "Payment status for school year %(school_year)s"
-msgstr "Stav plateb pro školní rok %(school_year)s"
-
-#: templates/leprikon/summary.html:14
-msgid "total price of all registrations"
-msgstr "celková cena všech přihlášek"
-
-#: templates/leprikon/summary.html:21
+#: templates/leprikon/summary.html:10
 msgid "New messages"
 msgstr "Nepřečtené zprávy"
+
+#: templates/leprikon/summary.html:15
+msgid "You have no new messages."
+msgstr ""
+
+#: templates/leprikon/summary.html:18
+msgid "Registrations and payments overview"
+msgstr "Přehled přihlášek a plateb"
+
+#: templates/leprikon/summary.html:21
+msgid "registrations count"
+msgstr "počet přihlášek"
+
+#: templates/leprikon/summary.html:22
+msgid "total price of all registrations"
+msgstr "celková cena všech přihlášek"
 
 #: templates/leprikon/terms_conditions.html:6
 msgid "Terms and Conditions"

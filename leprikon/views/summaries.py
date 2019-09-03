@@ -12,16 +12,19 @@ class SummaryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SummaryView, self).get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['registrations_count'] = self.request.user.leprikon_registrations.filter(
+            subject__school_year=self.request.school_year,
+        ).count()
         context['payment_status'] = sum(
             reg.payment_statuses.partial
             for reg in CourseRegistration.objects.filter(
-                subject__school_year = self.request.school_year,
+                subject__school_year=self.request.school_year,
                 user = self.request.user,
             )
         ) + sum(
             reg.payment_status
             for reg in EventRegistration.objects.filter(
-                subject__school_year = self.request.school_year,
+                subject__school_year=self.request.school_year,
                 user = self.request.user,
             )
         )
