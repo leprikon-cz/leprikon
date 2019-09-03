@@ -1,3 +1,6 @@
+import re
+from traceback import print_exc
+
 import requests
 from django import template
 from django.contrib.staticfiles import finders
@@ -82,7 +85,7 @@ def school_year_form(context):
 
 
 @register.simple_tag
-def upstream(url, xpath):
+def upstream(url, xpath, *replacements):
     '''
     If Leprikón is intended to look like another website (the main website of the organization),
     use this tag to include html snippet from the other site to always stay aligned with it.
@@ -91,6 +94,7 @@ def upstream(url, xpath):
 
         {% load cache leprikon_tags %}
         {% cache 300 menu %}{% upstream 'https://example.com/' '//nav' %}{% endcache %}
+        {% cache 300 menu %}{% upstream 'https://example.com/' '//nav' '|<br>|<br/>|' %}{% endcache %}
     '''
     try:
         cache = caches['upstream_pages']
@@ -101,12 +105,20 @@ def upstream(url, xpath):
         if content is None:
             content = requests.get(url).content
             cache.set(url, content, 60)
+        for replacement in replacements:
+            try:
+                replacement = replacement.encode('utf-8')
+                pattern, repl = replacement[1:-1].split(replacement[:1])
+            except (IndexError, ValueError):
+                print_exc()
+            else:
+                print((pattern, repl))
+                content = re.sub(pattern, repl, content)
         return mark_safe(b''.join(
             tostring(node)
             for node in fromstring(content).xpath(xpath)
         ))
     except Exception:
-        from traceback import print_exc
         print_exc()
         return ''
 
