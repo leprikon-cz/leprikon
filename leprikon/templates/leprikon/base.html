@@ -50,7 +50,9 @@
     <div id="header">
         <div class="container">
             <div class="col-sm-9">
-                {% static_placeholder "brand" or %}<a href="/"><img src="{% static 'leprikon/img/logo-horizontal.png' %}" height="80"/></a>{% endstatic_placeholder %}
+                {% block brand %}
+                    {% static_placeholder "brand" or %}<a href="/"><img src="{% static 'leprikon/img/logo-horizontal.png' %}" height="80"/></a>{% endstatic_placeholder %}
+                {% endblock %}
             </div>
             <div class="col-sm-3">
                 {% school_year_form %}
@@ -72,6 +74,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-9" id="content">
+                    {% block messages %}
                     {% if messages %}
                     <div class="modal fade" id="messages" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-lg" role="document">
@@ -96,6 +99,7 @@
                         });
                     </script>
                     {% endif %}
+                    {% endblock %}
                     {% block content %}{% endblock %}
                 </div>
                 <div class="col-sm-3" id="sidebar">
