@@ -1,3 +1,4 @@
+{% load i18n menu_tags %}
 <div class="dropdown">
     <button class="btn btn-default dropdown-toggle" type="button" id="user_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         {% if request.user.is_authenticated %}{{ request.user.get_full_name | default:request.user.get_username }}
