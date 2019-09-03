@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-03 16:40+0200\n"
+"POT-Creation-Date: 2019-09-03 17:16+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -2839,7 +2839,7 @@ msgstr "Nepřečtené zprávy"
 
 #: templates/leprikon/summary.html:15
 msgid "You have no new messages."
-msgstr ""
+msgstr "Nemáte žádné nové zprávy."
 
 #: templates/leprikon/summary.html:18
 msgid "Registrations and payments overview"
