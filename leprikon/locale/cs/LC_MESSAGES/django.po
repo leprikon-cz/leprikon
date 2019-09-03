@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-03 08:28+0200\n"
+"POT-Creation-Date: 2019-09-03 11:36+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -932,8 +932,8 @@ msgstr "uzavření účtu"
 #: models/agegroup.py:10 models/agreements.py:10 models/agreements.py:33
 #: models/citizenship.py:8 models/department.py:8 models/place.py:8
 #: models/printsetup.py:13 models/question.py:16 models/school.py:9
-#: models/schoolyear.py:108 models/subjects.py:70 models/subjects.py:134
-#: models/subjects.py:179 models/timesheets.py:129
+#: models/schoolyear.py:108 models/subjects.py:134 models/subjects.py:179
+#: models/timesheets.py:129
 msgid "name"
 msgstr "název"
 
@@ -1563,6 +1563,10 @@ msgstr "typ akce"
 msgid "subjects"
 msgstr "předmět"
 
+#: models/subjects.py:70
+msgid "name (singular)"
+msgstr "název (jednotné číslo)"
+
 #: models/subjects.py:71
 msgid "name (genitiv)"
 msgstr "název (druhý pád)"
@@ -2025,15 +2029,11 @@ msgstr "upravit záznam výkazu práce"
 msgid "edit course journal entry"
 msgstr "upravit záznam deníku"
 
-#: templates/leprikon/base.html:60
-msgid "Anonymous user"
-msgstr "Nepřihlášený uživatel"
-
-#: templates/leprikon/base.html:88
+#: templates/leprikon/base.html:82
 msgid "OK"
 msgstr "OK"
 
-#: templates/leprikon/base.html:109
+#: templates/leprikon/base.html:104
 msgid "Powered by Leprikón Information System"
 msgstr "Informační systém Leprikón"
 
@@ -2862,6 +2862,10 @@ msgstr "typ"
 #: templates/leprikon/timesheet_detail.html:43
 msgid "delete"
 msgstr "smazat"
+
+#: templates/leprikon/user_dropdown.html:5
+msgid "Anonymous user"
+msgstr "Nepřihlášený uživatel"
 
 #: utils.py:102 utils.py:104
 msgid ", and "

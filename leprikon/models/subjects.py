@@ -67,7 +67,7 @@ class SubjectType(models.Model):
         (EVENT, _('event type')),
     ])
     subject_type    = models.CharField(_('subjects'), max_length=10, choices=subject_type_labels.items())
-    name            = models.CharField(_('name'), max_length=150)
+    name            = models.CharField(_('name (singular)'), max_length=150)
     name_genitiv    = models.CharField(_('name (genitiv)'), max_length=150, blank=True)
     name_akuzativ   = models.CharField(_('name (akuzativ)'), max_length=150, blank=True)
     plural          = models.CharField(_('name (plural)'), max_length=150)

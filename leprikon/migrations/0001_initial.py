@@ -555,7 +555,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('subject_type', models.CharField(choices=[('course', 'course'), ('event', 'event')], max_length=10, verbose_name='subjects')),
-                ('name', models.CharField(max_length=150, verbose_name='name')),
+                ('name', models.CharField(max_length=150, verbose_name='name (singular)')),
                 ('name_genitiv', models.CharField(blank=True, max_length=150, verbose_name='name (genitiv)')),
                 ('name_akuzativ', models.CharField(blank=True, max_length=150, verbose_name='name (akuzativ)')),
                 ('plural', models.CharField(max_length=150, verbose_name='name (plural)')),
