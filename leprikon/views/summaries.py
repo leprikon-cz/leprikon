@@ -2,6 +2,7 @@ from datetime import date
 
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
+from ..models.utils import PaymentStatus
 from .generic import TemplateView
 
 
@@ -27,7 +28,7 @@ class SummaryView(TemplateView):
                 subject__school_year=self.request.school_year,
                 user = self.request.user,
             )
-        )
+        ) + PaymentStatus(0, 0, 0)
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)
         return context
 
