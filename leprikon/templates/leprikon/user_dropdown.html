@@ -1,0 +1,10 @@
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="user_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        {% if request.user.is_authenticated %}{{ request.user.get_full_name | default:request.user.get_username }}
+        {% else %}{% trans 'Anonymous user' %}{% endif %}
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="user_menu">
+        {% show_menu 0 100 100 100 'leprikon/user_menu.html' 'UserMenu' %}
+    </ul>
+</div>
