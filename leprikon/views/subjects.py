@@ -26,20 +26,23 @@ class SubjectTypeMixin(object):
         SubjectType.EVENT:  Event,
     }
 
+    def dispatch(self, request, subject_type, *args, **kwargs):
+        self.subject_type = get_object_or_404(SubjectType, slug=subject_type)
+        self.model = self._models[self.subject_type.subject_type]
+        return super(SubjectTypeMixin, self).dispatch(request, **kwargs)
+
+    def get_placeholder(self):
+        return super(SubjectTypeMixin, self).get_placeholder() + ':' + self.subject_type.slug
+
+    def get_queryset(self):
+        return super(SubjectTypeMixin, self).get_queryset().filter(subject_type=self.subject_type)
+
     def get_template_names(self):
         return [
             'leprikon/{}{}.html'.format(self.subject_type.slug, self.template_name_suffix),
             'leprikon/{}{}.html'.format(self.subject_type.subject_type, self.template_name_suffix),
             'leprikon/subject{}.html'.format(self.template_name_suffix),
         ]
-
-    def dispatch(self, request, subject_type, *args, **kwargs):
-        self.subject_type = get_object_or_404(SubjectType, slug=subject_type)
-        self.model = self._models[self.subject_type.subject_type]
-        return super(SubjectTypeMixin, self).dispatch(request, **kwargs)
-
-    def get_queryset(self):
-        return super(SubjectTypeMixin, self).get_queryset().filter(subject_type=self.subject_type)
 
 
 

@@ -18,11 +18,14 @@ class GenericViewMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(GenericViewMixin, self).get_context_data(
             *args,
-            placeholder = self.__class__.__name__,
+            placeholder = self.get_placeholder(),
             title       = self.get_title(),
             **kwargs
         )
         return context
+
+    def get_placeholder(self):
+        return self.__class__.__name__
 
     def get_title(self):
         return self.title
