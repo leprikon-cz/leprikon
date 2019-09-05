@@ -111,40 +111,42 @@
         {% include 'leprikon/form_item.html' %}
     {% endfor %}
 
-    <h3>{% trans 'Parents' %}</h3>
+    <div id="parents" class="hidden">
+        <h3>{% trans 'Parents' %}</h3>
 
-    <div id="parent1_switch">
-        {% include 'leprikon/form_item.html' with item=form.has_parent1 %}
-    </div>
-    <div id="parent1_form"{% if not form.has_parent1.value %} class="hidden"{% endif %}>
-        {% if form.parents %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_select_form.parent %}
-        {% else %}
-        <input type="hidden" name="parent1_select-parent" value="new"/>
-        {% endif %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_first_name %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_last_name %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_street %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_city %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_postal_code %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_phone %}
-        {% include 'leprikon/form_item.html' with item=form.parent1_email %}
-    </div>
+        <div id="parent1_switch">
+            {% include 'leprikon/form_item.html' with item=form.has_parent1 %}
+        </div>
+        <div id="parent1_form"{% if not form.has_parent1.value %} class="hidden"{% endif %}>
+            {% if form.parents %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_select_form.parent %}
+            {% else %}
+            <input type="hidden" name="parent1_select-parent" value="new"/>
+            {% endif %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_first_name %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_last_name %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_street %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_city %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_postal_code %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_phone %}
+            {% include 'leprikon/form_item.html' with item=form.parent1_email %}
+        </div>
 
-    {% include 'leprikon/form_item.html' with item=form.has_parent2 %}
-    <div id="parent2_form"{% if not form.has_parent2.value %} class="hidden"{% endif %}>
-        {% if form.parents %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_select_form.parent %}
-        {% else %}
-        <input type="hidden" name="parent2_select-parent" value="new"/>
-        {% endif %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_first_name %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_last_name %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_street %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_city %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_postal_code %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_phone %}
-        {% include 'leprikon/form_item.html' with item=form.parent2_email %}
+        {% include 'leprikon/form_item.html' with item=form.has_parent2 %}
+        <div id="parent2_form"{% if not form.has_parent2.value %} class="hidden"{% endif %}>
+            {% if form.parents %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_select_form.parent %}
+            {% else %}
+            <input type="hidden" name="parent2_select-parent" value="new"/>
+            {% endif %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_first_name %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_last_name %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_street %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_city %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_postal_code %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_phone %}
+            {% include 'leprikon/form_item.html' with item=form.parent2_email %}
+        </div>
     </div>
 
     {% for agreement_form in form.agreement_forms %}
@@ -189,15 +191,19 @@ var groups_requires_school = {{% for age_group in form.instance.subject.all_age_
     {{ age_group.id }}: {% if age_group.require_school %}true{% else %}false{% endif %},{% endfor %}
 };
 
-function toggle_section(show, section_name) {
+function toggle_section(show, section_name, update_required) {
     if (show) {
-        $('#' + section_name + ' .form-group').addClass('required');
-        $('#' + section_name + ' .form-control').attr('required', '');
         $('#' + section_name + '').removeClass('hidden');
+        if (update_required) {
+            $('#' + section_name + ' .form-group').addClass('required');
+            $('#' + section_name + ' .form-control').attr('required', '');
+        }
     } else {
-        $('#' + section_name + ' .form-group').removeClass('required');
-        $('#' + section_name + ' .form-control').removeAttr('required');
         $('#' + section_name + '').addClass('hidden');
+        if (update_required) {
+            $('#' + section_name + ' .form-group').removeClass('required');
+            $('#' + section_name + ' .form-control').removeAttr('required');
+        }
     }
 }
 
@@ -217,17 +223,15 @@ $(document).ready(function() {
         if (this.value == 'new') {
             $('#id_participant_first_name').val('');
             $('#id_participant_last_name').val('');
-            $('#id_participant_birth_num').val('');
-            $('#id_participant_age_group').val('');
-            $('#id_participant_age_group').trigger('change');
+            $('#id_participant_birth_num').val('').change();
+            $('#id_participant_age_group').val('').change();
             $('#id_participant_street').val('');
             $('#id_participant_city').val('');
             $('#id_participant_postal_code').val('');
             $('#id_participant_citizenship').val('');
             $('#id_participant_phone').val('');
             $('#id_participant_email').val('');
-            $('#id_participant_school').val('');
-            $('#id_participant_school').trigger('change');
+            $('#id_participant_school').val('').change();
             $('#id_participant_school_other').val('');
             $('#id_participant_school_class').val('');
             $('#id_participant_health').val('');
@@ -235,16 +239,14 @@ $(document).ready(function() {
             $('#id_participant_first_name').val('{{ participant.first_name | escapejs }}');
             $('#id_participant_last_name').val('{{ participant.last_name | escapejs }}');
             $('#id_participant_birth_num').val('{{ participant.birth_num | escapejs }}').change();
-            $('#id_participant_age_group').val('{{ participant.age_group_id }}');
-            $('#id_participant_age_group').trigger('change');
+            $('#id_participant_age_group').val('{{ participant.age_group_id }}').change();
             $('#id_participant_street').val('{{ participant.street | escapejs }}');
             $('#id_participant_city').val('{{ participant.city | escapejs }}');
             $('#id_participant_postal_code').val('{{ participant.postal_code | escapejs }}');
             $('#id_participant_citizenship').val('{{ participant.citizenship_id }}');
             $('#id_participant_phone').val('{{ participant.phone | escapejs }}');
             $('#id_participant_email').val('{{ participant.email | escapejs }}');
-            $('#id_participant_school').val('{% if participant.school_other %}other{% else %}{{ participant.school_id }}{% endif %}');
-            $('#id_participant_school').trigger('change');
+            $('#id_participant_school').val('{% if participant.school_other %}other{% else %}{{ participant.school_id }}{% endif %}').change();
             $('#id_participant_school_other').val('{{ participant.school_other | escapejs }}');
             $('#id_participant_school_class').val('{{ participant.school_class | escapejs }}');
             $('#id_participant_health').val('{{ participant.health | escapejs }}');
@@ -253,13 +255,13 @@ $(document).ready(function() {
 
     /* Toggle first parent */
     $('#id_has_parent1').change(function() {
-        toggle_section(this.checked, 'parent1_form');
+        toggle_section(this.checked, 'parent1_form', true);
     });
     $('#id_has_parent1').trigger('change');
 
     /* Toggle second parent */
     $('#id_has_parent2').change(function() {
-        toggle_section(this.checked, 'parent2_form');
+        toggle_section(this.checked, 'parent2_form', true);
     });
     $('#id_has_parent2').trigger('change');
 
@@ -308,25 +310,24 @@ $(document).ready(function() {
     /* Set callbeck on birth number change */
     $('#id_participant_birth_num').change(function() {
         age = getAge(this.value);
-        if (isNaN(age)) return;
-        if (age < 18) {
-            $('#parent1_switch .form-group').addClass('required');
-        } else {
-            $('#parent1_switch .form-group').removeClass('required');
-        }
-        toggle_section(age >= 18, 'participant_contact');
+        child = !isNaN(age) && age < 18;
+        adult = isNaN(age) || age >= 18;
+        toggle_section(adult, 'participant_contact', true);
+        toggle_section(child, 'parents', adult);
+        $('#id_has_parent1').prop('checked', child).change();
+        if (adult) $('#id_has_parent2').prop('checked', false).change();
     });
     $('#id_participant_birth_num').trigger('change');
 
     /* Set callbeck on school change */
     $('#id_participant_school').change(function() {
-        toggle_section(this.selectedIndex == this.options.length - 1, 'participant_school_other');
+        toggle_section(this.selectedIndex == this.options.length - 1, 'participant_school_other', true);
     });
     $('#id_participant_school').trigger('change');
 
     /* Set callbeck on age group change */
     $('#id_participant_age_group').change(function() {
-        toggle_section(groups_requires_school[this.value], 'participant_school_details');
+        toggle_section(groups_requires_school[this.value], 'participant_school_details', true);
         $('#id_participant_school').trigger('change');
     });
     $('#id_participant_age_group').trigger('change');
