@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectRegistration
+from .subjects import Subject, SubjectRegistrationParticipant
 
 
 def get_default_agenda():
@@ -17,19 +17,19 @@ def get_default_agenda():
 
 @python_2_unicode_compatible
 class JournalEntry(StartEndMixin, models.Model):
-    subject     = models.ForeignKey(Subject, verbose_name=_('subject'), editable=False,
-                                    related_name='journal_entries', on_delete=models.PROTECT)
-    date        = models.DateField(_('date'))
-    start       = models.TimeField(_('start time'), blank=True, null=True)
-    end         = models.TimeField(_('end time'), blank=True, null=True)
-    agenda      = HTMLField(_('session agenda'), default=get_default_agenda)
-    registrations = models.ManyToManyField(SubjectRegistration, verbose_name=_('participants'), blank=True,
-                                           related_name='journal_entries')
+    subject = models.ForeignKey(Subject, verbose_name=_('subject'), editable=False,
+                                related_name='journal_entries', on_delete=models.PROTECT)
+    date = models.DateField(_('date'))
+    start = models.TimeField(_('start time'), blank=True, null=True)
+    end = models.TimeField(_('end time'), blank=True, null=True)
+    agenda = HTMLField(_('session agenda'), default=get_default_agenda)
+    participants = models.ManyToManyField(SubjectRegistrationParticipant, verbose_name=_('participants'), blank=True,
+                                          related_name='journal_entries')
 
     class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('date', 'start', 'end')
-        verbose_name        = _('journal entry')
+        app_label = 'leprikon'
+        ordering = ('date', 'start', 'end')
+        verbose_name = _('journal entry')
         verbose_name_plural = _('journal entries')
 
     def __str__(self):
@@ -62,12 +62,12 @@ class JournalEntry(StartEndMixin, models.Model):
     duration.short_description = _('duration')
 
     @cached_property
-    def all_registrations(self):
-        return list(self.registrations.all())
+    def all_participants(self):
+        return list(self.participants.all())
 
     @cached_property
-    def all_registrations_idset(self):
-        return set(r.id for r in self.all_registrations)
+    def all_participants_idset(self):
+        return set(r.id for r in self.all_participants)
 
     @cached_property
     def all_leader_entries(self):
@@ -114,16 +114,16 @@ class JournalEntry(StartEndMixin, models.Model):
 class JournalLeaderEntry(StartEndMixin, models.Model):
     journal_entry = models.ForeignKey(JournalEntry, verbose_name=_('journal entry'),
                                       related_name='leader_entries', editable=False)
-    timesheet   = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='journal_entries',
-                                    editable=False, on_delete=models.PROTECT)
-    start       = models.TimeField(_('start time'))
-    end         = models.TimeField(_('end time'))
+    timesheet = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='journal_entries',
+                                  editable=False, on_delete=models.PROTECT)
+    start = models.TimeField(_('start time'))
+    end = models.TimeField(_('end time'))
 
     class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('journal leader entry')
+        app_label = 'leprikon'
+        verbose_name = _('journal leader entry')
         verbose_name_plural = _('journal leader entries')
-        unique_together     = (('journal_entry', 'timesheet'),)
+        unique_together = (('journal_entry', 'timesheet'),)
 
     def __str__(self):
         return '{subject_name}, {date}, {duration}'.format(

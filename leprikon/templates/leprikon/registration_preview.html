@@ -25,18 +25,6 @@
             </div>
         </div>
         <div class="row">
-            <label class="col-sm-4">{% trans 'Participant' %}:</label>
-            <div class="col-sm-8">
-                {{ reg.participant }}
-            </div>
-        </div>
-        <div class="row">
-            <label class="col-sm-4">{% trans 'Parents' %}:</label>
-            <div class="col-sm-8">
-                {{ reg.parents | comma_separated }}
-            </div>
-        </div>
-        <div class="row">
             <label class="col-sm-4">{% trans 'Date and time of registration' %}:</label>
             <div class="col-sm-8">
                 {{ reg.created }}
@@ -56,6 +44,23 @@
                 {% endif %}
             </div>
         </div>
-        {% include 'leprikon/registration_payments_presences.html' %}
+        {% for participant in reg.all_participants %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Participant' %}:</label>
+                <div class="col-sm-8">
+                    {{ participant.participant }}
+                </div>
+            </div>
+            {% if participant.parents %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Parents' %}:</label>
+                <div class="col-sm-8">
+                    {{ participant.parents | comma_separated }}
+                </div>
+            </div>
+            {% endif %}
+            {% include 'leprikon/registration_participant_presence.html' %}
+        {% endfor %}
+        {% include 'leprikon/registration_payments.html' %}
     </div>
 </div>

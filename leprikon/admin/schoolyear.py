@@ -4,10 +4,13 @@ from django.db import IntegrityError
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.schoolyear import SchoolYear, SchoolYearPeriod
+from ..models.schoolyear import (
+    SchoolYear, SchoolYearDivision, SchoolYearPeriod,
+)
 from .filters import SchoolYearListFilter
 
 
+@admin.register(SchoolYear)
 class SchoolYearAdmin(admin.ModelAdmin):
     list_display    = ('name', 'active')
     list_editable   = ('active',)
@@ -31,6 +34,7 @@ class SchoolYearPeriodInlineAdmin(admin.TabularInline):
     extra = 0
 
 
+@admin.register(SchoolYearDivision)
 class SchoolYearDivisionAdmin(admin.ModelAdmin):
     actions         = ('copy_to_school_year',)
     inlines         = (SchoolYearPeriodInlineAdmin,)

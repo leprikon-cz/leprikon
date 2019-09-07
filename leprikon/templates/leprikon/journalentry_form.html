@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-    $('#id_registrations').multiselect({
+    $('#id_participants').multiselect({
         enableFiltering: true,
         filterPlaceholder: '{% trans 'Search' %}',
         includeSelectAllOption: true,
@@ -42,8 +42,8 @@ $(document).ready(function() {
     });
 
     $('#id_date').on('dp.change', function(e) {
-        $.getJSON('{% url 'leprikon:api:registrations' form.instance.subject.id %}?date='+(e.date/1000), function(result) {
-            $('#id_registrations').multiselect('dataprovider', result['registrations']);
+        $.getJSON('{% url 'leprikon:api:participants' form.instance.subject.id %}?date='+(e.date/1000), function(result) {
+            $('#id_participants').multiselect('dataprovider', result['participants']);
         });
     });
 

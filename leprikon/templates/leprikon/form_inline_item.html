@@ -1,0 +1,8 @@
+<td class="form-group {{ item.css_classes }}">
+    <div class="control-label{% if item.errors %} alert alert-danger{% endif %}">
+        {{ item }}
+        {% for error in item.errors %}
+            {{ error }}<br/>
+        {% endfor %}
+    </div>
+</td>

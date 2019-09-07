@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<p>
+{% blocktrans asvar text %}Hello,
+we have just received Your payment. Please see the recipe attached.
+
+Thank You.{% endblocktrans %}{{ text|linebreaks }}
+</p>
+
+{% include 'leprikon/registration_mail_footer.html' with object=object.registration %}

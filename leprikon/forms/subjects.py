@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.forms.models import inlineformset_factory
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.timezone import now
@@ -20,7 +21,10 @@ from ..models.fields import DAY_OF_WEEK
 from ..models.place import Place
 from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
-from ..models.subjects import Subject, SubjectGroup, SubjectType
+from ..models.subjects import (
+    Subject, SubjectGroup, SubjectRegistration, SubjectRegistrationGroupMember,
+    SubjectRegistrationParticipant, SubjectType,
+)
 from ..utils import get_age, get_birth_date
 from .fields import AgreementBooleanField
 from .form import FormMixin
@@ -138,7 +142,6 @@ class SubjectFilterForm(FormMixin, forms.Form):
         return qs.distinct()
 
 
-
 class SubjectForm(FormMixin, forms.ModelForm):
 
     class Meta:
@@ -146,8 +149,7 @@ class SubjectForm(FormMixin, forms.ModelForm):
         fields = ['description', 'risks', 'plan', 'evaluation']
 
 
-
-class RegistrationForm(FormMixin, forms.ModelForm):
+class RegistrationParticipantForm(FormMixin, forms.ModelForm):
     participant_school = forms.ChoiceField(
         label=_('School'),
         choices=lambda: [('', '---------')] + [
@@ -155,22 +157,11 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         ] + [('other', _('other school'))]
     )
 
-    def __init__(self, subject, user, **kwargs):
-        super(RegistrationForm, self).__init__(**kwargs)
-        self.user = user
-        self.instance.subject = subject
-        self.participants = user.leprikon_participants.exclude(
-            birth_num__in=self.instance.subject.active_registrations.values_list('participant_birth_num', flat=True)
-        ) if user.is_authenticated() else []
-        self.parents = user.leprikon_parents.all() if user.is_authenticated() else []
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        # choices for subject_variant
-        if self.instance.subject.all_variants:
-            self.fields['subject_variant'].widget.choices.queryset = self.instance.subject.variants
-        else:
-            del self.fields['subject_variant']
-
-        self.fields['participant_age_group'].widget.choices.queryset = self.instance.subject.age_groups
+        # choices for age group
+        self.fields['participant_age_group'].widget.choices.queryset = self.subject.age_groups
 
         # dynamically required fields
         try:
@@ -179,7 +170,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             else:
                 self.fields['participant_phone'].required = True
                 self.fields['participant_email'].required = True
-        except:
+        except Exception:
             pass
 
         try:
@@ -191,57 +182,34 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
                     self.fields['parent{}_{}'.format(n + 1, field)].required = True
 
-        # sub forms
-
-        del kwargs['instance']
-
-        if not user.is_authenticated():
-            kwargs['prefix'] = 'email'
-            self.email_form = self.EmailForm(**kwargs)
-
         class ParticipantSelectForm(FormMixin, forms.Form):
             participant = forms.ChoiceField(
                 label   = _('Choose'),
-                choices = [('new', _('new participant'))] + list((p.id, p) for p in self.participants),
+                choices = [('new', _('new participant'))] + list((p.id, p) for p in self.user_participants),
                 initial = 'new',
                 widget  = RadioSelectBootstrap(),
             )
-        kwargs['prefix'] = 'participant_select'
+
+        kwargs['prefix'] = self.prefix + '-participant_select'
         self.participant_select_form = ParticipantSelectForm(**kwargs)
 
         class ParentSelectForm(FormMixin, forms.Form):
             parent = forms.ChoiceField(
                 label   = _('Choose'),
-                choices = [('new', _('new parent'))] + list((p.id, p) for p in self.parents),
+                choices = [('new', _('new parent'))] + list((p.id, p) for p in self.user_parents),
                 initial = 'new',
                 widget  = RadioSelectBootstrap(),
             )
-        kwargs['prefix'] = 'parent1_select'
+
+        kwargs['prefix'] = self.prefix + '-parent1_select'
         self.parent1_select_form = ParentSelectForm(**kwargs)
-        kwargs['prefix'] = 'parent2_select'
+        kwargs['prefix'] = self.prefix + '-parent2_select'
         self.parent2_select_form = ParentSelectForm(**kwargs)
 
-        kwargs['prefix'] = 'questions'
+        kwargs['prefix'] = self.prefix + '-questions'
         self.questions_form = type(str('QuestionsForm'), (FormMixin, forms.Form), dict(
-            (q.name, q.get_field()) for q in self.instance.subject.all_questions
+            (q.name, q.get_field()) for q in self.subject.all_questions
         ))(**kwargs)
-
-        self.agreement_forms = []
-        for agreement in self.instance.subject.all_registration_agreements:
-            kwargs['prefix'] = 'agreement_%s' % agreement.id
-            form_attributes = {
-                'agreement': agreement,
-                'options': {},
-            }
-            for option in agreement.all_options:
-                option_id = 'option_%s' % option.id
-                form_attributes[option_id] = AgreementBooleanField(
-                    label=option.option,
-                    allow_disagree=not option.required,
-                )
-                form_attributes['options'][option_id] = option
-            AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
-            self.agreement_forms.append(AgreementForm(**kwargs))
 
     def _add_error_required(self, field_name):
         self.add_error(field_name, forms.ValidationError(
@@ -279,16 +247,13 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     @cached_property
     def required_forms(self):
-        required_forms = [
-            super(RegistrationForm, self),
+        return [
+            super(RegistrationParticipantForm, self),
             self.participant_select_form,
             self.questions_form,
             self.parent1_select_form,
             self.parent2_select_form,
-        ] + self.agreement_forms
-        if not self.user.is_authenticated:
-            required_forms.append(self.email_form)
-        return required_forms
+        ]
 
     def is_valid(self):
         # validate all required forms
@@ -298,11 +263,178 @@ class RegistrationForm(FormMixin, forms.ModelForm):
     @cached_property
     def errors(self):
         return {
-            (form.prefix + field_name if form.prefix else field_name): error
+            (form.prefix + '-' + field_name if form.prefix else field_name): error
             for form in self.required_forms for field_name, error in form.errors.items()
         }
 
     def save(self, commit=True):
+        with transaction.atomic():
+            return self._save(commit)
+
+    def _save(self, commit):
+        # set answers
+        self.instance.answers = dumps(self.questions_form.cleaned_data)
+
+        # create
+        super().save(commit)
+
+        # save / update participant
+        if self.participant_select_form.cleaned_data['participant'] == 'new':
+            try:
+                participant = Participant.objects.get(
+                    user        = self.user,
+                    birth_num   = self.instance.participant.birth_num,
+                )
+            except Participant.DoesNotExist:
+                participant = Participant()
+                participant.user = self.instance.registration.user
+        else:
+            participant = Participant.objects.get(id=self.participant_select_form.cleaned_data['participant'])
+        for attr in ['first_name', 'last_name', 'birth_num', 'age_group', 'street', 'city', 'postal_code',
+                     'citizenship', 'phone', 'email', 'school', 'school_other', 'school_class', 'health']:
+            setattr(participant, attr, getattr(self.instance.participant, attr))
+        participant.save()
+
+        # save / update first parent
+        if self.instance.parent1:
+            if self.parent1_select_form.cleaned_data['parent'] == 'new':
+                parent = Parent()
+                parent.user = self.instance.registration.user
+            else:
+                parent = Parent.objects.get(id=self.parent1_select_form.cleaned_data['parent'])
+            for attr in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
+                setattr(parent, attr, getattr(self.instance.parent1, attr))
+            parent.save()
+
+        # save / update second parent
+        if self.instance.parent2:
+            if self.parent2_select_form.cleaned_data['parent'] == 'new':
+                parent = Parent()
+                parent.user = self.instance.registration.user
+            else:
+                parent = Parent.objects.get(id=self.parent2_select_form.cleaned_data['parent'])
+            for attr in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
+                setattr(parent, attr, getattr(self.instance.parent2, attr))
+            parent.save()
+        return self.instance
+
+
+class RegistrationForm(FormMixin, forms.ModelForm):
+    def __init__(self, subject, user, **kwargs):
+        super(RegistrationForm, self).__init__(**kwargs)
+        self.user = user
+        self.instance.subject = subject
+
+        # choices for subject_variant
+        if self.instance.subject.all_variants:
+            self.fields['subject_variant'].widget.choices.queryset = self.instance.subject.variants
+        else:
+            del self.fields['subject_variant']
+
+        # sub forms
+
+        registered_birth_nums = list(SubjectRegistrationParticipant.objects.filter(
+            registration_id__in=self.instance.subject.active_registrations.values('id')
+        ).values_list('participant_birth_num', flat=True))
+
+        participant_form = type(
+            RegistrationParticipantForm.__name__,
+            (RegistrationParticipantForm, ),
+            {
+                'subject': subject,
+                'user': user,
+                'user_participants': user.leprikon_participants.exclude(
+                    birth_num__in=registered_birth_nums,
+                ) if user.is_authenticated() else [],
+                'user_parents': user.leprikon_parents.all() if user.is_authenticated() else []
+            }
+        )
+
+        self.participants_formset = inlineformset_factory(
+            SubjectRegistration,
+            SubjectRegistrationParticipant,
+            form=participant_form,
+            fk_name='registration',
+            exclude=[],
+            extra=subject.max_participants_count,
+            min_num=subject.min_participants_count,
+            max_num=subject.max_participants_count,
+            validate_min=True,
+            validate_max=True,
+        )(kwargs.get('data'), instance=self.instance)
+
+        group_member_form = type(
+            forms.ModelForm.__name__,
+            (FormMixin, forms.ModelForm),
+            {}
+        )
+
+        self.group_members_formset = inlineformset_factory(
+            SubjectRegistration,
+            SubjectRegistrationGroupMember,
+            form=group_member_form,
+            fk_name='registration',
+            exclude=[],
+            extra=subject.max_group_members_count,
+            min_num=subject.min_group_members_count,
+            max_num=subject.max_group_members_count,
+            validate_min=True,
+            validate_max=True,
+        )(kwargs.get('data'), instance=self.instance)
+
+        del kwargs['instance']
+
+        if not user.is_authenticated():
+            kwargs['prefix'] = 'email'
+            self.email_form = self.EmailForm(**kwargs)
+
+        self.agreement_forms = []
+        for agreement in self.instance.subject.all_registration_agreements:
+            kwargs['prefix'] = 'agreement_%s' % agreement.id
+            form_attributes = {
+                'agreement': agreement,
+                'options': {},
+            }
+            for option in agreement.all_options:
+                option_id = 'option_%s' % option.id
+                form_attributes[option_id] = AgreementBooleanField(
+                    label=option.option,
+                    allow_disagree=not option.required,
+                )
+                form_attributes['options'][option_id] = option
+            AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
+            self.agreement_forms.append(AgreementForm(**kwargs))
+
+    @cached_property
+    def required_forms(self):
+        required_forms = [
+            super(RegistrationForm, self),
+        ] + self.agreement_forms
+        if not self.user.is_authenticated:
+            required_forms.append(self.email_form)
+        return required_forms
+
+    def is_valid(self):
+        # validate all required forms
+        results = [form.is_valid() for form in self.required_forms] + [
+            self.participants_formset.is_valid(),
+            self.group_members_formset.is_valid(),
+        ]
+        return all(results)
+
+    @cached_property
+    def errors(self):
+        return {
+            (form.prefix + field_name if form.prefix else field_name): error
+            for form in (self.required_forms + self.participants_formset.forms + self.group_members_formset.forms)
+            for field_name, error in form.errors.items()
+        }
+
+    def save(self, commit=True):
+        with transaction.atomic():
+            return self._save(commit)
+
+    def _save(self, commit):
         # set user
         if self.user.is_authenticated():
             self.instance.user = self.user
@@ -335,11 +467,14 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             else self.instance.subject.price
         )
 
-        # set answers
-        self.instance.answers = dumps(self.questions_form.cleaned_data)
-
         # create
-        super(RegistrationForm, self).save(commit)
+        super().save(commit)
+
+        # save participants
+        self.participants_formset.save()
+
+        # save group members
+        self.group_members_formset.save()
 
         # save additional questions
         self.instance.questions.set(self.instance.subject.all_questions)
@@ -353,53 +488,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 if checked:
                     self.instance.agreement_options.add(agreement_form.options[option_id])
 
-        # save / update participant
-        if self.participant_select_form.cleaned_data['participant'] == 'new':
-            try:
-                participant = Participant.objects.get(
-                    user        = self.instance.user,
-                    birth_num   = self.instance.participant.birth_num,
-                )
-            except Participant.DoesNotExist:
-                participant = Participant()
-                participant.user = self.instance.user
-        else:
-            participant = Participant.objects.get(id=self.participant_select_form.cleaned_data['participant'])
-        for attr in ['first_name', 'last_name', 'birth_num', 'age_group', 'street', 'city', 'postal_code',
-                     'citizenship', 'phone', 'email', 'school', 'school_other', 'school_class', 'health']:
-            setattr(participant, attr, getattr(self.instance.participant, attr))
-        participant.save()
-
-        # save / update first parent
-        if self.instance.parent1:
-            if self.parent1_select_form.cleaned_data['parent'] == 'new':
-                parent = Parent()
-                parent.user = self.instance.user
-            else:
-                parent = Parent.objects.get(id=self.parent1_select_form.cleaned_data['parent'])
-            for attr in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                setattr(parent, attr, getattr(self.instance.parent1, attr))
-            parent.save()
-
-        # save / update second parent
-        if self.instance.parent2:
-            if self.parent2_select_form.cleaned_data['parent'] == 'new':
-                parent = Parent()
-                parent.user = self.instance.user
-            else:
-                parent = Parent.objects.get(id=self.parent2_select_form.cleaned_data['parent'])
-            for attr in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                setattr(parent, attr, getattr(self.instance.parent2, attr))
-            parent.save()
-
         # send mail
-        try:
-            self.instance.send_mail()
-        except:
-            import traceback
-            from raven.contrib.django.models import client
-            traceback.print_exc()
-            client.captureException()
+        self.instance.send_mail()
+        return self.instance
 
     class EmailForm(FormMixin, forms.Form):
         email = VerifiedEmailField(label=_('Your email'), fieldsetup_id='RegistrationEmailForm')
@@ -412,7 +503,6 @@ class CourseRegistrationForm(RegistrationForm):
         exclude = ('subject', 'user', 'cancel_request', 'canceled')
 
 
-
 class EventRegistrationForm(RegistrationForm):
 
     class Meta:
@@ -420,37 +510,47 @@ class EventRegistrationForm(RegistrationForm):
         exclude = ('subject', 'user', 'cancel_request', 'canceled')
 
 
-
 class RegistrationAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super(RegistrationAdminForm, self).__init__(data, *args, **kwargs)
-        instance = kwargs.get('instance')
-        initial = kwargs.get('initial')
-        try:
-            subject = Subject.objects.get(id=int(data['subject']))
-        except (Subject.DoesNotExist, TypeError, KeyError, ValueError):
-            subject = instance.subject if instance else Subject.objects.get(id=initial['subject'])
-        self.fields['subject_variant'].widget.choices.queryset = subject.variants
-        if not subject.variants.exists():
-            self.fields['subject_variant'].required = False
-        self.fields['participant_age_group'].widget.choices.queryset = subject.age_groups
 
+        self.fields['subject_variant'].widget.choices.queryset = self.subject.variants
+        if not self.subject.variants.exists():
+            self.fields['subject_variant'].required = False
+
+        # choices for agreement options
+        instance = kwargs.get('instance')
+        self.fields['agreement_options'].widget.choices = tuple(
+            (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
+            for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
+        )
+
+
+class RegistrationParticipantAdminForm(forms.ModelForm):
+
+    def __init__(self, data=None, *args, **kwargs):
+        super(RegistrationParticipantAdminForm, self).__init__(data, *args, **kwargs)
+        instance = kwargs.get('instance')
+
+        self.fields['participant_age_group'].widget.choices.queryset = self.subject.age_groups
+
+        questions = self.obj.all_questions if self.obj else self.subject.all_questions
+        answers = instance.get_answers() if instance else {}
+        for q in questions:
+            self.fields['q_' + q.name].initial = answers.get(q.name)
+
+        created_date = self.obj.created.date() if self.obj else date.today()
         try:
-            age = get_age(
-                get_birth_date(data['participant_birth_num']),
-                instance.created.date() if instance else date.today(),
-            )
-        except:
-            age = get_age(
-                get_birth_date(instance.participant.birth_num),
-                instance.created.date(),
-            ) if instance else 18
-        if age < 18:
-            self.fields['has_parent1'].required = True
-        else:
-            self.fields['participant_phone'].required = True
-            self.fields['participant_email'].required = True
+            age = get_age(get_birth_date(data['participant_birth_num']), created_date)
+        except Exception:
+            age = get_age(get_birth_date(instance.participant.birth_num), created_date) if instance else None
+        if age is not None:
+            if age < 18:
+                self.fields['has_parent1'].required = True
+            else:
+                self.fields['participant_phone'].required = True
+                self.fields['participant_email'].required = True
 
         try:
             has_parent = ['has_parent1' in data, 'has_parent2' in data]
@@ -461,8 +561,9 @@ class RegistrationAdminForm(forms.ModelForm):
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
                     self.fields['parent{}_{}'.format(n + 1, field)].required = True
 
-        # choices for agreement options
-        self.fields['agreement_options'].widget.choices = tuple(
-            (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
-            for agreement in (instance.all_agreements if instance else subject.all_registration_agreements)
-        )
+    def save(self, commit=True):
+        self.instance.answers = dumps({
+            q.name: self.cleaned_data['q_' + q.name]
+            for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
+        })
+        return super().save(commit)

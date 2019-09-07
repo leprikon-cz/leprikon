@@ -4,11 +4,12 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.journals import JournalEntryAdminForm, JournalLeaderEntryAdminForm
-from ..models.journals import JournalLeaderEntry
+from ..models.journals import JournalEntry, JournalLeaderEntry
 from .export import AdminExportMixin
 from .filters import LeaderListFilter, SchoolYearListFilter, SubjectListFilter
 
 
+@admin.register(JournalLeaderEntry)
 class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form = JournalLeaderEntryAdminForm
     list_display = ('timesheet', 'date', 'start', 'end', 'duration', 'subject')
@@ -63,6 +64,7 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
     edit_link.allow_tags = True
 
 
+@admin.register(JournalEntry)
 class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form = JournalEntryAdminForm
     date_hierarchy = 'date'
@@ -71,7 +73,7 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         ('subject__school_year', SchoolYearListFilter),
         ('subject', SubjectListFilter),
     )
-    filter_horizontal = ('registrations',)
+    filter_horizontal = ('participants',)
     inlines = (JournalLeaderEntryInlineAdmin,)
     ordering = ('-date', '-start')
     readonly_fields = ('subject_name', 'date',)

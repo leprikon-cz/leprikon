@@ -151,12 +151,18 @@ img.right {
     font-weight: normal;
 }
 
-.form-group.required > label {
+.form-group.required > .control-label {
     font-weight: bold;
+    padding-right: 10px;
+    position: relative;
 }
 
-.form-group.required > label:after {
-  content:"*"; color:red;
+.form-group.required > .control-label:after {
+    color:red;
+    content:"*";
+    position: absolute;
+    top: 10px;
+    right: 0px;
 }
 
 input.form-control[type="checkbox"] {

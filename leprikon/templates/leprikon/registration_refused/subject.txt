@@ -1,0 +1,4 @@
+{% load i18n %}{% blocktrans %}Hello,
+we are sorry to inform You, that your registration was refused.{% endblocktrans %}
+
+{% include 'leprikon/registration_mail_footer.txt' %}

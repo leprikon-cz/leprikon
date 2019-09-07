@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.events import Event, EventRegistration
+from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
@@ -22,24 +22,25 @@ from .subjects import (
 )
 
 
+@admin.register(Event)
 class EventAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.EVENT
     registration_model = EventRegistration
-    list_export     = (
+    list_export = (
         'id', 'code', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'start_date', 'start_time', 'end_date', 'end_time',
         'place', 'public',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
+    list_filter = (
+        ('school_year', SchoolYearListFilter),
         'department',
-        ('subject_type',    EventTypeListFilter),
-        ('groups',          EventGroupListFilter),
-        ('leaders',         LeaderListFilter),
+        ('subject_type', EventTypeListFilter),
+        ('groups', EventGroupListFilter),
+        ('leaders', LeaderListFilter),
     )
-    date_hierarchy  = 'start_date'
-    actions         = (
+    date_hierarchy = 'start_date'
+    actions = (
         'publish', 'unpublish',
         'copy_to_school_year',
     )
@@ -91,20 +92,21 @@ class EventAdmin(SubjectBaseAdmin):
         ).distinct()
 
 
-
+@admin.register(EventRegistration)
 class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
-    list_display    = (
-        'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price', 'event_discounts', 'event_payments',
+    list_display = (
+        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
+        'event_discounts', 'event_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note',
     )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
+    list_filter = (
+        ('subject__school_year', SchoolYearListFilter),
         'subject__department',
-        ('subject__subject_type',   EventTypeListFilter),
+        ('subject__subject_type', EventTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
-        ('subject',                 EventListFilter),
-        ('subject__leaders',        LeaderListFilter),
+        ('subject', EventListFilter),
+        ('subject__leaders', LeaderListFilter),
     )
 
     def event_discounts(self, obj):
@@ -113,11 +115,11 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            href_list   = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
-            amount      = currency(status.discount),
-            href_add    = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
-            icon_add    = static('admin/img/icon-addlink.svg'),
-            title_add   = _('add discount'),
+            href_list = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
+            amount = currency(status.discount),
+            href_add = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
+            icon_add = static('admin/img/icon-addlink.svg'),
+            title_add = _('add discount'),
         )
     event_discounts.allow_tags = True
     event_discounts.short_description = _('event discounts')
@@ -128,19 +130,19 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             '<a class="popup-link" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            color       = status.color,
-            href_list   = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
-            title       = status.title,
-            amount      = currency(status.paid),
-            href_add    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-            icon_add    = static('admin/img/icon-addlink.svg'),
-            title_add   = _('add payment'),
+            color = status.color,
+            href_list = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
+            title = status.title,
+            amount = currency(status.paid),
+            href_add = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+            icon_add = static('admin/img/icon-addlink.svg'),
+            title_add = _('add payment'),
         )
     event_payments.allow_tags = True
     event_payments.short_description = _('event payments')
 
 
-
+@admin.register(EventDiscount)
 class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    list_display    = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
-    list_export     = ('accounted', 'registration', 'subject', 'amount', 'explanation')
+    list_display = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
+    list_export = ('accounted', 'registration', 'subject', 'amount', 'explanation')

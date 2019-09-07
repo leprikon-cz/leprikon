@@ -1,5 +1,3 @@
-from json import dumps
-
 from bankreader.models import Transaction as BankreaderTransaction
 from django import forms
 from django.conf.urls import url as urls_url
@@ -17,9 +15,13 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.subjects import RegistrationAdminForm
+from ..forms.subjects import (
+    RegistrationAdminForm, RegistrationParticipantAdminForm,
+)
 from ..models.subjects import (
-    Subject, SubjectAttachment, SubjectPayment, SubjectTypeAttachment,
+    Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
+    SubjectRegistration, SubjectRegistrationGroupMember,
+    SubjectRegistrationParticipant, SubjectType, SubjectTypeAttachment,
     SubjectVariant,
 )
 from ..utils import amount_color, currency
@@ -34,20 +36,18 @@ from .pdf import PdfExportAdminMixin
 
 
 class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
-    model   = SubjectTypeAttachment
-    extra   = 3
+    model = SubjectTypeAttachment
+    extra = 3
 
 
-
+@admin.register(SubjectType)
 class SubjectTypeAdmin(admin.ModelAdmin):
-    list_display    = ('plural', 'order')
-    list_editable   = ('order',)
-    exclude         = ('order',)
+    list_display = ('plural', 'order')
+    list_editable = ('order',)
+    exclude = ('order',)
     filter_horizontal = ('questions', 'registration_agreements')
     prepopulated_fields = {'slug': ('plural',)}
-    inlines         = (
-        SubjectTypeAttachmentInlineAdmin,
-    )
+    inlines = (SubjectTypeAttachmentInlineAdmin, )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(SubjectTypeAdmin, self).get_form(request, obj, **kwargs)
@@ -62,52 +62,49 @@ class SubjectTypeAdmin(admin.ModelAdmin):
         return form
 
 
-
+@admin.register(SubjectGroup)
 class SubjectGroupAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'color', 'order')
-    list_editable   = ('color', 'order')
+    list_display = ('name', 'color', 'order')
+    list_editable = ('color', 'order')
     filter_horizontal = ('subject_types',)
 
 
-
 class SubjectAttachmentInlineAdmin(admin.TabularInline):
-    model   = SubjectAttachment
-    extra   = 3
-
+    model = SubjectAttachment
+    extra = 3
 
 
 class SubjectVariantInlineAdmin(admin.TabularInline):
-    model   = SubjectVariant
-    extra   = 0
-
+    model = SubjectVariant
+    extra = 0
 
 
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
-    subject_type    = None
+    subject_type = None
     registration_model = None
-    list_display    = (
+    list_display = (
         'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public', 'registration_allowed_icon',
         'get_registrations_link',
         'get_journal_link', 'icon', 'note',
     )
-    list_editable   = ('public', 'note')
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
+    list_editable = ('public', 'note')
+    list_filter = (
+        ('school_year', SchoolYearListFilter),
         'department',
-        ('subject_type',    SubjectTypeListFilter),
-        ('groups',          SubjectGroupListFilter),
-        ('leaders',         LeaderListFilter),
+        ('subject_type', SubjectTypeListFilter),
+        ('groups', SubjectGroupListFilter),
+        ('leaders', LeaderListFilter),
     )
-    inlines         = (
+    inlines = (
         SubjectVariantInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions', 'registration_agreements')
-    actions         = ('set_registration_dates',)
-    search_fields   = ('name', 'description')
-    save_as         = True
+    actions = ('set_registration_dates',)
+    search_fields = ('name', 'description')
+    save_as = True
 
     @property
     def media(self):
@@ -165,8 +162,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url     = reverse('admin:leprikon_subject_journal', args=[obj.id]),
-            title   = _('printable journal'),
+            url = reverse('admin:leprikon_subject_journal', args=[obj.id]),
+            title = _('printable journal'),
             journal = _('journal'),
         )
     get_journal_link.short_description = _('journal')
@@ -184,32 +181,32 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
         if approved_registrations_count == 0:
             title = _('There are no approved registrations for this {}.').format(obj.subject_type.name_akuzativ)
-        elif obj.min_count is not None and approved_registrations_count < obj.min_count:
-            title = _('The number of approved registrations is lower than {}.').format(obj.min_count)
-        elif obj.max_count is not None and approved_registrations_count > obj.max_count:
-            title = _('The number of approved registrations is greater than {}.').format(obj.max_count)
+        elif obj.min_registrations_count is not None and approved_registrations_count < obj.min_registrations_count:
+            title = _('The number of approved registrations is lower than {}.').format(obj.min_registrations_count)
+        elif obj.max_registrations_count is not None and approved_registrations_count > obj.max_registrations_count:
+            title = _('The number of approved registrations is greater than {}.').format(obj.max_registrations_count)
         else:
             icon = True
             title = ''
         return format_html(
             '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>',
-            url     = reverse('admin:{}_{}_changelist'.format(
+            url = reverse('admin:{}_{}_changelist'.format(
                 self.registration_model._meta.app_label,
                 self.registration_model._meta.model_name,
             )) + '?subject__id__exact={}'.format(obj.id),
-            title       = title,
-            icon        = _boolean_icon(icon),
-            approved    = approved_registrations_count,
-            unapproved  = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
+            title = title,
+            icon = _boolean_icon(icon),
+            approved = approved_registrations_count,
+            unapproved = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
         ) + format_html(
             '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
             '<img src="{icon}" alt="+"/></a>',
-            url     = reverse('admin:{}_{}_add'.format(
+            url = reverse('admin:{}_{}_add'.format(
                 self.registration_model._meta.app_label,
                 self.registration_model._meta.model_name,
             )) + '?subject={}'.format(obj.id),
-            title   = _('add registration'),
-            icon    = static('admin/img/icon-addlink.svg'),
+            title = _('add registration'),
+            icon = static('admin/img/icon-addlink.svg'),
         )
     get_registrations_link.short_description = _('registrations')
     get_registrations_link.allow_tags = True
@@ -272,21 +269,21 @@ class ChangeformRedirectMixin:
         return super(ChangeformRedirectMixin, self).changeform_view(request, object_id, form_url, extra_context)
 
 
-
+@admin.register(Subject)
 class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
-    list_display    = (
+    list_display = (
         'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list', 'icon',
     )
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
+    list_filter = (
+        ('school_year', SchoolYearListFilter),
         'department',
         'subject_type__subject_type',
-        ('subject_type',    SubjectTypeListFilter),
-        ('groups',          SubjectGroupListFilter),
-        ('leaders',         LeaderListFilter),
+        ('subject_type', SubjectTypeListFilter),
+        ('groups', SubjectGroupListFilter),
+        ('leaders', LeaderListFilter),
     )
-    search_fields   = ('name', 'description')
+    search_fields = ('name', 'description')
 
     def get_model_perms(self, request):
         return {}
@@ -317,39 +314,66 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
         })
 
 
+class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
+    model = SubjectRegistrationParticipant
+    extra = 0
+
+    def get_min_num(self, request, obj=None, **kwargs):
+        return request.subject.min_participants_count
+
+    def get_max_num(self, request, obj=None, **kwargs):
+        return request.subject.max_participants_count
+
+    def get_formset(self, request, obj, **kwargs):
+        questions = obj.all_questions if obj else request.subject.all_questions
+        fields = dict(
+            ('q_' + q.name, q.get_field())
+            for q in questions
+        )
+        fields['subject'] = request.subject
+        fields['obj'] = obj
+        kwargs['form'] = type(RegistrationParticipantAdminForm.__name__, (RegistrationParticipantAdminForm,), fields)
+        return super().get_formset(request, obj, **kwargs)
+
+
+class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
+    model = SubjectRegistrationGroupMember
+    extra = 0
+
+    def get_min_num(self, request, obj=None, **kwargs):
+        return request.subject.min_group_members_count
+
+    def get_max_num(self, request, obj=None, **kwargs):
+        return request.subject.max_group_members_count
+
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
-    list_editable   = ('note',)
-    list_export     = (
-        'id', 'variable_symbol', 'slug', 'created', 'payment_requested', 'approved', 'user', 'subject', 'price',
-        'answers', 'cancel_request', 'canceled',
-        'participant_gender', 'participant_first_name', 'participant_last_name', 'participant_birth_num',
-        'participant_age_group', 'participant_street', 'participant_city', 'participant_postal_code',
-        'participant_citizenship', 'participant_phone', 'participant_email',
-        'participant_school', 'participant_school_other', 'participant_school_class', 'participant_health',
-        'has_parent1', 'parent1_first_name', 'parent1_last_name', 'parent1_street', 'parent1_city',
-        'parent1_postal_code', 'parent1_phone', 'parent1_email',
-        'has_parent2', 'parent2_first_name', 'parent2_last_name', 'parent2_street', 'parent2_city',
-        'parent2_postal_code', 'parent2_phone', 'parent2_email', 'note',
+    inlines = (SubjectRegistrationParticipantInlineAdmin, SubjectRegistrationGroupMemberInlineAdmin)
+    list_editable = ('note',)
+    list_export = (
+        'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
+        'created', 'payment_requested', 'approved', 'canceled', 'cancel_request',
+        'agreement_options_list', 'participants_list', 'group_members_list',
     )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
+    list_filter = (
+        ('subject__school_year', SchoolYearListFilter),
         'subject__department',
-        ('subject__subject_type',   SubjectTypeListFilter),
+        ('subject__subject_type', SubjectTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
-        ('subject',                 SubjectListFilter),
-        ('subject__leaders',        LeaderListFilter),
+        ('subject', SubjectListFilter),
+        ('subject__leaders', LeaderListFilter),
     )
-    actions         = ('approve', 'request_payment', 'cancel')
-    search_fields   = (
-        'variable_symbol', 'participant_birth_num',
-        'participant_first_name', 'participant_last_name',
-        'parent1_first_name', 'parent1_last_name',
-        'parent2_first_name', 'parent2_last_name',
+    actions = ('approve', 'refuse', 'request_payment', 'cancel')
+    search_fields = (
+        'variable_symbol', 'participants__participant_birth_num',
+        'participants__participant_first_name', 'participants__participant_last_name',
+        'participants__parent1_first_name', 'participants__parent1_last_name',
+        'participants__parent2_first_name', 'participants__parent2_last_name',
+        'group_members__first_name', 'group_members__last_name',
     )
-    ordering        = ('-cancel_request', '-created')
-    raw_id_fields   = ('subject', 'user',)
+    ordering = ('-cancel_request', '-created')
+    raw_id_fields = ('subject', 'user',)
 
     @property
     def media(self):
@@ -358,7 +382,10 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return m
 
     def has_delete_permission(self, request, obj=None):
-        return obj and obj.approved is None and obj.payments.count() == 0
+        if obj and obj.approved is None and obj.payments.count() == 0:
+            return super(SubjectRegistrationBaseAdmin, self).has_delete_permission(request, obj)
+        else:
+            return False
 
     def get_actions(self, request):
         actions = super(SubjectRegistrationBaseAdmin, self).get_actions(request)
@@ -371,6 +398,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             registration.approve()
         self.message_user(request, _('Selected registrations were approved.'))
     approve.short_description = _('Approve selected registrations')
+
+    def refuse(self, request, queryset):
+        for registration in queryset.all():
+            registration.refuse()
+        self.message_user(request, _('Selected registrations were refused.'))
+    refuse.short_description = _('Refuse selected registrations')
 
     def request_payment(self, request, queryset):
         for registration in queryset.all():
@@ -392,33 +425,47 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             formfield.widget.rel.limit_choices_to = limit_choices_to
         return formfield
 
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if not object_id and request.method == 'POST' and 'user' not in request.POST:
+            return HttpResponseRedirect('{}?subject={}'.format(request.path, request.POST.get('subject', '')))
+        else:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+
     def get_form(self, request, obj, **kwargs):
         try:
             # first try request.POST (user may want to change the subject)
-            subject = Subject.objects.get(id=int(request.POST.get('subject')))
+            request.subject = Subject.objects.get(id=int(request.POST.get('subject')))
         except (Subject.DoesNotExist, TypeError, ValueError):
             if obj:
                 # use subject from object
-                subject = obj.subject
+                request.subject = obj.subject
             else:
                 # try to get subject from request.GET
                 try:
-                    subject = Subject.objects.get(id=int(request.GET.get('subject')))
+                    request.subject = Subject.objects.get(id=int(request.GET.get('subject')))
                 except (Subject.DoesNotExist, TypeError, ValueError):
-                    subject = None
-        if subject:
-            questions       = obj.all_questions if obj else subject.all_questions
-            answers         = obj.get_answers() if obj else {}
-            kwargs['form']  = type(RegistrationAdminForm.__name__, (RegistrationAdminForm,), dict(
-                ('q_' + q.name, q.get_field(initial=answers.get(q.name)))
-                for q in questions
-            ))
+                    request.subject = None
+
+        if request.subject:
+            kwargs['form'] = type(
+                RegistrationAdminForm.__name__,
+                (RegistrationAdminForm,),
+                {'subject': request.subject},
+            )
         else:
             kwargs['fields'] = ['subject']
         return super(SubjectRegistrationBaseAdmin, self).get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        return super(SubjectRegistrationBaseAdmin, self).get_inline_instances(request, obj) if obj else []
+        return super().get_inline_instances(request, obj) if request.subject else []
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        if add and request.subject and not request.GET.get('subject'):
+            # we have received subject by POST
+            # redirect to complete form with GET
+            return HttpResponseRedirect('{}?subject={}'.format(request.path, request.subject.id))
+        else:
+            return super().render_change_form(request, context, add, change, form_url, obj)
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -429,18 +476,15 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
                 else obj.subject.price
             )
 
-        # save answers
-        obj.answers = dumps({
-            q.name: form.cleaned_data['q_' + q.name]
-            for q in (obj.all_questions if change else obj.subject.all_questions)
-        })
-
         obj.save()
 
         if not change:
             # save questions and agreements
             obj.questions.set(obj.subject.all_questions)
             obj.agreements.set(obj.subject.all_registration_agreements)
+
+            # send mail
+            obj.send_mail()
 
     def subject_name(self, obj):
         return obj.subject.name
@@ -452,29 +496,29 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         ).distinct()
 
 
-
+@admin.register(SubjectRegistration)
 class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
-    list_display    = (
-        'id', 'variable_symbol', 'subject', 'participant', 'created', 'canceled',
+    list_display = (
+        'id', 'variable_symbol', 'subject', 'participants_list_html', 'group_name', 'created', 'canceled',
     )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
+    list_filter = (
+        ('subject__school_year', SchoolYearListFilter),
         'subject__department',
-        ('subject__subject_type',   SubjectTypeListFilter),
+        ('subject__subject_type', SubjectTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
-        ('subject',                 SubjectListFilter),
-        ('subject__leaders',        LeaderListFilter),
+        ('subject', SubjectListFilter),
+        ('subject__leaders', LeaderListFilter),
     )
-    ordering        = ('-created',)
-    search_fields   = (
-        'variable_symbol', 'participant_birth_num',
-        'participant_first_name', 'participant_last_name',
-        'parent1_first_name', 'parent1_last_name',
-        'parent2_first_name', 'parent2_last_name',
+    ordering = ('-created',)
+    search_fields = (
+        'variable_symbol', 'participants__participant_birth_num',
+        'participants__participant_first_name', 'participant_last_name',
+        'participants__parent1_first_name', 'participants__parent1_last_name',
+        'participants__parent2_first_name', 'participants__parent2_last_name',
+        'group_members__first_name', 'group_members__last_name',
     )
-    fieldsets       = ((None, {'fields': ()}),)
 
     def get_model_perms(self, request):
         return {}
@@ -490,21 +534,21 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, Changefo
 
 
 class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_filter     = (
-        ('registration__subject__school_year',  SchoolYearListFilter),
+    list_filter = (
+        ('registration__subject__school_year', SchoolYearListFilter),
         'registration__subject__department',
         ('registration__subject__subject_type', SubjectTypeListFilter),
-        ('registration__subject',               SubjectListFilter),
-        ('registration__subject__leaders',      LeaderListFilter),
+        ('registration__subject', SubjectListFilter),
+        ('registration__subject__leaders', LeaderListFilter),
     )
-    search_fields   = (
+    search_fields = (
         'registration__subject__name', 'registration__participant_first_name', 'registration__participant_last_name',
         'registration__participant_birth_num',
     )
-    date_hierarchy  = 'accounted'
-    ordering        = ('-accounted',)
-    raw_id_fields   = ('registration',)
-    closed_fields   = ('accounted', 'registration', 'amount')
+    date_hierarchy = 'accounted'
+    ordering = ('-accounted',)
+    raw_id_fields = ('registration',)
+    closed_fields = ('accounted', 'registration', 'amount')
 
     def is_closed(self, request, obj):
         return (
@@ -541,21 +585,22 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
-            color   = amount_color(obj.amount),
-            amount  = currency(abs(obj.amount)),
+            color = amount_color(obj.amount),
+            amount = currency(abs(obj.amount)),
         )
     amount_html.short_description = _('amount')
     amount_html.admin_order_field = 'amount'
     amount_html.allow_tags = True
 
 
+@admin.register(SubjectPayment)
 class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    list_display    = ('accounted', 'download_tag', 'registration', 'subject', 'payment_type_label', 'amount_html',
-                       'received_by', 'note')
-    list_editable   = ('note',)
-    list_export     = ('accounted', 'registration', 'subject', 'payment_type_label', 'amount')
-    raw_id_fields   = ('registration', 'related_payment', 'bankreader_transaction', 'pays_payment')
-    exclude         = ('received_by',)
+    list_display = ('accounted', 'download_tag', 'registration', 'payment_type_label', 'amount_html',
+                    'received_by', 'note')
+    list_editable = ('note',)
+    list_export = ('accounted', 'registration', 'subject', 'payment_type_label', 'amount')
+    raw_id_fields = ('registration', 'related_payment', 'bankreader_transaction', 'pays_payment')
+    exclude = ('received_by',)
 
     def get_urls(self):
         urls = super(SubjectPaymentAdmin, self).get_urls()

@@ -1,6 +1,9 @@
 from django.contrib import admin
 
+from ..models.leprikonsite import LeprikonSite
 
+
+@admin.register(LeprikonSite)
 class LeprikonSiteAdmin(admin.ModelAdmin):
     list_display    = ('name',)
     filter_horizontal = ('registration_agreements',)

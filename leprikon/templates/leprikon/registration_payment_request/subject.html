@@ -7,7 +7,11 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 
 <p>
     {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>
-    {% trans 'Participant' %}: {{ object.participant }}<br/>
+    {% if object.group_name %}{% trans 'Group name' %}: {{ object.group_name }}<br/>{% endif %}
+    {% if object.all_participants %}
+        {% blocktrans count counter=object.all_participants|length %}Participant{% plural %}Participants{% endblocktrans %}:
+        {{ object.all_participants|comma_separated }}<br/>
+    {% endif %}
     {% trans 'Price' %}: {{ object.current_receivable | currency }}<br/>
 </p>
 
@@ -36,10 +40,6 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 
 <p>
     {% trans 'If You have already made the payment recently, please ignore this message.' %}
-    {% trans 'You may check the current status of your registrations and payments using following link:' %}<br/>
-    <a href="https://{{ site.domain }}{% url 'leprikon:registration_list' %}">
-        https://{{ site.domain }}{% url 'leprikon:registration_list' %}
-    </a>
 </p>
 
-<p>{{ site.name }}</p>
+{% include 'leprikon/registration_mail_footer.html' %}

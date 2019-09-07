@@ -14,7 +14,11 @@ from ..forms.user import UserAdminChangeForm, UserAdminCreateForm
 from ..utils import merge_users
 from .messages import SendMessageAdminMixin
 
+User = get_user_model()
+admin.site.unregister(User)
 
+
+@admin.register(User)
 class UserAdmin(SendMessageAdminMixin, _UserAdmin):
     actions = ('merge',)
     add_form = UserAdminCreateForm
@@ -51,13 +55,13 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
         else:
             form = MergeForm()
         return render(request, 'leprikon/admin/merge.html', {
-            'title':    _('Select target user for merge'),
+            'title': _('Select target user for merge'),
             'question': _('Are you sure you want to merge selected users into one? '
                           'All participants, parents, registrations and other related information '
                           'will be added to the target user account and the remaining users will be deleted.'),
             'queryset': queryset,
-            'objects_title':    _('Users'),
-            'form_title':       _('Select target account for merge'),
+            'objects_title': _('Users'),
+            'form_title': _('Select target account for merge'),
             'opts': self.model._meta,
             'form': form,
             'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
@@ -109,16 +113,16 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def login_as_link(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url     = reverse('admin:auth_user_login_as', args=[obj.id]),
-            text    = _('login')
+            url = reverse('admin:auth_user_login_as', args=[obj.id]),
+            text = _('login')
         ) if not obj.is_staff and not obj.is_superuser else ''
     login_as_link.allow_tags = True
     login_as_link.short_description = _('login')
 
     def login_as_link_superuser(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url     = reverse('admin:auth_user_login_as', args=[obj.id]),
-            text    = _('login')
+            url = reverse('admin:auth_user_login_as', args=[obj.id]),
+            text = _('login')
         )
     login_as_link_superuser.allow_tags = True
     login_as_link_superuser.short_description = _('login')

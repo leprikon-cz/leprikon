@@ -1,0 +1,12 @@
+{% load i18n %}
+
+<p>
+{% blocktrans asvar text %}Hello,
+we are pleased to inform You, that your registration was approved.{% endblocktrans %}{{ text|linebreaks }}
+</p>
+
+<p>
+{% trans 'We are looking forward to see You.' %}
+</p>
+
+{% include 'leprikon/registration_mail_footer.html' %}

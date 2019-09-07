@@ -18,15 +18,14 @@ def messagerecipient_send_mails(request, message, recipients, media):
         request,
         'admin/leprikon/messagerecipient/send_mails.html',
         {
-            'title':        _('Sending emails'),
-            'message':      message,
-            'recipients':   recipients,
-            'media':        media,
+            'title': _('Sending emails'),
+            'message': message,
+            'recipients': recipients,
+            'media': media,
             'message_opts': Message._meta,
-            'opts':         MessageRecipient._meta,
+            'opts': MessageRecipient._meta,
         },
     )
-
 
 
 class SendMessageAdminMixin(object):
@@ -64,7 +63,7 @@ class SendMessageAdminMixin(object):
             request,
             'admin/leprikon/message/add_recipients.html',
             {
-                'title':    _('Select target message'),
+                'title': _('Select target message'),
                 'queryset': queryset,
                 'opts': self.model._meta,
                 'form': form,
@@ -74,18 +73,17 @@ class SendMessageAdminMixin(object):
     add_to_message.short_description = _('Add recipients to existing message')
 
 
-
 class MessageAttachmentInlineAdmin(admin.TabularInline):
-    model   = MessageAttachment
-    extra   = 0
+    model = MessageAttachment
+    extra = 0
 
 
-
+@admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    form            = MessageAdminForm
-    inlines         = (MessageAttachmentInlineAdmin,)
-    search_fields   = ('subject', 'text')
-    list_display    = ('subject', 'created', 'recipients', 'action_links')
+    form = MessageAdminForm
+    inlines = (MessageAttachmentInlineAdmin,)
+    search_fields = ('subject', 'text')
+    list_display = ('subject', 'created', 'recipients', 'action_links')
 
     def get_changeform_initial_data(self, request):
         initial = super(MessageAdmin, self).get_changeform_initial_data(request)
@@ -103,13 +101,13 @@ class MessageAdmin(admin.ModelAdmin):
             '  / <span title="{viewed_title}">{viewed_count}</span>'
             '</a> '
         ).format(
-            recipients_url  = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
-            all_title       = _('recipients count'),
-            mails_title     = _('sent mail'),
-            viewed_title    = _('viewed on site'),
-            all_count       = obj.recipients.count(),
-            mails_count     = obj.recipients.exclude(sent_mail=None).count(),
-            viewed_count    = obj.recipients.exclude(viewed=None).count(),
+            recipients_url = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
+            all_title = _('recipients count'),
+            mails_title = _('sent mail'),
+            viewed_title = _('viewed on site'),
+            all_count = obj.recipients.count(),
+            mails_count = obj.recipients.exclude(sent_mail=None).count(),
+            viewed_count = obj.recipients.exclude(viewed=None).count(),
         )
     recipients.allow_tags = True
     recipients.short_description = _('recipients')
@@ -120,16 +118,16 @@ class MessageAdmin(admin.ModelAdmin):
             '<a href="{send_mails_all_url}" class="button" title="{send_mails_all_title}">{send_mails_all}</a> '
             '<a href="{send_mails_new_url}" class="button" title="{send_mails_new_title}">{send_mails_new}</a> '
         ).format(
-            recipients              = _('recipients'),
-            recipients_title        = _('show recipients details'),
-            recipients_url          = (reverse('admin:leprikon_messagerecipient_changelist') +
-                                       '?message={}'.format(obj.id)),
-            send_mails_all          = _('send mails'),
-            send_mails_all_title    = _('send mail to all recipients'),
-            send_mails_all_url      = reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
-            send_mails_new          = _('send unsent'),
-            send_mails_new_title    = _('send mails to new recipients only'),
-            send_mails_new_url      = reverse('admin:leprikon_message_send_mails') + '?message={}&new=1'.format(obj.id),
+            recipients = _('recipients'),
+            recipients_title = _('show recipients details'),
+            recipients_url = (reverse('admin:leprikon_messagerecipient_changelist') +
+                              '?message={}'.format(obj.id)),
+            send_mails_all = _('send mails'),
+            send_mails_all_title = _('send mail to all recipients'),
+            send_mails_all_url = reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
+            send_mails_new = _('send unsent'),
+            send_mails_new_title = _('send mails to new recipients only'),
+            send_mails_new_url = reverse('admin:leprikon_message_send_mails') + '?message={}&new=1'.format(obj.id),
         )
     action_links.allow_tags = True
     action_links.short_description = _('actions')
@@ -151,10 +149,10 @@ class MessageAdmin(admin.ModelAdmin):
         return messagerecipient_send_mails(request, message, recipients, self.media)
 
 
-
+@admin.register(MessageRecipient)
 class MessageRecipientAdmin(admin.ModelAdmin):
-    list_display    = ('recipient', 'sent', 'viewed', 'sent_mail')
-    actions         = ('send_mails',)
+    list_display = ('recipient', 'sent', 'viewed', 'sent_mail')
+    actions = ('send_mails',)
 
     # hide the model from admin index
     def get_model_perms(self, request):
@@ -169,9 +167,9 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def send_mails(self, request, queryset):
         return messagerecipient_send_mails(
             request,
-            message     = get_object_or_404(Message, id=request.GET.get('message', 0)),
-            recipients  = queryset,
-            media       = self.media,
+            message = get_object_or_404(Message, id=request.GET.get('message', 0)),
+            recipients = queryset,
+            media = self.media,
         )
     send_mails.short_description = _('Send email to selected recipients')
 
@@ -180,7 +178,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
         if extra_context is None:
             extra_context = {}
         extra_context.update({
-            'title':    _('Recipients of message {}').format(message.subject),
+            'title': _('Recipients of message {}').format(message.subject),
             'message': message,
             'message_opts': Message._meta,
         })

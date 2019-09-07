@@ -142,10 +142,6 @@ class Parent(models.Model):
             return self.email or self.phone or ''
 
     @cached_property
-    def all_participants(self):
-        return list(self.participants.all())
-
-    @cached_property
     def full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

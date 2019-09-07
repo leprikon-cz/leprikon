@@ -34,8 +34,8 @@ class JournalLeaderEntryAdminForm(forms.ModelForm):
 
         # readonly start end
         if self.instance.id and self.instance.timesheet.submitted:
-            cleaned_data['start']   = self.instance.start
-            cleaned_data['end']     = self.instance.end
+            cleaned_data['start'] = self.instance.start
+            cleaned_data['end'] = self.instance.end
 
         # check entry start and end
         errors = {}
@@ -67,7 +67,7 @@ class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
         if self.instance.timesheet.submitted:
             self.readonly_fields += [
                 ReadonlyField(label=_('Start'), value=self.instance.start),
-                ReadonlyField(label=_('End'),   value=self.instance.end),
+                ReadonlyField(label=_('End'), value=self.instance.end),
             ]
 
 
@@ -77,7 +77,7 @@ class JournalEntryAdminForm(forms.ModelForm):
 
     class Meta:
         model = JournalEntry
-        fields = ['date', 'start', 'end', 'agenda', 'registrations']
+        fields = ['date', 'start', 'end', 'agenda', 'participants']
 
     def __init__(self, *args, **kwargs):
         self.subject = kwargs.pop('subject', None) or kwargs['instance'].subject
@@ -87,7 +87,7 @@ class JournalEntryAdminForm(forms.ModelForm):
         if self.instance.id:
             d = self.instance.date
             self.readonly_fields = [
-                ReadonlyField(label=_('Date'),  value=d),
+                ReadonlyField(label=_('Date'), value=d),
             ]
             try:
                 del(self.fields['date'])
@@ -101,37 +101,39 @@ class JournalEntryAdminForm(forms.ModelForm):
                 last_end = None
             next_time = self.instance.subject.subject.get_next_time(last_end)
             if next_time:
-                self.initial['date']  = next_time.date
+                self.initial['date'] = next_time.date
                 self.initial['start'] = next_time.start
-                self.initial['end']   = next_time.end
+                self.initial['end'] = next_time.end
             else:
-                self.initial['date']  = date.today()
+                self.initial['date'] = date.today()
             try:
                 d = self.fields['date'].clean(kwargs['data']['date'])
             except:
                 d = self.initial['date']
 
-        self.fields['registrations'].widget.choices.queryset = \
-            self.instance.subject.subject.get_approved_registrations(d)
-        self.fields['registrations'].help_text = None
+        qs = self.fields['participants'].widget.choices.queryset
+        self.fields['participants'].widget.choices.queryset = qs.filter(
+            registration__in=self.instance.subject.subject.get_approved_registrations(d),
+        )
+        self.fields['participants'].help_text = None
 
     def clean(self):
-        start   = self.cleaned_data.get('start', None)
-        end     = self.cleaned_data.get('end', None)
+        start = self.cleaned_data.get('start', None)
+        end = self.cleaned_data.get('end', None)
 
         # start and end must be both set or both None
         if start is None and end is not None:
             raise ValidationError({'start': _('If You fill in start time, You must fill end time too.')})
         elif end is None and start is not None:
-            raise ValidationError({'end':   _('If You fill in end time, You must fill start time too.')})
+            raise ValidationError({'end': _('If You fill in end time, You must fill start time too.')})
 
         # check overlaping entries
         if start:
             qs = JournalEntry.objects.filter(
-                subject      = self.instance.subject,
-                date        = self.cleaned_data.get('date', self.instance.date),
-                start__lt   = end,
-                end__gt     = start,
+                subject = self.instance.subject,
+                date = self.cleaned_data.get('date', self.instance.date),
+                start__lt = end,
+                end__gt = start,
             )
             if self.instance.id:
                 qs = qs.exclude(id=self.instance.id)
@@ -144,8 +146,8 @@ class JournalEntryAdminForm(forms.ModelForm):
             if e.timesheet.submitted
         ]
         if submitted_leader_entries:
-            max_start   = min(e.start for e in submitted_leader_entries)
-            min_end     = max(e.end   for e in submitted_leader_entries)
+            max_start = min(e.start for e in submitted_leader_entries)
+            min_end = max(e.end   for e in submitted_leader_entries)
             errors = {}
             if (start is None) or (start > max_start):
                 errors['start'] = _('Some submitted timesheet entries start at {start}').format(
@@ -163,8 +165,8 @@ class JournalEntryAdminForm(forms.ModelForm):
 
 
 class JournalEntryForm(FormMixin, JournalEntryAdminForm):
-    leaders     = forms.ModelMultipleChoiceField(Leader.objects, label=_('Leaders'), required=False)
-    alternates  = forms.ModelMultipleChoiceField(Leader.objects, label=_('Alternates'), required=False)
+    leaders = forms.ModelMultipleChoiceField(Leader.objects, label=_('Leaders'), required=False)
+    alternates = forms.ModelMultipleChoiceField(Leader.objects, label=_('Alternates'), required=False)
 
     def __init__(self, *args, **kwargs):
         super(JournalEntryForm, self).__init__(*args, **kwargs)
@@ -173,8 +175,8 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
         ]
 
         # only allow to select leaders or alterates with not submitted timesheets
-        leaders     = self.instance.subject.all_leaders
-        alternates  = [l for l in Leader.objects.all() if l not in leaders]
+        leaders = self.instance.subject.all_leaders
+        alternates = [l for l in Leader.objects.all() if l not in leaders]
 
         self.fields['leaders'].widget.choices = tuple((l.id, l) for l in leaders)
         self.fields['leaders'].help_text = None
@@ -182,17 +184,17 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
         self.fields['alternates'].help_text = None
 
         if self.instance.id:
-            self.initial['leaders']     = [l.id for l in self.instance.all_leaders]
-            self.initial['alternates']  = [l.id for l in self.instance.all_alternates]
+            self.initial['leaders'] = [l.id for l in self.instance.all_leaders]
+            self.initial['alternates'] = [l.id for l in self.instance.all_alternates]
         else:
-            self.initial['leaders']     = [l.id for l in leaders]
+            self.initial['leaders'] = [l.id for l in leaders]
 
     def clean(self):
         self.cleaned_data = super(JournalEntryForm, self).clean()
         self.cleaned_entries = []
         self.deleted_entries = []
 
-        d   = self.cleaned_data.get('date', self.instance.date)
+        d = self.cleaned_data.get('date', self.instance.date)
         if d is None:
             # no other validation makes sense without date
             return self.cleaned_data
@@ -210,7 +212,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                 ),
             }
             leaders_with_submitted_timesheets = {}
-            period  = TimesheetPeriod.objects.for_date(d)
+            period = TimesheetPeriod.objects.for_date(d)
 
             for group in ('leaders', 'alternates'):
                 leaders_with_submitted_timesheets[group] = []
@@ -226,7 +228,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                         entry.journal_entry = self.instance
                         entry.timesheet = Timesheet.objects.for_leader_and_date(leader=leader, date=d)
                         entry.start = self.cleaned_data['start']
-                        entry.end   = self.cleaned_data['end']
+                        entry.end = self.cleaned_data['end']
                     else:
                         # try to update existing leader entry
                         entry = entries_by_leader[group].pop(leader)
@@ -262,7 +264,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                     len(leaders_with_submitted_timesheets['leaders'])
                 ).format(
                     leaders = comma_separated(leaders_with_submitted_timesheets['leaders']),
-                    period  = period.name,
+                    period = period.name,
                 )
             if leaders_with_submitted_timesheets['alternates']:
                 errors['alternates'] = ungettext(
@@ -271,7 +273,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                     len(leaders_with_submitted_timesheets['alternates'])
                 ).format(
                     leaders = comma_separated(leaders_with_submitted_timesheets['alternates']),
-                    period  = period.name,
+                    period = period.name,
                 )
             if errors:
                 raise ValidationError(errors)

@@ -72,7 +72,7 @@
             {% else %}
             <tr>
                 <td>{% trans 'Periods' %}</td>
-                <td><para style="para">{% for period in object.all_periods %}{{ period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
+                <td><para style="para">{% for period in object.subjectregistration.all_periods %}{{ period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
             </tr>
             {% if object.subject.course.all_times %}
             <tr>
@@ -89,103 +89,134 @@
 
         <spacer length="5mm"/>
 
-        <para style="title">{% trans 'Participant' %}</para>
+        {% for p in object.all_participants %}
 
-        <spacer length="2mm"/>
+            <para style="title">{% trans 'Participant' %}</para>
 
-        <blockTable style="blocktable">
-            <tr>
-                <td>{% trans 'Full name' %}</td>
-                <td><para style="para">{{ object.participant.full_name }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Age group' %}</td>
-                <td><para style="para">{{ object.participant.age_group }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Birth number' %}</td>
-                <td><para style="para">{{ object.participant.birth_num }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Address' %}</td>
-                <td><para style="para">{{ object.participant.address }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Citizenship' %}</td>
-                <td><para style="para">{{ object.participant.citizenship }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Phone' %}</td>
-                <td><para style="para">{{ object.participant.phone }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'E-mail' %}</td>
-                <td><para style="para">{{ object.participant.email }}</para></td>
-            </tr>
-            {% if object.participant.age_group.require_school %}
-            <tr>
-                <td>{% trans 'School' %}</td>
-                <td><para style="para">{{ object.participant.school_name }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Class' %}</td>
-                <td><para style="para">{{ object.participant.school_class }}</para></td>
-            </tr>
+            <spacer length="2mm"/>
+
+            <blockTable style="blocktable">
+                <tr>
+                    <td>{% trans 'Full name' %}</td>
+                    <td><para style="para">{{ p.participant.full_name }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Age group' %}</td>
+                    <td><para style="para">{{ p.participant.age_group }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Birth number' %}</td>
+                    <td><para style="para">{{ p.participant.birth_num }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Address' %}</td>
+                    <td><para style="para">{{ p.participant.address }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Citizenship' %}</td>
+                    <td><para style="para">{{ p.participant.citizenship }}</para></td>
+                </tr>
+                {% if p.participant.phone %}
+                <tr>
+                    <td>{% trans 'Phone' %}</td>
+                    <td><para style="para">{{ p.participant.phone }}</para></td>
+                </tr>
+                {% endif %}
+                {% if p.participant.email %}
+                <tr>
+                    <td>{% trans 'E-mail' %}</td>
+                    <td><para style="para">{{ p.participant.email }}</para></td>
+                </tr>
+                {% endif %}
+                {% if p.participant.age_group.require_school %}
+                <tr>
+                    <td>{% trans 'School' %}</td>
+                    <td><para style="para">{{ p.participant.school_name }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Class' %}</td>
+                    <td><para style="para">{{ p.participant.school_class }}</para></td>
+                </tr>
+                {% endif %}
+                {% for qa in p.get_questions_and_answers %}
+                <tr>
+                    <td>{{ qa.question }}</td>
+                    <td><para style="para">{{ qa.answer }}</para></td>
+                </tr>
+                {% endfor %}
+            </blockTable>
+
+            <blockTable style="blocktable">
+                <tr>
+                    <td>{% trans 'Health' %}</td>
+                </tr>
+                <tr>
+                    <td>
+                        {% for line in p.participant.health|lines %}
+                        <para style="para">{{ line }}</para>
+                        {% empty %}
+                        <para style="para"></para>
+                        <spacer length="1cm"/>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </blockTable>
+
+            {% if p.parents %}
+
+            <spacer length="5mm"/>
+
+            <para style="title">{% trans 'Parents' %}</para>
+
             {% endif %}
-            {% for qa in object.get_questions_and_answers %}
-            <tr>
-                <td>{{ qa.question }}</td>
-                <td><para style="para">{{ qa.answer }}</para></td>
-            </tr>
+
+            {% for parent in p.parents %}
+
+            <spacer length="{% if forloop.first %}2{% else %}8{% endif %}mm"/>
+
+            <blockTable style="blocktable">
+                <tr>
+                    <td>{% trans 'Full name' %}</td>
+                    <td><para style="para">{{ parent.full_name }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Address' %}</td>
+                    <td><para style="para">{{ parent.address }}</para></td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Contact' %}</td>
+                    <td><para style="para">{{ parent.contact }}</para></td>
+                </tr>
+            </blockTable>
+
             {% endfor %}
-        </blockTable>
 
-        <blockTable style="blocktable">
-            <tr>
-                <td>{% trans 'Health' %}</td>
-            </tr>
-            <tr>
-                <td>
-                    {% for line in object.participant.health|lines %}
-                    <para style="para">{{ line }}</para>
-                    {% empty %}
-                    <para style="para"></para>
-                    <spacer length="1cm"/>
-                    {% endfor %}
-                </td>
-            </tr>
-        </blockTable>
-
-        {% if object.parents %}
-
-        <spacer length="5mm"/>
-
-        <para style="title">{% trans 'Parents' %}</para>
-
-        {% endif %}
-
-        {% for parent in object.parents %}
-
-        <spacer length="{% if forloop.first %}2{% else %}8{% endif %}mm"/>
-
-        <blockTable style="blocktable">
-            <tr>
-                <td>{% trans 'Full name' %}</td>
-                <td><para style="para">{{ parent.full_name }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Address' %}</td>
-                <td><para style="para">{{ parent.address }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Contact' %}</td>
-                <td><para style="para">{{ parent.contact }}</para></td>
-            </tr>
-        </blockTable>
+            <spacer length="1cm"/>
 
         {% endfor %}
 
-        <spacer length="1cm"/>
+        {% for gm in object.all_group_members %}
+            {% if forloop.first %}
+            <para style="title">{% trans 'Group' %}: {{ object.group_name }}</para>
+
+            <spacer length="2mm"/>
+
+            <blockTable style="blocktable">
+                <tr>
+                    <td>{% trans 'Full name' %}</td>
+                    <td>{% trans 'Note' %}</td>
+                </tr>
+            {% endif %}
+                <tr>
+                    <td><para style="para">{{ gm.full_name }}</para></td>
+                    <td><para style="para">{{ gm.note }}</para></td>
+                </tr>
+            {% if forloop.last %}
+            </blockTable>
+
+            <spacer length="1cm"/>
+            {% endif %}
+        {% endfor %}
 
         {% for agreement in object.all_agreements %}
             {% if agreement.heading %}

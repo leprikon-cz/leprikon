@@ -9,7 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm
 from ..models.courses import (
-    Course, CourseRegistration, CourseRegistrationHistory, CourseTime,
+    Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory,
+    CourseTime,
 )
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
@@ -30,26 +31,27 @@ class CourseTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Course)
 class CourseAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.COURSE
     registration_model = CourseRegistration
-    list_export     = (
+    list_export = (
         'id', 'code', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
         'get_times_list',
         'place', 'public',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
-    list_filter     = (
-        ('school_year',     SchoolYearListFilter),
+    list_filter = (
+        ('school_year', SchoolYearListFilter),
         'department',
-        ('subject_type',    CourseTypeListFilter),
-        ('groups',          CourseGroupListFilter),
-        ('leaders',         LeaderListFilter),
+        ('subject_type', CourseTypeListFilter),
+        ('groups', CourseGroupListFilter),
+        ('leaders', LeaderListFilter),
     )
-    inlines         = (
+    inlines = (
         CourseTimeInlineAdmin,
     ) + SubjectBaseAdmin.inlines
-    actions         = (
+    actions = (
         'publish', 'unpublish',
         'copy_to_school_year',
     )
@@ -133,39 +135,40 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
         return False
 
 
+@admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
-    list_display    = (
-        'variable_symbol', 'download_tag', 'subject_name', 'participant', 'price',
+    list_display = (
+        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
         'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note',
     )
-    list_filter     = (
-        ('subject__school_year',    SchoolYearListFilter),
+    list_filter = (
+        ('subject__school_year', SchoolYearListFilter),
         'subject__department',
-        ('subject__subject_type',   CourseTypeListFilter),
+        ('subject__subject_type', CourseTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
-        ('subject',                 CourseListFilter),
-        ('subject__leaders',        LeaderListFilter),
+        ('subject', CourseListFilter),
+        ('subject__leaders', LeaderListFilter),
     )
-    inlines         = (CourseRegistrationHistoryInlineAdmin,)
+    inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
 
     def course_discounts(self, obj):
         html = []
         for period in obj.get_period_payment_statuses():
             html.append(format_html(
                 '{period}: <a href="{href}"><b>{amount}</b></a>',
-                period  = period.period.name,
-                href    = (reverse('admin:leprikon_coursediscount_changelist') +
-                           '?registration={}&period={}'.format(obj.id, period.period.id)),
-                amount  = currency(period.status.discount),
+                period = period.period.name,
+                href = (reverse('admin:leprikon_coursediscount_changelist') +
+                        '?registration={}&period={}'.format(obj.id, period.period.id)),
+                amount = currency(period.status.discount),
             ))
         html.append(format_html(
             '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
             '<img src="{icon}" alt="+"/></a>',
-            href    = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
-            title   = _('add discount'),
-            icon    = static('admin/img/icon-addlink.svg'),
+            href = reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
+            title = _('add discount'),
+            icon = static('admin/img/icon-addlink.svg'),
         ))
         return '<br/>'.join(html)
     course_discounts.allow_tags = True
@@ -177,18 +180,18 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             html.append(format_html(
                 '{period}: <a class="popup-link" style="color: {color}" href="{href}" title="{title}">'
                 '<b>{amount}</b></a>',
-                period  = period.period.name,
-                color   = period.status.color,
-                href    = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
-                title   = period.status.title,
-                amount  = currency(period.status.paid),
+                period = period.period.name,
+                color = period.status.color,
+                href = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
+                title = period.status.title,
+                amount = currency(period.status.paid),
             ))
         html.append(format_html(
             '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
             '<img src="{icon}" alt="+"/></a>',
-            href    = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-            title   = _('add payment'),
-            icon    = static('admin/img/icon-addlink.svg'),
+            href = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+            title = _('add payment'),
+            icon = static('admin/img/icon-addlink.svg'),
         ))
         return '<br/>'.join(html)
     course_payments.allow_tags = True
@@ -205,9 +208,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     def payments_partial_balance(self, obj):
         status = obj.get_payment_statuses().partial
         return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
-            color   = status.color,
+            color = status.color,
             balance = currency(status.balance),
-            title   = status.title,
+            title = status.title,
         )
     payments_partial_balance.allow_tags = True
     payments_partial_balance.short_description = _('actual balance')
@@ -215,17 +218,17 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     def payments_total_balance(self, obj):
         status = obj.get_payment_statuses().total
         return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
-            color   = status.color,
+            color = status.color,
             balance = currency(status.balance),
-            title   = status.title,
+            title = status.title,
         )
     payments_total_balance.allow_tags = True
     payments_total_balance.short_description = _('total balance')
 
 
-
+@admin.register(CourseDiscount)
 class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    form            = CourseDiscountAdminForm
-    list_display    = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
-    list_export     = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')
-    closed_fields   = ('accounted', 'registration', 'period', 'amount')
+    form = CourseDiscountAdminForm
+    list_display = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
+    list_export = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')
+    closed_fields = ('accounted', 'registration', 'period', 'amount')

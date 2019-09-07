@@ -7,101 +7,16 @@ from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 
-from ..models.account import AccountClosure
-from ..models.agegroup import AgeGroup
-from ..models.agreements import Agreement
-from ..models.citizenship import Citizenship
-from ..models.courses import Course, CourseDiscount, CourseRegistration
-from ..models.department import Department
-from ..models.events import Event, EventDiscount, EventRegistration
-from ..models.journals import JournalEntry, JournalLeaderEntry
-from ..models.leprikonsite import LeprikonSite
-from ..models.messages import Message, MessageRecipient
-from ..models.place import Place
-from ..models.printsetup import PrintSetup
-from ..models.question import Question
-from ..models.roles import Leader, Parent, Participant
-from ..models.school import School
-from ..models.schoolyear import SchoolYear, SchoolYearDivision
-from ..models.subjects import (
-    Subject, SubjectGroup, SubjectPayment, SubjectRegistration, SubjectType,
+from . import (  # NOQA
+    account, agegroup, agreements, citizenship, courses, department, events,
+    journals, leprikonsite, messages, place, printsetup, question, roles,
+    school, schoolyear, subjects, timesheets, user,
 )
-from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
-from .account import AccountClosureAdmin
-from .agegroup import AgeGroupAdmin
-from .agreements import AgreementAdmin
-from .citizenship import CitizenshipAdmin
-from .courses import CourseAdmin, CourseDiscountAdmin, CourseRegistrationAdmin
-from .department import DepartmentAdmin
-from .events import EventAdmin, EventDiscountAdmin, EventRegistrationAdmin
-from .journals import JournalEntryAdmin, JournalLeaderEntryAdmin
-from .leprikonsite import LeprikonSiteAdmin
-from .messages import MessageAdmin, MessageRecipientAdmin
-from .place import PlaceAdmin
-from .printsetup import PrintSetupAdmin
-from .question import QuestionAdmin
-from .roles import LeaderAdmin, ParentAdmin, ParticipantAdmin
-from .school import SchoolAdmin
-from .schoolyear import SchoolYearAdmin, SchoolYearDivisionAdmin
-from .subjects import (
-    SubjectAdmin, SubjectGroupAdmin, SubjectPaymentAdmin,
-    SubjectRegistrationAdmin, SubjectTypeAdmin,
-)
-from .timesheets import (
-    TimesheetAdmin, TimesheetEntryAdmin, TimesheetEntryTypeAdmin,
-)
-from .user import UserAdmin
 
 User = get_user_model()
 
 admin.site.site_header = _('Leprikon administration')
 admin.site.site_title = _('Leprikon administration')
-
-admin.site.register(AccountClosure,             AccountClosureAdmin)
-
-admin.site.register(AgeGroup,                   AgeGroupAdmin)
-admin.site.register(Agreement,                  AgreementAdmin)
-admin.site.register(Citizenship,                CitizenshipAdmin)
-admin.site.register(LeprikonSite,               LeprikonSiteAdmin)
-admin.site.register(Place,                      PlaceAdmin)
-admin.site.register(PrintSetup,                 PrintSetupAdmin)
-admin.site.register(School,                     SchoolAdmin)
-admin.site.register(SchoolYear,                 SchoolYearAdmin)
-admin.site.register(SchoolYearDivision,         SchoolYearDivisionAdmin)
-
-admin.site.register(Leader,                     LeaderAdmin)
-admin.site.register(Parent,                     ParentAdmin)
-admin.site.register(Participant,                ParticipantAdmin)
-
-admin.site.register(Subject,                    SubjectAdmin)
-admin.site.register(SubjectType,                SubjectTypeAdmin)
-admin.site.register(SubjectGroup,               SubjectGroupAdmin)
-admin.site.register(SubjectRegistration,        SubjectRegistrationAdmin)
-admin.site.register(SubjectPayment,             SubjectPaymentAdmin)
-
-admin.site.register(Course,                     CourseAdmin)
-admin.site.register(CourseRegistration,         CourseRegistrationAdmin)
-admin.site.register(CourseDiscount,             CourseDiscountAdmin)
-admin.site.register(JournalEntry,         JournalEntryAdmin)
-admin.site.register(JournalLeaderEntry,   JournalLeaderEntryAdmin)
-
-admin.site.register(Department,                 DepartmentAdmin)
-
-admin.site.register(Event,                      EventAdmin)
-admin.site.register(EventRegistration,          EventRegistrationAdmin)
-admin.site.register(EventDiscount,              EventDiscountAdmin)
-
-admin.site.register(Message,                    MessageAdmin)
-admin.site.register(MessageRecipient,           MessageRecipientAdmin)
-
-admin.site.register(Question,                   QuestionAdmin)
-
-admin.site.register(Timesheet,                  TimesheetAdmin)
-admin.site.register(TimesheetEntry,             TimesheetEntryAdmin)
-admin.site.register(TimesheetEntryType,         TimesheetEntryTypeAdmin)
-
-admin.site.unregister(User)
-admin.site.register(User,                       UserAdmin)
 
 
 def app_index(self, request, app_label, extra_context=None):

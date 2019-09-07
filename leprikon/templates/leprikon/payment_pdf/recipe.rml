@@ -51,14 +51,24 @@
 <blockTable style="without-borders">
     <tr>
         <td>
-            <para style="small">{% trans 'participant' %}:</para>
-            <para style="left">{{ object.registration.participant.full_name }}</para>
-            <para style="left">{{ object.registration.participant.address }}</para>
-
-            <spacer length="2mm"/>
-
             <para style="small">{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}name of {{ subject_type }}{% endblocktrans %}:</para>
             <para style="left">{{ object.subject.name }}</para>
+
+            {% if object.registration.group_name %}
+            <spacer length="2mm"/>
+
+            <para style="small">{% trans 'group name' %}:</para>
+            <para style="left">{{ object.registration.group_name }}</para>
+            {% endif %}
+
+            {% if object.registration.all_participants %}
+            <spacer length="2mm"/>
+
+            <para style="small">{% blocktrans count counter=object.registration.all_participants|length %}participant{% plural %}participants{% endblocktrans %}:</para>
+            {% for participant in object.registration.all_participants %}
+            <para style="left">{{ participant.participant.full_name }}</para>
+            {% endfor %}
+            {% endif %}
         </td>
         <td>
             {% if object.received_by %}

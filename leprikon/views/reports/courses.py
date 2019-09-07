@@ -11,18 +11,20 @@ from ...forms.reports.courses import (
 )
 from ...models.agegroup import AgeGroup
 from ...models.citizenship import Citizenship
-from ...models.courses import Course, CourseRegistration
+from ...models.courses import Course
 from ...models.roles import Participant
-from ...models.subjects import SubjectPayment, SubjectType
+from ...models.subjects import (
+    SubjectPayment, SubjectRegistrationParticipant, SubjectType,
+)
 from . import ReportBaseView
 
 
 class ReportCoursePaymentsView(ReportBaseView):
-    form_class      = CoursePaymentsForm
-    template_name   = 'leprikon/reports/course_payments.html'
-    title           = _('Course payments')
-    submit_label    = _('Show')
-    back_url        = reverse('leprikon:report_list')
+    form_class = CoursePaymentsForm
+    template_name = 'leprikon/reports/course_payments.html'
+    title = _('Course payments')
+    submit_label = _('Show')
+    back_url = reverse('leprikon:report_list')
 
     def form_valid(self, form):
         context = form.cleaned_data
@@ -36,13 +38,12 @@ class ReportCoursePaymentsView(ReportBaseView):
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
 
-
 class ReportCoursePaymentsStatusView(ReportBaseView):
-    form_class      = CoursePaymentsStatusForm
-    template_name   = 'leprikon/reports/course_payments_status.html'
-    title           = _('Course payments status')
-    submit_label    = _('Show')
-    back_url        = reverse('leprikon:report_list')
+    form_class = CoursePaymentsStatusForm
+    template_name = 'leprikon/reports/course_payments_status.html'
+    title = _('Course payments status')
+    submit_label = _('Show')
+    back_url = reverse('leprikon:report_list')
 
     CoursePaymentsStatusSums = namedtuple('CoursePaymentsStatusSums', ('registrations', 'status'))
 
@@ -54,8 +55,8 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             for course in Course.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.CoursePaymentsStatusSums(
-            registrations   = sum(len(r.registrations)  for r in context['reports']),
-            status          = sum(r.status              for r in context['reports']),
+            registrations = sum(len(r.registrations)  for r in context['reports']),
+            status = sum(r.status              for r in context['reports']),
         )
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
@@ -78,7 +79,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
                 registration_status for registration_status in (
                     self.RegPaymentStatus(
                         registration = registration,
-                        status       = registration.courseregistration.get_payment_statuses(self.date).total,
+                        status = registration.courseregistration.get_payment_statuses(self.date).total,
                     )
                     for registration in self.registrations
                 ) if registration_status.status.receivable
@@ -89,20 +90,19 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             return sum(rs.status for rs in self.registration_statuses)
 
 
-
 class ReportCourseStatsView(ReportBaseView):
-    form_class      = CourseStatsForm
-    template_name   = 'leprikon/reports/course_stats.html'
-    title           = _('Course statistics')
-    submit_label    = _('Show')
-    back_url        = reverse('leprikon:report_list')
+    form_class = CourseStatsForm
+    template_name = 'leprikon/reports/course_stats.html'
+    title = _('Course statistics')
+    submit_label = _('Show')
+    back_url = reverse('leprikon:report_list')
 
-    ReportItem      = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'citizenships'))
+    ReportItem = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'citizenships'))
 
     def form_valid(self, form):
-        d               = form.cleaned_data['date']
-        paid_only       = form.cleaned_data['paid_only']
-        context         = form.cleaned_data
+        d = form.cleaned_data['date']
+        paid_only = form.cleaned_data['paid_only']
+        context = form.cleaned_data
         context['form'] = form
 
         courses = Course.objects.filter(
@@ -111,38 +111,41 @@ class ReportCourseStatsView(ReportBaseView):
         ).distinct()
         context['courses_count'] = courses.count()
 
-        registrations = CourseRegistration.objects.filter(subject__in=courses, approved__lte=d).exclude(canceled__lte=d)
+        participants = SubjectRegistrationParticipant.objects.filter(
+            registration__subject__in=courses,
+            registration__approved__lte=d,
+        ).exclude(registration__canceled__lte=d).select_related('registration')
         if paid_only:
-            registrations = [
-                reg for reg in registrations
-                if reg.get_payment_statuses(d).partial.balance >= 0
+            participants = [
+                participant for participant in participants
+                if participant.registration.get_payment_statuses(d).partial.balance >= 0
             ]
         else:
-            registrations = list(registrations)
+            participants = list(participants)
 
         citizenships = list(Citizenship.objects.all())
         context['citizenships'] = citizenships
 
-        context['registrations_counts'] = self.ReportItem(
+        context['participants_counts'] = self.ReportItem(
             age_group=None,
-            all=len(registrations),
-            boys=len([r for r in registrations if r.participant_gender == Participant.MALE]),
-            girls=len([r for r in registrations if r.participant_gender == Participant.FEMALE]),
+            all=len(participants),
+            boys=len([p for p in participants if p.participant_gender == Participant.MALE]),
+            girls=len([p for p in participants if p.participant_gender == Participant.FEMALE]),
             citizenships=[
-                len([r for r in registrations if r.participant_citizenship_id == citizenship.id])
+                len([p for p in participants if p.participant_citizenship_id == citizenship.id])
                 for citizenship in citizenships
             ]
         )
-        context['registrations_counts_by_age_groups'] = []
+        context['participants_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
-            regs = [r for r in registrations if r.participant_age_group == age_group]
-            context['registrations_counts_by_age_groups'].append(self.ReportItem(
+            parts = [p for p in participants if p.participant_age_group == age_group]
+            context['participants_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
-                all=len(regs),
-                boys=len([r for r in regs if r.participant_gender == Participant.MALE]),
-                girls=len([r for r in regs if r.participant_gender == Participant.FEMALE]),
+                all=len(parts),
+                boys=len([p for p in parts if p.participant_gender == Participant.MALE]),
+                girls=len([p for p in parts if p.participant_gender == Participant.FEMALE]),
                 citizenships=[
-                    len([r for r in regs if r.participant_citizenship_id == citizenship.id])
+                    len([p for p in parts if p.participant_citizenship_id == citizenship.id])
                     for citizenship in citizenships
                 ]
             ))

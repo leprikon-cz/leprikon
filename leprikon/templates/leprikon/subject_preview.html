@@ -54,7 +54,7 @@
         {{ object.description | safe }}
 
         <p>
-            {% blocktrans count counter=object.all_age_groups|length %}Věková skupina{% plural %}Věkové skupiny{% endblocktrans %}:
+            {% blocktrans count counter=object.all_age_groups|length %}Age group{% plural %}Age groups{% endblocktrans %}:
             {{ object.all_age_groups|comma_separated }}
         </p>
 

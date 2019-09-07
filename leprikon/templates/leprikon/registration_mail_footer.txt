@@ -1,0 +1,4 @@
+{% load i18n %}{% trans 'You may check the current status of your registrations and payments using following link:' %}
+https://{{ site.domain }}{% url 'leprikon:registration_list' %}
+
+{{ site.name }}

@@ -1,0 +1,22 @@
+{% load i18n leprikon_tags qr_code %}
+
+<div class="row">
+    <label class="col-sm-4">{% trans 'Presence' %}:</label>
+    <div class="col-sm-8">
+    {% if reg.subject.course %}
+        {% for history in reg.course_history.all %}
+        {% for entry in history.journal_entries.all %}
+        <strong title="{{ entry.date }}{% if history.course_id != reg.subject_id %} ({{ history.course.display_name }}){% endif %}" style="color: #{% if participant.id in entry.all_participants_idset %}0a0{% else %}e00{% endif %}">
+            {% if participant.id in entry.all_participants_idset %}&#x2713;{% else %}&#x2717;{% endif %}
+        </strong>
+        {% endfor %}
+        {% endfor %}
+    {% elif reg.subject.event %}
+        {% for entry in reg.subject.journal_entries.all %}
+        <strong title="{{ entry.date }}" style="color: #{% if participant.id in entry.all_participants_idset %}0a0{% else %}e00{% endif %}">
+            {% if participant.id in entry.all_participants_idset %}&#x2713;{% else %}&#x2717;{% endif %}
+        </strong>
+        {% endfor %}
+    {% endif %}
+    </div>
+</div>

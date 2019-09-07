@@ -4,18 +4,19 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
-from ..models.timesheets import TimesheetEntry
+from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
 from .journals import JournalLeaderEntryInlineAdmin
 
 
+@admin.register(TimesheetEntry)
 class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):
-    form            = TimesheetEntryAdminForm
-    date_hierarchy  = 'date'
-    list_display    = ('timesheet', 'date', 'start', 'end', 'duration', 'entry_type')
-    list_filter     = ('entry_type', ('timesheet__leader', LeaderListFilter))
-    ordering        = ('-date', '-start',)
+    form = TimesheetEntryAdminForm
+    date_hierarchy = 'date'
+    list_display = ('timesheet', 'date', 'start', 'end', 'duration', 'entry_type')
+    list_filter = ('entry_type', ('timesheet__leader', LeaderListFilter))
+    ordering = ('-date', '-start',)
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.timesheet.submitted:
@@ -37,8 +38,8 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
         class Meta:
             model = TimesheetEntry
             fields = []
-    model           = TimesheetEntry
-    ordering        = ('date', 'start')
+    model = TimesheetEntry
+    ordering = ('date', 'start')
     readonly_fields = ('date', 'start', 'end', 'entry_type', 'description_html', 'edit_link')
 
     def has_add_permission(self, request):
@@ -57,19 +58,20 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
 
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url     = reverse('admin:leprikon_timesheetentry_change', args=[obj.id]),
-            title   = _('update entry'),
-            edit    = _('edit'),
+            url = reverse('admin:leprikon_timesheetentry_change', args=[obj.id]),
+            title = _('update entry'),
+            edit = _('edit'),
         )
     edit_link.short_description = ''
     edit_link.allow_tags = True
 
 
+@admin.register(Timesheet)
 class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
-    list_display    = ('leader', 'period', 'group_durations', 'submitted', 'paid')
-    list_filter     = (('leader', LeaderListFilter), 'period')
-    inlines         = (TimesheetEntryInlineAdmin, JournalLeaderEntryInlineAdmin)
-    actions         = ('submit', 'set_paid')
+    list_display = ('leader', 'period', 'group_durations', 'submitted', 'paid')
+    list_filter = (('leader', LeaderListFilter), 'period')
+    inlines = (TimesheetEntryInlineAdmin, JournalLeaderEntryInlineAdmin)
+    actions = ('submit', 'set_paid')
 
     # do not allow to add timesheets in admin
     # timesheets are created automatically
@@ -109,7 +111,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     submit.short_description = _('Submit selected timesheets')
 
 
-
+@admin.register(TimesheetEntryType)
 class TimesheetEntryTypeAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'order')
-    list_editable   = ('order',)
+    list_display = ('name', 'order')
+    list_editable = ('order',)

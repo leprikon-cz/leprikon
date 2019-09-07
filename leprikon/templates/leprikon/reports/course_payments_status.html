@@ -41,7 +41,7 @@
     <tr class="collapse out {{ report.course.id }}-collapsed">
         <th class="right" colspan="3">
             <a href="{% url 'admin:leprikon_courseregistration_changelist' %}?id={{ rs.registration.id }}">
-                {{ rs.registration.participant }}
+                {{ rs.registration }}
             </a>
         </th>
         <td class="right">

@@ -2,8 +2,9 @@
 thank You for submitting registration.{% endblocktrans %}
 
 {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}
-{% trans 'Participant' %}: {{ object.participant }}
-{% trans 'Price' %}: {{ object.current_receivable | currency }}
+{% if object.group_name %}{% trans 'Group name' %}: {{ object.group_name }}
+{% endif %}{% if object.all_participants %}{% blocktrans count counter=object.all_participants|length %}Participant{% plural %}Participants{% endblocktrans %}: {{ object.all_participants|comma_separated }}
+{% endif %}{% trans 'Price' %}: {{ object.current_receivable | currency }}
 
 {% if site.payment_gateway %}{% trans 'Please, use following link to perform online payment' %}:
 {{ object.payment_url }}
@@ -15,7 +16,5 @@ thank You for submitting registration.{% endblocktrans %}
 {% endif %}{% if not site.payment_gateway and not site.bank_account %}{% trans 'Currently we only accept payments in cash.' %}
 
 {% endif %}{% trans 'If You have already made the payment recently, please ignore this message.' %}
-{% trans 'You may check the current status of your registrations and payments using following link:' %}
-https://{{ site.domain }}{% url 'leprikon:registration_list' %}
 
-{{ site.name }}
+{% include 'leprikon/registration_mail_footer.txt' %}
