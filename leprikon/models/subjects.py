@@ -47,6 +47,7 @@ from .question import Question
 from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
+from .targetgroup import TargetGroup
 from .utils import generate_variable_symbol
 
 logger = logging.getLogger(__name__)
@@ -174,7 +175,9 @@ class Subject(models.Model):
     groups = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
     place = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
                               related_name='subjects', on_delete=models.SET_NULL)
-    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects')
+    age_groups = models.ManyToManyField(AgeGroup, blank=True, verbose_name=_('age groups'), related_name='subjects')
+    target_groups = models.ManyToManyField(TargetGroup, blank=True,
+                                           verbose_name=_('target groups'), related_name='subjects')
     leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price = PriceField(_('price'), blank=True, null=True)
     public = models.BooleanField(_('public'), default=False)
@@ -256,6 +259,10 @@ class Subject(models.Model):
     @cached_property
     def all_age_groups(self):
         return list(self.age_groups.all())
+
+    @cached_property
+    def all_target_groups(self):
+        return list(self.target_groups.all())
 
     @cached_property
     def all_leaders(self):
@@ -560,7 +567,21 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     subject_variant = models.ForeignKey(SubjectVariant, null=True, verbose_name=_('variant'),
                                         related_name='registrations', on_delete=models.PROTECT)
     price = PriceField(_('price'), editable=False)
+
+    target_group = models.ForeignKey(TargetGroup, verbose_name=_('target group'), blank=True, null=True,
+                                     related_name='+', on_delete=models.PROTECT)
     group_name = models.CharField(_('group name'), max_length=150, blank=True, default='')
+    group_leader_first_name = models.CharField(_('first name'), max_length=30, blank=True, default='')
+    group_leader_last_name = models.CharField(_('last name'), max_length=30, blank=True, default='')
+    group_leader_street = models.CharField(_('street'), max_length=150, blank=True, default='')
+    group_leader_city = models.CharField(_('city'), max_length=150, blank=True, default='')
+    group_leader_postal_code = PostalCodeField(_('postal code'), blank=True, default='')
+    group_leader_phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
+    group_leader_email = EmailField(_('email address'), blank=True, default='')
+    group_school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
+                                     related_name='+', on_delete=models.PROTECT)
+    group_school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
+    group_school_class = models.CharField(_('class'), max_length=30,  blank=True, default='')
 
     approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
     payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
@@ -606,6 +627,29 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def participants_list_html(self):
         return mark_safe('<br/>'.join(map(str, self.all_participants)))
     participants_list_html.short_description = _('participants')
+
+    @cached_property
+    def group_leader_full_name(self):
+        return '{} {}'.format(self.group_leader_first_name, self.group_leader_last_name)
+
+    @cached_property
+    def group_leader_address(self):
+        return '{}, {}, {}'.format(self.group_leader_street, self.group_leader_city, self.group_leader_postal_code)
+
+    @cached_property
+    def group_leader_contact(self):
+        if self.group_leader_email and self.group_leader_phone:
+            return '{}, {}'.format(self.group_leader_phone, self.group_leader_email)
+        else:
+            return self.group_leader_email or self.group_leader_phone
+
+    @cached_property
+    def group_school_name(self):
+        return self.group_school and smart_text(self.group_school) or self.group_school_other
+
+    @cached_property
+    def group_school_and_class(self):
+        return '{}, {}'.format(self.school_name, self.school_class)
 
     @cached_property
     def all_group_members(self):
@@ -955,10 +999,7 @@ class SubjectRegistrationParticipant(models.Model):
 
         @cached_property
         def school_and_class(self):
-            if self.school_name and self.school_class:
-                return '{}, {}'.format(self.school_name, self.school_class)
-            else:
-                return self.school_name or self.school_class or ''
+            return '{}, {}'.format(self.school_name, self.school_class)
 
 
 class SubjectRegistrationGroupMember(models.Model):

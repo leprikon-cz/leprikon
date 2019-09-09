@@ -16,7 +16,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
-    RegistrationAdminForm, RegistrationParticipantAdminForm,
+    RegistrationAdminForm, RegistrationParticipantAdminForm, SubjectAdminForm,
 )
 from ..models.subjects import (
     Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
@@ -101,7 +101,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         SubjectVariantInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
-    filter_horizontal = ('age_groups', 'groups', 'leaders', 'questions', 'registration_agreements')
+    filter_horizontal = ('age_groups', 'target_groups', 'groups', 'leaders', 'questions', 'registration_agreements')
     actions = ('set_registration_dates',)
     search_fields = ('name', 'description')
     save_as = True
@@ -113,47 +113,16 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         return m
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
+        # set school year
         if obj:
             request.school_year = obj.school_year
 
-        # limit choices of subject type
-        subject_type_choices = form.base_fields['subject_type'].widget.widget.choices
-        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=self.subject_type)
-        form.base_fields['subject_type'].choices = subject_type_choices
+        class form(SubjectAdminForm):
+            subject_type = self.subject_type
+            school_year = request.school_year
 
-        # limit choices of groups
-        groups_choices = form.base_fields['groups'].widget.widget.choices
-        groups_choices.queryset = groups_choices.queryset.filter(
-            subject_types__subject_type=self.subject_type
-        ).distinct()
-        form.base_fields['groups'].choices = groups_choices
-
-        # limit choices of leaders
-        leaders_choices = form.base_fields['leaders'].widget.widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = request.school_year)
-        form.base_fields['leaders'].choices = leaders_choices
-
-        # limit choices of questions
-        if obj:
-            questions_choices = form.base_fields['questions'].widget.widget.choices
-            questions_choices.queryset = questions_choices.queryset.exclude(
-                id__in=obj.subject_type.questions.values('id')
-            )
-            form.base_fields['questions'].choices = questions_choices
-
-        # limit choices of registration agreements
-        registration_agreements_choices = form.base_fields['registration_agreements'].widget.widget.choices
-        registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
-            id__in=request.leprikon_site.registration_agreements.values('id')
-        )
-        if obj:
-            registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
-                id__in=obj.subject_type.registration_agreements.values('id')
-            )
-        form.base_fields['registration_agreements'].choices = registration_agreements_choices
-
-        return form
+        kwargs['form'] = form
+        return super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
 
     def save_form(self, request, form, change):
         obj = super(SubjectBaseAdmin, self).save_form(request, form, change)

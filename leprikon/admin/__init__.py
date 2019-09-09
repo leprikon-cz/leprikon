@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from . import (  # NOQA
     account, agegroup, agreements, citizenship, courses, department, events,
     journals, leprikonsite, messages, place, printsetup, question, roles,
-    school, schoolyear, subjects, timesheets, user,
+    school, schoolyear, subjects, targetgroup, timesheets, user,
 )
 
 User = get_user_model()

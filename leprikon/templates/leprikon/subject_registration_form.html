@@ -160,6 +160,21 @@
         {% if forloop.first %}
         <h3>{% trans 'Group' %}</h3>
         {% include 'leprikon/form_item.html' with item=form.group_name %}
+        {% include 'leprikon/form_item.html' with item=form.target_group %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_first_name %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_last_name %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_street %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_city %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_postal_code %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_phone %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_email %}
+        <div id="group_school_details" class="hidden">
+            {% include 'leprikon/form_item.html' with item=form.group_school %}
+            <div id="group_school_other" class="hidden">
+                {% include 'leprikon/form_item.html' with item=form.group_school_other %}
+            </div>
+            {% include 'leprikon/form_item.html' with item=form.group_school_class %}
+        </div>
 
         <table class="table">
             <thead>
@@ -220,23 +235,27 @@ function getAge(birthNum) {
     return today.getFullYear() - year - (new Date(today.getFullYear(), month-1, day) > today ? 1 : 0)
 }
 
-var groups_requires_school = {{% for age_group in form.instance.subject.all_age_groups %}
+var age_group_requires_school = {{% for age_group in form.instance.subject.all_age_groups %}
     {{ age_group.id }}: {% if age_group.require_school %}true{% else %}false{% endif %},{% endfor %}
+};
+
+var target_group_requires_school = {{% for target_group in form.instance.subject.all_target_groups %}
+    {{ target_group.id }}: {% if target_group.require_school %}true{% else %}false{% endif %},{% endfor %}
 };
 
 function toggle_section(show, section_name, update_required) {
     if (show) {
         $('#' + section_name + '').removeClass('hidden');
-        /*if (update_required) {
+        if (update_required) {
             $('#' + section_name + ' .form-group').addClass('required');
             $('#' + section_name + ' .form-control').attr('required', '');
-        }*/
+        }
     } else {
         $('#' + section_name + '').addClass('hidden');
-        /*if (update_required) {
+        if (update_required) {
             $('#' + section_name + ' .form-group').removeClass('required');
             $('#' + section_name + ' .form-control').removeAttr('required');
-        }*/
+        }
     }
 }
 
@@ -252,7 +271,6 @@ $(document).ready(function() {
     {% endif %}
 
     {% for participant_form in form.participants_formset %}
-
     /* Select participant */
     $('input[type=radio][name={{ participant_form.prefix }}-participant_select-participant]').change(function() {
         if (this.value == 'new') {
@@ -363,11 +381,24 @@ $(document).ready(function() {
 
     /* Set callbeck on age group change */
     $('#id_{{ participant_form.prefix }}-participant_age_group').change(function() {
-        toggle_section(groups_requires_school[this.value], '{{ participant_form.prefix }}-participant_school_details', true);
+        toggle_section(age_group_requires_school[this.value], '{{ participant_form.prefix }}-participant_school_details', true);
         $('#id_{{ participant_form.prefix }}-participant_school').trigger('change');
     });
     $('#id_{{ participant_form.prefix }}-participant_age_group').trigger('change');
     {% endfor %}
+
+    /* Set callbeck on group's school change */
+    $('#id_group_school').change(function() {
+        toggle_section(this.selectedIndex == this.options.length - 1, 'group_school_other', true);
+    });
+    $('#id_group_school').trigger('change');
+
+    /* Set callbeck on target group change */
+    $('#id_target_group').change(function() {
+        toggle_section(target_group_requires_school[this.value], 'group_school_details', true);
+        $('#id_group_school').trigger('change');
+    });
+    $('#id_target_group').trigger('change');
 });
 
 </script>

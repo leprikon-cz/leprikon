@@ -3,6 +3,7 @@ from json import dumps
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.db.utils import IntegrityError
@@ -18,6 +19,7 @@ from ..models.courses import Course, CourseRegistration
 from ..models.department import Department
 from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
+from ..models.leprikonsite import LeprikonSite
 from ..models.place import Place
 from ..models.roles import Leader, Parent, Participant
 from ..models.school import School
@@ -147,6 +149,58 @@ class SubjectForm(FormMixin, forms.ModelForm):
     class Meta:
         model = Subject
         fields = ['description', 'risks', 'plan', 'evaluation']
+
+
+class SubjectAdminForm(FormMixin, forms.ModelForm):
+
+    def __init__(self, data=None, *args, **kwargs):
+        super().__init__(data, *args, **kwargs)
+        instance = kwargs.get('instance')
+        leprikon_site = LeprikonSite.objects.get_current()
+
+        # limit choices of subject type
+        subject_type_choices = self.fields['subject_type'].widget.choices
+        subject_type_choices.queryset = subject_type_choices.queryset.filter(subject_type=self.subject_type)
+
+        # limit choices of groups
+        groups_choices = self.fields['groups'].widget.choices
+        groups_choices.queryset = groups_choices.queryset.filter(
+            subject_types__subject_type=self.subject_type
+        ).distinct()
+
+        # limit choices of leaders
+        leaders_choices = self.fields['leaders'].widget.choices
+        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = self.school_year)
+
+        # limit choices of questions
+        if instance.subject_type:
+            questions_choices = self.fields['questions'].widget.choices
+            questions_choices.queryset = questions_choices.queryset.exclude(
+                id__in=instance.subject_type.questions.values('id')
+            )
+
+        # limit choices of registration agreements
+        registration_agreements_choices = self.fields['registration_agreements'].widget.choices
+        registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
+            id__in=leprikon_site.registration_agreements.values('id')
+        )
+        if instance.subject_type:
+            registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
+                id__in=instance.subject_type.registration_agreements.values('id')
+            )
+
+    def clean(self):
+        errors = {}
+        if self.cleaned_data.get('max_participants_count') and not self.cleaned_data.get('age_groups'):
+            errors['age_groups'] = [
+                _('At least one age group must be selected, if participants are allowed on registration.')
+            ]
+        if self.cleaned_data.get('max_group_members_count') and not self.cleaned_data.get('target_groups'):
+            errors['target_groups'] = [
+                _('At least one target group must be selected, if group members are allowed on registration.')
+            ]
+        if errors:
+            raise ValidationError(errors)
 
 
 class RegistrationParticipantForm(FormMixin, forms.ModelForm):
@@ -282,8 +336,8 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
         if self.participant_select_form.cleaned_data['participant'] == 'new':
             try:
                 participant = Participant.objects.get(
-                    user        = self.user,
-                    birth_num   = self.instance.participant.birth_num,
+                    user=self.instance.registration.user,
+                    birth_num=self.instance.participant.birth_num,
                 )
             except Participant.DoesNotExist:
                 participant = Participant()
@@ -320,6 +374,16 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
 
 
 class RegistrationForm(FormMixin, forms.ModelForm):
+    group_school = forms.ChoiceField(
+        label=_('School'),
+        choices=lambda: (
+            [('', '---------')] + [
+                (school.id, school) for school in School.objects.all()
+            ] + [('other', _('other school'))]
+        ),
+        required=False,
+    )
+
     def __init__(self, subject, user, **kwargs):
         super(RegistrationForm, self).__init__(**kwargs)
         self.user = user
@@ -330,6 +394,21 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             self.fields['subject_variant'].widget.choices.queryset = self.instance.subject.variants
         else:
             del self.fields['subject_variant']
+
+        # dynamically required fields
+        if self.instance.subject.max_group_members_count:
+            for field_name in [
+                'target_group',
+                'group_name',
+                'group_leader_first_name',
+                'group_leader_last_name',
+                'group_leader_street',
+                'group_leader_city',
+                'group_leader_postal_code',
+                'group_leader_phone',
+                'group_leader_email',
+            ]:
+                self.fields[field_name].required = True
 
         # sub forms
 
@@ -342,7 +421,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             (RegistrationParticipantForm, ),
             {
                 'subject': subject,
-                'user': user,
                 'user_participants': user.leprikon_participants.exclude(
                     birth_num__in=registered_birth_nums,
                 ) if user.is_authenticated() else [],
@@ -404,6 +482,42 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 form_attributes['options'][option_id] = option
             AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
             self.agreement_forms.append(AgreementForm(**kwargs))
+
+    def _add_error_required(self, field_name):
+        self.add_error(field_name, forms.ValidationError(
+            self.fields[field_name].error_messages['required'],
+            code='required',
+        ))
+
+    def clean(self):
+        # check required school and class
+        if self.cleaned_data.get('target_group'):
+            if self.cleaned_data['target_group'].require_school:
+                # require school
+                group_school = self.cleaned_data.get('group_school')
+                if group_school:
+                    if group_school == 'other':
+                        self.cleaned_data['group_school'] = None
+                        # require other school
+                        if not self.cleaned_data.get('group_school_other'):
+                            self._add_error_required('group_school_other')
+                    else:
+                        self.cleaned_data['group_school'] = School.objects.get(
+                            id=int(self.cleaned_data['group_school']),
+                        )
+                else:
+                    self._add_error_required('group_school')
+                # require school class
+                if not self.cleaned_data.get('group_school_class'):
+                    self._add_error_required('group_school_class')
+            else:
+                # delete school and class
+                self.cleaned_data['group_school'] = None
+                self.cleaned_data['group_school_other'] = ''
+                self.cleaned_data['group_school_class'] = ''
+        else:
+            self.cleaned_data['group_school'] = None
+        return self.cleaned_data
 
     @cached_property
     def required_forms(self):
@@ -471,6 +585,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         super().save(commit)
 
         # save participants
+        self.participants_formset.user = self.instance.user
         self.participants_formset.save()
 
         # save group members
@@ -513,7 +628,7 @@ class EventRegistrationForm(RegistrationForm):
 class RegistrationAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
-        super(RegistrationAdminForm, self).__init__(data, *args, **kwargs)
+        super().__init__(data, *args, **kwargs)
 
         self.fields['subject_variant'].widget.choices.queryset = self.subject.variants
         if not self.subject.variants.exists():
@@ -530,7 +645,7 @@ class RegistrationAdminForm(forms.ModelForm):
 class RegistrationParticipantAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
-        super(RegistrationParticipantAdminForm, self).__init__(data, *args, **kwargs)
+        super().__init__(data, *args, **kwargs)
         instance = kwargs.get('instance')
 
         self.fields['participant_age_group'].widget.choices.queryset = self.subject.age_groups
