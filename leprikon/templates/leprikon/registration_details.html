@@ -67,6 +67,56 @@
             {% endfor %}
             {% include 'leprikon/registration_participant_presence.html' %}
         {% endfor %}
+
+        {% if reg.all_group_members %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group name' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_name }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Target group' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.target_group }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group leader' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_leader_full_name }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Address' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_leader_address }}
+                </div>
+            </div>
+            {% if reg.group_leader_contact %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Contact' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_leader_contact }}
+                </div>
+            </div>
+            {% endif %}
+            {% if reg.target_group.require_school %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'School' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_school_and_class }}
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group members' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_members_list_html }}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row">
             <label class="col-sm-4">{% trans 'Legal agreements' %}:</label>
             <div class="col-sm-8">

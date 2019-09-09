@@ -649,7 +649,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     @cached_property
     def group_school_and_class(self):
-        return '{}, {}'.format(self.school_name, self.school_class)
+        return '{}, {}'.format(self.group_school_name, self.group_school_class)
 
     @cached_property
     def all_group_members(self):

@@ -44,6 +44,7 @@
                 {% endif %}
             </div>
         </div>
+
         {% for participant in reg.all_participants %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Participant' %}:</label>
@@ -61,6 +62,28 @@
             {% endif %}
             {% include 'leprikon/registration_participant_presence.html' %}
         {% endfor %}
+
+        {% if reg.all_group_members %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group name' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_name }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group leader' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_leader_full_name }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Group members' %}:</label>
+                <div class="col-sm-8">
+                    {{ reg.group_members_list_html }}
+                </div>
+            </div>
+        {% endif %}
+
         {% include 'leprikon/registration_payments.html' %}
     </div>
 </div>
