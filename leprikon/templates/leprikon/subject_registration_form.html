@@ -159,15 +159,15 @@
     {% for group_member_form in form.group_members_formset %}
         {% if forloop.first %}
         <h3>{% trans 'Group' %}</h3>
-        {% include 'leprikon/form_item.html' with item=form.group_name %}
         {% include 'leprikon/form_item.html' with item=form.target_group %}
+        <h3>{% trans 'Contact person' %}</h3>
         {% include 'leprikon/form_item.html' with item=form.group_leader_first_name %}
         {% include 'leprikon/form_item.html' with item=form.group_leader_last_name %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_phone %}
+        {% include 'leprikon/form_item.html' with item=form.group_leader_email %}
         {% include 'leprikon/form_item.html' with item=form.group_leader_street %}
         {% include 'leprikon/form_item.html' with item=form.group_leader_city %}
         {% include 'leprikon/form_item.html' with item=form.group_leader_postal_code %}
-        {% include 'leprikon/form_item.html' with item=form.group_leader_phone %}
-        {% include 'leprikon/form_item.html' with item=form.group_leader_email %}
         <div id="group_school_details" class="hidden">
             {% include 'leprikon/form_item.html' with item=form.group_school %}
             <div id="group_school_other" class="hidden">
@@ -175,7 +175,9 @@
             </div>
             {% include 'leprikon/form_item.html' with item=form.group_school_class %}
         </div>
+        {% include 'leprikon/form_item.html' with item=form.group_name %}
 
+        <h3>{% trans 'Participants list' %}</h3>
         <table class="table">
             <thead>
                 <tr>

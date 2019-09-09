@@ -53,10 +53,19 @@
 
         {{ object.description | safe }}
 
+        {% if object.all_age_groups %}
         <p>
             {% blocktrans count counter=object.all_age_groups|length %}Age group{% plural %}Age groups{% endblocktrans %}:
             {{ object.all_age_groups|comma_separated }}
         </p>
+        {% endif %}
+
+        {% if object.all_target_groups %}
+        <p>
+            {% blocktrans count counter=object.all_target_groups|length %}Target group{% plural %}Target groups{% endblocktrans %}:
+            {{ object.all_target_groups|comma_separated }}
+        </p>
+        {% endif %}
 
         {% if object.all_leaders %}
         <p>

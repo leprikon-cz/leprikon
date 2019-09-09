@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 14:51+0200\n"
+"POT-Creation-Date: 2019-09-09 15:49+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -342,7 +342,7 @@ msgid "printable journal"
 msgstr "tisknutelný deník"
 
 #: admin/subjects.py:136 admin/subjects.py:138
-#: templates/leprikon/subject_preview.html:98
+#: templates/leprikon/subject_preview.html:107
 msgid "journal"
 msgstr "deník"
 
@@ -363,7 +363,7 @@ msgid "add registration"
 msgstr "vytvořit přihlášku"
 
 #: admin/subjects.py:180 models/subjects.py:601
-#: templates/leprikon/subject_preview.html:94
+#: templates/leprikon/subject_preview.html:103
 msgid "registrations"
 msgstr "přihlášky"
 
@@ -822,7 +822,7 @@ msgstr "Místo"
 #: forms/subjects.py:46 templates/leprikon/participant_preview.html:23
 #: templates/leprikon/registration_details.html:22
 #: templates/leprikon/registration_pdf/subject.rml:104
-#: templates/leprikon/subject_preview.html:57
+#: templates/leprikon/subject_preview.html:58
 msgid "Age group"
 msgid_plural "Age groups"
 msgstr[0] "Věková skupina"
@@ -887,7 +887,7 @@ msgstr "nový účastník"
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/subjects.py:611
+#: forms/subjects.py:610
 msgid "Your email"
 msgstr "Váš e-mail"
 
@@ -2155,7 +2155,7 @@ msgstr "Cena"
 
 #: templates/leprikon/cms/event_list/default.html:46
 #: templates/leprikon/cms/event_list/grouped.html:48
-#: templates/leprikon/subject_preview.html:63
+#: templates/leprikon/subject_preview.html:72
 msgid "Led by"
 msgid_plural "Led by"
 msgstr[0] "Vede"
@@ -2165,7 +2165,7 @@ msgstr[2] "Vedou"
 #: templates/leprikon/cms/event_list/default.html:53
 #: templates/leprikon/cms/event_list/grouped.html:55
 #: templates/leprikon/messagerecipient_detail.html:20
-#: templates/leprikon/subject_preview.html:70
+#: templates/leprikon/subject_preview.html:79
 msgid "Attachments"
 msgstr "Přílohy"
 
@@ -2173,7 +2173,7 @@ msgstr "Přílohy"
 #: templates/leprikon/cms/event_list/grouped.html:67
 #: templates/leprikon/cms/leader_list/default.html:38
 #: templates/leprikon/leader_preview.html:41
-#: templates/leprikon/subject_preview.html:82
+#: templates/leprikon/subject_preview.html:91
 msgid "More information"
 msgstr "Více informací"
 
@@ -2508,8 +2508,12 @@ msgstr "Název skupiny"
 
 #: templates/leprikon/registration_details.html:79
 #: templates/leprikon/registration_pdf/subject.rml:209
+#: templates/leprikon/subject_preview.html:65
 msgid "Target group"
-msgstr "Cílová skupina"
+msgid_plural "Target groups"
+msgstr[0] "Cílová skupina"
+msgstr[1] "Cílové skupiny"
+msgstr[2] "Cílové skupiny"
 
 #: templates/leprikon/registration_details.html:85
 #: templates/leprikon/registration_pdf/subject.rml:213
@@ -2962,7 +2966,7 @@ msgstr "Plán činnosti"
 msgid "Evaluation of the activity"
 msgstr "Hodnocení činnosti"
 
-#: templates/leprikon/subject_preview.html:102
+#: templates/leprikon/subject_preview.html:111
 msgid "add journal entry"
 msgstr "přidat záznam deníku"
 
@@ -2980,6 +2984,14 @@ msgstr ""
 #: templates/leprikon/subject_registration_form.html:79
 msgid "User"
 msgstr "Uživatel"
+
+#: templates/leprikon/subject_registration_form.html:163
+msgid "Contact person"
+msgstr "Kontaktní osoba"
+
+#: templates/leprikon/subject_registration_form.html:180
+msgid "Participants list"
+msgstr "Seznam účastníků"
 
 #: templates/leprikon/summary.html:10
 msgid "New messages"

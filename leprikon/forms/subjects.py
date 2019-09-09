@@ -399,7 +399,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         if self.instance.subject.max_group_members_count:
             for field_name in [
                 'target_group',
-                'group_name',
                 'group_leader_first_name',
                 'group_leader_last_name',
                 'group_leader_street',
