@@ -206,9 +206,12 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
 class RegistrationParticipantForm(FormMixin, forms.ModelForm):
     participant_school = forms.ChoiceField(
         label=_('School'),
-        choices=lambda: [('', '---------')] + [
-            (school.id, school) for school in School.objects.all()
-        ] + [('other', _('other school'))]
+        choices=lambda: (
+            [('', '---------')] + [
+                (school.id, school) for school in School.objects.all()
+            ] + [('other', _('other school'))]
+        ),
+        required=False,
     )
 
     def __init__(self, **kwargs):
