@@ -202,10 +202,6 @@
         
         <blockTable style="blocktable">
             <tr>
-                <td>{% trans 'Group name' %}</td>
-                <td><para style="para">{{ object.group_name }}</para></td>
-            </tr>
-            <tr>
                 <td>{% trans 'Target group' %}</td>
                 <td><para style="para">{{ object.target_group }}</para></td>
             </tr>
@@ -239,6 +235,10 @@
                 <td><para style="para">{{ object.group_school_class }}</para></td>
             </tr>
             {% endif %}
+            <tr>
+                <td>{% trans 'Group name' %}</td>
+                <td><para style="para">{{ object.group_name }}</para></td>
+            </tr>
         </blockTable>
 
         <spacer length="2mm"/>
