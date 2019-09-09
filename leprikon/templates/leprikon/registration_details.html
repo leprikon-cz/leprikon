@@ -38,12 +38,14 @@
                 </div>
             </div>
             {% endif %}
+            {% if participant.participant.age_group.require_school %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'School' %}:</label>
                 <div class="col-sm-8">
                     {{ participant.participant.school_and_class }}
                 </div>
             </div>
+            {% endif %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Health' %}:</label>
                 <div class="col-sm-8">
