@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 15:49+0200\n"
+"POT-Creation-Date: 2019-09-09 16:15+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -549,7 +549,10 @@ msgstr "Přihlášky"
 msgid "Payments"
 msgstr "Platby"
 
-#: cms_menus.py:79 templates/leprikon/subject_journal.html:175
+#: cms_menus.py:79
+#: templates/leprikon/registration_payment_request/subject.html:12
+#: templates/leprikon/registration_payment_request/subject.txt:6
+#: templates/leprikon/subject_journal.html:175
 msgid "Participants"
 msgstr "Účastníci"
 
@@ -824,10 +827,7 @@ msgstr "Místo"
 #: templates/leprikon/registration_pdf/subject.rml:104
 #: templates/leprikon/subject_preview.html:58
 msgid "Age group"
-msgid_plural "Age groups"
-msgstr[0] "Věková skupina"
-msgstr[1] "Věkové skupiny"
-msgstr[2] "Věkové skupiny"
+msgstr "Věková skupina"
 
 #: forms/subjects.py:47
 msgid "Day of week"
@@ -2485,10 +2485,7 @@ msgstr "číslo přihlášky"
 #: templates/leprikon/registration_preview.html:50
 #: templates/leprikon/subject_registration_form.html:86
 msgid "Participant"
-msgid_plural "Participants"
-msgstr[0] "Účastník"
-msgstr[1] "Účastníci"
-msgstr[2] "Účastníci"
+msgstr "Účastník"
 
 #: templates/leprikon/registration_details.html:16
 msgid "Birth date"
@@ -2510,10 +2507,7 @@ msgstr "Název skupiny"
 #: templates/leprikon/registration_pdf/subject.rml:209
 #: templates/leprikon/subject_preview.html:65
 msgid "Target group"
-msgid_plural "Target groups"
-msgstr[0] "Cílová skupina"
-msgstr[1] "Cílové skupiny"
-msgstr[2] "Cílové skupiny"
+msgstr "Cílová skupina"
 
 #: templates/leprikon/registration_details.html:85
 #: templates/leprikon/registration_pdf/subject.rml:213
@@ -2965,6 +2959,14 @@ msgstr "Plán činnosti"
 #: templates/leprikon/subject_journal.html:279
 msgid "Evaluation of the activity"
 msgstr "Hodnocení činnosti"
+
+#: templates/leprikon/subject_preview.html:58
+msgid "Age groups"
+msgstr "Věkové skupiny"
+
+#: templates/leprikon/subject_preview.html:65
+msgid "Target groups"
+msgstr "Cílové skupiny"
 
 #: templates/leprikon/subject_preview.html:111
 msgid "add journal entry"

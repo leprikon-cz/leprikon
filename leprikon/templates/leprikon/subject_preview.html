@@ -55,14 +55,14 @@
 
         {% if object.all_age_groups %}
         <p>
-            {% blocktrans count counter=object.all_age_groups|length %}Age group{% plural %}Age groups{% endblocktrans %}:
+            {% if object.all_age_groups|length > 1 %}{% trans 'Age groups' %}{% else %}{% trans 'Age group' %}{% endif %}:
             {{ object.all_age_groups|comma_separated }}
         </p>
         {% endif %}
 
         {% if object.all_target_groups %}
         <p>
-            {% blocktrans count counter=object.all_target_groups|length %}Target group{% plural %}Target groups{% endblocktrans %}:
+            {% if object.all_target_groups|length > 1 %}{% trans 'Target groups' %}{% else %}{% trans 'Target group' %}{% endif %}:
             {{ object.all_target_groups|comma_separated }}
         </p>
         {% endif %}
