@@ -30,12 +30,16 @@ class MessageFilterForm(FormMixin, forms.Form):
 
 class MessageAdminForm(forms.ModelForm):
     recipients = forms.MultipleChoiceField(
-        widget      = widgets.FilteredSelectMultiple(
-            verbose_name = _('Recipients'),
-            is_stacked = False,
+        choices=lambda: [
+            (u.id, '{} ({})'.format(u.get_username(), u.get_full_name()))
+            for u in get_user_model().objects.all()
+        ],
+        widget=widgets.FilteredSelectMultiple(
+            verbose_name=_('Recipients'),
+            is_stacked=False,
         ),
-        label       = _('Recipients'),
-        required    = False,
+        label=_('Recipients'),
+        required=False,
     )
 
     class Meta:
@@ -46,15 +50,11 @@ class MessageAdminForm(forms.ModelForm):
         instance = kwargs.get('instance', None)
         if instance:
             kwargs['initial'] = kwargs.get('initial', {})
-            kwargs['initial']['recipients'] = set(
+            kwargs['initial']['recipients'] = list(set(
                 kwargs['initial'].get('recipients', []) +
                 [r[0] for r in instance.recipients.values_list('recipient_id')]
-            )
-        super(MessageAdminForm, self).__init__(*args, **kwargs)
-        self.fields['recipients'].choices = [
-            (u.id, '{} ({})'.format(u.get_username(), u.get_full_name()))
-            for u in get_user_model().objects.all()
-        ]
+            ))
+        super().__init__(*args, **kwargs)
 
     def _save_m2m(self):
         super(MessageAdminForm, self)._save_m2m()
