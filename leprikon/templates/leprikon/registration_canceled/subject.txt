@@ -1,6 +1,6 @@
 {% load i18n %}{% blocktrans %}Hello,
-we are pleased to inform You, that your registration was approved.{% endblocktrans %}
+your registration was canceled.{% endblocktrans %}
 
-{% trans 'We are looking forward to see You.' %}
+{% include 'leprikon/registration_mail_details.txt' %}
 
 {% include 'leprikon/registration_mail_footer.txt' %}
