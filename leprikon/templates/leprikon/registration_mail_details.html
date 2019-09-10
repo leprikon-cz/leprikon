@@ -1,0 +1,10 @@
+{% load i18n leprikon_tags %}
+
+<p>
+    {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>
+    {% if object.group_name %}{% trans 'Group name' %}: {{ object.group_name }}<br/>{% endif %}
+    {% if object.all_participants %}
+        {% if object.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}:
+        {{ object.all_participants|comma_separated }}<br/>
+    {% endif %}
+</p>
