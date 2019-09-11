@@ -112,7 +112,6 @@ def upstream(url, xpath, *replacements):
             except (IndexError, ValueError):
                 print_exc()
             else:
-                print((pattern, repl))
                 content = re.sub(pattern, repl, content)
         return mark_safe(b''.join(
             tostring(node)
