@@ -6,6 +6,9 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 </p>
 
 {% include 'leprikon/registration_mail_details.html' %}
+<p>
+    {% trans 'Price' %}: {{ object.current_receivable | currency }}<br/>
+</p>
 
 {% if site.payment_gateway %}
 <p>

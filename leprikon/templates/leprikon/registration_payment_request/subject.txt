@@ -2,6 +2,7 @@
 thank You for submitting registration.{% endblocktrans %}
 
 {% include 'leprikon/registration_mail_details.txt' %}
+{% trans 'Price' %}: {{ object.current_receivable | currency }}
 
 {% if site.payment_gateway %}{% trans 'Please, use following link to perform online payment' %}:
 {{ object.payment_url }}
