@@ -515,8 +515,10 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
         ('registration__subject__leaders', LeaderListFilter),
     )
     search_fields = (
-        'registration__subject__name', 'registration__participant_first_name', 'registration__participant_last_name',
-        'registration__participant_birth_num',
+        'registration__subject__name',
+        'registration__participants__participant_first_name',
+        'registration__participants__participant_last_name',
+        'registration__participants__participant_birth_num',
     )
     date_hierarchy = 'accounted'
     ordering = ('-accounted',)
