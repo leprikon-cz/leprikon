@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 16:15+0200\n"
+"POT-Creation-Date: 2019-09-11 11:34+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -549,9 +549,8 @@ msgstr "Přihlášky"
 msgid "Payments"
 msgstr "Platby"
 
-#: cms_menus.py:79
-#: templates/leprikon/registration_payment_request/subject.html:12
-#: templates/leprikon/registration_payment_request/subject.txt:6
+#: cms_menus.py:79 templates/leprikon/registration_mail_details.html:7
+#: templates/leprikon/registration_mail_details.txt:3
 #: templates/leprikon/subject_journal.html:175
 msgid "Participants"
 msgstr "Účastníci"
@@ -861,33 +860,33 @@ msgstr ""
 "Alespoň jedna cílová skupina musí být vybrána, pokud je povoleno skupinové "
 "přihlášení."
 
-#: forms/subjects.py:208 forms/subjects.py:378
+#: forms/subjects.py:208 forms/subjects.py:381
 #: templates/leprikon/participant_preview.html:41
-#: templates/leprikon/registration_details.html:42
-#: templates/leprikon/registration_details.html:106
+#: templates/leprikon/registration_details.html:43
+#: templates/leprikon/registration_details.html:108
 #: templates/leprikon/registration_pdf/subject.rml:133
-#: templates/leprikon/registration_pdf/subject.rml:234
+#: templates/leprikon/registration_pdf/subject.rml:230
 msgid "School"
 msgstr "Škola"
 
-#: forms/subjects.py:211 forms/subjects.py:382 models/roles.py:168
+#: forms/subjects.py:212 forms/subjects.py:385 models/roles.py:168
 #: models/subjects.py:583 models/subjects.py:856
 msgid "other school"
 msgstr "jiná škola"
 
-#: forms/subjects.py:241 forms/subjects.py:252
+#: forms/subjects.py:244 forms/subjects.py:255
 msgid "Choose"
 msgstr "Vyberte"
 
-#: forms/subjects.py:242
+#: forms/subjects.py:245
 msgid "new participant"
 msgstr "nový účastník"
 
-#: forms/subjects.py:253
+#: forms/subjects.py:256
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/subjects.py:610
+#: forms/subjects.py:611
 msgid "Your email"
 msgstr "Váš e-mail"
 
@@ -919,7 +918,7 @@ msgid "User with this email already exists."
 msgstr "Uživatel s touto e-mailovou adresou již existuje."
 
 #: forms/user.py:56 templates/leprikon/registration_pdf/subject.rml:127
-#: templates/leprikon/registration_pdf/subject.rml:228
+#: templates/leprikon/registration_pdf/subject.rml:224
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1714,7 +1713,7 @@ msgstr "maximální počet členů skupiny na přihlášce"
 
 #: models/subjects.py:210
 msgid "minimal registrations count"
-msgstr "počet přihlášek přihlášek"
+msgstr "minimální počet přihlášek"
 
 #: models/subjects.py:211
 msgid "maximal registrations count"
@@ -2142,8 +2141,8 @@ msgstr "vybraných"
 
 #: templates/leprikon/cms/event_list/default.html:38
 #: templates/leprikon/cms/event_list/grouped.html:40
-#: templates/leprikon/registration_payment_request/subject.html:15
-#: templates/leprikon/registration_payment_request/subject.txt:7
+#: templates/leprikon/registration_payment_request/subject.html:10
+#: templates/leprikon/registration_payment_request/subject.txt:5
 #: templates/leprikon/registration_payments.html:4
 #: templates/leprikon/registration_pdf/subject.rml:58
 #: templates/leprikon/reports/course_payments_status.html:15
@@ -2181,7 +2180,7 @@ msgstr "Více informací"
 #: templates/leprikon/leader_preview.html:28
 #: templates/leprikon/participant_preview.html:35
 #: templates/leprikon/registration_details.html:35
-#: templates/leprikon/registration_details.html:98
+#: templates/leprikon/registration_details.html:100
 #: templates/leprikon/registration_pdf/subject.rml:187
 msgid "Contact"
 msgstr "Kontakt"
@@ -2304,15 +2303,15 @@ msgstr "Účastník nemá vyplněny některé kontaktní informace."
 
 #: templates/leprikon/participant_preview.html:29
 #: templates/leprikon/registration_details.html:28
-#: templates/leprikon/registration_details.html:91
+#: templates/leprikon/registration_details.html:93
 #: templates/leprikon/registration_pdf/subject.rml:112
 #: templates/leprikon/registration_pdf/subject.rml:183
-#: templates/leprikon/registration_pdf/subject.rml:217
+#: templates/leprikon/registration_pdf/subject.rml:213
 msgid "Address"
 msgstr "Adresa"
 
 #: templates/leprikon/participant_preview.html:47
-#: templates/leprikon/registration_details.html:48
+#: templates/leprikon/registration_details.html:50
 #: templates/leprikon/registration_pdf/subject.rml:151
 msgid "Health"
 msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
@@ -2457,8 +2456,6 @@ msgstr "Částka"
 
 #: templates/leprikon/registration_approved/subject.html:4
 #: templates/leprikon/registration_approved/subject.txt:1
-#: templates/leprikon/registration_canceled/subject.html:4
-#: templates/leprikon/registration_canceled/subject.txt:1
 msgid ""
 "Hello,\n"
 "we are pleased to inform You, that your registration was approved."
@@ -2466,12 +2463,19 @@ msgstr ""
 "Dobrý den,\n"
 "máme pro Vás dobrou zprávu, Vaše přihláška byla schválena."
 
-#: templates/leprikon/registration_approved/subject.html:9
-#: templates/leprikon/registration_approved/subject.txt:4
-#: templates/leprikon/registration_canceled/subject.html:9
-#: templates/leprikon/registration_canceled/subject.txt:4
+#: templates/leprikon/registration_approved/subject.html:11
+#: templates/leprikon/registration_approved/subject.txt:6
 msgid "We are looking forward to see You."
 msgstr "Těšíme se na Vás."
+
+#: templates/leprikon/registration_canceled/subject.html:4
+#: templates/leprikon/registration_canceled/subject.txt:1
+#, fuzzy
+#| msgid "Selected registrations were canceled."
+msgid ""
+"Hello,\n"
+"your registration was canceled."
+msgstr "Vybrané přihlášky byly odhlášeny."
 
 #: templates/leprikon/registration_details.html:4
 #: templates/leprikon/registration_preview.html:5
@@ -2479,8 +2483,8 @@ msgid "registration number"
 msgstr "číslo přihlášky"
 
 #: templates/leprikon/registration_details.html:10
-#: templates/leprikon/registration_payment_request/subject.html:12
-#: templates/leprikon/registration_payment_request/subject.txt:6
+#: templates/leprikon/registration_mail_details.html:7
+#: templates/leprikon/registration_mail_details.txt:3
 #: templates/leprikon/registration_pdf/subject.rml:94
 #: templates/leprikon/registration_preview.html:50
 #: templates/leprikon/subject_registration_form.html:86
@@ -2491,37 +2495,37 @@ msgstr "Účastník"
 msgid "Birth date"
 msgstr "Datum narození"
 
-#: templates/leprikon/registration_details.html:55
+#: templates/leprikon/registration_details.html:57
 msgid "Parent"
 msgstr "Zástupce"
 
-#: templates/leprikon/registration_details.html:73
-#: templates/leprikon/registration_payment_request/subject.html:10
-#: templates/leprikon/registration_payment_request/subject.txt:5
-#: templates/leprikon/registration_pdf/subject.rml:205
+#: templates/leprikon/registration_details.html:75
+#: templates/leprikon/registration_mail_details.html:5
+#: templates/leprikon/registration_mail_details.txt:2
+#: templates/leprikon/registration_pdf/subject.rml:239
 #: templates/leprikon/registration_preview.html:68
 msgid "Group name"
 msgstr "Název skupiny"
 
-#: templates/leprikon/registration_details.html:79
-#: templates/leprikon/registration_pdf/subject.rml:209
+#: templates/leprikon/registration_details.html:81
+#: templates/leprikon/registration_pdf/subject.rml:205
 #: templates/leprikon/subject_preview.html:65
 msgid "Target group"
 msgstr "Cílová skupina"
 
-#: templates/leprikon/registration_details.html:85
-#: templates/leprikon/registration_pdf/subject.rml:213
+#: templates/leprikon/registration_details.html:87
+#: templates/leprikon/registration_pdf/subject.rml:209
 #: templates/leprikon/registration_preview.html:74
 msgid "Group leader"
 msgstr "Vedoucí skupiny"
 
-#: templates/leprikon/registration_details.html:113
+#: templates/leprikon/registration_details.html:115
 #: templates/leprikon/registration_pdf/subject.rml:246
 #: templates/leprikon/registration_preview.html:80
 msgid "Group members"
 msgstr "Členové skupiny"
 
-#: templates/leprikon/registration_details.html:121
+#: templates/leprikon/registration_details.html:123
 msgid "Legal agreements"
 msgstr "Právní ujednání"
 
@@ -2561,30 +2565,30 @@ msgstr ""
 "Dobrý den,\n"
 "děkujeme Vám za vyplnění přihlášky."
 
-#: templates/leprikon/registration_payment_request/subject.html:20
-#: templates/leprikon/registration_payment_request/subject.txt:9
+#: templates/leprikon/registration_payment_request/subject.html:15
+#: templates/leprikon/registration_payment_request/subject.txt:7
 msgid "Please, use following link to perform online payment"
 msgstr "Pro on-line platbu prosím použijte následující odkaz"
 
-#: templates/leprikon/registration_payment_request/subject.html:27
-#: templates/leprikon/registration_payment_request/subject.txt:12
+#: templates/leprikon/registration_payment_request/subject.html:22
+#: templates/leprikon/registration_payment_request/subject.txt:10
 #: templates/leprikon/registration_payments.html:57
 msgid "Please, use following information for bank transfer"
 msgstr "Pro platbu převodem prosím použijte následující údaje"
 
-#: templates/leprikon/registration_payment_request/subject.html:28
-#: templates/leprikon/registration_payment_request/subject.txt:13
+#: templates/leprikon/registration_payment_request/subject.html:23
+#: templates/leprikon/registration_payment_request/subject.txt:11
 #: templates/leprikon/registration_payments.html:58
 msgid "Bank account"
 msgstr "Číslo účtu"
 
-#: templates/leprikon/registration_payment_request/subject.html:29
-#: templates/leprikon/registration_payment_request/subject.txt:14
+#: templates/leprikon/registration_payment_request/subject.html:24
+#: templates/leprikon/registration_payment_request/subject.txt:12
 #: templates/leprikon/registration_payments.html:59
 msgid "Variable symbol"
 msgstr "Variabilní symbol"
 
-#: templates/leprikon/registration_payment_request/subject.html:32
+#: templates/leprikon/registration_payment_request/subject.html:27
 #: templates/leprikon/registration_payments.html:62
 msgid ""
 "Or You may use following QR code to scan the payment details to your mobile "
@@ -2593,14 +2597,14 @@ msgstr ""
 "Případně můžete použít následující QR kód pro načtení platebních informací "
 "do své mobilní bankovní aplikace"
 
-#: templates/leprikon/registration_payment_request/subject.html:38
-#: templates/leprikon/registration_payment_request/subject.txt:16
+#: templates/leprikon/registration_payment_request/subject.html:33
+#: templates/leprikon/registration_payment_request/subject.txt:14
 #: templates/leprikon/registration_payments.html:67
 msgid "Currently we only accept payments in cash."
 msgstr "Momentálně přijímáme platby pouze v hotovosti."
 
-#: templates/leprikon/registration_payment_request/subject.html:42
-#: templates/leprikon/registration_payment_request/subject.txt:18
+#: templates/leprikon/registration_payment_request/subject.html:37
+#: templates/leprikon/registration_payment_request/subject.txt:16
 msgid ""
 "If You have already made the payment recently, please ignore this message."
 msgstr ""
@@ -2667,12 +2671,12 @@ msgid "Citizenship"
 msgstr "Státní občanství"
 
 #: templates/leprikon/registration_pdf/subject.rml:121
-#: templates/leprikon/registration_pdf/subject.rml:222
+#: templates/leprikon/registration_pdf/subject.rml:218
 msgid "Phone"
 msgstr "Telefon"
 
 #: templates/leprikon/registration_pdf/subject.rml:137
-#: templates/leprikon/registration_pdf/subject.rml:238
+#: templates/leprikon/registration_pdf/subject.rml:234
 msgid "Class"
 msgstr "Třída"
 
@@ -2736,8 +2740,8 @@ msgstr "přihláška schválena %(d)s"
 msgid "awaiting approval"
 msgstr "čeká na schválení"
 
-#: templates/leprikon/registration_received/subject.html:7
-#: templates/leprikon/registration_received/subject.txt:3
+#: templates/leprikon/registration_received/subject.html:12
+#: templates/leprikon/registration_received/subject.txt:4
 #, python-format
 msgid ""
 "Unfortunately, the capacity of this %(subject_type)s has already been "
@@ -2747,13 +2751,13 @@ msgstr ""
 "Bohužel, kapacita %(subject_type)s je již naplněna. Vaše přihláška nemusí "
 "být schválena."
 
-#: templates/leprikon/registration_received/subject.html:10
-#: templates/leprikon/registration_received/subject.txt:5
+#: templates/leprikon/registration_received/subject.html:16
+#: templates/leprikon/registration_received/subject.txt:6
 msgid "We will inform you about its further processing."
 msgstr "O jejím dalším zpracování Vás budeme dále informovat."
 
-#: templates/leprikon/registration_received/subject.html:13
-#: templates/leprikon/registration_received/subject.txt:6
+#: templates/leprikon/registration_received/subject.html:19
+#: templates/leprikon/registration_received/subject.txt:7
 msgid "See attached files for futher information."
 msgstr "Další informace najdete v přiložených souborech."
 
