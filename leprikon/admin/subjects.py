@@ -321,6 +321,10 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     list_editable = ('note',)
     list_export = (
         'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
+        'group_name', 'group_leader_first_name', 'group_leader_last_name',
+        'group_leader_street', 'group_leader_city', 'group_leader_postal_code',
+        'group_leader_phone', 'group_leader_email',
+        'group_school', 'group_school_other', 'group_school_class',
         'created', 'payment_requested', 'approved', 'canceled', 'cancel_request',
         'agreement_options_list', 'participants_list', 'group_members_list',
     )
