@@ -173,7 +173,7 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
         leaders_choices.queryset = leaders_choices.queryset.filter(school_years = self.school_year)
 
         # limit choices of questions
-        if instance.subject_type:
+        if instance:
             questions_choices = self.fields['questions'].widget.choices
             questions_choices.queryset = questions_choices.queryset.exclude(
                 id__in=instance.subject_type.questions.values('id')
@@ -184,7 +184,7 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
         registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
             id__in=leprikon_site.registration_agreements.values('id')
         )
-        if instance.subject_type:
+        if instance:
             registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
                 id__in=instance.subject_type.registration_agreements.values('id')
             )
