@@ -276,30 +276,30 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
 
     def clean(self):
         # check required school and class
-        if 'participant_age_group' in self.cleaned_data:
-            if self.cleaned_data['participant_age_group'].require_school:
-                # require school
-                participant_school = self.cleaned_data.get('participant_school')
-                if participant_school:
-                    if participant_school == 'other':
-                        self.cleaned_data['participant_school'] = None
-                        # require other school
-                        if not self.cleaned_data.get('participant_school_other'):
-                            self._add_error_required('participant_school_other')
-                    else:
-                        self.cleaned_data['participant_school'] = School.objects.get(
-                            id=int(self.cleaned_data['participant_school']),
-                        )
+        age_group = self.cleaned_data.get('participant_age_group')
+        if age_group and age_group.require_school:
+            # require school
+            participant_school = self.cleaned_data.get('participant_school')
+            if participant_school:
+                if participant_school == 'other':
+                    self.cleaned_data['participant_school'] = None
+                    # require other school
+                    if not self.cleaned_data.get('participant_school_other'):
+                        self._add_error_required('participant_school_other')
                 else:
-                    self._add_error_required('participant_school')
-                # require school class
-                if not self.cleaned_data.get('participant_school_class'):
-                    self._add_error_required('participant_school_class')
+                    self.cleaned_data['participant_school'] = School.objects.get(
+                        id=int(self.cleaned_data['participant_school']),
+                    )
             else:
-                # delete school and class
-                self.cleaned_data['participant_school'] = None
-                self.cleaned_data['participant_school_other'] = ''
-                self.cleaned_data['participant_school_class'] = ''
+                self._add_error_required('participant_school')
+            # require school class
+            if not self.cleaned_data.get('participant_school_class'):
+                self._add_error_required('participant_school_class')
+        else:
+            # delete school and class
+            self.cleaned_data['participant_school'] = None
+            self.cleaned_data['participant_school_other'] = ''
+            self.cleaned_data['participant_school_class'] = ''
         return self.cleaned_data
 
     @cached_property
@@ -493,32 +493,30 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def clean(self):
         # check required school and class
-        if self.cleaned_data.get('target_group'):
-            if self.cleaned_data['target_group'].require_school:
-                # require school
-                group_school = self.cleaned_data.get('group_school')
-                if group_school:
-                    if group_school == 'other':
-                        self.cleaned_data['group_school'] = None
-                        # require other school
-                        if not self.cleaned_data.get('group_school_other'):
-                            self._add_error_required('group_school_other')
-                    else:
-                        self.cleaned_data['group_school'] = School.objects.get(
-                            id=int(self.cleaned_data['group_school']),
-                        )
+        target_group = self.cleaned_data.get('target_group')
+        if target_group and target_group.require_school:
+            # require school
+            group_school = self.cleaned_data.get('group_school')
+            if group_school:
+                if group_school == 'other':
+                    self.cleaned_data['group_school'] = None
+                    # require other school
+                    if not self.cleaned_data.get('group_school_other'):
+                        self._add_error_required('group_school_other')
                 else:
-                    self._add_error_required('group_school')
-                # require school class
-                if not self.cleaned_data.get('group_school_class'):
-                    self._add_error_required('group_school_class')
+                    self.cleaned_data['group_school'] = School.objects.get(
+                        id=int(self.cleaned_data['group_school']),
+                    )
             else:
-                # delete school and class
-                self.cleaned_data['group_school'] = None
-                self.cleaned_data['group_school_other'] = ''
-                self.cleaned_data['group_school_class'] = ''
+                self._add_error_required('group_school')
+            # require school class
+            if not self.cleaned_data.get('group_school_class'):
+                self._add_error_required('group_school_class')
         else:
+            # delete school and class
             self.cleaned_data['group_school'] = None
+            self.cleaned_data['group_school_other'] = ''
+            self.cleaned_data['group_school_class'] = ''
         return self.cleaned_data
 
     @cached_property
