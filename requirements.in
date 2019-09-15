@@ -29,8 +29,8 @@ psycopg2-binary
 pyexcel-xlsxw
 pyicu
 python-memcached
-raven
 requests
+sentry-sdk
 social-auth-app-django
 uwsgi
 whoosh

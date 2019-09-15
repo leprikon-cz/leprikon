@@ -75,7 +75,6 @@ INSTALLED_APPS = [
     'ganalytics',
     'html2rml',
     'qr_code',
-    'raven.contrib.django.raven_compat',
     'social_django',
     'verified_email_field',
 ]
@@ -299,36 +298,20 @@ if not DEBUG_LML:
     LOGGING['loggers']['pyexcel'] = {'level': 'WARNING'}
     LOGGING['loggers']['pyexcel_io'] = {'level': 'WARNING'}
 
-try:
-    import raven
-except ImportError:
-    pass
-else:
-    del raven
-    if not DEBUG and os.environ.get('SENTRY_DSN'):
-        # https://docs.sentry.io/clients/python/integrations/django/
-        RAVEN_CONFIG = {
-            'dsn': os.environ.get('SENTRY_DSN'),
-        }
 
-        LOGGING['filters'] = {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse',
-            },
-        }
-        LOGGING['handlers']['sentry'] = {
-            'level': 'WARNING',
-            'filters': ['require_debug_false'],
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            # supports SENTRY_TAGS env var in form "tag1:value1,tag2:value2"
-            'tags': dict(t.split(':', 1) for t in os.environ.get('SENTRY_TAGS', '').split(',') if ':' in t),
-        }
-        LOGGING['loggers']['raven'] = {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        }
-        LOGGING['loggers']['']['handlers'].append('sentry')
+# Sentry configuration
+if not DEBUG and os.environ.get('SENTRY_DSN'):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from leprikon import __version__
+
+    sentry_sdk.init(
+        dsn=os.environ.get('SENTRY_DSN'),
+        integrations=[DjangoIntegration()],
+        send_default_pii=True,
+        release=__version__,
+    )
+
 
 # Caching and session configuration
 CACHES = {
