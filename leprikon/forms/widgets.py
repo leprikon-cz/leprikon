@@ -1,5 +1,4 @@
 from django.forms.widgets import CheckboxSelectMultiple, RadioSelect
-from django.utils.safestring import mark_safe
 
 
 class BootstrapRenderer:
