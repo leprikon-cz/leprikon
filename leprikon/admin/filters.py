@@ -12,7 +12,7 @@ class SchoolYearListFilter(admin.FieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         try:
             request.school_year = SchoolYear.objects.get(year=params['year'])
-        except:
+        except (SchoolYear.DoesNotExist, ValueError, KeyError):
             pass
         self.school_year = request.school_year
         super(SchoolYearListFilter, self).__init__(field, request, params, model, model_admin, field_path)
@@ -32,7 +32,6 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
     def queryset(self, request, queryset):
         return queryset.filter(**{self.field_path: self.school_year})
-
 
 
 class ActiveListFilter(admin.SimpleListFilter):
@@ -67,7 +66,6 @@ class ActiveListFilter(admin.SimpleListFilter):
         ]
 
 
-
 class ApprovedListFilter(admin.SimpleListFilter):
     title = _('approval')
     parameter_name = 'approved'
@@ -83,7 +81,6 @@ class ApprovedListFilter(admin.SimpleListFilter):
             return queryset.filter(approved__isnull=False)
         if self.value() == 'no':
             return queryset.filter(approved__isnull=True)
-
 
 
 class CanceledListFilter(admin.SimpleListFilter):
@@ -118,7 +115,6 @@ class CanceledListFilter(admin.SimpleListFilter):
         ]
 
 
-
 class SubjectTypeListFilter(admin.RelatedFieldListFilter):
     subject_type_type = None
 
@@ -144,7 +140,6 @@ class EventTypeListFilter(SubjectTypeListFilter):
     subject_type_type = SubjectType.EVENT
 
 
-
 class SubjectGroupListFilter(admin.RelatedFieldListFilter):
     subject_type_type = None
 
@@ -168,7 +163,6 @@ class CourseGroupListFilter(SubjectGroupListFilter):
 
 class EventGroupListFilter(SubjectGroupListFilter):
     subject_type_type = SubjectType.EVENT
-
 
 
 class SubjectListFilter(admin.RelatedFieldListFilter):
@@ -199,7 +193,6 @@ class CourseListFilter(SubjectListFilter):
 class EventListFilter(SubjectListFilter):
     subject_type_type = SubjectType.EVENT
     model = Event
-
 
 
 class LeaderListFilter(admin.RelatedFieldListFilter):

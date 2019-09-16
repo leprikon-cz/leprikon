@@ -55,8 +55,8 @@ class ReportEventPaymentsStatusView(ReportBaseView):
             for event in Event.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.EventPaymentsStatusSums(
-            registrations = sum(len(r.registrations)  for r in context['reports']),
-            status = sum(r.status              for r in context['reports']),
+            registrations=sum(len(r.registrations) for r in context['reports']),
+            status=sum(r.status for r in context['reports']),
         )
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
@@ -78,8 +78,8 @@ class ReportEventPaymentsStatusView(ReportBaseView):
             return [
                 registration_status for registration_status in (
                     self.RegPaymentStatus(
-                        registration = registration,
-                        status = registration.eventregistration.get_payment_status(self.date),
+                        registration=registration,
+                        status=registration.eventregistration.get_payment_status(self.date),
                     )
                     for registration in self.registrations
                 ) if registration_status.status.receivable

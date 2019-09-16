@@ -26,9 +26,9 @@ __all__ = [
 
 
 class UserCreateView(CreateView):
-    model       = get_user_model()
-    form_class  = UserCreateForm
-    title       = _('Create account')
+    model = get_user_model()
+    form_class = UserCreateForm
+    title = _('Create account')
     form_item_template_name = 'leprikon/user_create_form_item.html'
 
     def get_message(self):
@@ -64,8 +64,8 @@ class UserCreateView(CreateView):
 
 
 class UserAgreementView(FormView):
-    form_class  = UserAgreementForm
-    title       = _('Agreement with the terms of use')
+    form_class = UserAgreementForm
+    title = _('Agreement with the terms of use')
     form_item_template_name = 'leprikon/user_create_form_item.html'
 
     def get_message(self):
@@ -84,9 +84,9 @@ class UserAgreementView(FormView):
 
 
 class UserUpdateView(UpdateView):
-    model       = get_user_model()
-    form_class  = UserUpdateForm
-    title       = _('Change user')
+    model = get_user_model()
+    form_class = UserUpdateForm
+    title = _('Change user')
 
     def get_object(self):
         return self.request.user
@@ -96,7 +96,7 @@ class UserUpdateView(UpdateView):
 
 
 class UserEmailView(UserUpdateView):
-    form_class  = UserEmailForm
+    form_class = UserEmailForm
 
     def get_title(self):
         if self.request.user.email:

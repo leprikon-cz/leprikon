@@ -14,7 +14,7 @@ from ..generic import GetFormView, TemplateView
 
 
 class ReportsListView(TemplateView):
-    template_name   = 'leprikon/reports/index.html'
+    template_name = 'leprikon/reports/index.html'
 
     Report = namedtuple('Report', ('title', 'instructions', 'form', 'url'))
 
@@ -24,49 +24,48 @@ class ReportsListView(TemplateView):
     def get_context_data(self, *args, **kwargs):
         return super(ReportsListView, self).get_context_data(reports=[
             self.Report(
-                title           = _('Course payments'),
-                instructions    = '',
-                form            = self.get_form(CoursePaymentsForm),
-                url             = reverse('leprikon:report_course_payments'),
+                title=_('Course payments'),
+                instructions='',
+                form=self.get_form(CoursePaymentsForm),
+                url=reverse('leprikon:report_course_payments'),
             ),
             self.Report(
-                title           = _('Event payments'),
-                instructions    = '',
-                form            = self.get_form(EventPaymentsForm),
-                url             = reverse('leprikon:report_event_payments'),
+                title=_('Event payments'),
+                instructions='',
+                form=self.get_form(EventPaymentsForm),
+                url=reverse('leprikon:report_event_payments'),
             ),
             self.Report(
-                title           = _('Course payments status'),
-                instructions    = '',
-                form            = self.get_form(CoursePaymentsStatusForm),
-                url             = reverse('leprikon:report_course_payments_status'),
+                title=_('Course payments status'),
+                instructions='',
+                form=self.get_form(CoursePaymentsStatusForm),
+                url=reverse('leprikon:report_course_payments_status'),
             ),
             self.Report(
-                title           = _('Event payments status'),
-                instructions    = '',
-                form            = self.get_form(EventPaymentsStatusForm),
-                url             = reverse('leprikon:report_event_payments_status'),
+                title=_('Event payments status'),
+                instructions='',
+                form=self.get_form(EventPaymentsStatusForm),
+                url=reverse('leprikon:report_event_payments_status'),
             ),
             self.Report(
-                title           = _('Course statistics'),
-                instructions    = '',
-                form            = self.get_form(CourseStatsForm),
-                url             = reverse('leprikon:report_course_stats'),
+                title=_('Course statistics'),
+                instructions='',
+                form=self.get_form(CourseStatsForm),
+                url=reverse('leprikon:report_course_stats'),
             ),
             self.Report(
-                title           = _('Event statistics'),
-                instructions    = '',
-                form            = self.get_form(EventStatsForm),
-                url             = reverse('leprikon:report_event_stats'),
+                title=_('Event statistics'),
+                instructions='',
+                form=self.get_form(EventStatsForm),
+                url=reverse('leprikon:report_event_stats'),
             ),
             self.Report(
-                title           = _('Debtors list'),
-                instructions    = '',
-                form            = self.get_form(DebtorsForm),
-                url             = reverse('leprikon:report_debtors'),
+                title=_('Debtors list'),
+                instructions='',
+                form=self.get_form(DebtorsForm),
+                url=reverse('leprikon:report_debtors'),
             ),
         ])
-
 
 
 class ReportBaseView(GetFormView):

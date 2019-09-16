@@ -21,11 +21,10 @@ class MessageFilterForm(FormMixin, forms.Form):
         qs = self.qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
-                Q(message__subject__icontains = word) |
-                Q(message__text__icontains = word)
+                Q(message__subject__icontains=word) |
+                Q(message__text__icontains=word)
             )
         return qs.distinct()
-
 
 
 class MessageAdminForm(forms.ModelForm):
@@ -63,5 +62,5 @@ class MessageAdminForm(forms.ModelForm):
             if recipient.recipient_id not in recipients:
                 recipient.delete()
         for user_id in recipients:
-            MessageRecipient.objects.get_or_create(recipient_id=user_id, message = self.instance)
+            MessageRecipient.objects.get_or_create(recipient_id=user_id, message=self.instance)
         return self.instance

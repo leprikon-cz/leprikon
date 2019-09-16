@@ -46,12 +46,12 @@ class EventAdmin(SubjectBaseAdmin):
     )
 
     def publish(self, request, queryset):
-        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public = True)
+        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public=True)
         self.message_user(request, _('Selected events were published.'))
     publish.short_description = _('Publish selected events')
 
     def unpublish(self, request, queryset):
-        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public = False)
+        Event.objects.filter(id__in=[reg['id'] for reg in queryset.values('id')]).update(public=False)
         self.message_user(request, _('Selected events were unpublished.'))
     unpublish.short_description = _('Unpublish selected events')
 
@@ -88,7 +88,7 @@ class EventAdmin(SubjectBaseAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_registrations__subject__in = queryset
+            leprikon_registrations__subject__in=queryset,
         ).distinct()
 
 
@@ -115,11 +115,11 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            href_list = reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
-            amount = currency(status.discount),
-            href_add = reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
-            icon_add = static('admin/img/icon-addlink.svg'),
-            title_add = _('add discount'),
+            href_list=reverse('admin:leprikon_eventdiscount_changelist') + '?registration={}'.format(obj.id),
+            amount=currency(status.discount),
+            href_add=reverse('admin:leprikon_eventdiscount_add') + '?registration={}'.format(obj.id),
+            icon_add=static('admin/img/icon-addlink.svg'),
+            title_add=_('add discount'),
         )
     event_discounts.allow_tags = True
     event_discounts.short_description = _('event discounts')
@@ -130,13 +130,13 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             '<a class="popup-link" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            color = status.color,
-            href_list = reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
-            title = status.title,
-            amount = currency(status.paid),
-            href_add = reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-            icon_add = static('admin/img/icon-addlink.svg'),
-            title_add = _('add payment'),
+            color=status.color,
+            href_list=reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
+            title=status.title,
+            amount=currency(status.paid),
+            href_add=reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+            icon_add=static('admin/img/icon-addlink.svg'),
+            title_add=_('add payment'),
         )
     event_payments.allow_tags = True
     event_payments.short_description = _('event payments')

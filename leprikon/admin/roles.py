@@ -121,5 +121,5 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_leader__in = queryset
+            leprikon_leader__in=queryset,
         ).distinct()

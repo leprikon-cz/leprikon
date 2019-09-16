@@ -7,9 +7,9 @@ from ..models.schoolyear import SchoolYear
 
 class SchoolYearForm(forms.Form):
     school_year = forms.ModelChoiceField(
-        label       = _('School year'),
-        queryset    = SchoolYear.objects.all(),
-        empty_label = None,
+        label=_('School year'),
+        queryset=SchoolYear.objects.all(),
+        empty_label=None,
     )
     back = settings.LEPRIKON_PARAM_BACK
 

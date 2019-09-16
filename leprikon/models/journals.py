@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
@@ -15,7 +14,6 @@ def get_default_agenda():
     return '<p>{}</p>'.format(_('instruction on OSH'))
 
 
-@python_2_unicode_compatible
 class JournalEntry(StartEndMixin, models.Model):
     subject = models.ForeignKey(Subject, verbose_name=_('subject'), editable=False,
                                 related_name='journal_entries', on_delete=models.PROTECT)
@@ -43,21 +41,21 @@ class JournalEntry(StartEndMixin, models.Model):
     def datetime_start(self):
         try:
             return datetime.combine(self.date, self.start)
-        except:
+        except TypeError:
             return None
 
     @cached_property
     def datetime_end(self):
         try:
             return datetime.combine(self.date, self.end)
-        except:
+        except TypeError:
             return None
 
     @cached_property
     def duration(self):
         try:
             return self.datetime_end - self.datetime_start
-        except:
+        except TypeError:
             return timedelta()
     duration.short_description = _('duration')
 
@@ -95,7 +93,7 @@ class JournalEntry(StartEndMixin, models.Model):
     def timesheets(self):
         from .timesheets import Timesheet
         return Timesheet.objects.by_date(self.start).filter(
-            leader__in = self.all_leaders + self.all_alternates,
+            leader__in=self.all_leaders + self.all_alternates,
         )
 
     def save(self, *args, **kwargs):
@@ -110,7 +108,6 @@ class JournalEntry(StartEndMixin, models.Model):
         return reverse('leprikon:journalentry_delete', args=(self.id,))
 
 
-@python_2_unicode_compatible
 class JournalLeaderEntry(StartEndMixin, models.Model):
     journal_entry = models.ForeignKey(JournalEntry, verbose_name=_('journal entry'),
                                       related_name='leader_entries', editable=False)

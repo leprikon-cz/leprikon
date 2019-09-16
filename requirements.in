@@ -1,5 +1,5 @@
 # Requirements of leprikon
-Django
+Django<2
 PyPDF2
 cmsplugin-filer
 django-bankreader

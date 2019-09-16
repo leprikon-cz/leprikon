@@ -36,23 +36,23 @@ User = get_user_model()
 
 
 class SubjectFilterForm(FormMixin, forms.Form):
-    q               = forms.CharField(label=_('Search term'), required=False)
-    course_types    = forms.ModelMultipleChoiceField(queryset=None, label=_('Course type'), required=False)
-    event_types     = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
-    departments     = forms.ModelMultipleChoiceField(queryset=None, label=_('Department'), required=False)
-    groups          = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
-    leaders         = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
-    places          = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
-    age_groups      = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
-    days_of_week    = forms.MultipleChoiceField(label=_('Day of week'),
-                                                choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
-    past            = forms.BooleanField(label=_('Include past subjects'), required=False)
-    reg_active      = forms.BooleanField(label=_('Available for registration'), required=False)
-    invisible       = forms.BooleanField(label=_('Show invisible'), required=False)
+    q = forms.CharField(label=_('Search term'), required=False)
+    course_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Course type'), required=False)
+    event_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
+    departments = forms.ModelMultipleChoiceField(queryset=None, label=_('Department'), required=False)
+    groups = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
+    leaders = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
+    places = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
+    age_groups = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    days_of_week = forms.MultipleChoiceField(label=_('Day of week'),
+                                             choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
+    past = forms.BooleanField(label=_('Include past subjects'), required=False)
+    reg_active = forms.BooleanField(label=_('Available for registration'), required=False)
+    invisible = forms.BooleanField(label=_('Show invisible'), required=False)
 
     _models = {
         SubjectType.COURSE: Course,
-        SubjectType.EVENT:  Event,
+        SubjectType.EVENT: Event,
     }
 
     def __init__(self, subject_type_type, subject_types, school_year, is_staff, data, **kwargs):
@@ -80,12 +80,12 @@ class SubjectFilterForm(FormMixin, forms.Form):
             del self.fields['course_types']
             self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
 
-        self.fields['departments'].queryset  = Department.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['departments'].queryset = Department.objects.filter(subjects__id__in=subject_ids).distinct()
         if self.fields['departments'].queryset.count() == 0:
             del self.fields['departments']
 
-        self.fields['groups'].queryset  = SubjectGroup.objects.filter(subject_types__in=subject_types,
-                                                                      subjects__id__in=subject_ids).distinct()
+        self.fields['groups'].queryset = SubjectGroup.objects.filter(subject_types__in=subject_types,
+                                                                     subjects__id__in=subject_ids).distinct()
         if self.fields['groups'].queryset.count() == 0:
             del self.fields['groups']
 
@@ -94,7 +94,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
         if self.fields['leaders'].queryset.count() == 0:
             del self.fields['leaders']
 
-        self.fields['places'].queryset  = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields['places'].queryset = Place.objects.filter(subjects__id__in=subject_ids).distinct()
         if self.fields['places'].queryset.count() == 0:
             del self.fields['places']
 
@@ -118,27 +118,27 @@ class SubjectFilterForm(FormMixin, forms.Form):
         qs = self.qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
-                Q(name__icontains = word) |
-                Q(description__icontains = word)
+                Q(name__icontains=word) |
+                Q(description__icontains=word)
             )
         if self.cleaned_data.get('course_types'):
-            qs = qs.filter(subject_type__in = self.cleaned_data['course_types'])
+            qs = qs.filter(subject_type__in=self.cleaned_data['course_types'])
         elif self.cleaned_data.get('event_types'):
-            qs = qs.filter(subject_type__in = self.cleaned_data['event_types'])
+            qs = qs.filter(subject_type__in=self.cleaned_data['event_types'])
         if self.cleaned_data.get('departments'):
-            qs = qs.filter(department__in = self.cleaned_data['departments'])
+            qs = qs.filter(department__in=self.cleaned_data['departments'])
         if self.cleaned_data.get('groups'):
-            qs = qs.filter(groups__in = self.cleaned_data['groups'])
+            qs = qs.filter(groups__in=self.cleaned_data['groups'])
         if self.cleaned_data.get('places'):
-            qs = qs.filter(place__in = self.cleaned_data['places'])
+            qs = qs.filter(place__in=self.cleaned_data['places'])
         if self.cleaned_data.get('leaders'):
-            qs = qs.filter(leaders__in = self.cleaned_data['leaders'])
+            qs = qs.filter(leaders__in=self.cleaned_data['leaders'])
         if self.cleaned_data.get('age_groups'):
-            qs = qs.filter(age_groups__in = self.cleaned_data['age_groups'])
+            qs = qs.filter(age_groups__in=self.cleaned_data['age_groups'])
         if self.cleaned_data.get('days_of_week'):
-            qs = qs.filter(times__day_of_week__in = self.cleaned_data['days_of_week'])
+            qs = qs.filter(times__day_of_week__in=self.cleaned_data['days_of_week'])
         if self.subject_type_type == SubjectType.EVENT and not self.cleaned_data['past']:
-            qs = qs.filter(end_date__gte = now())
+            qs = qs.filter(end_date__gte=now())
         if self.cleaned_data['reg_active']:
             qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now()).exclude(price=None)
         return qs.distinct()
@@ -170,7 +170,7 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
 
         # limit choices of leaders
         leaders_choices = self.fields['leaders'].widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(school_years = self.school_year)
+        leaders_choices.queryset = leaders_choices.queryset.filter(school_years=self.school_year)
 
         # limit choices of questions
         if instance:
@@ -231,8 +231,8 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
             pass
 
         try:
-            has_parent = ['has_parent1' in kwargs['data'], 'has_parent2' in kwargs['data']]
-        except:
+            has_parent = ['has_parent1' in kwargs.get('data'), 'has_parent2' in kwargs.get('data')]
+        except TypeError:
             has_parent = [False, False]
         for n in range(2):
             if has_parent[n]:
@@ -241,10 +241,10 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
 
         class ParticipantSelectForm(FormMixin, forms.Form):
             participant = forms.ChoiceField(
-                label   = _('Choose'),
-                choices = [('new', _('new participant'))] + list((p.id, p) for p in self.user_participants),
-                initial = 'new',
-                widget  = RadioSelectBootstrap(),
+                label=_('Choose'),
+                choices=[('new', _('new participant'))] + list((p.id, p) for p in self.user_participants),
+                initial='new',
+                widget=RadioSelectBootstrap(),
             )
 
         kwargs['prefix'] = self.prefix + '-participant_select'
@@ -252,10 +252,10 @@ class RegistrationParticipantForm(FormMixin, forms.ModelForm):
 
         class ParentSelectForm(FormMixin, forms.Form):
             parent = forms.ChoiceField(
-                label   = _('Choose'),
-                choices = [('new', _('new parent'))] + list((p.id, p) for p in self.user_parents),
-                initial = 'new',
-                widget  = RadioSelectBootstrap(),
+                label=_('Choose'),
+                choices=[('new', _('new parent'))] + list((p.id, p) for p in self.user_parents),
+                initial='new',
+                widget=RadioSelectBootstrap(),
             )
 
         kwargs['prefix'] = self.prefix + '-parent1_select'
@@ -669,7 +669,7 @@ class RegistrationParticipantAdminForm(forms.ModelForm):
 
         try:
             has_parent = ['has_parent1' in data, 'has_parent2' in data]
-        except:
+        except TypeError:
             has_parent = [instance.has_parent1, instance.has_parent2] if instance else [False, False]
         for n in range(2):
             if has_parent[n]:

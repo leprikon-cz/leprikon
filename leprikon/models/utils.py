@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -38,25 +37,24 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
 
     def __repr__(self):
         return 'PaymentStatus(price={price}, discount={discount}, paid={paid}, balance={balance})'.format(
-            price       = self.price,
-            discount    = self.discount,
-            paid        = self.paid,
-            balance     = self.balance,
+            price=self.price,
+            discount=self.discount,
+            paid=self.paid,
+            balance=self.balance,
         )
 
     def __add__(self, other):
         if other == 0:
             return self
         return PaymentStatus(
-            price       = self.price    + other.price,
-            discount    = self.discount + other.discount,
-            paid        = self.paid     + other.paid,
+            price=self.price + other.price,
+            discount=self.discount + other.discount,
+            paid=self.paid + other.paid,
         )
 
     __radd__ = __add__
 
 
-@python_2_unicode_compatible
 class BankAccount:
     def __init__(self, iban):
         self.iban = iban
@@ -84,7 +82,6 @@ class BankAccount:
             self.account_number,
             self.bank_code,
         )
-
 
 
 def generate_variable_symbol(registration):

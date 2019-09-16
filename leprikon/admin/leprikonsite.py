@@ -5,7 +5,7 @@ from ..models.leprikonsite import LeprikonSite
 
 @admin.register(LeprikonSite)
 class LeprikonSiteAdmin(admin.ModelAdmin):
-    list_display    = ('name',)
+    list_display = ('name',)
     filter_horizontal = ('registration_agreements',)
 
     def has_add_permission(self, request):

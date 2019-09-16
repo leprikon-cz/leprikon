@@ -20,18 +20,17 @@ class SummaryView(TemplateView):
             reg.payment_statuses.partial
             for reg in CourseRegistration.objects.filter(
                 subject__school_year=self.request.school_year,
-                user = self.request.user,
+                user=self.request.user,
             )
         ) + sum(
             reg.payment_status
             for reg in EventRegistration.objects.filter(
                 subject__school_year=self.request.school_year,
-                user = self.request.user,
+                user=self.request.user,
             )
         ) + PaymentStatus(0, 0, 0)
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)
         return context
-
 
 
 class LeaderSummaryView(TemplateView):

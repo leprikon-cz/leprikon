@@ -11,11 +11,11 @@ from .generic import (
 
 
 class TimesheetListView(ListView):
-    model               = Timesheet
-    preview_template    = 'leprikon/timesheet_preview.html'
-    paginate_by         = 6
-    add_label           = _('add entry')
-    add_url             = reverse_lazy('leprikon:timesheetentry_create')
+    model = Timesheet
+    preview_template = 'leprikon/timesheet_preview.html'
+    paginate_by = 6
+    add_label = _('add entry')
+    add_url = reverse_lazy('leprikon:timesheetentry_create')
 
     def get_title(self):
         return _('Timesheets')
@@ -24,16 +24,14 @@ class TimesheetListView(ListView):
         return super(TimesheetListView, self).get_queryset().filter(leader=self.request.leader)
 
 
-
 class TimesheetDetailView(DetailView):
     model = Timesheet
 
     def get_queryset(self):
         qs = super(TimesheetDetailView, self).get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(leader = self.request.leader)
+            qs = qs.filter(leader=self.request.leader)
         return qs
-
 
 
 class TimesheetSubmitView(ConfirmUpdateView):
@@ -42,8 +40,8 @@ class TimesheetSubmitView(ConfirmUpdateView):
 
     def get_queryset(self):
         return super(TimesheetSubmitView, self).get_queryset().filter(
-            leader      = self.request.leader,
-            submitted   = False,
+            leader=self.request.leader,
+            submitted=False,
         )
 
     def get_question(self):
@@ -60,13 +58,12 @@ class TimesheetSubmitView(ConfirmUpdateView):
         self.object.save()
 
 
-
 class TimesheetEntryCreateView(CreateView):
-    model           = TimesheetEntry
-    form_class      = TimesheetEntryForm
-    template_name   = 'leprikon/timesheetentry_form.html'
-    title           = _('New timesheet entry')
-    message         = _('New timesheet entry has been created.')
+    model = TimesheetEntry
+    form_class = TimesheetEntryForm
+    template_name = 'leprikon/timesheetentry_form.html'
+    title = _('New timesheet entry')
+    message = _('New timesheet entry has been created.')
 
     def get_form_kwargs(self):
         kwargs = super(TimesheetEntryCreateView, self).get_form_kwargs()
@@ -74,31 +71,29 @@ class TimesheetEntryCreateView(CreateView):
         return kwargs
 
 
-
 class TimesheetEntryUpdateView(UpdateView):
-    model           = TimesheetEntry
-    form_class      = TimesheetEntryForm
-    template_name   = 'leprikon/timesheetentry_form.html'
-    title           = _('Change timesheet entry')
-    message         = _('The timesheet entry has been updated.')
+    model = TimesheetEntry
+    form_class = TimesheetEntryForm
+    template_name = 'leprikon/timesheetentry_form.html'
+    title = _('Change timesheet entry')
+    message = _('The timesheet entry has been updated.')
 
     def get_queryset(self):
         qs = super(TimesheetEntryUpdateView, self).get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(timesheet__leader = self.request.leader)
+            qs = qs.filter(timesheet__leader=self.request.leader)
         return qs
 
 
-
 class TimesheetEntryDeleteView(DeleteView):
-    model   = TimesheetEntry
-    title   = _('Delete timesheet entry')
+    model = TimesheetEntry
+    title = _('Delete timesheet entry')
     message = _('The timesheet entry has been deleted.')
 
     def get_queryset(self):
         qs = super(TimesheetEntryDeleteView, self).get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(timesheet__leader = self.request.leader)
+            qs = qs.filter(timesheet__leader=self.request.leader)
         return qs
 
     def get_object(self):

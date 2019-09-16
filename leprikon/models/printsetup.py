@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from filer.fields.file import FilerFileField
@@ -8,24 +7,23 @@ from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.units import mm
 
 
-@python_2_unicode_compatible
 class PrintSetup(models.Model):
-    name        = models.CharField(_('name'), max_length=150)
-    background  = FilerFileField(verbose_name=_('pdf background'), blank=True, null=True,
-                                 on_delete=models.SET_NULL, related_name='+')
-    top         = models.IntegerField(_('margin top'), blank=True, default=20,
-                                      help_text=_('distance in milimetres'))
-    left        = models.IntegerField(_('margin left'), blank=True, default=20,
-                                      help_text=_('distance in milimetres'))
-    right       = models.IntegerField(_('margin right'), blank=True, default=20,
-                                      help_text=_('distance in milimetres'))
-    bottom      = models.IntegerField(_('margin bottom'), blank=True, default=20,
-                                      help_text=_('distance in milimetres'))
+    name = models.CharField(_('name'), max_length=150)
+    background = FilerFileField(verbose_name=_('pdf background'), blank=True, null=True,
+                                on_delete=models.SET_NULL, related_name='+')
+    top = models.IntegerField(_('margin top'), blank=True, default=20,
+                              help_text=_('distance in milimetres'))
+    left = models.IntegerField(_('margin left'), blank=True, default=20,
+                               help_text=_('distance in milimetres'))
+    right = models.IntegerField(_('margin right'), blank=True, default=20,
+                                help_text=_('distance in milimetres'))
+    bottom = models.IntegerField(_('margin bottom'), blank=True, default=20,
+                                 help_text=_('distance in milimetres'))
 
     class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('name',)
-        verbose_name        = _('print setup')
+        app_label = 'leprikon'
+        ordering = ('name',)
+        verbose_name = _('print setup')
         verbose_name_plural = _('print setups')
 
     def __str__(self):

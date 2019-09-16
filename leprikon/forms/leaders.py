@@ -18,8 +18,8 @@ class LeaderFilterForm(FormMixin, forms.Form):
         qs = self.qs
         for word in self.cleaned_data['q'].split():
             qs = qs.filter(
-                Q(user__first_name__icontains = word) |
-                Q(user__last_name__icontains = word) |
-                Q(description__icontains = word)
+                Q(user__first_name__icontains=word) |
+                Q(user__last_name__icontains=word) |
+                Q(description__icontains=word)
             )
         return qs.distinct()

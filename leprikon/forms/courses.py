@@ -19,5 +19,5 @@ class CourseDiscountAdminForm(forms.ModelForm):
             else:
                 registration_id = self.instance.registration_id
             self.fields['period'].widget.choices.queryset = self.fields['period'].widget.choices.queryset.filter(
-                school_year_division__courses__registrations__id = registration_id
+                school_year_division__courses__registrations__id=registration_id,
             )

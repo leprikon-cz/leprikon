@@ -12,8 +12,8 @@ from .filters import SchoolYearListFilter
 
 @admin.register(SchoolYear)
 class SchoolYearAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'active')
-    list_editable   = ('active',)
+    list_display = ('name', 'active')
+    list_editable = ('active',)
 
     # do not allow to delete entries in admin
     def has_delete_permission(self, request, obj=None):
@@ -36,10 +36,10 @@ class SchoolYearPeriodInlineAdmin(admin.TabularInline):
 
 @admin.register(SchoolYearDivision)
 class SchoolYearDivisionAdmin(admin.ModelAdmin):
-    actions         = ('copy_to_school_year',)
-    inlines         = (SchoolYearPeriodInlineAdmin,)
-    list_display    = ('name',)
-    list_filter     = (('school_year', SchoolYearListFilter),)
+    actions = ('copy_to_school_year',)
+    inlines = (SchoolYearPeriodInlineAdmin,)
+    list_display = ('name',)
+    list_filter = (('school_year', SchoolYearListFilter),)
 
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):

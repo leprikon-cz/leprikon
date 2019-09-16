@@ -23,7 +23,7 @@ from .generic import (
 class SubjectTypeMixin(object):
     _models = {
         SubjectType.COURSE: Course,
-        SubjectType.EVENT:  Event,
+        SubjectType.EVENT: Event,
     }
 
     def dispatch(self, request, subject_type, *args, **kwargs):
@@ -45,7 +45,6 @@ class SubjectTypeMixin(object):
         ]
 
 
-
 class CMSSubjectTypeMixin(SubjectTypeMixin):
     def dispatch(self, request, *args, **kwargs):
         # Get current CMS Page
@@ -59,30 +58,29 @@ class CMSSubjectTypeMixin(SubjectTypeMixin):
         return super(CMSSubjectTypeMixin, self).dispatch(request, cms_page.application_namespace, **kwargs)
 
 
-
 class SubjectListBaseView(FilteredListView):
-    form_class          = SubjectFilterForm
-    preview_template    = 'leprikon/subject_preview.html'
-    paginate_by         = 10
+    form_class = SubjectFilterForm
+    preview_template = 'leprikon/subject_preview.html'
+    paginate_by = 10
 
     def get_title(self):
         return _('{subject_type} in school year {school_year}').format(
-            subject_type    = self.subject_type.plural,
-            school_year     = self.request.school_year,
+            subject_type=self.subject_type.plural,
+            school_year=self.request.school_year,
         )
 
     def get_message_empty(self):
         return _('No {subject_type} matching given search parameters found.').format(
-            subject_type = self.subject_type.plural,
+            subject_type=self.subject_type.plural,
         )
 
     def get_form(self):
         return self.form_class(
-            subject_type_type   = self.subject_type.subject_type,
-            subject_types       = [self.subject_type],
-            school_year         = self.request.school_year,
-            is_staff            = self.request.user.is_staff,
-            data                = self.request.GET,
+            subject_type_type=self.subject_type.subject_type,
+            subject_types=[self.subject_type],
+            school_year=self.request.school_year,
+            is_staff=self.request.user.is_staff,
+            data=self.request.GET,
         )
 
     def get_queryset(self):
@@ -104,13 +102,12 @@ class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
 
     def get_title(self):
         return _('My {subject_type} in school year {school_year}').format(
-            subject_type = self.subject_type.plural,
-            school_year = self.request.school_year,
+            subject_type=self.subject_type.plural,
+            school_year=self.request.school_year,
         )
 
     def get_queryset(self):
         return super(SubjectListMineView, self).get_queryset().filter(leaders=self.request.leader)
-
 
 
 class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
@@ -120,7 +117,6 @@ class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
         if not self.request.user.is_staff:
             qs = qs.filter(public=True)
         return qs
-
 
 
 class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
@@ -139,18 +135,18 @@ class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
 
 
 class SubjectUpdateView(SubjectTypeMixin, UpdateView):
-    form_class  = SubjectForm
+    form_class = SubjectForm
 
     def get_title(self):
         return _('Change {subject_type} {subject}').format(
-            subject_type = self.subject_type.name_akuzativ,
-            subject = self.object.name,
+            subject_type=self.subject_type.name_akuzativ,
+            subject=self.object.name,
         )
 
     def get_message(self):
         return _('The changes in {subject_type} {subject} have been saved.').format(
-            subject_type = self.subject_type.name_genitiv,
-            subject = self.object.name,
+            subject_type=self.subject_type.name_genitiv,
+            subject=self.object.name,
         )
 
     def get_queryset(self):
@@ -158,7 +154,6 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs
-
 
 
 class SubjectMixin(object):
@@ -174,12 +169,12 @@ class SubjectMixin(object):
 
 
 class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, CreateView):
-    back_url        = reverse('leprikon:registration_list')
-    submit_label    = _('Submit registration')
-    message         = _('The registration has been saved. We will inform you about its further processing.')
+    back_url = reverse('leprikon:registration_list')
+    submit_label = _('Submit registration')
+    message = _('The registration has been saved. We will inform you about its further processing.')
     _form_classes = {
         SubjectType.COURSE: CourseRegistrationForm,
-        SubjectType.EVENT:  EventRegistrationForm,
+        SubjectType.EVENT: EventRegistrationForm,
     }
 
     def get_template_names(self):
@@ -191,19 +186,18 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, CreateView)
 
     def get_title(self):
         return _('Registration for {subject_type} {subject}').format(
-            subject_type = self.subject_type.name_akuzativ,
-            subject = self.subject.name,
+            subject_type=self.subject_type.name_akuzativ,
+            subject=self.subject.name,
         )
 
     def get_form_class(self):
         return self._form_classes[self.subject_type.subject_type]
 
     def get_form_kwargs(self):
-        kwargs  = super(SubjectRegistrationFormView, self).get_form_kwargs()
+        kwargs = super(SubjectRegistrationFormView, self).get_form_kwargs()
         kwargs['subject'] = self.subject
         kwargs['user'] = self.request.user
         return kwargs
-
 
 
 class UserRegistrationMixin(object):
@@ -220,7 +214,6 @@ class UserRegistrationMixin(object):
                                                      self.template_name_suffix),
             'leprikon/subject_registration{}.html'.format(self.template_name_suffix),
         ]
-
 
 
 class SubjectRegistrationPdfView(UserRegistrationMixin, DetailView):

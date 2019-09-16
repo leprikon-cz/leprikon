@@ -89,7 +89,7 @@ class MessageAdmin(admin.ModelAdmin):
         initial = super(MessageAdmin, self).get_changeform_initial_data(request)
         try:
             initial['recipients'] = request.leprikon_message_recipients
-        except:
+        except Exception:
             pass
         return initial
 
@@ -101,13 +101,13 @@ class MessageAdmin(admin.ModelAdmin):
             '  / <span title="{viewed_title}">{viewed_count}</span>'
             '</a> '
         ).format(
-            recipients_url = reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
-            all_title = _('recipients count'),
-            mails_title = _('sent mail'),
-            viewed_title = _('viewed on site'),
-            all_count = obj.recipients.count(),
-            mails_count = obj.recipients.exclude(sent_mail=None).count(),
-            viewed_count = obj.recipients.exclude(viewed=None).count(),
+            recipients_url=reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id),
+            all_title=_('recipients count'),
+            mails_title=_('sent mail'),
+            viewed_title=_('viewed on site'),
+            all_count=obj.recipients.count(),
+            mails_count=obj.recipients.exclude(sent_mail=None).count(),
+            viewed_count=obj.recipients.exclude(viewed=None).count(),
         )
     recipients.allow_tags = True
     recipients.short_description = _('recipients')
@@ -118,16 +118,15 @@ class MessageAdmin(admin.ModelAdmin):
             '<a href="{send_mails_all_url}" class="button" title="{send_mails_all_title}">{send_mails_all}</a> '
             '<a href="{send_mails_new_url}" class="button" title="{send_mails_new_title}">{send_mails_new}</a> '
         ).format(
-            recipients = _('recipients'),
-            recipients_title = _('show recipients details'),
-            recipients_url = (reverse('admin:leprikon_messagerecipient_changelist') +
-                              '?message={}'.format(obj.id)),
-            send_mails_all = _('send mails'),
-            send_mails_all_title = _('send mail to all recipients'),
-            send_mails_all_url = reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
-            send_mails_new = _('send unsent'),
-            send_mails_new_title = _('send mails to new recipients only'),
-            send_mails_new_url = reverse('admin:leprikon_message_send_mails') + '?message={}&new=1'.format(obj.id),
+            recipients=_('recipients'),
+            recipients_title=_('show recipients details'),
+            recipients_url=(reverse('admin:leprikon_messagerecipient_changelist') + '?message={}'.format(obj.id)),
+            send_mails_all=_('send mails'),
+            send_mails_all_title=_('send mail to all recipients'),
+            send_mails_all_url=reverse('admin:leprikon_message_send_mails') + '?message={}'.format(obj.id),
+            send_mails_new=_('send unsent'),
+            send_mails_new_title=_('send mails to new recipients only'),
+            send_mails_new_url=reverse('admin:leprikon_message_send_mails') + '?message={}&new=1'.format(obj.id),
         )
     action_links.allow_tags = True
     action_links.short_description = _('actions')
@@ -140,7 +139,7 @@ class MessageAdmin(admin.ModelAdmin):
     def send_mails(self, request):
         try:
             message_id = int(request.GET['message'])
-        except:
+        except (KeyError, ValueError):
             return HttpResponseBadRequest()
         message = get_object_or_404(Message, id=message_id)
         recipients = message.recipients.all()
@@ -167,9 +166,9 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def send_mails(self, request, queryset):
         return messagerecipient_send_mails(
             request,
-            message = get_object_or_404(Message, id=request.GET.get('message', 0)),
-            recipients = queryset,
-            media = self.media,
+            message=get_object_or_404(Message, id=request.GET.get('message', 0)),
+            recipients=queryset,
+            media=self.media,
         )
     send_mails.short_description = _('Send email to selected recipients')
 
@@ -195,7 +194,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def send_mail(self, request):
         try:
             recipient_id = int(request.GET['recipient_id'])
-        except:
+        except (KeyError, ValueError):
             return HttpResponseBadRequest()
         recipient = get_object_or_404(MessageRecipient, id=recipient_id)
         recipient.send_mail()

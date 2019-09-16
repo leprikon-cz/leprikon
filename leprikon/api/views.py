@@ -18,7 +18,7 @@ def participants(request, subject_id):
 
     try:
         d = localdate(datetime.utcfromtimestamp(int(request.GET['date'])).replace(tzinfo=pytz.utc))
-    except:
+    except (KeyError, ValueError):
         d = date.today()
     d = date.today()
 

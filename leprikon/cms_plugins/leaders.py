@@ -9,8 +9,8 @@ from .base import LeprikonPluginBase
 
 @plugin_pool.register_plugin
 class LeprikonLeaderPlugin(LeprikonPluginBase):
-    name    = _('Leader')
-    model   = LeaderPlugin
+    name = _('Leader')
+    model = LeaderPlugin
     raw_id_fields = ('leader',)
 
     def get_render_template(self, context, instance, placeholder):
@@ -19,8 +19,8 @@ class LeprikonLeaderPlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonLeaderListPlugin(LeprikonPluginBase):
-    name    = _('Leader list')
-    model   = LeaderListPlugin
+    name = _('Leader list')
+    model = LeaderListPlugin
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
@@ -29,6 +29,6 @@ class LeprikonLeaderListPlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonFilteredLeaderListPlugin(LeprikonPluginBase):
-    name    = _('Leader list with search form')
-    model   = FilteredLeaderListPlugin
+    name = _('Leader list with search form')
+    model = FilteredLeaderListPlugin
     render_template = 'leprikon/cms/leader_list_filtered.html'

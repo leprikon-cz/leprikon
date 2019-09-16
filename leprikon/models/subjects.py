@@ -581,7 +581,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     group_school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
                                      related_name='+', on_delete=models.PROTECT)
     group_school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    group_school_class = models.CharField(_('class'), max_length=30,  blank=True, default='')
+    group_school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
 
     approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
     payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
@@ -854,25 +854,25 @@ class SubjectRegistrationParticipant(models.Model):
     participant_school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
                                            related_name='+', on_delete=models.PROTECT)
     participant_school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    participant_school_class = models.CharField(_('class'), max_length=30,  blank=True, default='')
+    participant_school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
     participant_health = models.TextField(_('health'), blank=True, default='')
 
     has_parent1 = models.BooleanField(_('first parent'), default=False)
-    parent1_first_name = models.CharField(_('first name'), max_length=30,  blank=True, null=True)
-    parent1_last_name = models.CharField(_('last name'), max_length=30,  blank=True, null=True)
+    parent1_first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
+    parent1_last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
     parent1_street = models.CharField(_('street'), max_length=150, blank=True, null=True)
     parent1_city = models.CharField(_('city'), max_length=150, blank=True, null=True)
     parent1_postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    parent1_phone = models.CharField(_('phone'), max_length=30,  blank=True, null=True)
+    parent1_phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
     parent1_email = EmailField(_('email address'), blank=True, null=True)
 
     has_parent2 = models.BooleanField(_('second parent'), default=False)
-    parent2_first_name = models.CharField(_('first name'), max_length=30,  blank=True, null=True)
-    parent2_last_name = models.CharField(_('last name'), max_length=30,  blank=True, null=True)
+    parent2_first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
+    parent2_last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
     parent2_street = models.CharField(_('street'), max_length=150, blank=True, null=True)
     parent2_city = models.CharField(_('city'), max_length=150, blank=True, null=True)
     parent2_postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    parent2_phone = models.CharField(_('phone'), max_length=30,  blank=True, null=True)
+    parent2_phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
     parent2_email = EmailField(_('email address'), blank=True, null=True)
 
     answers = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
@@ -1110,9 +1110,9 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
 
     def __str__(self):
         return '{registration}, {payment_type} {amount}'.format(
-            registration = self.registration,
-            payment_type = self.payment_type_label,
-            amount = currency(abs(self.amount)),
+            registration=self.registration,
+            payment_type=self.payment_type_label,
+            amount=currency(abs(self.amount)),
         )
 
     @cached_property

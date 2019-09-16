@@ -11,13 +11,13 @@ from . import ReportBaseView
 
 
 class ReportDebtorsView(ReportBaseView):
-    form_class      = DebtorsForm
-    template_name   = 'leprikon/reports/debtors.html'
-    title           = _('Debtors list')
-    submit_label    = _('Show')
-    back_url        = reverse('leprikon:report_list')
+    form_class = DebtorsForm
+    template_name = 'leprikon/reports/debtors.html'
+    title = _('Debtors list')
+    submit_label = _('Show')
+    back_url = reverse('leprikon:report_list')
 
-    ReportItem  = namedtuple('ReportItem', ('registration', 'balance'))
+    ReportItem = namedtuple('ReportItem', ('registration', 'balance'))
 
     class Report(list):
         def append(self, item):
@@ -30,16 +30,16 @@ class ReportDebtorsView(ReportBaseView):
         context['reports'] = {}
         context['sum'] = 0
 
-        for reg in CourseRegistration.objects.filter(subject__school_year = self.request.school_year,
-                                                     created__date__lte = context['date']):
+        for reg in CourseRegistration.objects.filter(subject__school_year=self.request.school_year,
+                                                     created__date__lte=context['date']):
             balance = reg.get_payment_statuses(context['date']).partial.balance
             if balance < 0:
                 report = context['reports'].setdefault(reg.user, self.Report())
                 report.append(self.ReportItem(registration=reg, balance=balance))
                 context['sum'] += balance
 
-        for reg in EventRegistration.objects.filter(subject__school_year = self.request.school_year,
-                                                    created__date__lte = context['date']):
+        for reg in EventRegistration.objects.filter(subject__school_year=self.request.school_year,
+                                                    created__date__lte=context['date']):
             balance = reg.get_payment_status(context['date']).balance
             if balance < 0:
                 report = context['reports'].setdefault(reg.user, self.Report())

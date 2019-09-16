@@ -46,7 +46,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
                         try:
                             merge_users(user, target)
                             self.message_user(request, _('User {} was merged into user {}.').format(user, target))
-                        except:
+                        except Exception:
                             self.message_user(
                                 request, _('Can not merge user {} into user {}.').format(user, target),
                                 level=ERROR
@@ -113,16 +113,16 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def login_as_link(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url = reverse('admin:auth_user_login_as', args=[obj.id]),
-            text = _('login')
+            url=reverse('admin:auth_user_login_as', args=[obj.id]),
+            text=_('login')
         ) if not obj.is_staff and not obj.is_superuser else ''
     login_as_link.allow_tags = True
     login_as_link.short_description = _('login')
 
     def login_as_link_superuser(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url = reverse('admin:auth_user_login_as', args=[obj.id]),
-            text = _('login')
+            url=reverse('admin:auth_user_login_as', args=[obj.id]),
+            text=_('login')
         )
     login_as_link_superuser.allow_tags = True
     login_as_link_superuser.short_description = _('login')

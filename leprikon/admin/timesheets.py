@@ -32,7 +32,6 @@ class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         return super(TimesheetEntryAdmin, self).has_delete_permission(request, obj)
 
 
-
 class TimesheetEntryInlineAdmin(admin.TabularInline):
     class form(forms.ModelForm):
         class Meta:
@@ -58,9 +57,9 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
 
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url = reverse('admin:leprikon_timesheetentry_change', args=[obj.id]),
-            title = _('update entry'),
-            edit = _('edit'),
+            url=reverse('admin:leprikon_timesheetentry_change', args=[obj.id]),
+            title=_('update entry'),
+            edit=_('edit'),
         )
     edit_link.short_description = ''
     edit_link.allow_tags = True
@@ -93,8 +92,8 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     def group_durations(self, obj):
         return '<br/>'.join(
             '<label>{name}</label>: {duration}'.format(
-                name = group.name,
-                duration = group.duration,
+                name=group.name,
+                duration=group.duration,
             ) for group in obj.groups
         )
     group_durations.allow_tags = True

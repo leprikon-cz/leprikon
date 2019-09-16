@@ -34,30 +34,30 @@ class AdminExportMixin:
                 for n in names[1:]:
                     field = field.related.model._meta.get_field(n)
                 fields.append({
-                    'name':         field.name,
+                    'name': field.name,
                     'verbose_name': field.verbose_name,
-                    'get_value':    partial(lambda name, obj: lookup_attr(obj, name), name),
+                    'get_value': partial(lambda name, obj: lookup_attr(obj, name), name),
                 })
-            except:
+            except Exception:
                 if callable(name):
                     fields.append({
-                        'name':         name.__func__.__name__,
+                        'name': name.__func__.__name__,
                         'verbose_name': getattr(name, 'short_description', name.__func__.__name__),
-                        'get_value':    partial(lambda name, obj: name(obj), name),
+                        'get_value': partial(lambda name, obj: name(obj), name),
                     })
                 elif hasattr(self, name):
                     attr = getattr(self, name)
                     fields.append({
-                        'name':         name,
+                        'name': name,
                         'verbose_name': getattr(attr, 'short_description', name),
-                        'get_value':    partial(lambda attr, obj: attr(obj), attr),
+                        'get_value': partial(lambda attr, obj: attr(obj), attr),
                     })
                 elif hasattr(self.model, name):
                     attr = getattr(self.model, name)
                     fields.append({
-                        'name':         name,
+                        'name': name,
                         'verbose_name': getattr(attr, 'short_description', name),
-                        'get_value':    partial(lambda name, obj: lookup_attr(obj, name), name),
+                        'get_value': partial(lambda name, obj: lookup_attr(obj, name), name),
                     })
                 else:
                     raise Exception('Can not resolve name "{}"'.format(name))
@@ -78,7 +78,7 @@ class AdminExportMixin:
                     # what can not be converted to float, must be converted to string
                     try:
                         float(value)
-                    except:
+                    except ValueError:
                         value = force_text(value)
                 values.append(value)
             yield values

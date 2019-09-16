@@ -5,8 +5,8 @@ from . import bankreaders  # noqa
 
 
 class LeprikonConfig(AppConfig):
-    name            = 'leprikon'
-    verbose_name    = _('Leprikon')
+    name = 'leprikon'
+    verbose_name = _('Leprikon')
 
     def ready(self):
 
@@ -14,7 +14,7 @@ class LeprikonConfig(AppConfig):
         from .models.leprikonsite import LeprikonSite
         try:
             LeprikonSite.objects.get_current()
-        except:
+        except Exception:
             pass
 
         # create leprikon page on first run
@@ -36,5 +36,5 @@ class LeprikonConfig(AppConfig):
                 published=True,
             ).set_as_homepage()
             menu_pool.clear()
-        except:
+        except Exception:
             pass

@@ -15,7 +15,7 @@ insurances = [
 
 subject_types = [
     {'subject_type': 'course', 'name': 'kroužek', 'name_genitiv': 'kroužku', 'name_akuzativ': 'kroužek', 'plural': 'kroužky', 'slug': 'krouzky'},
-    {'subject_type': 'event',  'name': 'tábor',   'name_genitiv': 'táboru',  'name_akuzativ': 'tábor',   'plural': 'tábory',  'slug': 'tabory'},
+    {'subject_type': 'event', 'name': 'tábor', 'name_genitiv': 'táboru', 'name_akuzativ': 'tábor', 'plural': 'tábory', 'slug': 'tabory'},
 ]
 
 age_groups = ['děti', 'dospělí']

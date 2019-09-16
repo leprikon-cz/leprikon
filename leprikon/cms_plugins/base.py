@@ -3,8 +3,8 @@ from django.utils.translation import ugettext as _
 
 
 class LeprikonPluginBase(CMSPluginBase):
-    cache   = False
-    module  = _('Leprikon')
+    cache = False
+    module = _('Leprikon')
     text_enabled = True
 
     def render(self, context, instance, placeholder):

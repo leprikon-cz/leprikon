@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from cms.models import CMSPlugin
 from django.db import models
 from django.dispatch import receiver
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_text
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -29,9 +29,9 @@ class Course(Subject):
                                              related_name='courses')
 
     class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('code', 'name')
-        verbose_name        = _('course')
+        app_label = 'leprikon'
+        ordering = ('code', 'name')
+        verbose_name = _('course')
         verbose_name_plural = _('courses')
 
     @cached_property
@@ -60,7 +60,7 @@ class Course(Subject):
         return comma_separated(self.all_times)
     get_times_list.short_description = _('times')
 
-    def get_next_time(self, now = None):
+    def get_next_time(self, now=None):
         try:
             return min(t.get_next_time(now) for t in self.all_times)
         except ValueError:
@@ -88,22 +88,22 @@ class Course(Subject):
         new = Course.objects.get(id=old.id)
         new.id, new.pk = None, None
         new.school_year = school_year
-        new.public      = False
-        new.evaluation  = ''
-        new.note        = ''
+        new.public = False
+        new.evaluation = ''
+        new.note = ''
         try:
             new.school_year_division = SchoolYearDivision.objects.get(
                 school_year=school_year,
                 name=old.school_year_division.name,
             )
-        except:
+        except SchoolYearDivision.DoesNotExist:
             new.school_year_division = old.school_year_division.copy_to_school_year(school_year)
         new.save()
-        new.groups      = old.groups.all()
-        new.age_groups  = old.age_groups.all()
-        new.leaders     = old.leaders.all()
-        new.questions   = old.questions.all()
-        new.times       = old.times.all()
+        new.groups = old.groups.all()
+        new.age_groups = old.age_groups.all()
+        new.leaders = old.leaders.all()
+        new.questions = old.questions.all()
+        new.times = old.times.all()
         new.attachments = old.attachments.all()
         year_offset = school_year.year - old.school_year.year
         if new.reg_from:
@@ -149,30 +149,29 @@ class Course(Subject):
         return new
 
 
-@python_2_unicode_compatible
 class CourseTime(StartEndMixin, models.Model):
-    course      = models.ForeignKey(Course, verbose_name=_('course'), related_name='times')
+    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='times')
     day_of_week = DayOfWeekField(_('day of week'))
-    start       = models.TimeField(_('start time'), blank=True, null=True)
-    end         = models.TimeField(_('end time'), blank=True, null=True)
+    start = models.TimeField(_('start time'), blank=True, null=True)
+    end = models.TimeField(_('end time'), blank=True, null=True)
 
     class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('day_of_week', 'start')
-        verbose_name        = _('time')
+        app_label = 'leprikon'
+        ordering = ('day_of_week', 'start')
+        verbose_name = _('time')
         verbose_name_plural = _('times')
 
     def __str__(self):
         if self.start is not None and self.end is not None:
             return _('{day}, {start:%H:%M} - {end:%H:%M}').format(
-                day     = self.day,
-                start   = self.start,
-                end     = self.end,
+                day=self.day,
+                start=self.start,
+                end=self.end,
             )
         elif self.start is not None:
             return _('{day}, {start:%H:%M}').format(
-                day     = self.day,
-                start   = self.start,
+                day=self.day,
+                start=self.start,
             )
         else:
             return force_text(self.day)
@@ -183,7 +182,7 @@ class CourseTime(StartEndMixin, models.Model):
 
     Time = namedtuple('Time', ('date', 'start', 'end'))
 
-    def get_next_time(self, now = None):
+    def get_next_time(self, now=None):
         now = now or datetime.now()
         daydelta = (self.day_of_week - now.isoweekday()) % 7
         if daydelta == 0 and (isinstance(now, date) or self.start is None or self.start <= now.time()):
@@ -193,19 +192,18 @@ class CourseTime(StartEndMixin, models.Model):
         else:
             next_date = now + timedelta(daydelta)
         return self.Time(
-            date    = next_date,
-            start   = self.start,
-            end     = self.end,
+            date=next_date,
+            start=self.start,
+            end=self.end,
         )
-
 
 
 class CourseRegistration(SubjectRegistration):
     subject_type = SubjectType.COURSE
 
     class Meta:
-        app_label           = 'leprikon'
-        verbose_name        = _('course registration')
+        app_label = 'leprikon'
+        verbose_name = _('course registration')
         verbose_name_plural = _('course registrations')
 
     @property
@@ -235,11 +233,11 @@ class CourseRegistration(SubjectRegistration):
                 if discount.period == period and (d is None or discount.accounted <= d)
             )
             yield self.PeriodPaymentStatus(
-                period  = period,
-                status  = PaymentStatus(
-                    price       = self.price,
-                    discount    = discount,
-                    paid        = min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
+                period=period,
+                status=PaymentStatus(
+                    price=self.price,
+                    discount=discount,
+                    paid=min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
                 ),
             )
             paid = max(paid - (self.price - discount), 0)
@@ -262,12 +260,12 @@ class CourseRegistration(SubjectRegistration):
         else:
             partial_price = 0
             total_price = 0
-        discounted  = self.get_discounted(d)
-        partial_discounted  = self.get_partial_discounted(d)
-        paid        = self.get_paid(d)
+        discounted = self.get_discounted(d)
+        partial_discounted = self.get_partial_discounted(d)
+        paid = self.get_paid(d)
         return self.PaymentStatuses(
-            partial = PaymentStatus(price=partial_price, discount=partial_discounted, paid=paid),
-            total   = PaymentStatus(price=total_price, discount=discounted, paid=paid),
+            partial=PaymentStatus(price=partial_price, discount=partial_discounted, paid=paid),
+            total=PaymentStatus(price=total_price, discount=discounted, paid=paid),
         )
 
     def get_partial_discounted(self, d=None):
@@ -284,16 +282,13 @@ class CourseRegistration(SubjectRegistration):
         return max(price - discount - paid, 0)
 
 
-
 class CourseDiscount(SubjectDiscount):
-    registration    = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
-                                        related_name='discounts', on_delete=models.PROTECT)
-    period          = models.ForeignKey(SchoolYearPeriod, verbose_name=_('period'),
-                                        related_name='discounts', on_delete=models.PROTECT)
+    registration = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
+                                     related_name='discounts', on_delete=models.PROTECT)
+    period = models.ForeignKey(SchoolYearPeriod, verbose_name=_('period'),
+                               related_name='discounts', on_delete=models.PROTECT)
 
 
-
-@python_2_unicode_compatible
 class CourseRegistrationHistory(StartEndMixin, models.Model):
     registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'), editable=False,
                                      related_name='course_history', on_delete=models.PROTECT)
@@ -303,16 +298,16 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
     end = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label           = 'leprikon'
-        ordering            = ('start',)
-        verbose_name        = _('course registration history')
+        app_label = 'leprikon'
+        ordering = ('start',)
+        verbose_name = _('course registration history')
         verbose_name_plural = _('course registration history')
 
     def __str__(self):
         return '{course}, {start} - {end}'.format(
-            course  = self.course.name,
-            start   = date_format(self.start, 'SHORT_DATE_FORMAT'),
-            end     = date_format(self.end, 'SHORT_DATE_FORMAT') if self.end else _('now'),
+            course=self.course.name,
+            start=date_format(self.start, 'SHORT_DATE_FORMAT'),
+            end=date_format(self.end, 'SHORT_DATE_FORMAT') if self.end else _('now'),
         )
 
     @property
@@ -337,7 +332,6 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
         super(CourseRegistrationHistory, self).save(*args, **kwargs)
 
 
-
 @receiver(models.signals.post_save, sender=CourseRegistration)
 def update_course_registration_history(sender, instance, created, **kwargs):
     if instance.approved:
@@ -356,17 +350,15 @@ def update_course_registration_history(sender, instance, created, **kwargs):
             )
 
 
-
 class CoursePlugin(CMSPlugin):
-    course     = models.ForeignKey(Course, verbose_name=_('course'), related_name='+')
-    template    = models.CharField(_('template'), max_length=100,
-                                   choices=settings.LEPRIKON_COURSE_TEMPLATES,
-                                   default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
-                                   help_text=_('The template used to render plugin.'))
+    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='+')
+    template = models.CharField(_('template'), max_length=100,
+                                choices=settings.LEPRIKON_COURSE_TEMPLATES,
+                                default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
+                                help_text=_('The template used to render plugin.'))
 
     class Meta:
         app_label = 'leprikon'
-
 
 
 class CourseListPlugin(CMSPlugin):
@@ -377,26 +369,26 @@ class CourseListPlugin(CMSPlugin):
     course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), blank=True, related_name='+',
                                           limit_choices_to={'subject_type': SubjectType.COURSE},
                                           help_text=_('Keep empty to skip searching by course types.'))
-    age_groups  = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
-                                         help_text=_('Keep empty to skip searching by age groups.'))
-    groups      = models.ManyToManyField(SubjectGroup, verbose_name=_('course groups'), blank=True, related_name='+',
-                                         help_text=_('Keep empty to skip searching by groups.'))
-    leaders     = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
-                                         help_text=_('Keep empty to skip searching by leaders.'))
-    template    = models.CharField(_('template'), max_length=100,
-                                   choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
-                                   default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
-                                   help_text=_('The template used to render plugin.'))
+    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
+                                        help_text=_('Keep empty to skip searching by age groups.'))
+    groups = models.ManyToManyField(SubjectGroup, verbose_name=_('course groups'), blank=True, related_name='+',
+                                    help_text=_('Keep empty to skip searching by groups.'))
+    leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
+                                     help_text=_('Keep empty to skip searching by leaders.'))
+    template = models.CharField(_('template'), max_length=100,
+                                choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
+                                default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
+                                help_text=_('The template used to render plugin.'))
 
     class Meta:
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.departments    = oldinstance.departments.all()
-        self.course_types   = oldinstance.course_types.all()
-        self.groups         = oldinstance.groups.all()
-        self.age_groups     = oldinstance.age_groups.all()
-        self.leaders        = oldinstance.leaders.all()
+        self.departments = oldinstance.departments.all()
+        self.course_types = oldinstance.course_types.all()
+        self.groups = oldinstance.groups.all()
+        self.age_groups = oldinstance.age_groups.all()
+        self.leaders = oldinstance.leaders.all()
 
     @cached_property
     def all_departments(self):
@@ -426,31 +418,30 @@ class CourseListPlugin(CMSPlugin):
         courses = Course.objects.filter(school_year=school_year, public=True).distinct()
 
         if self.all_departments:
-            courses = courses.filter(department__in = self.all_departments)
+            courses = courses.filter(department__in=self.all_departments)
         if self.all_course_types:
-            courses = courses.filter(subject_type__in = self.all_course_types)
+            courses = courses.filter(subject_type__in=self.all_course_types)
         if self.all_age_groups:
-            courses = courses.filter(age_groups__in = self.all_age_groups)
+            courses = courses.filter(age_groups__in=self.all_age_groups)
         if self.all_leaders:
-            courses = courses.filter(leaders__in = self.all_leaders)
+            courses = courses.filter(leaders__in=self.all_leaders)
         if self.all_groups:
-            courses = courses.filter(groups__in = self.all_groups)
+            courses = courses.filter(groups__in=self.all_groups)
             groups = self.all_groups
         elif self.all_course_types:
-            groups = SubjectGroup.objects.filter(subject_types__in = self.all_course_types)
+            groups = SubjectGroup.objects.filter(subject_types__in=self.all_course_types)
         else:
             groups = SubjectGroup.objects.all()
 
         context.update({
-            'school_year':  school_year,
-            'courses':      courses,
-            'groups':       (
-                self.Group(group = group, objects = courses.filter(groups=group))
+            'school_year': school_year,
+            'courses': courses,
+            'groups': (
+                self.Group(group=group, objects=courses.filter(groups=group))
                 for group in groups
             ),
         })
         return context
-
 
 
 class FilteredCourseListPlugin(CMSPlugin):
@@ -475,15 +466,15 @@ class FilteredCourseListPlugin(CMSPlugin):
 
         from ..forms.subjects import SubjectFilterForm
         form = SubjectFilterForm(
-            subject_type_type = SubjectType.COURSE,
-            subject_types = self.all_course_types,
-            school_year = school_year,
-            is_staff = context['request'].user.is_staff,
+            subject_type_type=SubjectType.COURSE,
+            subject_types=self.all_course_types,
+            school_year=school_year,
+            is_staff=context['request'].user.is_staff,
             data=context['request'].GET,
         )
         context.update({
-            'school_year':  school_year,
-            'form':         form,
-            'courses':      form.get_queryset(),
+            'school_year': school_year,
+            'form': form,
+            'courses': form.get_queryset(),
         })
         return context

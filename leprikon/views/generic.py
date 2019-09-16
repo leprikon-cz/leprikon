@@ -13,13 +13,13 @@ from ..forms.confirm import ConfirmForm
 
 
 class GenericViewMixin(object):
-    title       = ''
+    title = ''
 
     def get_context_data(self, *args, **kwargs):
         context = super(GenericViewMixin, self).get_context_data(
             *args,
-            placeholder = self.get_placeholder(),
-            title       = self.get_title(),
+            placeholder=self.get_placeholder(),
+            title=self.get_title(),
             **kwargs
         )
         return context
@@ -31,14 +31,13 @@ class GenericViewMixin(object):
         return self.title
 
 
-
 class ListView(GenericViewMixin, _ListView):
-    template_name       = 'leprikon/list.html'
-    add_url             = None
-    add_label           = _('add')
-    add_title           = ''
-    message_empty       = _('No items found.')
-    preview_template    = ''
+    template_name = 'leprikon/list.html'
+    add_url = None
+    add_label = _('add')
+    add_title = ''
+    message_empty = _('No items found.')
+    preview_template = ''
 
     def get_add_url(self):
         return self.add_url
@@ -55,19 +54,18 @@ class ListView(GenericViewMixin, _ListView):
     def get_context_data(self, *args, **kwargs):
         return super(ListView, self).get_context_data(
             *args,
-            preview_template = self.preview_template,
-            add_url = self.get_add_url(),
-            add_label = self.get_add_label(),
-            add_title = self.get_add_title(),
-            message_empty = self.get_message_empty(),
+            preview_template=self.preview_template,
+            add_url=self.get_add_url(),
+            add_label=self.get_add_label(),
+            add_title=self.get_add_title(),
+            message_empty=self.get_message_empty(),
             **kwargs
         )
 
 
-
 class FilteredListView(ListView):
-    form_class      = None
-    message_empty   = _('No items found matching given search parameters.')
+    form_class = None
+    message_empty = _('No items found matching given search parameters.')
 
     def get_form(self):
         return self.form_class(data=self.request.GET)
@@ -76,16 +74,15 @@ class FilteredListView(ListView):
         return super(FilteredListView, self).get_context_data(*args, form=self.get_form(), **kwargs)
 
 
-
 class BackViewMixin(object):
-    back_url    = reverse('leprikon:summary')
-    back_label  = _('Back')
+    back_url = reverse('leprikon:summary')
+    back_label = _('Back')
 
     def get_context_data(self, *args, **kwargs):
         return super(BackViewMixin, self).get_context_data(
             *args,
-            back_url        = self.get_back_url(),
-            back_label      = self.get_back_label(),
+            back_url=self.get_back_url(),
+            back_label=self.get_back_label(),
             **kwargs
         )
 
@@ -101,21 +98,20 @@ class BackViewMixin(object):
             return self.back_url
 
 
-
 class FormViewMixin(BackViewMixin, GenericViewMixin):
-    template_name   = 'leprikon/form.html'
+    template_name = 'leprikon/form.html'
     form_item_template_name = 'leprikon/form_item.html'
-    instructions    = ''
-    submit_label    = _('Save')
-    success_url     = reverse('leprikon:summary')
-    message         = None
+    instructions = ''
+    submit_label = _('Save')
+    success_url = reverse('leprikon:summary')
+    message = None
 
     def get_context_data(self, *args, **kwargs):
         return super(FormViewMixin, self).get_context_data(
             *args,
-            form_item_template = self.get_form_item_template_name(),
-            instructions    = self.get_instructions(),
-            submit_label    = self.get_submit_label(),
+            form_item_template=self.get_form_item_template_name(),
+            instructions=self.get_instructions(),
+            submit_label=self.get_submit_label(),
             **kwargs
         )
 
@@ -145,7 +141,6 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
         return response
 
 
-
 class GetFormViewMixin(FormViewMixin):
     def get_form_kwargs(self):
         return {
@@ -157,12 +152,11 @@ class GetFormViewMixin(FormViewMixin):
         return self.post(self, reqest, *args, **kwargs)
 
 
-
 class ConfirmFormViewMixin(FormViewMixin):
-    form_class      = ConfirmForm
-    template_name   = 'leprikon/confirm_form.html'
-    question        = ''
-    submit_label    = _('Yes')
+    form_class = ConfirmForm
+    template_name = 'leprikon/confirm_form.html'
+    question = ''
+    submit_label = _('Yes')
 
     def get_question(self):
         return self.question
@@ -178,30 +172,24 @@ class ConfirmFormViewMixin(FormViewMixin):
         pass
 
 
-
 class DetailView(GenericViewMixin, _DetailView):
     pass
-
 
 
 class CreateView(FormViewMixin, _CreateView):
     pass
 
 
-
 class ConfirmCreateView(ConfirmFormViewMixin, _CreateView):
     pass
-
 
 
 class UpdateView(FormViewMixin, _UpdateView):
     pass
 
 
-
 class ConfirmUpdateView(ConfirmFormViewMixin, _UpdateView):
     pass
-
 
 
 class DeleteView(ConfirmFormViewMixin, _DeleteView):
@@ -218,15 +206,12 @@ class DeleteView(ConfirmFormViewMixin, _DeleteView):
         return response
 
 
-
 class FormView(FormViewMixin, _FormView):
     pass
 
 
-
 class GetFormView(GetFormViewMixin, _FormView):
     pass
-
 
 
 class TemplateView(GenericViewMixin, _TemplateView):

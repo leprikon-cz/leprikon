@@ -9,8 +9,8 @@ from .base import LeprikonPluginBase
 
 @plugin_pool.register_plugin
 class LeprikonEventPlugin(LeprikonPluginBase):
-    name    = _('Event')
-    model   = EventPlugin
+    name = _('Event')
+    model = EventPlugin
     raw_id_fields = ('event',)
 
     def get_render_template(self, context, instance, placeholder):
@@ -19,8 +19,8 @@ class LeprikonEventPlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonEventListPlugin(LeprikonPluginBase):
-    name    = _('Event list')
-    model   = EventListPlugin
+    name = _('Event list')
+    model = EventListPlugin
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
@@ -29,6 +29,6 @@ class LeprikonEventListPlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonFilteredEventListPlugin(LeprikonPluginBase):
-    name    = _('Event list with search form')
-    model   = FilteredEventListPlugin
+    name = _('Event list with search form')
+    model = FilteredEventListPlugin
     render_template = 'leprikon/cms/event_list_filtered.html'

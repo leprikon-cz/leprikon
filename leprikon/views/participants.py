@@ -8,10 +8,10 @@ from .generic import CreateView, ListView, UpdateView
 
 
 class ParticipantListView(ListView):
-    add_label           = _('add participant')
-    model               = Participant
-    template_name       = 'leprikon/participants.html'
-    preview_template    = 'leprikon/participant_preview.html'
+    add_label = _('add participant')
+    model = Participant
+    template_name = 'leprikon/participants.html'
+    preview_template = 'leprikon/participant_preview.html'
 
     def get_title(self):
         return _('Participants and parents')
@@ -23,12 +23,11 @@ class ParticipantListView(ListView):
         return reverse_with_back(self.request, 'leprikon:participant_create')
 
 
-
 class ParticipantCreateView(CreateView):
-    model       = Participant
-    form_class  = ParticipantForm
+    model = Participant
+    form_class = ParticipantForm
     success_url = reverse('leprikon:summary')
-    title       = _('New participant')
+    title = _('New participant')
 
     def get_form_kwargs(self):
         kwargs = super(ParticipantCreateView, self).get_form_kwargs()
@@ -42,12 +41,11 @@ class ParticipantCreateView(CreateView):
         return _('New participant {} has been created.').format(self.object)
 
 
-
 class ParticipantUpdateView(UpdateView):
-    model       = Participant
-    form_class  = ParticipantForm
+    model = Participant
+    form_class = ParticipantForm
     success_url = reverse('leprikon:summary')
-    title       = _('Change participant')
+    title = _('Change participant')
 
     def get_queryset(self):
         # only allow to edit user's own participants

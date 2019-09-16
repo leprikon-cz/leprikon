@@ -9,8 +9,8 @@ from .base import LeprikonPluginBase
 
 @plugin_pool.register_plugin
 class LeprikonCoursePlugin(LeprikonPluginBase):
-    name    = _('Course')
-    model   = CoursePlugin
+    name = _('Course')
+    model = CoursePlugin
     raw_id_fields = ('course',)
 
     def get_render_template(self, context, instance, placeholder):
@@ -19,8 +19,8 @@ class LeprikonCoursePlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonCourseListPlugin(LeprikonPluginBase):
-    name    = _('Course list')
-    model   = CourseListPlugin
+    name = _('Course list')
+    model = CourseListPlugin
     filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
@@ -29,6 +29,6 @@ class LeprikonCourseListPlugin(LeprikonPluginBase):
 
 @plugin_pool.register_plugin
 class LeprikonFilteredCourseListPlugin(LeprikonPluginBase):
-    name    = _('Course list with search form')
-    model   = FilteredCourseListPlugin
+    name = _('Course list with search form')
+    model = FilteredCourseListPlugin
     render_template = 'leprikon/cms/course_list_filtered.html'

@@ -56,9 +56,9 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
 
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url = reverse('admin:leprikon_journalleaderentry_change', args=[obj.id]),
-            title = _('update entry'),
-            edit = _('edit'),
+            url=reverse('admin:leprikon_journalleaderentry_change', args=[obj.id]),
+            title=_('update entry'),
+            edit=_('edit'),
         )
     edit_link.short_description = ''
     edit_link.allow_tags = True

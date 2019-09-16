@@ -40,9 +40,8 @@ class EmailField(models.EmailField):
 class PriceField(models.DecimalField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('decimal_places', settings.PRICE_DECIMAL_PLACES)
-        kwargs.setdefault('max_digits',     settings.PRICE_MAX_DIGITS)
+        kwargs.setdefault('max_digits', settings.PRICE_MAX_DIGITS)
         super(PriceField, self).__init__(*args, **kwargs)
-
 
 
 DAY_OF_WEEK = {
@@ -65,7 +64,6 @@ class DayOfWeekField(models.IntegerField):
         super(DayOfWeekField, self).__init__(*args, **defaults)
 
 
-
 birth_num_regex = re.compile('^[0-9]{2}([0257][1-9]|[1368][0-2])[0-3][0-9]/?[0-9]{3,4}$')
 
 
@@ -76,7 +74,7 @@ def validate_birth_num(value):
         value = value.replace('/', '')
         if len(value) > 9:
             assert int(value) % 11 == 0
-    except:
+    except Exception:
         raise ValidationError(
             message=_('Enter a valid birth number.'),
             code='invalid',
@@ -98,7 +96,6 @@ class BirthNumberField(models.CharField):
     def clean(self, value, model_instance):
         value = super(BirthNumberField, self).clean(value, model_instance)
         return value if value[6] == '/' else '{}/{}'.format(value[:6], value[6:])
-
 
 
 class _PostalCodeField(CZPostalCodeField, forms.CharField):

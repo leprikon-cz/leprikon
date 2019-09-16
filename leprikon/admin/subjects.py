@@ -131,16 +131,16 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     def get_journal_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url = reverse('admin:leprikon_subject_journal', args=[obj.id]),
-            title = _('printable journal'),
-            journal = _('journal'),
+            url=reverse('admin:leprikon_subject_journal', args=[obj.id]),
+            title=_('printable journal'),
+            journal=_('journal'),
         )
     get_journal_link.short_description = _('journal')
     get_journal_link.allow_tags = True
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_subjectregistrations__subject__in = queryset
+            leprikon_subjectregistrations__subject__in=queryset
         ).distinct()
 
     def get_registrations_link(self, obj):
@@ -159,23 +159,23 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             title = ''
         return format_html(
             '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>',
-            url = reverse('admin:{}_{}_changelist'.format(
+            url=reverse('admin:{}_{}_changelist'.format(
                 self.registration_model._meta.app_label,
                 self.registration_model._meta.model_name,
             )) + '?subject__id__exact={}'.format(obj.id),
-            title = title,
-            icon = _boolean_icon(icon),
-            approved = approved_registrations_count,
-            unapproved = ' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
+            title=title,
+            icon=_boolean_icon(icon),
+            approved=approved_registrations_count,
+            unapproved=' + {}'.format(unapproved_registrations_count) if unapproved_registrations_count else '',
         ) + format_html(
             '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
             '<img src="{icon}" alt="+"/></a>',
-            url = reverse('admin:{}_{}_add'.format(
+            url=reverse('admin:{}_{}_add'.format(
                 self.registration_model._meta.app_label,
                 self.registration_model._meta.model_name,
             )) + '?subject={}'.format(obj.id),
-            title = _('add registration'),
-            icon = static('admin/img/icon-addlink.svg'),
+            title=_('add registration'),
+            icon=static('admin/img/icon-addlink.svg'),
         )
     get_registrations_link.short_description = _('registrations')
     get_registrations_link.allow_tags = True
@@ -210,8 +210,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             form = RegistrationDatesForm(request.POST)
             if form.is_valid():
                 Subject.objects.filter(id__in=[s['id'] for s in queryset.values('id')]).update(
-                    reg_from = form.cleaned_data['reg_from'],
-                    reg_to = form.cleaned_data['reg_to'],
+                    reg_from=form.cleaned_data['reg_from'],
+                    reg_to=form.cleaned_data['reg_to'],
                 )
                 self.message_user(request, _('Registration dates were updated.'))
                 return
@@ -464,9 +464,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     subject_name.short_description = _('subject')
 
     def get_message_recipients(self, request, queryset):
-        return get_user_model().objects.filter(
-            leprikon_registrations__in = queryset
-        ).distinct()
+        return get_user_model().objects.filter(leprikon_registrations__in=queryset).distinct()
 
 
 @admin.register(SubjectRegistration)
@@ -560,8 +558,8 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
-            color = amount_color(obj.amount),
-            amount = currency(abs(obj.amount)),
+            color=amount_color(obj.amount),
+            amount=currency(abs(obj.amount)),
         )
     amount_html.short_description = _('amount')
     amount_html.admin_order_field = 'amount'
