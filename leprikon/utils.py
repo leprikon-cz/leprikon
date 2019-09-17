@@ -153,7 +153,11 @@ def get_birth_date(birth_num):
 
 def get_age(birth_date, today=None):
     today = today or date.today()
-    if date(today.year, birth_date.month, birth_date.day) > today:
+    try:
+        birth_day_this_year = date(today.year, birth_date.month, birth_date.day)
+    except ValueError:
+        birth_day_this_year = date(today.year, birth_date.month + 1, 1)
+    if birth_day_this_year > today:
         return today.year - birth_date.year - 1
     else:
         return today.year - birth_date.year
