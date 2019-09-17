@@ -78,7 +78,7 @@ class AdminExportMixin:
                     # what can not be converted to float, must be converted to string
                     try:
                         float(value)
-                    except ValueError:
+                    except (TypeError, ValueError):
                         value = force_text(value)
                 values.append(value)
             yield values
