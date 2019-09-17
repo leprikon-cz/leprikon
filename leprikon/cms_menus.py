@@ -164,20 +164,22 @@ class LeprikonModifier(Modifier):
         final = []
         backends_not_associated = backends(request)['backends']['not_associated']
         for node in nodes:
-            if (
-                (node.attr.get('require_leader', False) and not request.leader) or
-                (node.attr.get('require_staff', False) and not request.user.is_staff) or
-                (node.attr.get('social_backend') and (
-                    node.attr.get('social_backend') not in backends_not_associated
-                ))
-            ):
-                if node.parent and node in node.parent.children:
-                    node.parent.children.remove(node)
-                continue
-            else:
+            show = True
+            if node.attr.get('require_leader', False):
+                if not request.leader or not request.leader.school_years.filter(id=request.school_year.id).exists():
+                    show = False
+            if node.attr.get('require_staff', False) and not request.user.is_staff:
+                show = False
+            if node.attr.get('social_backend') and (node.attr.get('social_backend') not in backends_not_associated):
+                show = False
+            if show:
                 if node.attr.get('add_url_back', False):
                     node.url = url_with_back(node.url, current_url(request))
                 final.append(node)
+            else:
+                if node.parent and node in node.parent.children:
+                    node.parent.children.remove(node)
+                continue
         return final
 
 
