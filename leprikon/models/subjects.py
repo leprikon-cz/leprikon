@@ -5,6 +5,7 @@ from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
 from json import loads
+from os.path import basename
 
 import qrcode
 import trml2pdf
@@ -820,7 +821,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def get_attachments(self, event):
         if event == 'received':
             return [self.pdf_attachment] + [
-                (attachment.file.file.path,) for attachment in self.all_attachments
+                (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
+                for attachment in self.all_attachments
             ]
         elif event == 'payment_request':
             leprikon_site = LeprikonSite.objects.get_current()
