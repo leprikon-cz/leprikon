@@ -21,6 +21,7 @@ services:
       EMAIL_SUBJECT_PREFIX: '[Leprikón]'
       MEMCACHED_LOCATION: memcached:11211
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
+      SUPERVISORD_RUN: 'nginx uwsgi'
     ports:
       - 127.0.0.1:80:80
     volumes:
