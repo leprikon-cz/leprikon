@@ -20,7 +20,6 @@ def participants(request, subject_id):
         d = localdate(datetime.utcfromtimestamp(int(request.GET['date'])).replace(tzinfo=pytz.utc))
     except (KeyError, ValueError):
         d = date.today()
-    d = date.today()
 
     return JsonResponse({
         'participants': list(
