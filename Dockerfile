@@ -46,7 +46,7 @@ RUN patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plug
 
 # install leprikon
 COPY . /src
-RUN pip install --no-cache-dir /src \
+RUN pip install --no-cache-dir --no-deps /src \
  && cp -a /src/translations/* /usr/local/lib/python3.6/dist-packages/ \
  && cp -a /src/conf /src/bin /src/startup ./ \
  && rm -r /src \
