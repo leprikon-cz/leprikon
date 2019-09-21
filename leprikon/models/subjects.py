@@ -403,7 +403,10 @@ class JournalPeriod:
     def all_journal_entries(self):
         qs = self.subject.journal_entries.all()
         if self.period:
-            qs = qs.filter(date__gte=self.period.start, date__lte=self.period.end)
+            if self.period != self.subject.all_periods[0]:
+                qs = qs.filter(date__gte=self.period.start)
+            if self.period != self.subject.all_periods[-1]:
+                qs = qs.filter(date__lte=self.period.end)
         return list(qs)
 
     @cached_property

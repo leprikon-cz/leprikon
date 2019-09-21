@@ -118,7 +118,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    {% for period in subject.subject.all_journal_periods %}
+    {% for period in subject.all_journal_periods %}
     {% with period.all_journal_entries|length|add:2 as columns_count %}
     <div class="container paper">
         <h1>{% trans 'Attendance' %}{% if period.period %} - {{ period.period.name }}{% endif %}</h1>
