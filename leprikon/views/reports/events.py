@@ -110,8 +110,8 @@ class ReportEventStatsView(ReportBaseView):
 
         participants = SubjectRegistrationParticipant.objects.filter(
             registration__subject__in=events,
-            registration__approved__lte=d,
-        ).exclude(registration__canceled__lte=d).select_related('registration')
+            registration__approved__date__lte=d,
+        ).exclude(registration__canceled__date__lte=d).select_related('registration')
         if paid_only:
             participants = [
                 participant for participant in participants

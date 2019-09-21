@@ -35,7 +35,7 @@ class Event(Subject):
         return self.registrations.filter(canceled__isnull=False)
 
     def get_approved_registrations(self, d):
-        return self.registrations.filter(created__lte=d, approved__lte=d).exclude(canceled__lt=d)
+        return self.registrations.filter(created__date__lte=d, approved__date__lte=d).exclude(canceled__date__lt=d)
 
     def get_times_list(self):
         return '{start}{separator}{end}'.format(

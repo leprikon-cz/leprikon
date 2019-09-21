@@ -82,7 +82,10 @@ class Course(Subject):
             .exclude(end__lt=d)
             .values_list('registration_id', flat=True)
         )
-        return CourseRegistration.objects.filter(id__in=ids, approved__lte=d).exclude(canceled__lt=d).distinct()
+        return CourseRegistration.objects.filter(
+            id__in=ids,
+            approved__date__lte=d,
+        ).exclude(canceled__date__lt=d).distinct()
 
     def copy_to_school_year(old, school_year):
         new = Course.objects.get(id=old.id)
