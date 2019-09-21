@@ -9,47 +9,47 @@
             <div class="row">
                 <label class="col-sm-4">{% trans 'Participant' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant }}
+                    {{ participant.full_name }}
                 </div>
             </div>
             <div class="row">
                 <label class="col-sm-4">{% trans 'Birth date' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.birth_date }}
+                    {{ participant.birth_date }}
                 </div>
             </div>
             <div class="row">
                 <label class="col-sm-4">{% trans 'Age group' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.age_group }}
+                    {{ participant.age_group }}
                 </div>
             </div>
             <div class="row">
                 <label class="col-sm-4">{% trans 'Address' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.address }}
+                    {{ participant.address }}
                 </div>
             </div>
-            {% if participant.participant.contact %}
+            {% if participant.contact %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Contact' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.contact }}
+                    {{ participant.contact }}
                 </div>
             </div>
             {% endif %}
-            {% if participant.participant.age_group.require_school %}
+            {% if participant.age_group.require_school %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'School' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.school_and_class }}
+                    {{ participant.school_and_class }}
                 </div>
             </div>
             {% endif %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Health' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant.health | linebreaks }}
+                    {{ participant.health | linebreaks }}
                 </div>
             </div>
             {% for parent in participant.parents %}
@@ -74,40 +74,40 @@
             <div class="row">
                 <label class="col-sm-4">{% trans 'Group name' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_name }}
+                    {{ reg.group.name }}
                 </div>
             </div>
             <div class="row">
                 <label class="col-sm-4">{% trans 'Target group' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.target_group }}
+                    {{ reg.group.target_group }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group leader' %}:</label>
+                <label class="col-sm-4">{% trans 'Contact person' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_leader_full_name }}
+                    {{ reg.group.full_name }}
                 </div>
             </div>
             <div class="row">
                 <label class="col-sm-4">{% trans 'Address' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_leader_address }}
+                    {{ reg.group.address }}
                 </div>
             </div>
-            {% if reg.group_leader_contact %}
+            {% if reg.group.contact %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Contact' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_leader_contact }}
+                    {{ reg.group.contact }}
                 </div>
             </div>
             {% endif %}
-            {% if reg.target_group.require_school %}
+            {% if reg.group.target_group.require_school %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'School' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_school_and_class }}
+                    {{ reg.group.school_and_class }}
                 </div>
             </div>
             {% endif %}

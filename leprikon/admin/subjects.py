@@ -16,13 +16,14 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
-    RegistrationAdminForm, RegistrationParticipantAdminForm, SubjectAdminForm,
+    RegistrationAdminForm, RegistrationGroupAdminForm,
+    RegistrationParticipantAdminForm, SubjectAdminForm,
 )
 from ..models.subjects import (
     Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
-    SubjectRegistration, SubjectRegistrationGroupMember,
-    SubjectRegistrationParticipant, SubjectType, SubjectTypeAttachment,
-    SubjectVariant,
+    SubjectRegistration, SubjectRegistrationGroup,
+    SubjectRegistrationGroupMember, SubjectRegistrationParticipant,
+    SubjectType, SubjectTypeAttachment, SubjectVariant,
 )
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
@@ -112,17 +113,81 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         m.add_js(['leprikon/js/Popup.js'])
         return m
 
-    def get_form(self, request, obj=None, **kwargs):
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if not object_id and request.method == 'POST' and len(request.POST) == 4:
+            return HttpResponseRedirect('{}?subject_type={}&registration_type={}'.format(
+                request.path,
+                request.POST.get('subject_type', ''),
+                request.POST.get('registration_type', ''),
+            ))
+        else:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def get_form(self, request, obj, **kwargs):
         # set school year
         if obj:
             request.school_year = obj.school_year
 
-        class form(SubjectAdminForm):
-            subject_type = self.subject_type
-            school_year = request.school_year
+        # get subject type
+        try:
+            # first try request.POST (user may want to change subject type)
+            subject_type = SubjectType.objects.get(id=int(request.POST.get('subject_type')))
+        except (SubjectType.DoesNotExist, TypeError, ValueError):
+            if obj:
+                # use subject type from object
+                subject_type = obj.subject_type
+            else:
+                # try to get subject type from request.GET
+                try:
+                    subject_type = SubjectType.objects.get(
+                        id=int(request.GET.get('subject_type')),
+                    )
+                except (SubjectType.DoesNotExist, TypeError, ValueError):
+                    subject_type = None
 
-        kwargs['form'] = form
-        return super(SubjectBaseAdmin, self).get_form(request, obj, **kwargs)
+        # get registration type
+        registration_type = request.POST.get('registration_type')
+        if registration_type not in Subject.REGISTRATION_TYPES:
+            if obj:
+                # use registration type from object
+                registration_type = obj.registration_type
+            else:
+                # try to get registration type from request.GET
+                registration_type = request.GET.get('registration_type')
+                if registration_type not in Subject.REGISTRATION_TYPES:
+                    registration_type = None
+
+        if subject_type and registration_type:
+            if registration_type == Subject.PARTICIPANTS:
+                exclude = ['target_groups', 'min_group_members_count', 'max_group_members_count']
+            elif registration_type == Subject.GROUPS:
+                exclude = ['age_groups', 'min_participants_count', 'max_participants_count']
+            if obj and obj.registrations.exists():
+                exclude.append('registration_type')
+            kwargs['form'] = type(
+                SubjectAdminForm.__name__,
+                (SubjectAdminForm, ),
+                {
+                    'school_year': request.school_year,
+                    'subject_type': subject_type,
+                    'registration_type': registration_type,
+                    'Meta': type('Meta', (), {'exclude': exclude}),
+                },
+            )
+        else:
+            kwargs['fields'] = ['subject_type', 'registration_type']
+            request.hide_inlines = True
+        return super().get_form(request, obj, **kwargs)
+
+    def get_inline_instances(self, request, obj=None):
+        return [] if hasattr(request, 'hide_inlines') else super().get_inline_instances(request, obj)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == 'subject_type':
+            limit_choices_to = {'subject_type__exact': self.subject_type}
+            formfield.limit_choices_to = limit_choices_to
+        return formfield
 
     def save_form(self, request, form, change):
         obj = super(SubjectBaseAdmin, self).save_form(request, form, change)
@@ -249,6 +314,7 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
         'department',
         'subject_type__subject_type',
         ('subject_type', SubjectTypeListFilter),
+        'registration_type',
         ('groups', SubjectGroupListFilter),
         ('leaders', LeaderListFilter),
     )
@@ -305,6 +371,24 @@ class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
         return super().get_formset(request, obj, **kwargs)
 
 
+class SubjectRegistrationGroupInlineAdmin(admin.StackedInline):
+    model = SubjectRegistrationGroup
+    extra = 1
+    min_num = 1
+    max_num = 1
+
+    def get_formset(self, request, obj, **kwargs):
+        questions = obj.all_questions if obj else request.subject.all_questions
+        fields = dict(
+            ('q_' + q.name, q.get_field())
+            for q in questions
+        )
+        fields['subject'] = request.subject
+        fields['obj'] = obj
+        kwargs['form'] = type(RegistrationGroupAdminForm.__name__, (RegistrationGroupAdminForm,), fields)
+        return super().get_formset(request, obj, **kwargs)
+
+
 class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
     model = SubjectRegistrationGroupMember
     extra = 0
@@ -317,14 +401,9 @@ class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
-    inlines = (SubjectRegistrationParticipantInlineAdmin, SubjectRegistrationGroupMemberInlineAdmin)
     list_editable = ('note',)
     list_export = (
         'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
-        'group_name', 'group_leader_first_name', 'group_leader_last_name',
-        'group_leader_street', 'group_leader_city', 'group_leader_postal_code',
-        'group_leader_phone', 'group_leader_email',
-        'group_school', 'group_school_other', 'group_school_class',
         'created', 'payment_requested', 'approved', 'canceled', 'cancel_request',
         'agreement_options_list', 'participants_list', 'group_members_list',
     )
@@ -332,6 +411,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         ('subject__school_year', SchoolYearListFilter),
         'subject__department',
         ('subject__subject_type', SubjectTypeListFilter),
+        'subject__registration_type',
         ApprovedListFilter,
         CanceledListFilter,
         ('subject', SubjectListFilter),
@@ -339,8 +419,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     )
     actions = ('approve', 'refuse', 'request_payment', 'cancel')
     search_fields = (
-        'variable_symbol', 'participants__participant_birth_num',
-        'participants__participant_first_name', 'participants__participant_last_name',
+        'variable_symbol', 'participants__birth_num',
+        'participants__first_name', 'participants__last_name',
         'participants__parent1_first_name', 'participants__parent1_last_name',
         'participants__parent2_first_name', 'participants__parent2_last_name',
         'group_members__first_name', 'group_members__last_name',
@@ -391,7 +471,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     cancel.short_description = _('Cancel selected registrations')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        formfield = super(SubjectRegistrationBaseAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == 'subject':
             limit_choices_to = {'subject_type__subject_type__exact': self.model.subject_type}
             formfield.limit_choices_to = limit_choices_to
@@ -430,15 +510,17 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return super(SubjectRegistrationBaseAdmin, self).get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        return super().get_inline_instances(request, obj) if request.subject else []
-
-    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        if add and request.subject and not request.GET.get('subject'):
-            # we have received subject by POST
-            # redirect to complete form with GET
-            return HttpResponseRedirect('{}?subject={}'.format(request.path, request.subject.id))
+        if request.subject:
+            if request.subject.registration_type_participants:
+                inlines = (SubjectRegistrationParticipantInlineAdmin, )
+            elif request.subject.registration_type_groups:
+                inlines = (SubjectRegistrationGroupInlineAdmin, SubjectRegistrationGroupMemberInlineAdmin)
+            return [
+                inline(self.model, self.admin_site)
+                for inline in inlines
+            ] + super().get_inline_instances(request, obj)
         else:
-            return super().render_change_form(request, context, add, change, form_url, obj)
+            return []
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -471,7 +553,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """ Hidden admin used for raw id fields """
     list_display = (
-        'id', 'variable_symbol', 'subject', 'participants_list_html', 'group_name', 'created', 'canceled',
+        'id', 'variable_symbol', 'subject', 'participants_list_html', 'group', 'created', 'canceled',
     )
     list_filter = (
         ('subject__school_year', SchoolYearListFilter),
@@ -484,8 +566,8 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, Changefo
     )
     ordering = ('-created',)
     search_fields = (
-        'variable_symbol', 'participants__participant_birth_num',
-        'participants__participant_first_name', 'participant_last_name',
+        'variable_symbol', 'participants__birth_num',
+        'participants__first_name', 'last_name',
         'participants__parent1_first_name', 'participants__parent1_last_name',
         'participants__parent2_first_name', 'participants__parent2_last_name',
         'group_members__first_name', 'group_members__last_name',
@@ -514,9 +596,9 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
     )
     search_fields = (
         'registration__subject__name',
-        'registration__participants__participant_first_name',
-        'registration__participants__participant_last_name',
-        'registration__participants__participant_birth_num',
+        'registration__participants__first_name',
+        'registration__participants__last_name',
+        'registration__participants__birth_num',
     )
     date_hierarchy = 'accounted'
     ordering = ('-accounted',)

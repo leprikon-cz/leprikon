@@ -165,9 +165,18 @@ class SubjectGroup(models.Model):
 
 
 class Subject(models.Model):
+    PARTICIPANTS = 'P'
+    GROUPS = 'G'
+    REGISTRATION_TYPE_CHOICES = [
+        (PARTICIPANTS, _('participants')),
+        (GROUPS, _('groups')),
+    ]
+    REGISTRATION_TYPES = dict(REGISTRATION_TYPE_CHOICES)
+
     school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects', editable=False)
     subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
                                      related_name='subjects', on_delete=models.PROTECT)
+    registration_type = models.CharField(_('registration type'), choices=REGISTRATION_TYPE_CHOICES, max_length=1)
     code = models.PositiveSmallIntegerField(_('accounting code'), blank=True, default=0)
     name = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
@@ -176,9 +185,8 @@ class Subject(models.Model):
     groups = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
     place = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
                               related_name='subjects', on_delete=models.SET_NULL)
-    age_groups = models.ManyToManyField(AgeGroup, blank=True, verbose_name=_('age groups'), related_name='subjects')
-    target_groups = models.ManyToManyField(TargetGroup, blank=True,
-                                           verbose_name=_('target groups'), related_name='subjects')
+    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects')
+    target_groups = models.ManyToManyField(TargetGroup, verbose_name=_('target groups'), related_name='subjects')
     leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
     price = PriceField(_('price'), blank=True, null=True)
     public = models.BooleanField(_('public'), default=False)
@@ -200,12 +208,10 @@ class Subject(models.Model):
     )
     min_group_members_count = models.PositiveIntegerField(
         _('minimal group members count per registration'),
-        default=0,
         help_text=_('Group member details only include name and note.'),
     )
     max_group_members_count = models.PositiveIntegerField(
         _('maximal group members count per registration'),
-        default=0,
         help_text=_('Group member details only include name and note.'),
     )
     min_registrations_count = models.PositiveIntegerField(_('minimal registrations count'), blank=True, null=True)
@@ -234,6 +240,23 @@ class Subject(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.school_year, self.display_name)
+
+    def save(self, *args, **kwargs):
+        if self.registration_type_participants:
+            self.min_group_members_count = 0
+            self.max_group_members_count = 0
+        elif self.registration_type_groups:
+            self.min_participants_count = 0
+            self.max_participants_count = 0
+        super().save(*args, **kwargs)
+
+    @cached_property
+    def registration_type_participants(self):
+        return self.registration_type == self.PARTICIPANTS
+
+    @cached_property
+    def registration_type_groups(self):
+        return self.registration_type == self.GROUPS
 
     @cached_property
     def subject(self):
@@ -569,21 +592,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                                         related_name='registrations', on_delete=models.PROTECT)
     price = PriceField(_('price'), editable=False)
 
-    target_group = models.ForeignKey(TargetGroup, verbose_name=_('target group'), blank=True, null=True,
-                                     related_name='+', on_delete=models.PROTECT)
-    group_name = models.CharField(_('group name'), max_length=150, blank=True, default='')
-    group_leader_first_name = models.CharField(_('first name'), max_length=30, blank=True, default='')
-    group_leader_last_name = models.CharField(_('last name'), max_length=30, blank=True, default='')
-    group_leader_street = models.CharField(_('street'), max_length=150, blank=True, default='')
-    group_leader_city = models.CharField(_('city'), max_length=150, blank=True, default='')
-    group_leader_postal_code = PostalCodeField(_('postal code'), blank=True, default='')
-    group_leader_phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    group_leader_email = EmailField(_('email address'), blank=True, default='')
-    group_school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                                     related_name='+', on_delete=models.PROTECT)
-    group_school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    group_school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
-
     approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
     payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
     canceled = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
@@ -604,7 +612,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def __str__(self):
         return '{} - {}'.format(
             self.subject,
-            self.group_name or comma_separated([p.participant.full_name for p in self.all_participants]),
+            self.group if self.subject.registration_type_groups else comma_separated([
+                p.full_name for p in self.all_participants
+            ])
         )
 
     def get_edit_url(self):
@@ -628,29 +638,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def participants_list_html(self):
         return mark_safe('<br/>'.join(map(str, self.all_participants)))
     participants_list_html.short_description = _('participants')
-
-    @cached_property
-    def group_leader_full_name(self):
-        return '{} {}'.format(self.group_leader_first_name, self.group_leader_last_name)
-
-    @cached_property
-    def group_leader_address(self):
-        return '{}, {}, {}'.format(self.group_leader_street, self.group_leader_city, self.group_leader_postal_code)
-
-    @cached_property
-    def group_leader_contact(self):
-        if self.group_leader_email and self.group_leader_phone:
-            return '{}, {}'.format(self.group_leader_phone, self.group_leader_email)
-        else:
-            return self.group_leader_email or self.group_leader_phone
-
-    @cached_property
-    def group_school_name(self):
-        return self.group_school and smart_text(self.group_school) or self.group_school_other
-
-    @cached_property
-    def group_school_and_class(self):
-        return '{}, {}'.format(self.group_school_name, self.group_school_class)
 
     @cached_property
     def all_group_members(self):
@@ -833,31 +820,71 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return None
 
 
-class SubjectRegistrationParticipant(models.Model):
+class QuestionsMixin:
+    def get_answers(self):
+        return loads(self.answers)
+
+    def get_questions_and_answers(self):
+        answers = self.get_answers()
+        for q in self.registration.all_questions:
+            yield {
+                'question': q.question,
+                'answer': answers.get(q.name, ''),
+            }
+
+
+class PersonMixin:
+    @cached_property
+    def full_name(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
+    @cached_property
+    def address(self):
+        return '{}, {}, {}'.format(self.street, self.city, self.postal_code)
+
+    @cached_property
+    def contact(self):
+        if self.email and self.phone:
+            return '{}, {}'.format(self.phone, self.email)
+        else:
+            return self.email or self.phone or ''
+
+
+class SchoolMixin:
+    @cached_property
+    def school_name(self):
+        return self.school and smart_text(self.school) or self.school_other
+
+    @cached_property
+    def school_and_class(self):
+        return '{}, {}'.format(self.school_name, self.school_class)
+
+
+class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
     registration = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
                                      related_name='participants', on_delete=models.CASCADE)
     MALE = 'm'
     FEMALE = 'f'
-    participant_gender = models.CharField(_('gender'), max_length=1, editable=False,
-                                          choices=((MALE, _('male')), (FEMALE, _('female'))))
-    participant_first_name = models.CharField(_('first name'), max_length=30)
-    participant_last_name = models.CharField(_('last name'), max_length=30)
-    participant_birth_num = BirthNumberField(_('birth number'))
-    participant_age_group = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
-                                              related_name='+', on_delete=models.PROTECT)
-    participant_street = models.CharField(_('street'), max_length=150)
-    participant_city = models.CharField(_('city'), max_length=150)
-    participant_postal_code = PostalCodeField(_('postal code'))
-    participant_citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
-                                                related_name='+', on_delete=models.PROTECT)
-    participant_phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    participant_email = EmailField(_('email address'), blank=True, default='')
+    gender = models.CharField(_('gender'), max_length=1, editable=False,
+                              choices=((MALE, _('male')), (FEMALE, _('female'))))
+    first_name = models.CharField(_('first name'), max_length=30)
+    last_name = models.CharField(_('last name'), max_length=30)
+    birth_num = BirthNumberField(_('birth number'))
+    age_group = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
+                                  related_name='+', on_delete=models.PROTECT)
+    street = models.CharField(_('street'), max_length=150)
+    city = models.CharField(_('city'), max_length=150)
+    postal_code = PostalCodeField(_('postal code'))
+    citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
+                                    related_name='+', on_delete=models.PROTECT)
+    phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
+    email = EmailField(_('email address'), blank=True, default='')
 
-    participant_school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                                           related_name='+', on_delete=models.PROTECT)
-    participant_school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    participant_school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
-    participant_health = models.TextField(_('health'), blank=True, default='')
+    school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
+                               related_name='+', on_delete=models.PROTECT)
+    school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
+    school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
+    health = models.TextField(_('health'), blank=True, default='')
 
     has_parent1 = models.BooleanField(_('first parent'), default=False)
     parent1_first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
@@ -886,25 +913,9 @@ class SubjectRegistrationParticipant(models.Model):
 
     def __str__(self):
         return '{full_name} ({birth_date})'.format(
-            full_name=self.participant.full_name,
-            birth_date=self.participant.birth_date,
+            full_name=self.full_name,
+            birth_date=self.birth_date,
         )
-
-    def get_answers(self):
-        return loads(self.answers)
-
-    def get_questions_and_answers(self):
-        answers = self.get_answers()
-        for q in self.registration.all_questions:
-            yield {
-                'question': q.question,
-                'answer': answers.get(q.name, ''),
-            }
-
-    @cached_property
-    def participant(self):
-        return self.Person(self, 'participant')
-    participant.short_description = _('participant')
 
     @cached_property
     def parents(self):
@@ -913,7 +924,7 @@ class SubjectRegistrationParticipant(models.Model):
     @cached_property
     def parent1(self):
         if self.has_parent1:
-            return self.Person(self, 'parent1')
+            return self.Parent(self, 'parent1')
         else:
             return None
     parent1.short_description = _('first parent')
@@ -921,7 +932,7 @@ class SubjectRegistrationParticipant(models.Model):
     @cached_property
     def parent2(self):
         if self.has_parent2:
-            return self.Person(self, 'parent2')
+            return self.Parent(self, 'parent2')
         else:
             return None
     parent2.short_description = _('second parent')
@@ -929,12 +940,12 @@ class SubjectRegistrationParticipant(models.Model):
     @cached_property
     def all_recipients(self):
         recipients = set(parent.email for parent in self.parents if parent.email)
-        if self.participant.email:
-            recipients.add(self.participant.email)
+        if self.email:
+            recipients.add(self.email)
         return recipients
 
     def save(self, *args, **kwargs):
-        self.participant_gender = self.participant_birth_num[2:4] > '50' and self.FEMALE or self.MALE
+        self.gender = self.birth_num[2:4] > '50' and self.FEMALE or self.MALE
         if not self.has_parent1:
             if self.has_parent2:
                 self.parent1_first_name = self.parent2_first_name
@@ -964,7 +975,11 @@ class SubjectRegistrationParticipant(models.Model):
             self.parent2_email = None
         super(SubjectRegistrationParticipant, self).save(*args, **kwargs)
 
-    class Person:
+    @cached_property
+    def birth_date(self):
+        return get_birth_date(self.birth_num)
+
+    class Parent(PersonMixin):
         def __init__(self, registration, role):
             self._registration = registration
             self._role = role
@@ -975,33 +990,34 @@ class SubjectRegistrationParticipant(models.Model):
         def __str__(self):
             return self.full_name
 
-        @cached_property
-        def full_name(self):
-            return '{} {}'.format(self.first_name, self.last_name)
 
-        @cached_property
-        def address(self):
-            return '{}, {}, {}'.format(self.street, self.city, self.postal_code)
+class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
+    registration = models.OneToOneField(SubjectRegistration, verbose_name=_('registration'),
+                                        related_name='group', on_delete=models.CASCADE)
+    target_group = models.ForeignKey(TargetGroup, verbose_name=_('target group'),
+                                     related_name='+', on_delete=models.PROTECT)
+    name = models.CharField(_('group name'), blank=True, null=True, max_length=150)
+    first_name = models.CharField(_('first name'), max_length=30)
+    last_name = models.CharField(_('last name'), max_length=30)
+    street = models.CharField(_('street'), max_length=150)
+    city = models.CharField(_('city'), max_length=150)
+    postal_code = PostalCodeField(_('postal code'))
+    phone = models.CharField(_('phone'), max_length=30)
+    email = EmailField(_('email address'))
+    school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
+                               related_name='+', on_delete=models.PROTECT)
+    school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
+    school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
 
-        @cached_property
-        def contact(self):
-            if self.email and self.phone:
-                return '{}, {}'.format(self.phone, self.email)
-            else:
-                return self.email or self.phone or ''
+    answers = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
 
-        # this is participant specific
-        @cached_property
-        def birth_date(self):
-            return get_birth_date(self.birth_num)
+    class Meta:
+        app_label = 'leprikon'
+        verbose_name = _('registered group')
+        verbose_name_plural = _('registered groups')
 
-        @cached_property
-        def school_name(self):
-            return self.school and smart_text(self.school) or self.school_other
-
-        @cached_property
-        def school_and_class(self):
-            return '{}, {}'.format(self.school_name, self.school_class)
+    def __str__(self):
+        return self.name or self.full_name
 
 
 class SubjectRegistrationGroupMember(models.Model):
@@ -1028,7 +1044,6 @@ class SubjectRegistrationGroupMember(models.Model):
 
 
 class TransactionMixin(object):
-
     def save(self, *args, **kwargs):
         self.clean()
         super(TransactionMixin, self).save(*args, **kwargs)
@@ -1097,7 +1112,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
                                            limit_choices_to={'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)},
                                            related_name='related_payments', on_delete=models.PROTECT)
     bankreader_transaction = models.OneToOneField(BankreaderTransaction, verbose_name=_('bank account transaction'),
-                                                  blank=True, null=True, on_delete=models.PROTECT)
+                                                  editable=False, blank=True, null=True, on_delete=models.PROTECT)
     pays_payment = models.OneToOneField(PaysPayment, editable=False, verbose_name=_('online payment'),
                                         limit_choices_to={'status': PaysPayment.REALIZED},
                                         blank=True, null=True, on_delete=models.PROTECT)

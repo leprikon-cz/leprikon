@@ -126,23 +126,23 @@ class ReportEventStatsView(ReportBaseView):
         context['participants_counts'] = self.ReportItem(
             age_group=None,
             all=len(participants),
-            boys=len([p for p in participants if p.participant_gender == Participant.MALE]),
-            girls=len([p for p in participants if p.participant_gender == Participant.FEMALE]),
+            boys=len([p for p in participants if p.gender == Participant.MALE]),
+            girls=len([p for p in participants if p.gender == Participant.FEMALE]),
             citizenships=[
-                len([p for p in participants if p.participant_citizenship_id == citizenship.id])
+                len([p for p in participants if p.citizenship_id == citizenship.id])
                 for citizenship in citizenships
             ]
         )
         context['participants_counts_by_age_groups'] = []
         for age_group in AgeGroup.objects.all():
-            parts = [p for p in participants if p.participant_age_group == age_group]
+            parts = [p for p in participants if p.age_group == age_group]
             context['participants_counts_by_age_groups'].append(self.ReportItem(
                 age_group=age_group,
                 all=len(parts),
-                boys=len([p for p in parts if p.participant_gender == Participant.MALE]),
-                girls=len([p for p in parts if p.participant_gender == Participant.FEMALE]),
+                boys=len([p for p in parts if p.gender == Participant.MALE]),
+                girls=len([p for p in parts if p.gender == Participant.FEMALE]),
                 citizenships=[
-                    len([p for p in parts if p.participant_citizenship_id == citizenship.id])
+                    len([p for p in parts if p.citizenship_id == citizenship.id])
                     for citizenship in citizenships
                 ]
             ))

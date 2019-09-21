@@ -62,7 +62,7 @@ class CourseAdmin(SubjectBaseAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
         # school year division choices
-        if not obj or not obj.has_discounts:
+        if 'school_year_division' in form.base_fields and (not obj or not obj.has_discounts):
             # school year division can not be changed if there are discounts
             # because discounts are related to school year periods
             if obj:
@@ -151,7 +151,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         ('subject', CourseListFilter),
         ('subject__leaders', LeaderListFilter),
     )
-    inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
+    inlines = (CourseRegistrationHistoryInlineAdmin,)
 
     def course_discounts(self, obj):
         html = []

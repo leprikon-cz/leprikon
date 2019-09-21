@@ -49,7 +49,7 @@
             <div class="row">
                 <label class="col-sm-4">{% trans 'Participant' %}:</label>
                 <div class="col-sm-8">
-                    {{ participant.participant }}
+                    {{ participant.full_name }}
                 </div>
             </div>
             {% if participant.parents %}
@@ -67,13 +67,13 @@
             <div class="row">
                 <label class="col-sm-4">{% trans 'Group name' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_name }}
+                    {{ reg.group.name }}
                 </div>
             </div>
             <div class="row">
-                <label class="col-sm-4">{% trans 'Group leader' %}:</label>
+                <label class="col-sm-4">{% trans 'Contact person' %}:</label>
                 <div class="col-sm-8">
-                    {{ reg.group_leader_full_name }}
+                    {{ reg.group.full_name }}
                 </div>
             </div>
             <div class="row">

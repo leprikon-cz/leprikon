@@ -98,44 +98,44 @@
             <blockTable style="blocktable">
                 <tr>
                     <td>{% trans 'Full name' %}</td>
-                    <td><para style="para">{{ p.participant.full_name }}</para></td>
+                    <td><para style="para">{{ p.full_name }}</para></td>
                 </tr>
                 <tr>
                     <td>{% trans 'Age group' %}</td>
-                    <td><para style="para">{{ p.participant.age_group }}</para></td>
+                    <td><para style="para">{{ p.age_group }}</para></td>
                 </tr>
                 <tr>
                     <td>{% trans 'Birth number' %}</td>
-                    <td><para style="para">{{ p.participant.birth_num }}</para></td>
+                    <td><para style="para">{{ p.birth_num }}</para></td>
                 </tr>
                 <tr>
                     <td>{% trans 'Address' %}</td>
-                    <td><para style="para">{{ p.participant.address }}</para></td>
+                    <td><para style="para">{{ p.address }}</para></td>
                 </tr>
                 <tr>
                     <td>{% trans 'Citizenship' %}</td>
-                    <td><para style="para">{{ p.participant.citizenship }}</para></td>
+                    <td><para style="para">{{ p.citizenship }}</para></td>
                 </tr>
-                {% if p.participant.phone %}
+                {% if p.phone %}
                 <tr>
                     <td>{% trans 'Phone' %}</td>
-                    <td><para style="para">{{ p.participant.phone }}</para></td>
+                    <td><para style="para">{{ p.phone }}</para></td>
                 </tr>
                 {% endif %}
-                {% if p.participant.email %}
+                {% if p.email %}
                 <tr>
                     <td>{% trans 'E-mail' %}</td>
-                    <td><para style="para">{{ p.participant.email }}</para></td>
+                    <td><para style="para">{{ p.email }}</para></td>
                 </tr>
                 {% endif %}
-                {% if p.participant.age_group.require_school %}
+                {% if p.age_group.require_school %}
                 <tr>
                     <td>{% trans 'School' %}</td>
-                    <td><para style="para">{{ p.participant.school_name }}</para></td>
+                    <td><para style="para">{{ p.school_name }}</para></td>
                 </tr>
                 <tr>
                     <td>{% trans 'Class' %}</td>
-                    <td><para style="para">{{ p.participant.school_class }}</para></td>
+                    <td><para style="para">{{ p.school_class }}</para></td>
                 </tr>
                 {% endif %}
                 {% for qa in p.get_questions_and_answers %}
@@ -152,7 +152,7 @@
                 </tr>
                 <tr>
                     <td>
-                        {% for line in p.participant.health|lines %}
+                        {% for line in p.health|lines %}
                         <para style="para">{{ line }}</para>
                         {% empty %}
                         <para style="para"></para>
@@ -203,42 +203,48 @@
         <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'Target group' %}</td>
-                <td><para style="para">{{ object.target_group }}</para></td>
+                <td><para style="para">{{ object.group.target_group }}</para></td>
             </tr>
-            <tr>
-                <td>{% trans 'Group leader' %}</td>
-                <td><para style="para">{{ object.group_leader_full_name }}</para></td>
-            </tr>
-            <tr>
-                <td>{% trans 'Address' %}</td>
-                <td><para style="para">{{ object.group_leader_address }}</para></td>
-            </tr>
-            {% if object.group_leader_phone %}
-            <tr>
-                <td>{% trans 'Phone' %}</td>
-                <td><para style="para">{{ object.group_leader_phone }}</para></td>
-            </tr>
-            {% endif %}
-            {% if object.group_leader_email %}
-            <tr>
-                <td>{% trans 'E-mail' %}</td>
-                <td><para style="para">{{ object.group_leader_email }}</para></td>
-            </tr>
-            {% endif %}
-            {% if object.target_group.require_school %}
+            {% if object.group.target_group.require_school %}
             <tr>
                 <td>{% trans 'School' %}</td>
-                <td><para style="para">{{ object.group_school_name }}</para></td>
+                <td><para style="para">{{ object.group.school_name }}</para></td>
             </tr>
             <tr>
                 <td>{% trans 'Class' %}</td>
-                <td><para style="para">{{ object.group_school_class }}</para></td>
+                <td><para style="para">{{ object.group.school_class }}</para></td>
             </tr>
             {% endif %}
             <tr>
                 <td>{% trans 'Group name' %}</td>
-                <td><para style="para">{{ object.group_name }}</para></td>
+                <td><para style="para">{{ object.group.name }}</para></td>
             </tr>
+            <tr>
+                <td>{% trans 'Contact person' %}</td>
+                <td><para style="para">{{ object.group.full_name }}</para></td>
+            </tr>
+            <tr>
+                <td>{% trans 'Address' %}</td>
+                <td><para style="para">{{ object.group.address }}</para></td>
+            </tr>
+            {% if object.group.phone %}
+            <tr>
+                <td>{% trans 'Phone' %}</td>
+                <td><para style="para">{{ object.group.phone }}</para></td>
+            </tr>
+            {% endif %}
+            {% if object.group.email %}
+            <tr>
+                <td>{% trans 'E-mail' %}</td>
+                <td><para style="para">{{ object.group.email }}</para></td>
+            </tr>
+            {% endif %}
+            {% for qa in object.group.get_questions_and_answers %}
+            <tr>
+                <td>{{ qa.question }}</td>
+                <td><para style="para">{{ qa.answer }}</para></td>
+            </tr>
+            {% endfor %}
         </blockTable>
 
         <spacer length="2mm"/>

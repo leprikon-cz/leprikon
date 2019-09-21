@@ -54,20 +54,20 @@
             <para style="small">{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}name of {{ subject_type }}{% endblocktrans %}:</para>
             <para style="left">{{ object.subject.name }}</para>
 
-            {% if object.registration.group_name %}
             <spacer length="2mm"/>
 
-            <para style="small">{% trans 'group name' %}:</para>
-            <para style="left">{{ object.registration.group_name }}</para>
-            {% endif %}
-
-            {% if object.registration.all_participants %}
-            <spacer length="2mm"/>
-
-            <para style="small">{% blocktrans count counter=object.registration.all_participants|length %}participant{% plural %}participants{% endblocktrans %}:</para>
-            {% for participant in object.registration.all_participants %}
-            <para style="left">{{ participant.participant.full_name }}</para>
-            {% endfor %}
+            {% if object.registration.subject.registration_type_participants %}
+                <para style="small">{% blocktrans count counter=object.registration.all_participants|length %}participant{% plural %}participants{% endblocktrans %}:</para>
+                {% for participant in object.registration.all_participants %}
+                <para style="left">{{ participant.full_name }}</para>
+                {% endfor %}
+            {% elif object.registration.subject.registration_type_groups %}
+                <para style="small">{% trans 'contact person' %}:</para>
+                <para style="left">{{ object.registration.group.full_name }}</para>
+                {% if object.registration.group.name %}
+                <para style="small">{% trans 'group name' %}:</para>
+                <para style="left">{{ object.registration.group.name }}</para>
+                {% endif %}
             {% endif %}
         </td>
         <td>
