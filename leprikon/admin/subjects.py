@@ -407,7 +407,22 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     list_export = (
         'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
         'created', 'payment_requested', 'approved', 'canceled', 'cancel_request',
-        'agreement_options_list', 'participants_list', 'group_members_list',
+        'agreement_options_list', 'group_members_list',
+        'participants__gender', 'participants__first_name', 'participants__last_name', 'participants__birth_num',
+        'participants__age_group', 'participants__street', 'participants__city', 'participants__postal_code',
+        'participants__citizenship', 'participants__phone', 'participants__email',
+        'participants__school', 'participants__school_other', 'participants__school_class',
+        'participants__health', 'participants__answers',
+        'participants__has_parent1', 'participants__parent1_first_name', 'participants__parent1_last_name',
+        'participants__parent1_street', 'participants__parent1_city', 'participants__parent1_postal_code',
+        'participants__parent1_phone', 'participants__parent1_email',
+        'participants__has_parent2', 'participants__parent2_first_name', 'participants__parent2_last_name',
+        'participants__parent2_street', 'participants__parent2_city', 'participants__parent2_postal_code',
+        'participants__parent2_phone', 'participants__parent2_email',
+        'group__name', 'group__first_name', 'group__last_name',
+        'group__street', 'group__city', 'group__postal_code',
+        'group__phone', 'group__email',
+        'group__school__name', 'group__school_other', 'group__school_class',
     )
     list_filter = (
         ('subject__school_year', SchoolYearListFilter),

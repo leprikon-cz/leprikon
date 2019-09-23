@@ -3,17 +3,25 @@ from datetime import datetime
 from functools import partial
 
 import django_excel
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models import F
 from django.http import HttpResponse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 
-def lookup_attr(obj, name):
-    for n in name.split('__'):
-        obj = getattr(obj, n)
-        if callable(obj):
-            obj = obj()
-    return obj
+def get_attr_value(obj, name):
+    value = getattr(obj, name)
+    if callable(value):
+        value = value()
+    return value
+
+
+def get_verbose_name(field):
+    try:
+        return force_text(field.verbose_name)
+    except AttributeError:
+        return force_text(field.related_model._meta.verbose_name)
 
 
 class AdminExportMixin:
@@ -31,33 +39,32 @@ class AdminExportMixin:
             try:
                 names = name.split('__')
                 field = self.model._meta.get_field(names[0])
+                verbose_names = [get_verbose_name(field)]
                 for n in names[1:]:
-                    field = field.related.model._meta.get_field(n)
+                    field = field.related_model._meta.get_field(n)
+                    verbose_names.append(get_verbose_name(field))
                 fields.append({
-                    'name': field.name,
-                    'verbose_name': field.verbose_name,
-                    'get_value': partial(lambda name, obj: lookup_attr(obj, name), name),
+                    'annotate': name if len(names) > 1 else None,
+                    'verbose_name': ' / '.join(verbose_names),
+                    'get_value': partial(lambda name, obj: get_attr_value(obj, name), name),
                 })
-            except Exception:
+            except (AttributeError, FieldDoesNotExist):
                 if callable(name):
                     fields.append({
-                        'name': name.__func__.__name__,
                         'verbose_name': getattr(name, 'short_description', name.__func__.__name__),
                         'get_value': partial(lambda name, obj: name(obj), name),
                     })
                 elif hasattr(self, name):
                     attr = getattr(self, name)
                     fields.append({
-                        'name': name,
                         'verbose_name': getattr(attr, 'short_description', name),
                         'get_value': partial(lambda attr, obj: attr(obj), attr),
                     })
                 elif hasattr(self.model, name):
                     attr = getattr(self.model, name)
                     fields.append({
-                        'name': name,
                         'verbose_name': getattr(attr, 'short_description', name),
-                        'get_value': partial(lambda name, obj: lookup_attr(obj, name), name),
+                        'get_value': partial(lambda name, obj: get_attr_value(obj, name), name),
                     })
                 else:
                     raise Exception('Can not resolve name "{}"'.format(name))
@@ -66,7 +73,11 @@ class AdminExportMixin:
     def get_export_data(self, request, queryset):
         fields = self.get_export_fields(request)
         yield [force_text(f['verbose_name']) for f in fields]
-        for obj in queryset.all():
+        annotations = {
+            field['annotate']: F(field['annotate'])
+            for field in fields if field.get('annotate')
+        }
+        for obj in queryset.annotate(**annotations):
             values = []
             for field in fields:
                 value = field['get_value'](obj)
