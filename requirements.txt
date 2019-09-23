@@ -71,17 +71,17 @@ python-memcached==1.59
 python3-openid==3.1.0     # via social-auth-core
 pytz==2019.2              # via django, django-staticfiles-downloader
 qrcode==6.1               # via django-qr-code
-reportlab==3.5.23
+reportlab==3.5.26
 requests-oauthlib==1.2.0  # via social-auth-core
 requests==2.22.0
-sentry-sdk==0.11.2
+sentry-sdk==0.12.2
 six==1.12.0               # via django-appconf, django-countries, html5lib, prompt-toolkit, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0
 social-auth-core==3.2.0   # via social-auth-app-django
 texttable==1.6.2          # via pyexcel
 traitlets==4.3.2          # via ipython
 unidecode==1.0.23         # via django-filer
-urllib3==1.25.3           # via requests, sentry-sdk
+urllib3==1.25.5           # via requests, sentry-sdk
 uwsgi==2.0.18
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
