@@ -123,6 +123,15 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
+    def get_exclude(self, request, obj=None):
+        if request.registration_type == Subject.PARTICIPANTS:
+            exclude = ['target_groups', 'min_group_members_count', 'max_group_members_count']
+        elif request.registration_type == Subject.GROUPS:
+            exclude = ['age_groups', 'min_participants_count', 'max_participants_count']
+        if obj and obj.registrations.exists():
+            exclude.append('registration_type')
+        return exclude
+
     def get_form(self, request, obj, **kwargs):
         # set school year
         if obj:
@@ -131,47 +140,40 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         # get subject type
         try:
             # first try request.POST (user may want to change subject type)
-            subject_type = SubjectType.objects.get(id=int(request.POST.get('subject_type')))
+            request.subject_type = SubjectType.objects.get(id=int(request.POST.get('subject_type')))
         except (SubjectType.DoesNotExist, TypeError, ValueError):
             if obj:
                 # use subject type from object
-                subject_type = obj.subject_type
+                request.subject_type = obj.subject_type
             else:
                 # try to get subject type from request.GET
                 try:
-                    subject_type = SubjectType.objects.get(
+                    request.subject_type = SubjectType.objects.get(
                         id=int(request.GET.get('subject_type')),
                     )
                 except (SubjectType.DoesNotExist, TypeError, ValueError):
-                    subject_type = None
+                    request.subject_type = None
 
         # get registration type
-        registration_type = request.POST.get('registration_type')
-        if registration_type not in Subject.REGISTRATION_TYPES:
+        request.registration_type = request.POST.get('registration_type')
+        if request.registration_type not in Subject.REGISTRATION_TYPES:
             if obj:
                 # use registration type from object
-                registration_type = obj.registration_type
+                request.registration_type = obj.registration_type
             else:
                 # try to get registration type from request.GET
-                registration_type = request.GET.get('registration_type')
-                if registration_type not in Subject.REGISTRATION_TYPES:
-                    registration_type = None
+                request.registration_type = request.GET.get('registration_type')
+                if request.registration_type not in Subject.REGISTRATION_TYPES:
+                    request.registration_type = None
 
-        if subject_type and registration_type:
-            if registration_type == Subject.PARTICIPANTS:
-                exclude = ['target_groups', 'min_group_members_count', 'max_group_members_count']
-            elif registration_type == Subject.GROUPS:
-                exclude = ['age_groups', 'min_participants_count', 'max_participants_count']
-            if obj and obj.registrations.exists():
-                exclude.append('registration_type')
+        if request.subject_type and request.registration_type:
             kwargs['form'] = type(
                 SubjectAdminForm.__name__,
                 (SubjectAdminForm, ),
                 {
                     'school_year': request.school_year,
-                    'subject_type': subject_type,
-                    'registration_type': registration_type,
-                    'Meta': type('Meta', (), {'exclude': exclude}),
+                    'subject_type': request.subject_type,
+                    'registration_type': request.registration_type,
                 },
             )
         else:
@@ -483,6 +485,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             return HttpResponseRedirect('{}?subject={}'.format(request.path, request.POST.get('subject', '')))
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def get_exclude(self, request, obj=None):
+        return [] if request.subject.variants.exists() else ['subject_variant']
 
     def get_form(self, request, obj, **kwargs):
         try:
