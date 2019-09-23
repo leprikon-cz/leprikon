@@ -57,7 +57,11 @@
             <spacer length="2mm"/>
 
             {% if object.registration.subject.registration_type_participants %}
-                <para style="small">{% blocktrans count counter=object.registration.all_participants|length %}participant{% plural %}participants{% endblocktrans %}:</para>
+                {% if bject.registration.all_participants|length > 1 %}
+                <para style="small">{% trans 'participant' %}:</para>
+                {% else %}
+                <para style="small">{% trans 'participants' %}:</para>
+                {% endif %}
                 {% for participant in object.registration.all_participants %}
                 <para style="left">{{ participant.full_name }}</para>
                 {% endfor %}
