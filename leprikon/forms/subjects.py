@@ -186,19 +186,6 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
                 id__in=instance.subject_type.registration_agreements.values('id')
             )
 
-    def clean(self):
-        errors = {}
-        if self.cleaned_data.get('max_participants_count') and not self.cleaned_data.get('age_groups'):
-            errors['age_groups'] = [
-                _('At least one age group must be selected, if participants are allowed on registration.')
-            ]
-        if self.cleaned_data.get('max_group_members_count') and not self.cleaned_data.get('target_groups'):
-            errors['target_groups'] = [
-                _('At least one target group must be selected, if group members are allowed on registration.')
-            ]
-        if errors:
-            raise ValidationError(errors)
-
 
 class SchoolMixin:
     def _add_error_required(self, field_name):
