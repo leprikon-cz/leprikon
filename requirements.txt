@@ -12,7 +12,7 @@ cmsplugin-filer==1.1.3
 decorator==4.4.0          # via ipython, traitlets
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 django-appconf==1.0.3     # via cmsplugin-filer
-django-bankreader==0.5.0
+django-bankreader==0.5.1
 django-classy-tags==0.9.0  # via django-cms, django-sekizai
 django-cms==3.6.0
 django-countries==5.5
