@@ -223,7 +223,21 @@ class SchoolMixin:
         return self.cleaned_data
 
 
-class RegistrationParticipantForm(FormMixin, SchoolMixin, forms.ModelForm):
+class BirthNumberMixin:
+    def clean_birth_num(self):
+        qs = SubjectRegistrationParticipant.objects.filter(
+            registration__subject_id=self.subject.id,
+            registration__canceled=None,
+            birth_num=self.cleaned_data['birth_num'],
+        )
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise ValidationError(_('Participant with this birth number has already been registered.'))
+        return self.cleaned_data['birth_num']
+
+
+class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, forms.ModelForm):
     x_group = 'age_group'
 
     school = forms.ChoiceField(
@@ -697,7 +711,7 @@ class SchoolAdminMixin:
         return self.cleaned_data
 
 
-class RegistrationParticipantAdminForm(SchoolAdminMixin, forms.ModelForm):
+class RegistrationParticipantAdminForm(BirthNumberMixin, SchoolAdminMixin, forms.ModelForm):
     x_group = 'age_group'
 
     def __init__(self, data=None, *args, **kwargs):

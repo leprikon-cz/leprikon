@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-23 20:43+0200\n"
+"POT-Creation-Date: 2019-09-24 16:35+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -844,23 +844,11 @@ msgstr "Povoleno přihlašování"
 msgid "Show invisible"
 msgstr "Zobrazit neviditelné"
 
-#: forms/subjects.py:193
-msgid ""
-"At least one age group must be selected, if participants are allowed on "
-"registration."
-msgstr ""
-"Alespoň jedna věková skupina musí být vybrána, pokud jsou povoleni účastníci "
-"na přihlášce."
+#: forms/subjects.py:236
+msgid "Participant with this birth number has already been registered."
+msgstr "Účastník s tímto rodným číslem je již přihlášený."
 
-#: forms/subjects.py:197
-msgid ""
-"At least one target group must be selected, if group members are allowed on "
-"registration."
-msgstr ""
-"Alespoň jedna cílová skupina musí být vybrána, pokud je povoleno skupinové "
-"přihlášení."
-
-#: forms/subjects.py:243 forms/subjects.py:390
+#: forms/subjects.py:244 forms/subjects.py:391
 #: templates/leprikon/participant_preview.html:41
 #: templates/leprikon/registration_details.html:43
 #: templates/leprikon/registration_details.html:108
@@ -869,24 +857,24 @@ msgstr ""
 msgid "School"
 msgstr "Škola"
 
-#: forms/subjects.py:247 forms/subjects.py:394 models/roles.py:159
+#: forms/subjects.py:248 forms/subjects.py:395 models/roles.py:159
 #: models/subjects.py:888 models/subjects.py:1012
 msgid "other school"
 msgstr "jiná škola"
 
-#: forms/subjects.py:284 forms/subjects.py:295
+#: forms/subjects.py:285 forms/subjects.py:296
 msgid "Choose"
 msgstr "Vyberte"
 
-#: forms/subjects.py:285
+#: forms/subjects.py:286
 msgid "new participant"
 msgstr "nový účastník"
 
-#: forms/subjects.py:296
+#: forms/subjects.py:297
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/subjects.py:653
+#: forms/subjects.py:654
 msgid "Your email"
 msgstr "Váš e-mail"
 
