@@ -502,7 +502,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_exclude(self, request, obj=None):
-        return [] if request.subject.variants.exists() else ['subject_variant']
+        return [] if not request.subject or request.subject.variants.exists() else ['subject_variant']
 
     def get_form(self, request, obj, **kwargs):
         try:
