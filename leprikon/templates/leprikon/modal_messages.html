@@ -1,0 +1,26 @@
+{% load i18n %}
+
+{% if messages %}
+<div class="modal fade" id="messages" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %}" role="alert">
+                    <span class="glyphicon glyphicon-{% if message.level_tag == 'error' %}exclamation{% else %}{{ message.level_tag }}{% endif %}-sign" aria-hidden="true"></span>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">{% trans 'OK' %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#messages').modal({
+        backdrop: 'static',
+    });
+</script>
+{% endif %}
