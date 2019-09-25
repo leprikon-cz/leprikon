@@ -257,13 +257,11 @@ function toggle_section(show, section_name, update_required) {
         $('#' + section_name + '').removeClass('hidden');
         if (update_required) {
             $('#' + section_name + ' .form-group').addClass('required');
-            $('#' + section_name + ' .form-control').attr('required', '');
         }
     } else {
         $('#' + section_name + '').addClass('hidden');
         if (update_required) {
             $('#' + section_name + ' .form-group').removeClass('required');
-            $('#' + section_name + ' .form-control').removeAttr('required');
         }
     }
 }
