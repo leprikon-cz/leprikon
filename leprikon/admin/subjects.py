@@ -128,6 +128,8 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             exclude = ['target_groups', 'min_group_members_count', 'max_group_members_count']
         elif request.registration_type == Subject.GROUPS:
             exclude = ['age_groups', 'min_participants_count', 'max_participants_count']
+        else:
+            exclude = []
         if obj and obj.registrations.exists():
             exclude.append('registration_type')
         return exclude
