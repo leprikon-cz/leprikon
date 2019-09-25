@@ -587,7 +587,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, Changefo
     ordering = ('-created',)
     search_fields = (
         'variable_symbol', 'participants__birth_num',
-        'participants__first_name', 'last_name',
+        'participants__first_name', 'participants__last_name',
         'participants__parent1_first_name', 'participants__parent1_last_name',
         'participants__parent2_first_name', 'participants__parent2_last_name',
         'group_members__first_name', 'group_members__last_name',
