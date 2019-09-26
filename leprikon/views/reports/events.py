@@ -115,7 +115,7 @@ class ReportEventStatsView(ReportBaseView):
         if paid_only:
             participants = [
                 participant for participant in participants
-                if participant.registration.get_payment_status(d).balance >= 0
+                if participant.registration.eventregistration.get_payment_status(d).balance >= 0
             ]
         else:
             participants = list(participants)
