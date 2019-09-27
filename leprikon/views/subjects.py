@@ -204,7 +204,7 @@ class UserRegistrationMixin(object):
     model = SubjectRegistration
 
     def get_queryset(self):
-        return super(UserRegistrationMixin, self).get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user)
 
     def get_template_names(self):
         return [self.template_name] if self.template_name else [
@@ -234,6 +234,9 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
     template_name_suffix = '_cancel'
     title = _('Registration cancellation request')
 
+    def get_queryset(self):
+        return super().get_queryset().filter(canceled=None)
+
     def get_question(self):
         return _('Are you sure You want to cancel the registration "{}"?').format(self.object)
 
@@ -241,8 +244,11 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
         return _('The cancellation request for {} has been saved.').format(self.object)
 
     def confirmed(self):
-        self.object.cancel_request = True
-        self.object.save()
+        if self.object.approved:
+            self.object.cancel_request = True
+            self.object.save()
+        else:
+            self.object.refuse()
 
 
 class UserPaymentMixin(object):
