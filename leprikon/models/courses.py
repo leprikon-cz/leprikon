@@ -211,11 +211,17 @@ class CourseRegistration(SubjectRegistration):
 
     @property
     def periods(self):
-        periods = self.subject.course.school_year_division.periods
+        periods = self.subject.course.school_year_division.periods.filter(
+            end__gte=self.created.date(),
+        )
         if self.canceled:
-            return periods.filter(end__gt=self.created, start__lt=self.canceled)
+            # include at least the first one (if any)
+            first_period_start = periods.values_list('start', flat=True).first()
+            return periods.filter(
+                start__lte=max(self.canceled.date(), first_period_start or self.canceled.date())
+            )
         else:
-            return periods.filter(end__gt=self.created)
+            return periods
 
     @cached_property
     def all_periods(self):
@@ -274,6 +280,9 @@ class CourseRegistration(SubjectRegistration):
     def get_partial_discounted(self, d=None):
         if d is None:
             d = date.today()
+        # always count the first period (if any)
+        if self.all_periods:
+            d = max(d, self.all_periods[0].start)
         return sum(p.amount for p in self.get_discounts(d) if p.period.start <= d)
 
     @cached_property
