@@ -48,18 +48,18 @@ class LeprikonSite(Site):
     vat_number = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
     iban = IBANField(_('IBAN'), blank=True, null=True)
     bic = BICField(_('BIC (SWIFT)'), blank=True, null=True)
-    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                         verbose_name=_('bill print setup'), blank=True, null=True)
-    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                        verbose_name=_('registration print setup'), blank=True, null=True)
+    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                         related_name='+', verbose_name=_('bill print setup'))
+    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                        related_name='+', verbose_name=_('registration print setup'))
     user_agreement = HTMLField(_('user agreement'), blank=True, default='')
     user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
     registration_agreements = models.ManyToManyField(
-        Agreement, verbose_name=_('registration agreements'), blank=True, related_name='+',
+        Agreement, blank=True, related_name='+', verbose_name=_('registration agreements'),
         help_text=_('Add legal agreements for the registration form.'),
     )
-    payment_gateway = models.ForeignKey(Gateway, on_delete=models.SET_NULL, related_name='+',
-                                        verbose_name=_('Payment Gateway'), blank=True, null=True)
+    payment_gateway = models.ForeignKey(Gateway, blank=True, null=True, on_delete=models.SET_NULL,
+                                        related_name='+', verbose_name=_('Payment Gateway'))
 
     objects = LeprikonSiteManager()
 

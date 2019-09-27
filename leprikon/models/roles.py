@@ -20,12 +20,12 @@ from .schoolyear import SchoolYear
 
 
 class Leader(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                                related_name='leprikon_leader', on_delete=models.PROTECT)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                related_name='leprikon_leader', verbose_name=_('user'))
     description = HTMLField(_('description'), blank=True, default='')
     photo = FilerImageField(verbose_name=_('photo'), blank=True, null=True, related_name='+', on_delete=models.SET_NULL)
     page = PageField(verbose_name=_('page'), blank=True, null=True, related_name='+', on_delete=models.SET_NULL)
-    school_years = models.ManyToManyField(SchoolYear, verbose_name=_('school years'), related_name='leaders')
+    school_years = models.ManyToManyField(SchoolYear, related_name='leaders', verbose_name=_('school years'))
 
     class Meta:
         app_label = 'leprikon'
@@ -81,7 +81,7 @@ class Leader(models.Model):
 
 
 class Contact(models.Model):
-    leader = models.ForeignKey(Leader, verbose_name=_('leader'), related_name='contacts')
+    leader = models.ForeignKey(Leader, on_delete=models.CASCADE, related_name='contacts', verbose_name=_('leader'))
     contact_type = models.CharField(_('contact type'), max_length=30,
                                     choices=settings.LEPRIKON_CONTACT_TYPES)
     contact = models.CharField(_('contact'), max_length=250)
@@ -105,8 +105,8 @@ class Contact(models.Model):
 
 
 class Parent(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                             related_name='leprikon_parents')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='leprikon_parents', verbose_name=_('user'))
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     street = models.CharField(_('street'), max_length=150)
@@ -140,10 +140,10 @@ class Parent(models.Model):
 
 
 class Participant(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                             related_name='leprikon_participants')
-    age_group = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
-                                  related_name='+', on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='leprikon_participants', verbose_name=_('user'))
+    age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT,
+                                  related_name='+', verbose_name=_('age group'))
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     birth_num = BirthNumberField(_('birth number'))
@@ -152,10 +152,10 @@ class Participant(models.Model):
     postal_code = PostalCodeField(_('postal code'))
     email = EmailField(_('email address'), blank=True, default='')
     phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
-                                    related_name='+', on_delete=models.PROTECT)
-    school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                               related_name='participants', on_delete=models.PROTECT)
+    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('citizenship'))
+    school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
+                               related_name='participants', verbose_name=_('school'))
     school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
     health = models.TextField(_('health'), blank=True, default='')
@@ -220,7 +220,7 @@ class Participant(models.Model):
 
 
 class LeaderPlugin(CMSPlugin):
-    leader = models.ForeignKey(Leader, verbose_name=_('leader'), related_name='+')
+    leader = models.ForeignKey(Leader, on_delete=models.CASCADE, related_name='+', verbose_name=_('leader'))
     template = models.CharField(
         _('template'), max_length=100,
         choices=settings.LEPRIKON_LEADER_TEMPLATES,
@@ -233,10 +233,10 @@ class LeaderPlugin(CMSPlugin):
 
 
 class LeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
-    subject = models.ForeignKey('leprikon.Subject', verbose_name=_('subject'),
-                                related_name='+', blank=True, null=True)
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
+    subject = models.ForeignKey('leprikon.Subject', blank=True, null=True, on_delete=models.CASCADE,
+                                related_name='+', verbose_name=_('subject'))
     template = models.CharField(
         _('template'), max_length=100,
         choices=settings.LEPRIKON_LEADERLIST_TEMPLATES,
@@ -268,8 +268,8 @@ class LeaderListPlugin(CMSPlugin):
 
 
 class FilteredLeaderListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
 
     class Meta:
         app_label = 'leprikon'

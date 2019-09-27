@@ -49,7 +49,8 @@ class SchoolYear(models.Model):
 
 
 class SchoolYearDivision(models.Model):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='divisions')
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE,
+                                    related_name='divisions', verbose_name=_('school year'))
     name = models.CharField(_('division name'), max_length=150)
     period_name = models.CharField(_('period name'), max_length=150)
 
@@ -96,8 +97,8 @@ class SchoolYearDivision(models.Model):
 
 
 class SchoolYearPeriod(StartEndMixin, models.Model):
-    school_year_division = models.ForeignKey(SchoolYearDivision, verbose_name=_('school year division'),
-                                             related_name='periods')
+    school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.CASCADE,
+                                             related_name='periods', verbose_name=_('school year division'))
     name = models.CharField(_('name'), max_length=150)
     start = models.DateField(_('start date'))
     end = models.DateField(_('end date'))

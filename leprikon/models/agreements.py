@@ -26,7 +26,8 @@ class Agreement(models.Model):
 
 
 class AgreementOption(models.Model):
-    agreement = models.ForeignKey(Agreement, verbose_name=_('agreement'), related_name='options')
+    agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE,
+                                  related_name='options', verbose_name=_('agreement'))
     name = models.CharField(_('name'), max_length=50)
     order = models.IntegerField(_('order'), blank=True, default=0)
     required = models.BooleanField(_('required'), default=False)

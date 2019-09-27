@@ -25,8 +25,8 @@ from .utils import PaymentStatus
 
 
 class Course(Subject):
-    school_year_division = models.ForeignKey(SchoolYearDivision, verbose_name=_('school year division'),
-                                             related_name='courses')
+    school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.PROTECT,
+                                             related_name='courses', verbose_name=_('school year division'))
 
     class Meta:
         app_label = 'leprikon'
@@ -153,7 +153,8 @@ class Course(Subject):
 
 
 class CourseTime(StartEndMixin, models.Model):
-    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='times')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE,
+                               related_name='times', verbose_name=_('course'))
     day_of_week = DayOfWeekField(_('day of week'))
     start = models.TimeField(_('start time'), blank=True, null=True)
     end = models.TimeField(_('end time'), blank=True, null=True)
@@ -295,17 +296,17 @@ class CourseRegistration(SubjectRegistration):
 
 
 class CourseDiscount(SubjectDiscount):
-    registration = models.ForeignKey(CourseRegistration, verbose_name=_('registration'),
-                                     related_name='discounts', on_delete=models.PROTECT)
-    period = models.ForeignKey(SchoolYearPeriod, verbose_name=_('period'),
-                               related_name='discounts', on_delete=models.PROTECT)
+    registration = models.ForeignKey(CourseRegistration, on_delete=models.CASCADE,
+                                     related_name='discounts', verbose_name=_('registration'))
+    period = models.ForeignKey(SchoolYearPeriod, on_delete=models.PROTECT,
+                               related_name='discounts', verbose_name=_('period'))
 
 
 class CourseRegistrationHistory(StartEndMixin, models.Model):
-    registration = models.ForeignKey(CourseRegistration, verbose_name=_('course'), editable=False,
-                                     related_name='course_history', on_delete=models.PROTECT)
-    course = models.ForeignKey(Course, verbose_name=_('course'), editable=False,
-                               related_name='registrations_history', on_delete=models.PROTECT)
+    registration = models.ForeignKey(CourseRegistration, editable=False, on_delete=models.PROTECT,
+                                     related_name='course_history', verbose_name=_('course'))
+    course = models.ForeignKey(Course, editable=False, on_delete=models.PROTECT,
+                               related_name='registrations_history', verbose_name=_('course'))
     start = models.DateField()
     end = models.DateField(blank=True, null=True)
 
@@ -363,7 +364,7 @@ def update_course_registration_history(sender, instance, created, **kwargs):
 
 
 class CoursePlugin(CMSPlugin):
-    course = models.ForeignKey(Course, verbose_name=_('course'), related_name='+')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='+', verbose_name=_('course'))
     template = models.CharField(_('template'), max_length=100,
                                 choices=settings.LEPRIKON_COURSE_TEMPLATES,
                                 default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
@@ -374,18 +375,19 @@ class CoursePlugin(CMSPlugin):
 
 
 class CourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
-    departments = models.ManyToManyField(Department, verbose_name=_('departments'), blank=True, related_name='+',
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
+    departments = models.ManyToManyField(Department, blank=True, related_name='+', verbose_name=_('departments'),
                                          help_text=_('Keep empty to skip searching by departments.'))
-    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), blank=True, related_name='+',
+    course_types = models.ManyToManyField(SubjectType, blank=True,
                                           limit_choices_to={'subject_type': SubjectType.COURSE},
+                                          related_name='+', verbose_name=_('course types'),
                                           help_text=_('Keep empty to skip searching by course types.'))
-    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
+    age_groups = models.ManyToManyField(AgeGroup, blank=True, related_name='+', verbose_name=_('age groups'),
                                         help_text=_('Keep empty to skip searching by age groups.'))
-    groups = models.ManyToManyField(SubjectGroup, verbose_name=_('course groups'), blank=True, related_name='+',
+    groups = models.ManyToManyField(SubjectGroup, blank=True, related_name='+', verbose_name=_('course groups'),
                                     help_text=_('Keep empty to skip searching by groups.'))
-    leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
+    leaders = models.ManyToManyField(Leader, blank=True, related_name='+', verbose_name=_('leaders'),
                                      help_text=_('Keep empty to skip searching by leaders.'))
     template = models.CharField(_('template'), max_length=100,
                                 choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
@@ -457,10 +459,10 @@ class CourseListPlugin(CMSPlugin):
 
 
 class FilteredCourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
-    course_types = models.ManyToManyField(SubjectType, verbose_name=_('course types'), related_name='+',
-                                          limit_choices_to={'subject_type': SubjectType.COURSE})
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
+    course_types = models.ManyToManyField(SubjectType, limit_choices_to={'subject_type': SubjectType.COURSE},
+                                          related_name='+', verbose_name=_('course types'))
 
     class Meta:
         app_label = 'leprikon'

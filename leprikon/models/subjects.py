@@ -73,17 +73,17 @@ class SubjectType(models.Model):
     slug = models.SlugField()
     order = models.IntegerField(_('order'), blank=True, default=0)
     questions = models.ManyToManyField(
-        Question, verbose_name=_('additional questions'), blank=True, related_name='+',
+        Question, blank=True, related_name='+', verbose_name=_('additional questions'),
         help_text=_('Add additional questions to be asked in the registration form.'),
     )
     registration_agreements = models.ManyToManyField(
-        Agreement, verbose_name=_('additional legal agreements'), blank=True, related_name='+',
+        Agreement, blank=True, related_name='+', verbose_name=_('additional legal agreements'),
         help_text=_('Add additional legal agreements specific to this subject type.'),
     )
-    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                        verbose_name=_('registration print setup'), blank=True, null=True)
-    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                         verbose_name=_('payment print setup'), blank=True, null=True)
+    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                        related_name='+', verbose_name=_('registration print setup'))
+    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                         related_name='+', verbose_name=_('payment print setup'))
 
     class Meta:
         app_label = 'leprikon'
@@ -111,8 +111,9 @@ class SubjectType(models.Model):
 
 
 class SubjectTypeAttachment(models.Model):
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'), related_name='attachments')
-    file = FilerFileField(related_name='+')
+    subject_type = models.ForeignKey(SubjectType, on_delete=models.CASCADE,
+                                     related_name='attachments', verbose_name=_('subject type'))
+    file = FilerFileField(on_delete=models.CASCADE, related_name='+')
     order = models.IntegerField(_('order'), blank=True, default=0)
 
     class Meta:
@@ -130,7 +131,7 @@ class SubjectGroup(models.Model):
     plural = models.CharField(_('plural'), max_length=150)
     color = ColorField(_('color'))
     order = models.IntegerField(_('order'), blank=True, default=0)
-    subject_types = models.ManyToManyField(SubjectType, verbose_name=_('subject type'), related_name='groups')
+    subject_types = models.ManyToManyField(SubjectType, related_name='groups', verbose_name=_('subject type'))
 
     class Meta:
         app_label = 'leprikon'
@@ -173,29 +174,30 @@ class Subject(models.Model):
     ]
     REGISTRATION_TYPES = dict(REGISTRATION_TYPE_CHOICES)
 
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'), related_name='subjects', editable=False)
-    subject_type = models.ForeignKey(SubjectType, verbose_name=_('subject type'),
-                                     related_name='subjects', on_delete=models.PROTECT)
+    school_year = models.ForeignKey(SchoolYear, editable=False, on_delete=models.CASCADE,
+                                    related_name='subjects', verbose_name=_('school year'))
+    subject_type = models.ForeignKey(SubjectType, on_delete=models.PROTECT,
+                                     related_name='subjects', verbose_name=_('subject type'))
     registration_type = models.CharField(_('registration type'), choices=REGISTRATION_TYPE_CHOICES, max_length=1)
     code = models.PositiveSmallIntegerField(_('accounting code'), blank=True, default=0)
     name = models.CharField(_('name'), max_length=150)
     description = HTMLField(_('description'), blank=True, default='')
-    department = models.ForeignKey(Department, verbose_name=_('department'), blank=True, null=True,
-                                   related_name='subjects', on_delete=models.SET_NULL)
+    department = models.ForeignKey(Department, blank=True, null=True, on_delete=models.SET_NULL,
+                                   related_name='subjects', verbose_name=_('department'))
     groups = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
-    place = models.ForeignKey(Place, verbose_name=_('place'), blank=True, null=True,
-                              related_name='subjects', on_delete=models.SET_NULL)
-    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), related_name='subjects')
-    target_groups = models.ManyToManyField(TargetGroup, verbose_name=_('target groups'), related_name='subjects')
-    leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), related_name='subjects', blank=True)
+    place = models.ForeignKey(Place, blank=True, null=True, on_delete=models.SET_NULL,
+                              related_name='subjects', verbose_name=_('place'))
+    age_groups = models.ManyToManyField(AgeGroup, related_name='subjects', verbose_name=_('age groups'))
+    target_groups = models.ManyToManyField(TargetGroup, related_name='subjects', verbose_name=_('target groups'))
+    leaders = models.ManyToManyField(Leader, blank=True, related_name='subjects', verbose_name=_('leaders'))
     price = PriceField(_('price'), blank=True, null=True)
     public = models.BooleanField(_('public'), default=False)
     reg_from = models.DateTimeField(_('registration active from'), blank=True, null=True)
     reg_to = models.DateTimeField(_('registration active to'), blank=True, null=True)
     photo = FilerImageField(verbose_name=_('photo'), blank=True, null=True,
                             related_name='+', on_delete=models.SET_NULL)
-    page = PageField(verbose_name=_('page'), blank=True, null=True,
-                     related_name='+', on_delete=models.SET_NULL)
+    page = PageField(blank=True, null=True, on_delete=models.SET_NULL,
+                     related_name='+', verbose_name=_('page'))
     min_participants_count = models.PositiveIntegerField(
         _('minimal participants count per registration'),
         default=1,
@@ -224,13 +226,13 @@ class Subject(models.Model):
                                        related_name='+', blank=True,
                                        help_text=_('Add additional questions to be asked in the registration form.'))
     registration_agreements = models.ManyToManyField(
-        Agreement, verbose_name=_('additional legal agreements'), blank=True, related_name='+',
+        Agreement, blank=True, related_name='+', verbose_name=_('additional legal agreements'),
         help_text=_('Add additional legal agreements specific for this subject.'),
     )
-    reg_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                        verbose_name=_('registration print setup'), blank=True, null=True)
-    bill_print_setup = models.ForeignKey(PrintSetup, on_delete=models.SET_NULL, related_name='+',
-                                         verbose_name=_('payment print setup'), blank=True, null=True)
+    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                        related_name='+', verbose_name=_('registration print setup'))
+    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                         related_name='+', verbose_name=_('payment print setup'))
 
     class Meta:
         app_label = 'leprikon'
@@ -464,7 +466,7 @@ class JournalPeriod:
 
 
 class SubjectVariant(models.Model):
-    subject = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='variants')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='variants', verbose_name=_('subject'))
     name = models.CharField(_('variant name'), max_length=150)
     description = HTMLField(_('variant description'), blank=True, default='')
     price = PriceField(_('price'), blank=True, null=True)
@@ -481,8 +483,9 @@ class SubjectVariant(models.Model):
 
 
 class SubjectAttachment(models.Model):
-    subject = models.ForeignKey(Subject, verbose_name=_('subject'), related_name='attachments')
-    file = FilerFileField(related_name='+')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE,
+                                related_name='attachments', verbose_name=_('subject'))
+    file = FilerFileField(on_delete=models.CASCADE, related_name='+')
     order = models.IntegerField(_('order'), blank=True, default=0)
 
     class Meta:
@@ -587,12 +590,12 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     slug = models.SlugField(editable=False)
     created = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                             related_name='leprikon_registrations', on_delete=models.PROTECT)
-    subject = models.ForeignKey(Subject, verbose_name=_('subject'),
-                                related_name='registrations', on_delete=models.PROTECT)
-    subject_variant = models.ForeignKey(SubjectVariant, null=True, verbose_name=_('variant'),
-                                        related_name='registrations', on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                             related_name='leprikon_registrations', verbose_name=_('user'))
+    subject = models.ForeignKey(Subject, on_delete=models.PROTECT,
+                                related_name='registrations', verbose_name=_('subject'))
+    subject_variant = models.ForeignKey(SubjectVariant, null=True, on_delete=models.PROTECT,
+                                        related_name='registrations', verbose_name=_('variant'))
     price = PriceField(_('price'), editable=False)
 
     approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
@@ -885,8 +888,8 @@ class SchoolMixin:
 
 
 class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
-    registration = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
-                                     related_name='participants', on_delete=models.CASCADE)
+    registration = models.ForeignKey(SubjectRegistration, on_delete=models.CASCADE,
+                                     related_name='participants', verbose_name=_('registration'))
     MALE = 'm'
     FEMALE = 'f'
     gender = models.CharField(_('gender'), max_length=1, editable=False,
@@ -894,18 +897,18 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     birth_num = BirthNumberField(_('birth number'))
-    age_group = models.ForeignKey(AgeGroup, verbose_name=_('age group'),
-                                  related_name='+', on_delete=models.PROTECT)
+    age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT,
+                                  related_name='+', verbose_name=_('age group'))
     street = models.CharField(_('street'), max_length=150)
     city = models.CharField(_('city'), max_length=150)
     postal_code = PostalCodeField(_('postal code'))
-    citizenship = models.ForeignKey(Citizenship, verbose_name=_('citizenship'),
-                                    related_name='+', on_delete=models.PROTECT)
+    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('citizenship'))
     phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
     email = EmailField(_('email address'), blank=True, default='')
 
-    school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                               related_name='+', on_delete=models.PROTECT)
+    school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
+                               related_name='+', verbose_name=_('school'))
     school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
     health = models.TextField(_('health'), blank=True, default='')
@@ -1016,10 +1019,10 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
 
 
 class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
-    registration = models.OneToOneField(SubjectRegistration, verbose_name=_('registration'),
-                                        related_name='group', on_delete=models.CASCADE)
-    target_group = models.ForeignKey(TargetGroup, verbose_name=_('target group'),
-                                     related_name='+', on_delete=models.PROTECT)
+    registration = models.OneToOneField(SubjectRegistration, on_delete=models.CASCADE,
+                                        related_name='group', verbose_name=_('registration'))
+    target_group = models.ForeignKey(TargetGroup, on_delete=models.PROTECT,
+                                     related_name='+', verbose_name=_('target group'))
     name = models.CharField(_('group name'), blank=True, null=True, max_length=150)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
@@ -1028,8 +1031,8 @@ class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.
     postal_code = PostalCodeField(_('postal code'))
     phone = models.CharField(_('phone'), max_length=30)
     email = EmailField(_('email address'))
-    school = models.ForeignKey(School, verbose_name=_('school'), blank=True, null=True,
-                               related_name='+', on_delete=models.PROTECT)
+    school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
+                               related_name='+', verbose_name=_('school'))
     school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
 
@@ -1045,8 +1048,8 @@ class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.
 
 
 class SubjectRegistrationGroupMember(models.Model):
-    registration = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
-                                     related_name='group_members', on_delete=models.CASCADE)
+    registration = models.ForeignKey(SubjectRegistration, on_delete=models.CASCADE,
+                                     related_name='group_members', verbose_name=_('registration'))
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     note = models.CharField(_('note'), max_length=150, blank=True, default='')
@@ -1126,22 +1129,22 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
     returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
 
-    registration = models.ForeignKey(SubjectRegistration, verbose_name=_('registration'),
-                                     related_name='payments', on_delete=models.PROTECT)
+    registration = models.ForeignKey(SubjectRegistration, on_delete=models.PROTECT,
+                                     related_name='payments', verbose_name=_('registration'))
     accounted = models.DateTimeField(_('accounted time'), default=timezone.now)
     payment_type = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note = models.CharField(_('note'), max_length=300, blank=True, default='')
-    related_payment = models.OneToOneField('self', verbose_name=_('related payment'), blank=True, null=True,
-                                           limit_choices_to={'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)},
-                                           related_name='related_payments', on_delete=models.PROTECT)
-    bankreader_transaction = models.OneToOneField(BankreaderTransaction, verbose_name=_('bank account transaction'),
-                                                  editable=False, blank=True, null=True, on_delete=models.PROTECT)
-    pays_payment = models.OneToOneField(PaysPayment, editable=False, verbose_name=_('online payment'),
+    related_payment = models.OneToOneField('self', blank=True, limit_choices_to={
+        'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)
+    }, null=True, on_delete=models.PROTECT, related_name='related_payments', verbose_name=_('related payment'))
+    bankreader_transaction = models.OneToOneField(BankreaderTransaction, blank=True, editable=False, null=True,
+                                                  on_delete=models.PROTECT, verbose_name=_('bank account transaction'))
+    pays_payment = models.OneToOneField(PaysPayment, blank=True, editable=False,
                                         limit_choices_to={'status': PaysPayment.REALIZED},
-                                        blank=True, null=True, on_delete=models.PROTECT)
-    received_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_('received by'),
-                                    related_name='+', on_delete=models.PROTECT)
+                                        null=True, on_delete=models.PROTECT, verbose_name=_('online payment'))
+    received_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('received by'))
 
     class Meta:
         app_label = 'leprikon'

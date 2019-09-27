@@ -1,9 +1,9 @@
 import uuid
 
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
 from django.template.loader import get_template
+from django.urls import reverse_lazy as reverse
 from django.utils.encoding import force_text
 from django.utils.functional import cached_property
 from django.utils.timezone import now
@@ -40,9 +40,10 @@ class Message(models.Model):
 
 class MessageRecipient(models.Model):
     slug = models.SlugField(editable=False)
-    message = models.ForeignKey(Message, verbose_name=_('message'), related_name='recipients', editable=False)
-    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('recipient'), editable=False,
-                                  related_name='leprikon_messages')
+    message = models.ForeignKey(Message, editable=False, on_delete=models.CASCADE,
+                                related_name='recipients', verbose_name=_('message'))
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, on_delete=models.CASCADE,
+                                  related_name='leprikon_messages', verbose_name=_('recipient'))
     sent = models.DateTimeField(_('sent'), editable=False, auto_now_add=True)
     viewed = models.DateTimeField(_('viewed on site'), editable=False, null=True, default=None)
     sent_mail = models.DateTimeField(_('sent by email'), editable=False, null=True, default=None)
@@ -89,8 +90,9 @@ class MessageRecipient(models.Model):
 
 
 class MessageAttachment(models.Model):
-    message = models.ForeignKey(Message, verbose_name=_('message'), related_name='attachments')
-    file = FilerFileField(related_name='+')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE,
+                                related_name='attachments', verbose_name=_('message'))
+    file = FilerFileField(on_delete=models.CASCADE, related_name='+')
 
     class Meta:
         app_label = 'leprikon'

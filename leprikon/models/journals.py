@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.urls import reverse_lazy as reverse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
@@ -15,14 +15,14 @@ def get_default_agenda():
 
 
 class JournalEntry(StartEndMixin, models.Model):
-    subject = models.ForeignKey(Subject, verbose_name=_('subject'), editable=False,
-                                related_name='journal_entries', on_delete=models.PROTECT)
+    subject = models.ForeignKey(Subject, editable=False, on_delete=models.PROTECT,
+                                related_name='journal_entries', verbose_name=_('subject'))
     date = models.DateField(_('date'))
     start = models.TimeField(_('start time'), blank=True, null=True)
     end = models.TimeField(_('end time'), blank=True, null=True)
     agenda = HTMLField(_('session agenda'), default=get_default_agenda)
-    participants = models.ManyToManyField(SubjectRegistrationParticipant, verbose_name=_('participants'), blank=True,
-                                          related_name='journal_entries')
+    participants = models.ManyToManyField(SubjectRegistrationParticipant, blank=True,
+                                          related_name='journal_entries', verbose_name=_('participants'))
 
     class Meta:
         app_label = 'leprikon'
@@ -109,10 +109,10 @@ class JournalEntry(StartEndMixin, models.Model):
 
 
 class JournalLeaderEntry(StartEndMixin, models.Model):
-    journal_entry = models.ForeignKey(JournalEntry, verbose_name=_('journal entry'),
-                                      related_name='leader_entries', editable=False)
-    timesheet = models.ForeignKey('leprikon.Timesheet', verbose_name=_('timesheet'), related_name='journal_entries',
-                                  editable=False, on_delete=models.PROTECT)
+    journal_entry = models.ForeignKey(JournalEntry, editable=False, on_delete=models.CASCADE,
+                                      related_name='leader_entries', verbose_name=_('journal entry'))
+    timesheet = models.ForeignKey('leprikon.Timesheet', editable=False, on_delete=models.PROTECT,
+                                  related_name='journal_entries', verbose_name=_('timesheet'))
     start = models.TimeField(_('start time'))
     end = models.TimeField(_('end time'))
 

@@ -162,12 +162,12 @@ class EventRegistration(SubjectRegistration):
 
 
 class EventDiscount(SubjectDiscount):
-    registration = models.ForeignKey(EventRegistration, verbose_name=_('registration'),
-                                     related_name='discounts', on_delete=models.PROTECT)
+    registration = models.ForeignKey(EventRegistration, on_delete=models.CASCADE,
+                                     related_name='discounts', verbose_name=_('registration'))
 
 
 class EventPlugin(CMSPlugin):
-    event = models.ForeignKey(Event, verbose_name=_('event'), related_name='+')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='+', verbose_name=_('event'))
     template = models.CharField(_('template'), max_length=100,
                                 choices=settings.LEPRIKON_EVENT_TEMPLATES,
                                 default=settings.LEPRIKON_EVENT_TEMPLATES[0][0],
@@ -178,16 +178,17 @@ class EventPlugin(CMSPlugin):
 
 
 class EventListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
-    departments = models.ManyToManyField(Department, verbose_name=_('departments'), blank=True, related_name='+',
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
+    departments = models.ManyToManyField(Department, blank=True, related_name='+', verbose_name=_('departments'),
                                          help_text=_('Keep empty to skip searching by departments.'))
-    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event types'), blank=True, related_name='+',
+    event_types = models.ManyToManyField(SubjectType, blank=True,
                                          limit_choices_to={'subject_type': SubjectType.EVENT},
+                                         related_name='+', verbose_name=_('event types'),
                                          help_text=_('Keep empty to skip searching by event types.'))
-    age_groups = models.ManyToManyField(AgeGroup, verbose_name=_('age groups'), blank=True, related_name='+',
+    age_groups = models.ManyToManyField(AgeGroup, blank=True, related_name='+', verbose_name=_('age groups'),
                                         help_text=_('Keep empty to skip searching by age groups.'))
-    groups = models.ManyToManyField(SubjectGroup, verbose_name=_('event groups'), blank=True, related_name='+',
+    groups = models.ManyToManyField(SubjectGroup, blank=True, related_name='+', verbose_name=_('event groups'),
                                     help_text=_('Keep empty to skip searching by groups.'))
     leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
                                      help_text=_('Keep empty to skip searching by leaders.'))
@@ -261,10 +262,10 @@ class EventListPlugin(CMSPlugin):
 
 
 class FilteredEventListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, verbose_name=_('school year'),
-                                    related_name='+', blank=True, null=True)
-    event_types = models.ManyToManyField(SubjectType, verbose_name=_('event types'), related_name='+',
-                                         limit_choices_to={'subject_type': SubjectType.EVENT})
+    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
+                                    related_name='+', verbose_name=_('school year'))
+    event_types = models.ManyToManyField(SubjectType, limit_choices_to={'subject_type': SubjectType.EVENT},
+                                         related_name='+', verbose_name=_('event types'))
 
     class Meta:
         app_label = 'leprikon'
