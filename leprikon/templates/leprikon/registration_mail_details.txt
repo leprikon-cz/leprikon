@@ -1,3 +1,5 @@
 {% load i18n leprikon_tags %}{{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}
-{% if object.group_name %}{% trans 'Group name' %}: {{ object.group_name }}
-{% endif %}{% if object.all_participants %}{% if object.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}: {{ object.all_participants|comma_separated }}{% endif %}
+{% if object.subject.registration_type_participants %}{% if object.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}: {{ object.all_participants|comma_separated }}
+{% elif object.subject.registration_type_groups %}{% trans 'Contact person' %}: {{ object.group.first_name }}{% if object.group.name %}
+{% trans 'Group name' %}: {{ object.group.name }}{% endif %}
+{% endif %}

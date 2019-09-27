@@ -2,7 +2,7 @@
 
 <p>
 {% blocktrans asvar text %}Hello,
-we are sorry to inform You, that your registration was refused.{% endblocktrans %}
+we are sorry to inform You, that your registration was refused.{% endblocktrans %}{{ text|linebreaks }}
 </p>
 
 {% include 'leprikon/registration_mail_details.html' %}
