@@ -1,12 +1,13 @@
 from bankreader.models import Transaction as BankreaderTransaction
 from django import forms
 from django.conf.urls import url as urls_url
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.admin.utils import unquote
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import (
     HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
@@ -467,14 +468,26 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     def approve(self, request, queryset):
         for registration in queryset.all():
-            registration.approve()
-        self.message_user(request, _('Selected registrations were approved.'))
+            try:
+                registration.approve()
+            except ValidationError as e:
+                self.message_user(request, e.message, messages.ERROR)
+            else:
+                self.message_user(request, _(
+                    'The registration {r} has been approved and the user has been notified.'
+                ).format(r=registration))
     approve.short_description = _('Approve selected registrations')
 
     def refuse(self, request, queryset):
         for registration in queryset.all():
-            registration.refuse()
-        self.message_user(request, _('Selected registrations were refused.'))
+            try:
+                registration.refuse()
+            except ValidationError as e:
+                self.message_user(request, e.message, messages.ERROR)
+            else:
+                self.message_user(request, _(
+                    'The registration {r} has been refused and the user has been notified.'
+                ).format(r=registration))
     refuse.short_description = _('Refuse selected registrations')
 
     def request_payment(self, request, queryset):
@@ -485,8 +498,14 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     def cancel(self, request, queryset):
         for registration in queryset.all():
-            registration.cancel()
-        self.message_user(request, _('Selected registrations were canceled.'))
+            try:
+                registration.cancel()
+            except ValidationError as e:
+                self.message_user(request, e.message, messages.ERROR)
+            else:
+                self.message_user(request, _(
+                    'The registration {r} has been canceled and the user has been notified.'
+                ).format(r=registration))
     cancel.short_description = _('Cancel selected registrations')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

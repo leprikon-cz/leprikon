@@ -758,35 +758,56 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     }
 
     def approve(self):
-        with transaction.atomic():
-            if self.approved is None:
+        if self.approved is None:
+            with transaction.atomic():
+                self.canceled = None
                 self.approved = timezone.now()
                 self.save()
                 self.send_mail('approved')
                 if self.payment_requested is None:
                     self.request_payment()
+        else:
+            raise ValidationError((
+                _('Unfortunately, it is not possible to restore canceled registration {r}. Please create new one.')
+                if self.canceled else
+                _('The registration {r} has already been approved.')
+            ).format(r=self))
 
     def request_payment(self):
         with transaction.atomic():
             if self.payment_requested is None:
                 self.payment_requested = timezone.now()
                 self.save()
-                if self.current_receivable:
-                    self.send_mail('payment_request')
+            if self.current_receivable:
+                self.send_mail('payment_request')
 
     def refuse(self):
-        with transaction.atomic():
+        if self.approved is None:
             if self.canceled is None:
-                self.canceled = timezone.now()
-                self.save()
-                self.send_mail('refused')
+                with transaction.atomic():
+                    self.canceled = timezone.now()
+                    self.save()
+                    self.send_mail('refused')
+            else:
+                raise ValidationError(_('The registration {r} has already been refued.').format(r=self))
+        else:
+            raise ValidationError(_(
+                'Unfortunately, it is not possible to refuse the registration {r}. However, You may cancel it.'
+            ).format(r=self))
 
     def cancel(self):
-        with transaction.atomic():
+        if self.approved:
             if self.canceled is None:
-                self.canceled = timezone.now()
-                self.save()
-                self.send_mail('canceled')
+                with transaction.atomic():
+                    self.canceled = timezone.now()
+                    self.save()
+                    self.send_mail('canceled')
+            else:
+                raise ValidationError(_('The registration {r} has already been canceled.').format(r=self))
+        else:
+            raise ValidationError(_(
+                'Unfortunately, it is not possible to cancel the registration {r}. However, You may refuse it.'
+            ).format(r=self))
 
     def save(self, *args, **kwargs):
         if not self.slug:
