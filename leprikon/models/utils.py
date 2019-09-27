@@ -43,6 +43,13 @@ class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))
             balance=self.balance,
         )
 
+    def __str__(self):
+        return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
+            color=self.color,
+            balance=currency(self.balance),
+            title=self.title,
+        )
+
     def __add__(self, other):
         if other == 0:
             return self

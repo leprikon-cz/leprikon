@@ -139,7 +139,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
-        'payments_partial_balance', 'payments_total_balance', 'course_discounts', 'course_payments',
+        'payments_partial_status', 'payments_total_status', 'course_discounts', 'course_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note',
     )
     list_filter = (
@@ -197,33 +197,15 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     course_payments.allow_tags = True
     course_payments.short_description = _('course payments')
 
-    def payments_partial_balance(self, obj):
-        return obj.get_payment_statuses().partial.balance
-    payments_partial_balance.short_description = _('actual balance')
+    def payments_partial_status(self, obj):
+        return str(obj.payment_statuses.partial)
+    payments_partial_status.allow_tags = True
+    payments_partial_status.short_description = _('actual balance')
 
-    def payments_total_balance(self, obj):
-        return obj.get_payment_statuses().total.balance
-    payments_total_balance.short_description = _('total balance')
-
-    def payments_partial_balance(self, obj):
-        status = obj.get_payment_statuses().partial
-        return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
-            color=status.color,
-            balance=currency(status.balance),
-            title=status.title,
-        )
-    payments_partial_balance.allow_tags = True
-    payments_partial_balance.short_description = _('actual balance')
-
-    def payments_total_balance(self, obj):
-        status = obj.get_payment_statuses().total
-        return '<strong title="{title}" style="color: {color}">{balance}</strong>'.format(
-            color=status.color,
-            balance=currency(status.balance),
-            title=status.title,
-        )
-    payments_total_balance.allow_tags = True
-    payments_total_balance.short_description = _('total balance')
+    def payments_total_status(self, obj):
+        return str(obj.payment_statuses.total)
+    payments_total_status.allow_tags = True
+    payments_total_status.short_description = _('total balance')
 
 
 @admin.register(CourseDiscount)
