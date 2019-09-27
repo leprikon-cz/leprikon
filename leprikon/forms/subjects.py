@@ -259,22 +259,30 @@ class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, form
             self.fields['age_group'].initial = self.subject.age_groups.first()
 
         # initial school
-        self.fields['school'].initial = 'other' if School.objects.count() == 0 else None
+        if School.objects.count() == 0:
+            self.fields['school'].initial = 'other'
+
+        # prepare data
+        prefix = self.prefix + '-'
+        data = {
+            key[len(prefix):]: value
+            for key, value in kwargs.get('data', {}).items()
+            if key.startswith(prefix)
+        }
 
         # dynamically required fields
         try:
-            if get_age(get_birth_date(kwargs['data']['birth_num'])) < 18:
-                self.fields['has_parent1'].required = True
-            else:
-                self.fields['phone'].required = True
-                self.fields['email'].required = True
+            age = get_age(get_birth_date(data['birth_num']))
         except Exception:
-            pass
+            age = None
 
-        try:
-            has_parent = ['has_parent1' in kwargs.get('data'), 'has_parent2' in kwargs.get('data')]
-        except TypeError:
-            has_parent = [False, False]
+        if age is not None and age < 18:
+            self.fields['has_parent1'].required = True
+        else:
+            self.fields['phone'].required = True
+            self.fields['email'].required = True
+
+        has_parent = ['has_parent1' in data, 'has_parent2' in data]
         for n in range(2):
             if has_parent[n]:
                 for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
