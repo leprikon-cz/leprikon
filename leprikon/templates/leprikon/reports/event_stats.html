@@ -23,7 +23,7 @@
         <th>{{ citizenship }}</th>
         {% endfor %}
     </tr>
-    {% for counts in registrations_counts_by_age_groups %}
+    {% for counts in participants_counts_by_age_groups %}
     <tr>
         <th>{{ counts.age_group.title }}</th>
         <td class="right">{{ counts.all }}</td>
@@ -36,10 +36,10 @@
     {% endfor %}
     <tr>
         <th>{% trans 'Total' %}</th>
-        <td class="right">{{ registrations_counts.all }}</td>
-        <td class="right">{{ registrations_counts.boys }}</td>
-        <td class="right">{{ registrations_counts.girls }}</td>
-        {% for count in registrations_counts.citizenships %}
+        <td class="right">{{ participants_counts.all }}</td>
+        <td class="right">{{ participants_counts.boys }}</td>
+        <td class="right">{{ participants_counts.girls }}</td>
+        {% for count in participants_counts.citizenships %}
         <td class="right">{{ count }}</td>
         {% endfor %}
     </tr>
