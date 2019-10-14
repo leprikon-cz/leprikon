@@ -133,6 +133,11 @@
                         <a class="noprint" href="{% url_with_back 'leprikon:journalentry_update' entry.id %}" title="{% trans 'edit' %}">
                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                         </a>
+                        {% if not entry.affects_submitted_timesheets %}
+                        <a class="noprint" href="{% url_with_back 'leprikon:journalentry_delete' entry.id %}" title="{% trans 'delete' %}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </a>
+                        {% endif %}
                         {% endif %}
                         {{ entry.date }}
                     </div>
@@ -215,6 +220,12 @@
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                         {% trans 'edit' %}
                     </a>
+                    {% if not entry.affects_submitted_timesheets %}
+                    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journalentry_delete' entry.id %}">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        {% trans 'delete' %}
+                    </a>
+                    {% endif %}
                     {% endif %}
                     {{ entry.agenda | safe }}
                 </td>

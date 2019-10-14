@@ -89,12 +89,9 @@ class JournalEntry(StartEndMixin, models.Model):
             if le.timesheet.leader not in self.subject.all_leaders
         )
 
-    @property
-    def timesheets(self):
-        from .timesheets import Timesheet
-        return Timesheet.objects.by_date(self.start).filter(
-            leader__in=self.all_leaders + self.all_alternates,
-        )
+    @cached_property
+    def affects_submitted_timesheets(self):
+        return self.leader_entries.filter(timesheet__submitted=True).exists()
 
     def save(self, *args, **kwargs):
         if self.end is None:

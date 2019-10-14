@@ -83,7 +83,7 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj:
-            if obj.leader_entries.filter(timesheet__submitted=True).exists():
+            if obj.affects_submitted_timesheets:
                 return False
             else:
                 return super(JournalEntryAdmin, self).has_delete_permission(request, obj)

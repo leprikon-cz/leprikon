@@ -80,7 +80,7 @@ class JournalEntryDeleteView(DeleteView):
 
     def get_object(self):
         obj = super(JournalEntryDeleteView, self).get_object()
-        if obj.timesheets.filter(submitted=True).exists():
+        if obj.affects_submitted_timesheets:
             raise Http404()
         return obj
 
