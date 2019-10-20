@@ -24,7 +24,6 @@ def participants(request, subject_id):
     return JsonResponse({
         'participants': list(
             {'value': p.id, 'label': str(p)}
-            for reg in subject.subject.get_approved_registrations(d)
-            for p in reg.all_participants
+            for p in subject.get_valid_participants(d)
         ),
     })

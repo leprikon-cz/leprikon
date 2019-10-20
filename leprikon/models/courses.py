@@ -75,18 +75,6 @@ class Course(Subject):
         return (CourseRegistration.objects.filter(course_history__course=self)
                 .exclude(id__in=self.active_registrations.all()).distinct())
 
-    def get_approved_registrations(self, d):
-        ids = list(
-            CourseRegistrationHistory.objects
-            .filter(course=self, start__lte=d)
-            .exclude(end__lt=d)
-            .values_list('registration_id', flat=True)
-        )
-        return CourseRegistration.objects.filter(
-            id__in=ids,
-            approved__date__lte=d,
-        ).exclude(canceled__date__lt=d).distinct()
-
     def copy_to_school_year(old, school_year):
         new = Course.objects.get(id=old.id)
         new.id, new.pk = None, None

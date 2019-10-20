@@ -74,7 +74,7 @@ class JournalEntryAdminForm(forms.ModelForm):
 
     class Meta:
         model = JournalEntry
-        fields = ['date', 'start', 'end', 'agenda', 'participants']
+        fields = ['date', 'start', 'end', 'agenda', 'participants', 'participants_instructed']
 
     def __init__(self, *args, **kwargs):
         self.subject = kwargs.pop('subject', None) or kwargs['instance'].subject
@@ -107,16 +107,16 @@ class JournalEntryAdminForm(forms.ModelForm):
                 d = self.fields['date'].clean(kwargs['data']['date'])
             except (KeyError, TypeError, ValidationError):
                 d = self.initial['date']
-
-        qs = self.fields['participants'].widget.choices.queryset
-        self.fields['participants'].widget.choices.queryset = qs.filter(
-            registration__in=self.instance.subject.subject.get_approved_registrations(d),
-        )
+        self.fields['participants'].widget.choices.queryset = self.instance.subject.get_valid_participants(d)
         self.fields['participants'].help_text = None
 
+        self.fields['participants_instructed'].widget.choices.queryset = self.instance.subject.get_valid_participants(d)
+        self.fields['participants_instructed'].help_text = None
+
     def clean(self):
-        start = self.cleaned_data.get('start', None)
-        end = self.cleaned_data.get('end', None)
+        date = self.cleaned_data.get('date', self.instance.date)
+        start = self.cleaned_data.get('start')
+        end = self.cleaned_data.get('end')
 
         # start and end must be both set or both None
         if start is None and end is not None:
@@ -136,6 +136,29 @@ class JournalEntryAdminForm(forms.ModelForm):
                 qs = qs.exclude(id=self.instance.id)
             if qs.exists():
                 raise ValidationError(_('An overlaping entry has already been added in the journal.'))
+
+        # check instructed participants
+        participants = set(self.cleaned_data.get('participants', []))
+        participants_instructed = set(self.cleaned_data.get('participants_instructed', []))
+        not_present_participants_instructed = participants_instructed - participants
+        if not_present_participants_instructed:
+            self.add_error(
+                'participants_instructed',
+                _('Following participants were selected as instructed, but not selected as present: {}').format(
+                    comma_separated(map(str, not_present_participants_instructed))
+                ),
+            )
+        not_instructed_participants = []
+        for participant in participants - participants_instructed:
+            if not participant.instructed.filter(date__lt=date).exists():
+                not_instructed_participants.append(participant)
+        if not_instructed_participants:
+            self.add_error(
+                'participants',
+                _('Following participants have not yet been instructed: {}').format(
+                    comma_separated(map(str, not_instructed_participants))
+                ),
+            )
 
         # check submitted leader entries
         submitted_leader_entries = [

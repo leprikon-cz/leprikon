@@ -178,7 +178,7 @@ input.form-control[type="checkbox"] {
 
 /* do not show radio inputs in multiselect */
 .radio input {
-    display: none;
+    visibility: hidden;
 }
 
 .list-group .list-group {

@@ -158,19 +158,19 @@
             <tr>
                 <th colspan="{{ columns_count }}">{% trans 'Leaders' %}</td>
             </tr>
-            {% for pr in period.get_leader_presences %}
+            {% for presence_record in period.get_leader_presences %}
             <tr>
-                <td>{{ pr.name }}</td>
-                {% for p in pr.presences %}
+                <td>{{ presence_record.person }}</td>
+                {% for p in presence_record.presences %}
                 <td>{% if p %}<a href="{{ p.get_edit_url }}?{% param_back %}={% current_url %}">&#x2717;</a>{% endif %}</td>
                 {% endfor %}
                 <td>&nbsp;</td>
             </tr>
             {% endfor %}
-            {% for pr in period.get_alternate_presences %}
+            {% for presence_record in period.get_alternate_presences %}
             <tr>
-                <td>{{ pr.name }}</td>
-                {% for p in pr.presences %}
+                <td>{{ presence_record.person }}</td>
+                {% for p in presence_record.presences %}
                 <td>{% if p %}<a href="{{ p.get_edit_url }}?{% param_back %}={% current_url %}">&#x2717;</a>{% endif %}</td>
                 {% endfor %}
                 <td>&nbsp;</td>
@@ -179,10 +179,10 @@
             <tr>
                 <th colspan="{{ columns_count }}">{% trans 'Participants' %}</td>
             </tr>
-            {% for pr in period.get_participant_presences %}
+            {% for presence_record in period.get_participant_presences %}
             <tr>
-                <td>{{ pr.name }}</td>
-                {% for p in pr.presences %}
+                <td>{{ presence_record.person }}</td>
+                {% for p in presence_record.presences %}
                 <td>{% if p %}&#x2717;{% endif %}</td>
                 {% endfor %}
                 <td class="empty"></td>
@@ -226,6 +226,13 @@
                         {% trans 'delete' %}
                     </a>
                     {% endif %}
+                    {% endif %}
+                    {% if entry.all_participants_instructed %}
+                    <p>
+                        {% trans 'participants instructed about safety and internal rules' as participants_instructed_label %}
+                        {{ participants_instructed_label | first_upper }}:
+                        {{ entry.all_participants_instructed|comma_separated }}
+                    </p>
                     {% endif %}
                     {{ entry.agenda | safe }}
                 </td>

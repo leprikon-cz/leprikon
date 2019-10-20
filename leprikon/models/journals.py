@@ -10,19 +10,19 @@ from .startend import StartEndMixin
 from .subjects import Subject, SubjectRegistrationParticipant
 
 
-def get_default_agenda():
-    return '<p>{}</p>'.format(_('instruction on OSH'))
-
-
 class JournalEntry(StartEndMixin, models.Model):
     subject = models.ForeignKey(Subject, editable=False, on_delete=models.PROTECT,
                                 related_name='journal_entries', verbose_name=_('subject'))
     date = models.DateField(_('date'))
     start = models.TimeField(_('start time'), blank=True, null=True)
     end = models.TimeField(_('end time'), blank=True, null=True)
-    agenda = HTMLField(_('session agenda'), default=get_default_agenda)
+    agenda = HTMLField(_('session agenda'), default='')
     participants = models.ManyToManyField(SubjectRegistrationParticipant, blank=True,
                                           related_name='journal_entries', verbose_name=_('participants'))
+    participants_instructed = models.ManyToManyField(
+        SubjectRegistrationParticipant, blank=True, related_name='instructed',
+        verbose_name=_('participants instructed about safety and internal rules'),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -62,6 +62,10 @@ class JournalEntry(StartEndMixin, models.Model):
     @cached_property
     def all_participants(self):
         return list(self.participants.all())
+
+    @cached_property
+    def all_participants_instructed(self):
+        return list(self.participants_instructed.all())
 
     @cached_property
     def all_participants_idset(self):

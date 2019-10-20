@@ -11,22 +11,12 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-    $('#id_participants').multiselect({
-        enableFiltering: true,
-        filterPlaceholder: '{% trans 'Search' %}',
-        includeSelectAllOption: true,
-        includeSelectAllIfMoreThan: 3,
-        selectAllText: '{% trans 'select all' %}',
-        nonSelectedText: '',
-        numberDisplayed: 4,
-        nSelectedText: '{% trans 'selected' %}',
-    });
-
     $('#id_leaders').multiselect({
         includeSelectAllOption: true,
         includeSelectAllIfMoreThan: 3,
         selectAllText: '{% trans 'select all' %}',
         nonSelectedText: '',
+        allSelectedText: '{% trans 'all' %}',
         numberDisplayed: 4,
         nSelectedText: '{% trans 'selected' %}',
     });
@@ -37,6 +27,31 @@ $(document).ready(function() {
         includeSelectAllIfMoreThan: 3,
         selectAllText: '{% trans 'select all' %}',
         nonSelectedText: '',
+        allSelectedText: '{% trans 'all' %}',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_participants').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        allSelectedText: '{% trans 'all' %}',
+        numberDisplayed: 4,
+        nSelectedText: '{% trans 'selected' %}',
+    });
+
+    $('#id_participants_instructed').multiselect({
+        enableFiltering: true,
+        filterPlaceholder: '{% trans 'Search' %}',
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        allSelectedText: '{% trans 'all' %}',
         numberDisplayed: 4,
         nSelectedText: '{% trans 'selected' %}',
     });
@@ -44,6 +59,7 @@ $(document).ready(function() {
     $('#id_date').on('dp.change', function(e) {
         $.getJSON('{% url 'leprikon:api:participants' form.instance.subject.id %}?date='+(e.date/1000), function(result) {
             $('#id_participants').multiselect('dataprovider', result['participants']);
+            $('#id_participants_instructed').multiselect('dataprovider', result['participants']);
         });
     });
 

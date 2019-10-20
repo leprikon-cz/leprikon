@@ -306,6 +306,41 @@ class Subject(models.Model):
     def all_registrations(self):
         return list(self.registrations.all())
 
+    def get_valid_participants(self, d):
+        qs = SubjectRegistrationParticipant.objects
+        if self.subject_type.subject_type == SubjectType.COURSE:
+            qs = qs.filter(
+                registration__courseregistration__course_history__course_id=self.id,
+                registration__courseregistration__course_history__start__lte=d,
+            ).exclude(
+                registration__courseregistration__course_history__end__lt=d,
+            )
+        else:  # self.subject_type.subject_type == SubjectType.EVENT:
+            qs = qs.filter(
+                registration__subject_id=self.id,
+                registration__approved__date__lte=d,
+            )
+        return qs.exclude(
+            registration__canceled__date__lt=d,
+        )
+
+    @cached_property
+    def all_approved_participants(self):
+        qs = SubjectRegistrationParticipant.objects
+        if self.subject_type.subject_type == SubjectType.COURSE:
+            qs = qs.filter(
+                registration__courseregistration__course_history__course_id=self.id,
+            ).annotate(
+                approved=models.F('registration__approved'),
+                canceled=models.F('registration__canceled'),
+            )
+        else:  # self.subject_type.subject_type == SubjectType.EVENT:
+            qs = qs.filter(
+                registration__subject_id=self.id,
+                registration__approved__isnull=False,
+            )
+        return list(qs)
+
     @property
     def registration_allowed(self):
         now = timezone.now()
@@ -412,12 +447,18 @@ class JournalPeriod:
         return list(qs)
 
     @cached_property
-    def all_registrations(self):
+    def all_approved_participants(self):
         if self.period:  # course
-            qs = self.subject.registrations_history_registrations.filter(created__lt=self.period.end)
+            return [
+                participant
+                for participant in self.subject.all_approved_participants
+                if (
+                    participant.approved.date() <= self.period.end and
+                    (participant.canceled is None or participant.canceled.date() >= self.period.start)
+                )
+            ]
         else:  # event
-            qs = self.subject.registrations.all()
-        return list(qs)
+            return self.subject.all_approved_participants
 
     @cached_property
     def all_alternates(self):
@@ -427,7 +468,7 @@ class JournalPeriod:
                 alternates.add(alternate)
         return list(alternates)
 
-    PresenceRecord = namedtuple('PresenceRecord', ('name', 'presences'))
+    PresenceRecord = namedtuple('PresenceRecord', ('person', 'presences'))
 
     def get_participant_presences(self):
         return [
@@ -438,8 +479,7 @@ class JournalPeriod:
                     for entry in self.all_journal_entries
                 ]
             )
-            for reg in self.all_registrations
-            for participant in reg.all_participants
+            for participant in self.all_approved_participants
         ]
 
     def get_leader_presences(self):
@@ -940,9 +980,9 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         verbose_name_plural = _('participants')
 
     def __str__(self):
-        return '{full_name} ({birth_date})'.format(
+        return '{full_name} ({birth_year})'.format(
             full_name=self.full_name,
-            birth_date=self.birth_date,
+            birth_year=self.birth_date.year,
         )
 
     @cached_property

@@ -9,7 +9,6 @@ import filer.fields.file
 import filer.fields.image
 from leprikon.conf import settings
 import leprikon.models.fields
-import leprikon.models.journals
 import leprikon.models.startend
 import localflavor.generic.models
 
@@ -76,7 +75,7 @@ class Migration(migrations.Migration):
                 ('date', models.DateField(verbose_name='date')),
                 ('start', models.TimeField(blank=True, null=True, verbose_name='start time')),
                 ('end', models.TimeField(blank=True, null=True, verbose_name='end time')),
-                ('agenda', djangocms_text_ckeditor.fields.HTMLField(default=leprikon.models.journals.get_default_agenda, verbose_name='session agenda')),
+                ('agenda', djangocms_text_ckeditor.fields.HTMLField(default='', verbose_name='session agenda')),
             ],
             options={
                 'ordering': ('date', 'start', 'end'),
