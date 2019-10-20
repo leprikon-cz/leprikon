@@ -117,6 +117,7 @@ class Migration(migrations.Migration):
                 ('participant_school', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.School', verbose_name='school')),
             ],
             options={
+                'ordering': ('last_name', 'first_name'),
                 'verbose_name': 'participant',
                 'verbose_name_plural': 'participants',
             },

@@ -935,6 +935,7 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
 
     class Meta:
         app_label = 'leprikon'
+        ordering = ('last_name', 'first_name')
         verbose_name = _('participant')
         verbose_name_plural = _('participants')
 

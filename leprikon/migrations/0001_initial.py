@@ -220,7 +220,7 @@ class Migration(migrations.Migration):
                 ('photo', filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='filer.Image', verbose_name='photo')),
             ],
             options={
-                'ordering': ('user__first_name', 'user__last_name'),
+                'ordering': ('user__last_name', 'user__first_name'),
                 'verbose_name': 'leader',
                 'verbose_name_plural': 'leaders',
             },

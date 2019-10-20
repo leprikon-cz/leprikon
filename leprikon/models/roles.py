@@ -29,7 +29,7 @@ class Leader(models.Model):
 
     class Meta:
         app_label = 'leprikon'
-        ordering = ('user__first_name', 'user__last_name')
+        ordering = ('user__last_name', 'user__first_name')
         verbose_name = _('leader')
         verbose_name_plural = _('leaders')
 
