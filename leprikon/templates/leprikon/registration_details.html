@@ -5,6 +5,20 @@
     </div>
 
     <div class="box-content">
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Status' %}:</label>
+            <div class="col-sm-8">
+                {% if reg.canceled %}
+                    {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
+                {% elif reg.cancel_request %}
+                    {% trans 'cancellation requested' %}
+                {% elif reg.approved %}
+                    {% blocktrans with d=reg.approved %}registration approved on {{ d }}{% endblocktrans %}
+                {% else %}
+                    {% trans 'awaiting approval' %}
+                {% endif %}
+            </div>
+        </div>
         {% for participant in reg.all_participants %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Participant' %}:</label>
