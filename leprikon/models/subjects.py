@@ -310,10 +310,12 @@ class Subject(models.Model):
         qs = SubjectRegistrationParticipant.objects
         if self.subject_type.subject_type == SubjectType.COURSE:
             qs = qs.filter(
-                registration__courseregistration__course_history__course_id=self.id,
-                registration__courseregistration__course_history__start__lte=d,
-            ).exclude(
-                registration__courseregistration__course_history__end__lt=d,
+                models.Q(registration__courseregistration__course_history__course_id=self.id) &
+                models.Q(registration__courseregistration__course_history__start__lte=d) &
+                (
+                    models.Q(registration__courseregistration__course_history__end__isnull=True) |
+                    models.Q(registration__courseregistration__course_history__end__gte=d)
+                )
             )
         else:  # self.subject_type.subject_type == SubjectType.EVENT:
             qs = qs.filter(
