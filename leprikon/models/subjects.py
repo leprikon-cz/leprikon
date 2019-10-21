@@ -1194,8 +1194,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         ordering = ('accounted',)
 
     def __str__(self):
-        return '{registration}, {payment_type} {amount}'.format(
-            registration=self.registration,
+        return '{payment_type} {amount}'.format(
             payment_type=self.payment_type_label,
             amount=currency(abs(self.amount)),
         )
