@@ -1179,7 +1179,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     related_payment = models.OneToOneField('self', blank=True, limit_choices_to={
         'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)
     }, null=True, on_delete=models.PROTECT, related_name='related_payments', verbose_name=_('related payment'))
-    bankreader_transaction = models.OneToOneField(BankreaderTransaction, blank=True, editable=False, null=True,
+    bankreader_transaction = models.OneToOneField(BankreaderTransaction, blank=True, null=True,
                                                   on_delete=models.PROTECT, verbose_name=_('bank account transaction'))
     pays_payment = models.OneToOneField(PaysPayment, blank=True, editable=False,
                                         limit_choices_to={'status': PaysPayment.REALIZED},

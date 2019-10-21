@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='subjectpayment',
             name='bankreader_transaction',
-            field=models.OneToOneField(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.PROTECT, to='bankreader.Transaction', verbose_name='bank account transaction'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='bankreader.Transaction', verbose_name='bank account transaction'),
         ),
         migrations.AlterField(
             model_name='subjectpayment',
