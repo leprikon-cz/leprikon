@@ -120,7 +120,13 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
+            'debug': DEBUG_TEMPLATE,
             'loaders': [
+                ('template_admin.loader.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ]),
+            ] if DEBUG_TEMPLATE else [
                 ('template_admin.loader.Loader', [
                     ('django.template.loaders.cached.Loader', [
                         'django.template.loaders.filesystem.Loader',
@@ -131,11 +137,6 @@ TEMPLATES = [
         },
     },
 ]
-
-if DEBUG_TEMPLATE:
-    TEMPLATES[0]['OPTIONS']['debug'] = True
-    del TEMPLATES[0]['OPTIONS']['loaders']
-    TEMPLATES[0]['APP_DIRS'] = True
 
 WSGI_APPLICATION = os.environ.get('UWSGI_MODULE', 'leprikon.site.wsgi:application').replace(':', '.')
 
