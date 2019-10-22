@@ -91,7 +91,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
 
     def group_durations(self, obj):
         return '<br/>'.join(
-            '<label>{name}</label>: {duration}'.format(
+            '<b>{name}</b>: {duration}'.format(
                 name=group.name,
                 duration=group.duration,
             ) for group in obj.groups
