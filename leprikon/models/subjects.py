@@ -366,6 +366,10 @@ class Subject(models.Model):
     def get_edit_url(self):
         return reverse('admin:leprikon_{}_change'.format(self.subject._meta.model_name), args=(self.id,))
 
+    def get_age_groups_list(self):
+        return comma_separated(self.all_age_groups)
+    get_age_groups_list.short_description = _('age groups list')
+
     def get_groups_list(self):
         return comma_separated(self.all_groups)
     get_groups_list.short_description = _('groups list')
@@ -373,6 +377,10 @@ class Subject(models.Model):
     def get_leaders_list(self):
         return comma_separated(self.all_leaders)
     get_leaders_list.short_description = _('leaders list')
+
+    def get_target_groups_list(self):
+        return comma_separated(self.all_target_groups)
+    get_target_groups_list.short_description = _('target groups list')
 
     @property
     def active_registrations(self):

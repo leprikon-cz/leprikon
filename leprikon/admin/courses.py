@@ -36,9 +36,11 @@ class CourseAdmin(SubjectBaseAdmin):
     subject_type = SubjectType.COURSE
     registration_model = CourseRegistration
     list_export = (
-        'id', 'code', 'name', 'department', 'subject_type', 'get_groups_list', 'get_leaders_list',
-        'get_times_list',
-        'place', 'public',
+        'id', 'school_year', 'code', 'name', 'department', 'subject_type', 'registration_type',
+        'get_groups_list', 'get_leaders_list', 'get_age_groups_list', 'get_target_groups_list',
+        'get_times_list', 'place', 'public', 'price',
+        'min_participants_count', 'max_participants_count', 'min_group_members_count', 'max_group_members_count',
+        'min_registrations_count', 'max_registrations_count',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
     )
     list_filter = (
