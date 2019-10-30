@@ -95,6 +95,12 @@ class SchoolYearDivision(models.Model):
         SchoolYearPeriod.objects.bulk_create(periods)
         return new
 
+    def get_current_period(self):
+        return (
+            self.periods.filter(end__gte=date.today()).first() or
+            self.periods.last()
+        )
+
 
 class SchoolYearPeriod(StartEndMixin, models.Model):
     school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.CASCADE,

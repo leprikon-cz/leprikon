@@ -97,6 +97,7 @@ class EventAdmin(SubjectBaseAdmin):
 
 @admin.register(EventRegistration)
 class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
+    actions = ('add_full_discount',)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
         'event_discounts', 'event_payments',
@@ -111,6 +112,18 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
         ('subject', EventListFilter),
         ('subject__leaders', LeaderListFilter),
     )
+
+    def add_full_discount(self, request, queryset):
+        EventDiscount.objects.bulk_create(
+            EventDiscount(
+                registration_id=registration.id,
+                amount=registration.price,
+                explanation=_('full discount'),
+            )
+            for registration in queryset.all()
+        )
+        self.message_user(request, _('The discounts have been created for each selected registration.'))
+    add_full_discount.short_description = _('Add full discount')
 
     def event_discounts(self, obj):
         status = obj.get_payment_status()

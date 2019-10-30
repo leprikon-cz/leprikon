@@ -50,12 +50,6 @@ class Course(Subject):
     def has_discounts(self):
         return CourseDiscount.objects.filter(registration__subject_id=self.id).exists()
 
-    def get_current_period(self):
-        return (
-            self.school_year_division.periods.filter(end__gte=date.today()).first() or
-            self.school_year_division.periods.last()
-        )
-
     def get_times_list(self):
         return comma_separated(self.all_times)
     get_times_list.short_description = _('times')

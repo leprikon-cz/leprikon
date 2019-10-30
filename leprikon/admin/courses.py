@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
+from django.db.models import F
 from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -139,6 +140,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
+    actions = ('add_full_discount_for_period',)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
         'payments_partial_status', 'payments_total_status', 'course_discounts', 'course_payments',
@@ -154,6 +156,27 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         ('subject__leaders', LeaderListFilter),
     )
     inlines = (CourseRegistrationHistoryInlineAdmin,)
+
+    def add_full_discount_for_period(self, request, queryset):
+        current_period = {
+            school_year_division.id: school_year_division.get_current_period()
+            for school_year_division in request.school_year.divisions.all()
+        }
+        CourseDiscount.objects.bulk_create(
+            CourseDiscount(
+                registration_id=registration.id,
+                period=current_period[registration.subject.course.school_year_division_id],
+                amount=registration.price,
+                explanation=_('full discount for current period'),
+            )
+            for registration in queryset.annotate(
+                school_year_division_id=F('subject__course__school_year_division_id'),
+            )
+        )
+        self.message_user(request, _(
+            'The discounts have been created for each selected registration and current period.'
+        ))
+    add_full_discount_for_period.short_description = _('Add full discount for current period')
 
     def course_discounts(self, obj):
         html = []
