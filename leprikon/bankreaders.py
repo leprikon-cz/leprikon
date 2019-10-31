@@ -5,8 +5,8 @@ from bankreader.readers.gpc import GpcReader
 
 
 @register_reader
-class CZGpcReader(GpcReader):
-    label = 'Formát GPC'
+class CsobGpcReader(GpcReader):
+    label = 'ČSOB GPC'
     encoding = 'cp1250'
 
 
