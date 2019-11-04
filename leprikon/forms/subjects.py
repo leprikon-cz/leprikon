@@ -6,13 +6,10 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
-from django.db.utils import IntegrityError
 from django.forms.models import inlineformset_factory
-from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from verified_email_field.forms import VerifiedEmailField
 
 from ..models.agegroup import AgeGroup
 from ..models.courses import Course, CourseRegistration
@@ -478,8 +475,8 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                     'subject': subject,
                     'user_participants': user.leprikon_participants.exclude(
                         birth_num__in=registered_birth_nums,
-                    ) if user.is_authenticated() else [],
-                    'user_parents': user.leprikon_parents.all() if user.is_authenticated() else []
+                    ),
+                    'user_parents': user.leprikon_parents.all()
                 }
             )
 
@@ -531,10 +528,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
         del kwargs['instance']
 
-        if not user.is_authenticated():
-            kwargs['prefix'] = 'email'
-            self.email_form = self.EmailForm(**kwargs)
-
         self.agreement_forms = []
         for agreement in self.instance.subject.all_registration_agreements:
             kwargs['prefix'] = 'agreement_%s' % agreement.id
@@ -554,12 +547,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     @cached_property
     def required_forms(self):
-        required_forms = [
+        return [
             super(RegistrationForm, self),
         ] + self.agreement_forms
-        if not self.user.is_authenticated:
-            required_forms.append(self.email_form)
-        return required_forms
 
     @cached_property
     def all_forms(self):
@@ -596,29 +586,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def _save(self, commit):
         # set user
-        if self.user.is_authenticated():
-            self.instance.user = self.user
-        else:
-            email = self.email_form.cleaned_data['email'].lower()
-            user = User.objects.filter(email=email).first()
-            if not user:
-                username_base = email.split('@')[0]
-                username_max_length = User._meta.get_field('username').max_length
-                user = User(
-                    username=username_base[:username_max_length],
-                    email=email,
-                )
-                user.set_password(get_random_string())
-                while not user.pk:
-                    try:
-                        with transaction.atomic():
-                            user.save()
-                    except IntegrityError:
-                        user.username = '.'.join((
-                            username_base[:(username_max_length - 4)],
-                            get_random_string(3),
-                        ))
-            self.instance.user = user
+        self.instance.user = self.user
 
         # set price
         self.instance.price = (
@@ -657,9 +625,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         # send mail
         self.instance.send_mail()
         return self.instance
-
-    class EmailForm(FormMixin, forms.Form):
-        email = VerifiedEmailField(label=_('Your email'), fieldsetup_id='RegistrationEmailForm')
 
 
 class CourseRegistrationForm(RegistrationForm):
