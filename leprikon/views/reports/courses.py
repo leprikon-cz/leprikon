@@ -105,13 +105,11 @@ class ReportCourseStatsView(ReportBaseView):
         context = form.cleaned_data
         context['form'] = form
 
-        courses = Course.objects.filter(school_year=self.request.school_year)
-        context['courses_count'] = courses.count()
-
         participants = SubjectRegistrationParticipant.objects.filter(
-            registration__subject__in=courses,
+            registration__subject__school_year=self.request.school_year,
+            registration__subject__subject_type__subject_type=SubjectType.COURSE,
             registration__approved__date__lte=d,
-        ).exclude(registration__canceled__date__lte=d).select_related('registration')
+        ).exclude(registration__canceled__date__lte=d).select_related('registration', 'age_group')
         if paid_only:
             participants = [
                 participant for participant in participants
@@ -119,6 +117,7 @@ class ReportCourseStatsView(ReportBaseView):
             ]
         else:
             participants = list(participants)
+        context['courses_count'] = len(set(participant.registration.subject_id for participant in participants))
 
         citizenships = list(Citizenship.objects.all())
         context['citizenships'] = citizenships
