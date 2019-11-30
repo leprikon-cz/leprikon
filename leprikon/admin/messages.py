@@ -82,8 +82,9 @@ class MessageAttachmentInlineAdmin(admin.TabularInline):
 class MessageAdmin(admin.ModelAdmin):
     form = MessageAdminForm
     inlines = (MessageAttachmentInlineAdmin,)
-    search_fields = ('subject', 'text')
     list_display = ('subject', 'created', 'recipients', 'action_links')
+    raw_id_fields = ('sender',)
+    search_fields = ('subject', 'text')
 
     def get_changeform_initial_data(self, request):
         initial = super(MessageAdmin, self).get_changeform_initial_data(request)

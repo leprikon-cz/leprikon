@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-30 15:01+0100\n"
+"POT-Creation-Date: 2019-11-30 21:15+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -207,7 +207,7 @@ msgid "edit"
 msgstr "upravit"
 
 #: admin/journals.py:100 admin/subjects.py:587 admin/subjects.py:679
-#: models/journals.py:15 models/journals.py:142 models/messages.py:20
+#: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:239 models/subjects.py:240 models/subjects.py:519
 #: models/subjects.py:537 models/subjects.py:646
 #: templates/leprikon/alternating.html:15
@@ -242,51 +242,51 @@ msgstr "Vyberte cílovou zprávu"
 msgid "Add recipients to existing message"
 msgstr "Přidat příjemce k existující zprávě"
 
-#: admin/messages.py:105
+#: admin/messages.py:106
 msgid "recipients count"
 msgstr "počet příjemců"
 
-#: admin/messages.py:106
+#: admin/messages.py:107
 msgid "sent mail"
 msgstr "odesláno e-mailem"
 
-#: admin/messages.py:107 models/messages.py:48
+#: admin/messages.py:108 models/messages.py:50
 msgid "viewed on site"
 msgstr "zobrazeno na webu"
 
-#: admin/messages.py:113 admin/messages.py:121 models/messages.py:54
+#: admin/messages.py:114 admin/messages.py:122 models/messages.py:56
 msgid "recipients"
 msgstr "příjemci"
 
-#: admin/messages.py:122
+#: admin/messages.py:123
 msgid "show recipients details"
 msgstr "zobrazit podrobnosti o příjemcích"
 
-#: admin/messages.py:124
+#: admin/messages.py:125
 msgid "send mails"
 msgstr "odeslat e-maily"
 
-#: admin/messages.py:125
+#: admin/messages.py:126
 msgid "send mail to all recipients"
 msgstr "odeslat e-mail všem příjemcům"
 
-#: admin/messages.py:127
+#: admin/messages.py:128
 msgid "send unsent"
 msgstr "odeslat neodeslané"
 
-#: admin/messages.py:128
+#: admin/messages.py:129
 msgid "send mails to new recipients only"
 msgstr "odeslat e-maily pouze novým příjemcům"
 
-#: admin/messages.py:132
+#: admin/messages.py:133
 msgid "actions"
 msgstr "akce"
 
-#: admin/messages.py:173
+#: admin/messages.py:174
 msgid "Send email to selected recipients"
 msgstr "Odeslat e-mail vybraným příjemcům"
 
-#: admin/messages.py:180
+#: admin/messages.py:181
 msgid "Recipients of message {}"
 msgstr "Příjemci zprávy {}"
 
@@ -591,7 +591,7 @@ msgstr "Účastníci"
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: cms_menus.py:105 templates/leprikon/login.html:73 views/user.py:32
+#: cms_menus.py:105 templates/leprikon/login.html:73 views/user.py:31
 msgid "Create account"
 msgstr "Vytvořit účet"
 
@@ -607,7 +607,7 @@ msgstr "Změnit údaje o uživateli"
 msgid "Change e-mail"
 msgstr "Změnit e-mail"
 
-#: cms_menus.py:131 templates/admin/inc/branding.html:23 views/user.py:122
+#: cms_menus.py:131 templates/admin/inc/branding.html:23 views/user.py:121
 msgid "Change password"
 msgstr "Změnit heslo"
 
@@ -1375,35 +1375,39 @@ msgid "created"
 msgstr "vytvořeno"
 
 #: models/messages.py:21
+msgid "sender"
+msgstr "odesilatel"
+
+#: models/messages.py:23
 msgid "text"
 msgstr "text"
 
-#: models/messages.py:26 models/messages.py:44 models/messages.py:94
+#: models/messages.py:28 models/messages.py:46 models/messages.py:100
 msgid "message"
 msgstr "zpráva"
 
-#: models/messages.py:27
+#: models/messages.py:29
 msgid "messages"
 msgstr "zprávy"
 
-#: models/messages.py:46 models/messages.py:53
+#: models/messages.py:48 models/messages.py:55
 msgid "recipient"
 msgstr "příjemce"
 
-#: models/messages.py:47
+#: models/messages.py:49
 #: templates/admin/leprikon/messagerecipient/send_mails.html:63
 msgid "sent"
 msgstr "odesláno"
 
-#: models/messages.py:49
+#: models/messages.py:51
 msgid "sent by email"
 msgstr "odesláno e-mailem"
 
-#: models/messages.py:99 models/subjects.py:122 models/subjects.py:544
+#: models/messages.py:105 models/subjects.py:122 models/subjects.py:544
 msgid "attachment"
 msgstr "příloha"
 
-#: models/messages.py:100 models/subjects.py:123 models/subjects.py:545
+#: models/messages.py:106 models/subjects.py:123 models/subjects.py:545
 msgid "attachments"
 msgstr "přílohy"
 
@@ -2178,7 +2182,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:79
-#: views/user.py:123
+#: views/user.py:122
 msgid "Back"
 msgstr "Zpět"
 
@@ -3383,51 +3387,51 @@ msgstr "Nový záznam výkazu práce"
 msgid "New timesheet entry has been created."
 msgstr "Nový záznam výkazu práce byl vytvořen."
 
-#: views/user.py:36
+#: views/user.py:35
 msgid "User account {} has been created."
 msgstr "Uživatel {} byl vytvořen."
 
-#: views/user.py:69
+#: views/user.py:68
 msgid "Agreement with the terms of use"
 msgstr "Souhlas s podmínkami užití"
 
-#: views/user.py:73
+#: views/user.py:72
 msgid "The agreement has been saved."
 msgstr "Váš souhlas byl uložen."
 
-#: views/user.py:90
+#: views/user.py:89
 msgid "Change user"
 msgstr "Aktualizace údajů o uživateli"
 
-#: views/user.py:96
+#: views/user.py:95
 msgid "User account {} has been updated."
 msgstr "Uživatel {} byl upraven."
 
-#: views/user.py:104
+#: views/user.py:103
 msgid "Change e-mail address"
 msgstr "Změna e-mailové adresy"
 
-#: views/user.py:106
+#: views/user.py:105
 msgid "Set e-mail address"
 msgstr "Nastavení e-mailové adresy"
 
-#: views/user.py:143
+#: views/user.py:142
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:145
+#: views/user.py:144
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:163
+#: views/user.py:162
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:165
+#: views/user.py:164
 msgid "Set my password"
 msgstr "Nastavit heslo"

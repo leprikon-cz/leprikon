@@ -43,7 +43,7 @@ class MessageAdminForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ['subject', 'text']
+        fields = ['sender', 'subject', 'text']
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance', None)
