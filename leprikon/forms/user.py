@@ -9,6 +9,9 @@ from django.contrib.auth.forms import (
 )
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from verified_email_field.auth import (
+    EmailAuthenticationForm as _EmailAuthenticationForm,
+)
 from verified_email_field.forms import VerifiedEmailField
 
 from .form import FormMixin
@@ -71,7 +74,7 @@ class UserAgreementForm(FormMixin, forms.Form):
 
 
 class UserEmailForm(UserFormMixin, forms.ModelForm):
-    email = VerifiedEmailField(label='email', fieldsetup_id='UserEmailForm', required=True)
+    email = VerifiedEmailField(label=_('E-mail'), fieldsetup_id='UserEmailForm', required=True)
 
     class Meta:
         model = User
@@ -89,8 +92,30 @@ class UserUpdateForm(UserFormMixin, forms.ModelForm):
         fields = ['username', 'first_name', 'last_name']
 
 
-class UserLoginForm(FormMixin, _AuthenticationForm):
-    pass
+class UserLoginForm:
+    class PasswordForm(FormMixin, _AuthenticationForm):
+        pass
+
+    class EmailForm(FormMixin, _EmailAuthenticationForm):
+        pass
+
+    def __init__(self, request, data=None, **kwargs):
+        if data:
+            if 'email_0' in data:
+                self.used_form = self.email_form = self.EmailForm(data=data)
+                self.password_form = self.PasswordForm(request=request)
+            else:
+                self.used_form = self.password_form = self.PasswordForm(data=data, request=request)
+                self.email_form = self.EmailForm()
+        else:
+            self.password_form = self.PasswordForm(request=request)
+            self.email_form = self.EmailForm()
+            self.used_form = None
+        self.media = self.password_form.media + self.email_form.media
+
+    def __getattr__(self, attr):
+        # implement an interface to the currently used form
+        return getattr(self.used_form, attr)
 
 
 class UserPasswordForm(FormMixin, _PasswordChangeForm):

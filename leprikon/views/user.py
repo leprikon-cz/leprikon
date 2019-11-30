@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import (
-    login, logout, password_change, password_reset as pr,
+    LoginView as _LoginView, logout, password_change, password_reset as pr,
     password_reset_complete as pr_complete,
     password_reset_confirm as pr_confirm, password_reset_done as pr_done,
 )
@@ -18,8 +18,8 @@ from ..models.useragreement import UserAgreement
 from .generic import CreateView, FormView, UpdateView
 
 __all__ = [
-    'UserCreateView', 'UserUpdateView',
-    'user_password', 'user_login', 'user_logout',
+    'UserCreateView', 'UserLoginView', 'UserUpdateView',
+    'user_password', 'user_logout',
     'password_reset', 'password_reset_done',
     'password_reset_confirm', 'password_reset_complete',
 ]
@@ -105,6 +105,12 @@ class UserEmailView(UserUpdateView):
             return _('Set e-mail address')
 
 
+class UserLoginView(_LoginView):
+    template_name = 'leprikon/login.html'
+    authentication_form = UserLoginForm
+    redirect_field_name = settings.LEPRIKON_PARAM_BACK
+
+
 def user_password(request):
     return password_change(
         request,
@@ -118,11 +124,6 @@ def user_password(request):
             'placeholder': 'user_password',
         },
     )
-
-
-def user_login(request):
-    return login(request, template_name='leprikon/login.html', authentication_form=UserLoginForm,
-                 redirect_field_name=settings.LEPRIKON_PARAM_BACK)
 
 
 def user_logout(request):

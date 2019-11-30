@@ -3,54 +3,108 @@
 
 {% block content %}
 
-<h1>{% block title %}{% trans 'Login' %}{% endblock %}</h1>
+<h1>{% block title %}{% trans 'Log in' %}{% endblock %}</h1>
 
-<div class="col-sm-6"><div class="col-md-offset-1 col-md-10">
-    <form action="" method="post">{% csrf_token %}
-        {% for item in form %}
-        <div class="form-group {{ item.css_classes }}">
-            <label for="{{ item.id_for_label }}" class="control-label">
-                {{ item.label }}
-            </label>
-            {{ item }}
-        </div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingPassword" data-toggle="collapse" data-parent="#accordion" href="#collapsePassword" aria-expanded="{% if form.used_form == form.email_form %}false{% else %}true{% endif %}" aria-controls="collapsePassword">
+      <h3 class="panel-title">
+        {% trans 'Log in with username and password' %}
+      </h3>
+    </div>
+    <div id="collapsePassword" class="panel-collapse collapse{% if form.used_form != form.email_form %} in{% endif %}" role="tabpanel" aria-labelledby="headingPassword">
+      <div class="panel-body">
+        {% if form.used_form == form.password_form %}
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
+        {% endif %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
+        {% endif %}
+        <form action="" method="post">{% csrf_token %}
+            {% for item in form.password_form %}
+                {% include 'leprikon/form_item_fullwidth.html' %}
+            {% endfor %}
+            <div class="form-group">
+                <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingEmail" data-toggle="collapse" data-parent="#accordion" href="#collapseEmail" aria-expanded="{% if form.used_form == form.email_form %}true{% else %}false{% endif %}" aria-controls="collapseEmail">
+      <h3 class="panel-title">
+        {% trans 'Log in with verified e-mail' %}
+      </h3>
+    </div>
+    <div id="collapseEmail" class="panel-collapse collapse{% if form.used_form == form.email_form %} in{% endif %}" role="tabpanel" aria-labelledby="headingEmail">
+      <div class="panel-body">
+        {% if form.used_form == form.email_form %}
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
+        {% endif %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+        {% endif %}
+        <form action="" method="post">{% csrf_token %}
+            {% for item in form.email_form %}
+                {% include 'leprikon/form_item_fullwidth.html' %}
+            {% endfor %}
+            <div class="form-group">
+                <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOther" data-toggle="collapse" data-parent="#accordion" href="#collapseOther" aria-expanded="false" aria-controls="collapseOther">
+      <h3 class="panel-title">
+        {% trans 'Other options' %}
+      </h3>
+    </div>
+    <div id="collapseOther" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOther">
+      <div class="panel-body">
         <div class="form-group">
-            <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
+            <a class="btn btn-block btn-primary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
+                {% trans 'Create account' %}
+            </a>
         </div>
-    </form>
-</div></div>
+        <div class="form-group">
+            <a class="btn btn-block btn-primary" href="{% url 'leprikon:password_reset' %}?{% param_back %}={% url_back %}">
+                {% trans 'Reset password' %}
+            </a>
+        </div>
+        {% if 'google-oauth2' in backends.not_associated %}
+        <div class="form-group">
+            <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
+                <i class="fa fa-google"></i>
+                {% trans 'Log in with Google' %}
+            </a>
+        </div>
+        {% endif %}
+        {% if 'facebook' in backends.not_associated %}
+        <div class="form-group">
+            <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
+                <i class="fa fa-facebook"></i>
+                {% trans 'Log in with Facebook' %}
+            </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 
-<div class="col-sm-6"><div class="col-md-offset-1 col-md-10">
-    <h2>{% trans 'Other options' %}</h2>
-    <div class="form-group">
-        <a class="btn btn-block btn-primary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
-            {% trans 'Create account' %}
-        </a>
-    </div>
-    {% if 'google-oauth2' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
-            <i class="fa fa-google"></i>
-            {% trans 'Log in with Google' %}
-        </a>
-    </div>
-    {% elif 'google-plus' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-plus' %}?next={% url_back %}">
-            <i class="fa fa-google"></i>
-            {% trans 'Log in with Google' %}
-        </a>
-    </div>
-    {% endif %}
-    {% if 'facebook' in backends.not_associated %}
-    <div class="form-group">
-        <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
-            <i class="fa fa-facebook"></i>
-            {% trans 'Log in with Facebook' %}
-        </a>
-    </div>
-    {% endif %}
-</div></div>
+{% addtoblock 'css' %}
+{{ form.media.css }}
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+{{ form.media.js }}
+{% endaddtoblock %}
 
 {% endblock %}
