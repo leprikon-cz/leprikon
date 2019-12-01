@@ -10,16 +10,16 @@
             <blockTable style="with-borders">
                 <tr>
                     <td>
-                        <para style="title">{{ site.get_company_name }}</para>
+                        <para style="title">{{ object.organization.name }}</para>
                         <spacer length="2mm"/>
                         <para style="left">{% trans 'address' %}:</para>
-                        <para style="left">{{ site.street }}</para>
-                        <para style="left">{{ site.postal_code }}, {{ site.city }}</para>
+                        <para style="left">{{ object.organization.street }}</para>
+                        <para style="left">{{ object.organization.postal_code }}, {{ object.organization.city }}</para>
                         <spacer length="2mm"/>
-                        {% if site.email %}<para style="left">{% trans 'email' %}: {{ site.email }}</para>{% endif %}
-                        {% if site.phone %}<para style="left">{% trans 'phone' %}: {{ site.phone }}</para>{% endif %}
-                        {% if site.email or site.phone %}<spacer length="2mm"/>{% endif %}
-                        <para style="left">{% trans 'company number' %}: {{ site.company_num }}</para>
+                        {% if object.organization.email %}<para style="left">{% trans 'email' %}: {{ object.organization.email }}</para>{% endif %}
+                        {% if object.organization.phone %}<para style="left">{% trans 'phone' %}: {{ object.organization.phone }}</para>{% endif %}
+                        {% if object.organization.email or object.organization.phone %}<spacer length="2mm"/>{% endif %}
+                        <para style="left">{% trans 'company number' %}: {{ object.organization.company_num }}</para>
                     </td>
                 </tr>
             </blockTable>

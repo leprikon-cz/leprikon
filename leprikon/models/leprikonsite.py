@@ -6,14 +6,12 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django_pays.models import Gateway
 from djangocms_text_ckeditor.fields import HTMLField
-from localflavor.generic.models import BICField, IBANField
 
 from ..conf import settings
 from .account import AccountClosure
 from .agreements import Agreement
-from .fields import EmailField, PostalCodeField
+from .organizations import Organization
 from .printsetup import PrintSetup
-from .utils import BankAccount
 
 
 class LeprikonSiteManager(models.Manager):
@@ -38,24 +36,16 @@ class LeprikonSiteManager(models.Manager):
 
 
 class LeprikonSite(Site):
-    company_name = models.CharField(_('company name'), max_length=150, blank=True, null=True)
-    street = models.CharField(_('street'), max_length=150, blank=True, null=True)
-    city = models.CharField(_('city'), max_length=150, blank=True, null=True)
-    postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    email = EmailField(_('email address'), blank=True, null=True)
-    phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
-    company_num = models.CharField(_('company number'), max_length=8, blank=True, null=True)
-    vat_number = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
-    iban = IBANField(_('IBAN'), blank=True, null=True)
-    bic = BICField(_('BIC (SWIFT)'), blank=True, null=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
+                                     related_name='+', verbose_name=_('default organization'))
     bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                         related_name='+', verbose_name=_('bill print setup'))
+                                         related_name='+', verbose_name=_('default bill print setup'))
     reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        related_name='+', verbose_name=_('registration print setup'))
+                                        related_name='+', verbose_name=_('default registration print setup'))
     user_agreement = HTMLField(_('user agreement'), blank=True, default='')
     user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
     registration_agreements = models.ManyToManyField(
-        Agreement, blank=True, related_name='+', verbose_name=_('registration agreements'),
+        Agreement, blank=True, related_name='+', verbose_name=_('default registration agreements'),
         help_text=_('Add legal agreements for the registration form.'),
     )
     payment_gateway = models.ForeignKey(Gateway, blank=True, null=True, on_delete=models.SET_NULL,
@@ -67,13 +57,6 @@ class LeprikonSite(Site):
         app_label = 'leprikon'
         verbose_name = _('leprikon site')
         verbose_name_plural = _('leprikon sites')
-
-    def get_company_name(self):
-        return self.company_name or self.name
-
-    @cached_property
-    def bank_account(self):
-        return self.iban and BankAccount(self.iban)
 
     @cached_property
     def max_closure_date(self):

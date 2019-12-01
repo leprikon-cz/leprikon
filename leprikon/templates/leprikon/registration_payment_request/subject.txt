@@ -7,11 +7,11 @@ thank You for submitting registration.{% endblocktrans %}
 {% if site.payment_gateway %}{% trans 'Please, use following link to perform online payment' %}:
 {{ object.payment_url }}
 
-{% endif %}{% if site.bank_account %}{% trans 'Please, use following information for bank transfer' %}:
-{% trans 'Bank account' %}: {{ site.bank_account }}
+{% endif %}{% if object.organization.bank_account %}{% trans 'Please, use following information for bank transfer' %}:
+{% trans 'Bank account' %}: {{ object.organization.bank_account }}
 {% trans 'Variable symbol' %}: {{ object.variable_symbol }}
 
-{% endif %}{% if not site.payment_gateway and not site.bank_account %}{% trans 'Currently we only accept payments in cash.' %}
+{% endif %}{% if not site.payment_gateway and not object.organization.bank_account %}{% trans 'Currently we only accept payments in cash.' %}
 
 {% endif %}{% trans 'If You have already made the payment recently, please ignore this message.' %}
 

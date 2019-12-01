@@ -51,11 +51,11 @@
                 <h4>{% trans 'Online payment' %}</h4>
                 <p><a class="btn btn-primary" href="{{ reg.payment_url }}">{% trans 'pay online' %}</a></p>
             {% endif %}
-            {% if site.bank_account %}
+            {% if reg.organization.bank_account %}
                 <h4>{% trans 'Bank transfer' %}</h4>
                 <p>
                     {% trans 'Please, use following information for bank transfer' %}:<br/>
-                    {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+                    {% trans 'Bank account' %}: {{ reg.organization.bank_account }}<br/>
                     {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
                 </p>
                 <p>
@@ -63,7 +63,7 @@
                     {% qr_from_text reg.spayd border=1 %}
                 </p>
             {% endif %}
-            {% if not site.bank_account and not site.payment_gateway %}
+            {% if not reg.organization.bank_account and not site.payment_gateway %}
                 <p>{% trans 'Currently we only accept payments in cash.' %}</p>
             {% endif %}
         {% endif %}

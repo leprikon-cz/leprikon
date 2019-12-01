@@ -17,10 +17,10 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 </p>
 {% endif %}
 
-{% if site.bank_account %}
+{% if object.organization.bank_account %}
 <p>
     {% trans 'Please, use following information for bank transfer' %}:<br/>
-    {% trans 'Bank account' %}: {{ site.bank_account }}<br/>
+    {% trans 'Bank account' %}: {{ object.organization.bank_account }}<br/>
     {% trans 'Variable symbol' %}: {{ object.variable_symbol }}<br/>
 </p>
 <p>
@@ -29,7 +29,7 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 </p>
 {% endif %}
 
-{% if not site.payment_gateway and not site.bank_account %}
+{% if not site.payment_gateway and not object.organization.bank_account %}
 <p>{% trans 'Currently we only accept payments in cash.' %}</p>
 {% endif %}
 

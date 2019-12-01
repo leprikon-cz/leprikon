@@ -42,6 +42,7 @@ from .fields import (
     BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField,
 )
 from .leprikonsite import LeprikonSite
+from .organizations import Organization
 from .place import Place
 from .printsetup import PrintSetup
 from .question import Question
@@ -84,6 +85,8 @@ class SubjectType(models.Model):
                                         related_name='+', verbose_name=_('registration print setup'))
     bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                          related_name='+', verbose_name=_('payment print setup'))
+    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
+                                     related_name='+', verbose_name=_('organization'))
 
     class Meta:
         app_label = 'leprikon'
@@ -230,9 +233,14 @@ class Subject(models.Model):
         help_text=_('Add additional legal agreements specific for this subject.'),
     )
     reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        related_name='+', verbose_name=_('registration print setup'))
+                                        related_name='+', verbose_name=_('registration print setup'),
+                                        help_text=_('Only use to set value specific for this subject.'))
     bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                         related_name='+', verbose_name=_('payment print setup'))
+                                         related_name='+', verbose_name=_('payment print setup'),
+                                         help_text=_('Only use to set value specific for this subject.'))
+    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
+                                     related_name='+', verbose_name=_('organization'),
+                                     help_text=_('Only use to set value specific for this subject.'))
 
     class Meta:
         app_label = 'leprikon'
@@ -757,14 +765,23 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return self.subjectregistration.current_receivable
 
     @cached_property
+    def organization(self):
+        return (
+            self.subject.organization or
+            self.subject.subject_type.organization or
+            LeprikonSite.objects.get_current().organization or
+            Organization()
+        )
+
+    @cached_property
     def spayd(self):
-        leprikon_site = LeprikonSite.objects.get_current()
+        org = self.organization
         return spayd(
-            ('ACC', ('%s+%s' % (leprikon_site.iban, leprikon_site.bic)) if leprikon_site.bic else leprikon_site.iban),
+            ('ACC', ('%s+%s' % (org.iban, org.bic)) if org.bic else org.iban),
             ('AM', self.current_receivable),
             ('CC', localeconv['int_curr_symbol'].strip()),
             ('MSG', '%s, %s' % (self.subject.name[:29], str(self)[:29])),
-            ('RN', slugify(leprikon_site.company_name).replace('*', '')[:35]),
+            ('RN', slugify(self.organization.name).replace('*', '')[:35]),
             ('X-VS', self.variable_symbol),
         )
 
@@ -884,13 +901,12 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     def get_attachments(self, event):
         if event == 'received':
-            return [self.pdf_attachment] + [
+            return [
                 (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
                 for attachment in self.all_attachments
             ]
         elif event == 'payment_request':
-            leprikon_site = LeprikonSite.objects.get_current()
-            if leprikon_site.bank_account:
+            if self.organization.iban:
                 qr_code = MIMEImage(self.get_qr_code())
                 qr_code.add_header('Content-ID', '<qr_code>')
                 return [qr_code]
@@ -1207,6 +1223,15 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         return '{payment_type} {amount}'.format(
             payment_type=self.payment_type_label,
             amount=currency(abs(self.amount)),
+        )
+
+    @cached_property
+    def organization(self):
+        return (
+            self.registration.subject.organization or
+            self.registration.subject.subject_type.organization or
+            LeprikonSite.objects.get_current().organization or
+            Organization()
         )
 
     @cached_property
