@@ -198,6 +198,7 @@ input.form-control[type="checkbox"] {
     border-bottom-left-radius: 0;
 }
 
+[data-toggle="collapse"],
 .clickable {
     cursor: pointer;
 }
