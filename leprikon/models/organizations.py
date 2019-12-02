@@ -30,7 +30,9 @@ class Organization(models.Model):
     @cached_property
     def address(self):
         return ', '.join(filter(bool, (self.street, self.city, self.postal_code)))
+    address.short_description = _('address')
 
     @cached_property
     def bank_account(self):
         return self.iban and BankAccount(self.iban)
+    bank_account.short_description = _('bank account')

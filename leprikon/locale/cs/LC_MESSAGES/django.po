@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-01 20:11+0100\n"
+"POT-Creation-Date: 2019-12-02 16:46+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1423,6 +1423,14 @@ msgstr "organizace"
 msgid "organizations"
 msgstr "organizace"
 
+#: models/organizations.py:33 templates/leprikon/payment_pdf/recipe.rml:15
+msgid "address"
+msgstr "adresa"
+
+#: models/organizations.py:38
+msgid "bank account"
+msgstr "číslo účtu"
+
 #: models/place.py:7 models/place.py:12 models/subjects.py:192
 msgid "place"
 msgstr "místo"
@@ -2519,10 +2527,6 @@ msgstr "Potvrzení o přijetí platby"
 #: templates/leprikon/payment_pdf/recipe.rml:6
 msgid "recipe number"
 msgstr "číslo stvrzenky"
-
-#: templates/leprikon/payment_pdf/recipe.rml:15
-msgid "address"
-msgstr "adresa"
 
 #: templates/leprikon/payment_pdf/recipe.rml:34
 msgid "payment date"
