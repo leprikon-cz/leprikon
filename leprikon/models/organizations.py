@@ -24,6 +24,9 @@ class Organization(models.Model):
         verbose_name = _('organization')
         verbose_name_plural = _('organizations')
 
+    def __str__(self):
+        return f'{self.name} ({self.bank_account})'
+
     @cached_property
     def address(self):
         return ', '.join(filter(bool, (self.street, self.city, self.postal_code)))
