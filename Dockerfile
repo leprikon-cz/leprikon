@@ -9,6 +9,9 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
+COPY requirements.txt /app/
+COPY patch /app/patch
+
 # install requirements and generate czech locale
 RUN apt-get update \
  && apt-get -y upgrade \
@@ -16,33 +19,39 @@ RUN apt-get update \
     build-essential \
     gcc \
     git \
-    libmysqlclient-dev \
-    locales \
     libicu-dev \
+    libmysqlclient-dev \
+    libssl-dev \
+    python3-dev \
+    locales \
+    libmysqlclient20 \
+    libpython3.6 \
     mariadb-client \
     memcached \
     nginx \
     postgresql-client \
-    python3-dev \
     python3-pip \
     python3-setuptools \
     sqlite3 \
     supervisor \
+ && pip3 install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && rm requirements.txt \
+ && patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
+ && rm -r patch \
+ && apt-get -y purge \
+    build-essential \
+    gcc \
+    git \
+    libicu-dev \
+    libmysqlclient-dev \
+    libssl-dev \
+    python3-dev \
  && apt-get -y autoremove \
  && apt-get -y clean \
- && pip3 install --upgrade pip \
  && ln -s /usr/bin/python3 /usr/local/bin/python \
  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 ENV LC_ALL cs_CZ.UTF-8
-
-# install required packages
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
-
-# patch installed packages
-COPY patch /app/patch
-RUN patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
- && rm -r patch
 
 # install leprikon
 COPY . /src
