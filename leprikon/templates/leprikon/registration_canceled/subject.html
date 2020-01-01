@@ -1,9 +1,4 @@
-{% load i18n %}
-
-<p>
-{% blocktrans asvar text %}Hello,
-your registration was canceled.{% endblocktrans %}{{ text|linebreaks }}
-</p>
+{{ object.text_registration_canceled }}
 
 {% include 'leprikon/registration_mail_details.html' %}
 

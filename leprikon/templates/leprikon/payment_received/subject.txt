@@ -1,6 +1,3 @@
-{% load i18n %}{% blocktrans %}Hello,
-we have just received Your payment. Please see the recipe attached.
-
-Thank You.{% endblocktrans %}
+{{ object.registration.text_payment_received|striptags }}
 
 {% include 'leprikon/registration_mail_footer.txt' with object=object.registration %}

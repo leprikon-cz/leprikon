@@ -1,10 +1,10 @@
 from collections import namedtuple
 
-from django.utils.functional import cached_property
+from django.utils.functional import cached_property, lazy
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
-from ..utils import currency
+from ..utils import currency, paragraph
 
 
 class PaymentStatus(namedtuple('_PaymentsStatus', ('price', 'discount', 'paid'))):
@@ -105,3 +105,10 @@ def generate_variable_symbol(registration):
             odd_sum += int(char)
     check_digit = (odd_sum * 3 + even_sum) % 10
     return variable_symbol * 10 + check_digit
+
+
+def html_help_text_with_default(default):
+    return paragraph(_('Keep empty to use default value:\n{}').format(default))
+
+
+lazy_html_help_text_with_default = lazy(html_help_text_with_default, str)

@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import IntegrityError, transaction
 from django.utils.encoding import iri_to_uri, smart_text
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from .conf import settings
@@ -240,3 +241,11 @@ def spayd(*items):
     )
     s += '*CRC32:%x' % zlib.crc32(s.encode())
     return s.upper()
+
+
+def paragraph(text):
+    return mark_safe(
+        f'<p>{text.strip()}</p>'
+        .replace('\n', '<br/>\n')
+        .replace('<br/>\n<br/>\n', '</p>\n\n<p>')
+    )

@@ -1,5 +1,4 @@
-{% load i18n %}{% blocktrans %}Hello,
-your registration was canceled.{% endblocktrans %}
+{{ object.text_registration_canceled|striptags }}
 
 {% include 'leprikon/registration_mail_details.txt' %}
 

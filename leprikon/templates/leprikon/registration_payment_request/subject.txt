@@ -1,5 +1,4 @@
-{% load i18n leprikon_tags %}{% blocktrans %}Hello,
-thank You for submitting registration.{% endblocktrans %}
+{% load i18n leprikon_tags %}{{ object.text_registration_payment_request|striptags }}
 
 {% include 'leprikon/registration_mail_details.txt' %}
 {% trans 'Price' %}: {{ object.current_receivable | currency }}
@@ -13,6 +12,4 @@ thank You for submitting registration.{% endblocktrans %}
 
 {% endif %}{% if not site.payment_gateway and not object.organization.bank_account %}{% trans 'Currently we only accept payments in cash.' %}
 
-{% endif %}{% trans 'If You have already made the payment recently, please ignore this message.' %}
-
-{% include 'leprikon/registration_mail_footer.txt' %}
+{% endif %}{% include 'leprikon/registration_mail_footer.txt' %}

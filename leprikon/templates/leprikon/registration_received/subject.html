@@ -1,21 +1,14 @@
 {% load i18n %}
 
-<p>
-{% blocktrans asvar text %}Hello,
-thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
-</p>
+{{ object.text_registration_received }}
 
-{% include 'leprikon/registration_mail_details.html' %}
-
-<p>
 {% if object.subject.full %}
+<p>
 {% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
-The registration may not be approved.{% endblocktrans %}
+The registration may be refused.{% endblocktrans %}
+</p>
 {% endif %}
 
-{% blocktrans %}We will inform you about its further processing.{% endblocktrans %}
-</p>
-
-{% if self.all_attachments %}<p>{% trans 'See attached files for futher information.' %}</p>{% endif %}
+{% include 'leprikon/registration_mail_details.html' %}
 
 {% include 'leprikon/registration_mail_footer.html' %}

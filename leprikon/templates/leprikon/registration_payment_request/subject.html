@@ -1,9 +1,6 @@
 {% load i18n leprikon_tags qr_code %}
 
-<p>
-{% blocktrans asvar text %}Hello,
-thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
-</p>
+{{ object.text_registration_payment_request|striptags }}
 
 {% include 'leprikon/registration_mail_details.html' %}
 <p>
@@ -32,9 +29,5 @@ thank You for submitting registration.{% endblocktrans %}{{ text|linebreaks }}
 {% if not site.payment_gateway and not object.organization.bank_account %}
 <p>{% trans 'Currently we only accept payments in cash.' %}</p>
 {% endif %}
-
-<p>
-    {% trans 'If You have already made the payment recently, please ignore this message.' %}
-</p>
 
 {% include 'leprikon/registration_mail_footer.html' %}

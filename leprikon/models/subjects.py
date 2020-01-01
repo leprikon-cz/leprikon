@@ -32,7 +32,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
 from ..utils import (
-    comma_separated, currency, get_birth_date, localeconv, spayd,
+    comma_separated, currency, get_birth_date, localeconv, paragraph, spayd,
 )
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
@@ -50,9 +50,50 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
-from .utils import generate_variable_symbol
+from .utils import generate_variable_symbol, lazy_html_help_text_with_default
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_TEXTS = {
+    'text_registration_received': _(
+        'Hello,\n'
+        'thank You for submitting the registration.\n'
+        'We will inform you about its further processing.'
+    ),
+
+    'text_registration_approved': _(
+        'Hello,\n'
+        'we are pleased to inform You, that Your registration was approved.\n'
+        'We are looking forward to see You.'
+    ),
+
+    'text_registration_refused': _(
+        'Hello,\n'
+        'we are sorry to inform You, that Your registration was refused.'
+    ),
+
+    'text_registration_payment_request': _(
+        'Hello,\n'
+        'we\'d like to ask You to pay for Your registration.\n'
+        'If You have already made the payment recently, please ignore this message.'
+    ),
+
+    'text_registration_canceled': _(
+        'Hello,\n'
+        'Your registration was canceled.'
+    ),
+
+    'text_discount_granted': _(
+        'Hello,\n'
+        'we have just grated a discount for Your registration.'
+    ),
+
+    'text_payment_received': _(
+        'Hello,\n'
+        'we have just received Your payment. Thank You.\n'
+        'Please see the recipe attached.'
+    ),
+}
 
 
 class SubjectType(models.Model):
@@ -87,6 +128,34 @@ class SubjectType(models.Model):
                                          related_name='+', verbose_name=_('payment print setup'))
     organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
                                      related_name='+', verbose_name=_('organization'))
+    text_registration_received = HTMLField(
+        _('text: registration received'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_received']),
+    )
+    text_registration_approved = HTMLField(
+        _('text: registration approved'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_approved']),
+    )
+    text_registration_refused = HTMLField(
+        _('text: registration refused'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_refused']),
+    )
+    text_registration_payment_request = HTMLField(
+        _('text: registration payment request'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_payment_request']),
+    )
+    text_registration_canceled = HTMLField(
+        _('text: registration canceled'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_canceled']),
+    )
+    text_discount_granted = HTMLField(
+        _('text: discount granted'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_discount_granted']),
+    )
+    text_payment_received = HTMLField(
+        _('text: payment received'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_payment_received']),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -241,6 +310,34 @@ class Subject(models.Model):
     organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
                                      related_name='+', verbose_name=_('organization'),
                                      help_text=_('Only use to set value specific for this subject.'))
+    text_registration_received = HTMLField(
+        _('text: registration received'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_received']),
+    )
+    text_registration_approved = HTMLField(
+        _('text: registration approved'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_approved']),
+    )
+    text_registration_refused = HTMLField(
+        _('text: registration refused'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_refused']),
+    )
+    text_registration_payment_request = HTMLField(
+        _('text: registration payment request'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_payment_request']),
+    )
+    text_registration_canceled = HTMLField(
+        _('text: registration canceled'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_registration_canceled']),
+    )
+    text_discount_granted = HTMLField(
+        _('text: discount granted'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_discount_granted']),
+    )
+    text_payment_received = HTMLField(
+        _('text: payment received'), blank=True, default='',
+        help_text=lazy_html_help_text_with_default(DEFAULT_TEXTS['text_payment_received']),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -793,6 +890,62 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             order_id=self.variable_symbol,
             amount=self.current_receivable,
             email=self.user.email,
+        )
+
+    @cached_property
+    def text_registration_received(self):
+        return (
+            self.subject.text_registration_received or
+            self.subject.subject_type.text_registration_received or
+            paragraph(DEFAULT_TEXTS['text_registration_received'])
+        )
+
+    @cached_property
+    def text_registration_approved(self):
+        return (
+            self.subject.text_registration_approved or
+            self.subject.subject_type.text_registration_approved or
+            paragraph(DEFAULT_TEXTS['text_registration_approved'])
+        )
+
+    @cached_property
+    def text_registration_refused(self):
+        return (
+            self.subject.text_registration_refused or
+            self.subject.subject_type.text_registration_refused or
+            paragraph(DEFAULT_TEXTS['text_registration_refused'])
+        )
+
+    @cached_property
+    def text_registration_payment_request(self):
+        return (
+            self.subject.text_registration_payment_request or
+            self.subject.subject_type.text_registration_payment_request or
+            paragraph(DEFAULT_TEXTS['text_registration_payment_request'])
+        )
+
+    @cached_property
+    def text_registration_canceled(self):
+        return (
+            self.subject.text_registration_canceled or
+            self.subject.subject_type.text_registration_canceled or
+            paragraph(DEFAULT_TEXTS['text_registration_canceled'])
+        )
+
+    @cached_property
+    def text_discount_granted(self):
+        return (
+            self.subject.text_discount_granted or
+            self.subject.subject_type.text_discount_granted or
+            paragraph(DEFAULT_TEXTS['text_discount_granted'])
+        )
+
+    @cached_property
+    def text_payment_received(self):
+        return (
+            self.subject.text_payment_received or
+            self.subject.subject_type.text_payment_received or
+            paragraph(DEFAULT_TEXTS['text_payment_received'])
         )
 
     def get_discounts(self, d):

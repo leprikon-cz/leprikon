@@ -21,11 +21,12 @@ from ..forms.subjects import (
     RegistrationParticipantAdminForm, SubjectAdminForm,
 )
 from ..models.subjects import (
-    Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
+    DEFAULT_TEXTS, Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
     SubjectRegistration, SubjectRegistrationGroup,
     SubjectRegistrationGroupMember, SubjectRegistrationParticipant,
     SubjectType, SubjectTypeAttachment, SubjectVariant,
 )
+from ..models.utils import lazy_html_help_text_with_default
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -182,7 +183,24 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         else:
             kwargs['fields'] = ['subject_type', 'registration_type']
             request.hide_inlines = True
-        return super().get_form(request, obj, **kwargs)
+
+        form = super().get_form(request, obj, **kwargs)
+
+        if request.subject_type and request.registration_type:
+            for field_name in [
+                'text_registration_received',
+                'text_registration_approved',
+                'text_registration_refused',
+                'text_registration_payment_request',
+                'text_registration_canceled',
+                'text_discount_granted',
+                'text_payment_received',
+            ]:
+                form.base_fields[field_name].help_text = lazy_html_help_text_with_default(
+                    getattr(request.subject_type, field_name) or DEFAULT_TEXTS[field_name]
+                )
+
+        return form
 
     def get_inline_instances(self, request, obj=None):
         return [] if hasattr(request, 'hide_inlines') else super().get_inline_instances(request, obj)

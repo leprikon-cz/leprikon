@@ -1,8 +1,5 @@
-{% load i18n %}{% blocktrans %}Hello,
-we are pleased to inform You, that your registration was approved.{% endblocktrans %}
+{{ object.text_registration_approved|striptags }}
 
 {% include 'leprikon/registration_mail_details.txt' %}
-
-{% trans 'We are looking forward to see You.' %}
 
 {% include 'leprikon/registration_mail_footer.txt' %}
