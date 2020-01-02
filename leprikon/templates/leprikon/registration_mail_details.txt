@@ -3,3 +3,6 @@
 {% elif object.subject.registration_type_groups %}{% trans 'Contact person' %}: {{ object.group.first_name }}{% if object.group.name %}
 {% trans 'Group name' %}: {{ object.group.name }}{% endif %}
 {% endif %}
+
+{% trans 'You may download the registration in PDF using the following link:' %}
+https://{{ site.domain }}{{ object.get_absolute_url }}
