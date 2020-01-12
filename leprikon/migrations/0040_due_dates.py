@@ -9,14 +9,17 @@ import django.utils.timezone
 
 
 def set_due_dates(apps, schema_editor):
-    for model in (
-        apps.get_model('leprikon', 'Event'),
-        apps.get_model('leprikon', 'SchoolYearPeriod'),
-    ):
-        model.objects.update(
-            due_from=models.F('start'),
-            due_date=models.F('start') + timedelta(30),
-        )
+    Event = apps.get_model('leprikon', 'Event')
+    Event.objects.update(
+        due_from=models.F('start_date') - timedelta(180),
+        due_date=models.F('start_date') + timedelta(30),
+    )
+
+    SchoolYearPeriod = apps.get_model('leprikon', 'SchoolYearPeriod')
+    SchoolYearPeriod.objects.update(
+        due_from=models.F('start'),
+        due_date=models.F('start') + timedelta(30),
+    )
 
 
 class Migration(migrations.Migration):
