@@ -217,64 +217,47 @@ class CourseRegistration(SubjectRegistration):
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
 
     def get_period_payment_statuses(self, d=None):
+        if d is None:
+            d = date.today()
         paid = self.get_paid(d)
         for counter, period in enumerate(self.all_periods, start=1):
             discount = sum(
                 discount.amount
                 for discount in self.all_discounts
-                if discount.period == period and (d is None or discount.accounted <= d)
+                if discount.period == period and discount.accounted.date() <= d
+            )
+            explanation = ',\n'.join(
+                discount.explanation.strip()
+                for discount in self.all_discounts
+                if discount.period == period and discount.accounted.date() <= d and discount.explanation.strip()
             )
             yield self.PeriodPaymentStatus(
                 period=period,
                 status=PaymentStatus(
                     price=self.price,
                     discount=discount,
+                    explanation=explanation,
                     paid=min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
+                    current_date=d,
+                    due_from=period.due_from,
+                    due_date=period.due_date,
                 ),
             )
             paid = max(paid - (self.price - discount), 0)
 
-    @cached_property
-    def payment_statuses(self):
-        return self.get_payment_statuses()
-
-    PaymentStatuses = namedtuple('PaymentStatuses', ('partial', 'total'))
-
-    def get_payment_statuses(self, d=None):
-        if d is None:
-            d = date.today()
-        if self.approved:
-            if self.approved.date() <= d:
-                partial_price = self.price * (len(tuple(p for p in self.all_periods if p.start <= d)) or 1)
-            else:
-                partial_price = 0
-            total_price = self.price * len(self.all_periods)
-        else:
-            partial_price = 0
-            total_price = 0
-        discounted = self.get_discounted(d)
-        partial_discounted = self.get_partial_discounted(d)
-        paid = self.get_paid(d)
-        return self.PaymentStatuses(
-            partial=PaymentStatus(price=partial_price, discount=partial_discounted, paid=paid),
-            total=PaymentStatus(price=total_price, discount=discounted, paid=paid),
+    def get_payment_status(self, d=None):
+        return sum(
+            pps.status
+            for pps in self.get_period_payment_statuses(d)
         )
 
-    def get_partial_discounted(self, d=None):
-        if d is None:
-            d = date.today()
-        # always count the first period (if any)
-        if self.all_periods:
-            d = max(d, self.all_periods[0].start)
-        return sum(p.amount for p in self.get_discounts(d) if p.period.start <= d)
+    @cached_property
+    def period_payment_statuses(self):
+        return list(self.get_period_payment_statuses())
 
     @cached_property
-    def current_receivable(self):
-        d = date.today()
-        price = self.price * (len(tuple(p for p in self.all_periods if p.start <= d)) or 1)
-        discount = self.get_discounted(d)
-        paid = self.get_paid(d)
-        return max(price - discount - paid, 0)
+    def payment_statuses(self):
+        return [pps.status for pps in self.period_payment_statuses]
 
 
 class CourseDiscount(SubjectDiscount):

@@ -1,8 +1,9 @@
 {% load i18n leprikon_tags %}{{ object.text_registration_payment_request|striptags }}
 
 {% include 'leprikon/registration_mail_details.txt' %}
-{% trans 'Price' %}: {{ object.current_receivable | currency }}
-
+{% for ps in object.payment_statuses %}{% if ps.amount_due %}{% trans 'Amount due' %}: {{ ps.amount_due | currency }}
+{% trans 'Due date' %}: {{ ps.due_date }}
+{% endif %}{% endfor %}
 {% if site.payment_gateway %}{% trans 'Please, use following link to perform online payment' %}:
 {{ object.payment_url }}
 

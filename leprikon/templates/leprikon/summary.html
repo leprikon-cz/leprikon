@@ -15,13 +15,23 @@
 <p><i>{% trans 'You have no new messages.' %}</i></p>
 {% endif %}
 
-<h2>{% trans 'Registrations and payments overview' %}</h2>
+<h2>{% trans 'Payments overview' %}</h2>
 <p>
-    <strong style="color: {{ payment_status.color }}">{{ payment_status.title }}</strong>
-    ({% trans 'registrations count' %}: {{ registrations_count }},
-    {% trans 'total price of all registrations' %}: {{ payment_status.price | currency }},
-    {% trans 'discounts' %}: {{ payment_status.discount | currency }},
-    {% trans 'paid' %}: {{ payment_status.paid | currency }})
+    {% if payment_status_sum.overdue %}
+    <strong style="color: {{ payment_status_sum.color }}">
+    {% blocktrans with overdue=payment_status_sum.overdue|currency %}You have overdue of {{ overdue }}.{% endblocktrans %}
+    </strong><br/>
+    {% endif %}
+    {% if payment_status_sum.amount_due %}
+    <span style="color: {{ payment_status_sum.color }}">
+    {% blocktrans with amount_due=payment_status_sum.amount_due|currency %}Your current amount due is {{ amount_due }}.{% endblocktrans %}
+    </span>
+    {% else %}
+    <i>{% trans 'All Your receivables have been paid.' %}</i>
+    {% endif %}
+    {% if payment_status_sum.overpaid %}
+    {% blocktrans with overdue=payment_status_sum.overpaid|currency %}You have overpaid {{ overpaid }}.{% endblocktrans %}
+    {% endif %}
 </p>
 
 {% endblock %}

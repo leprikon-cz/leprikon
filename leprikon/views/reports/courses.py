@@ -11,7 +11,7 @@ from ...forms.reports.courses import (
 )
 from ...models.agegroup import AgeGroup
 from ...models.citizenship import Citizenship
-from ...models.courses import Course
+from ...models.courses import Course, CourseRegistration
 from ...models.roles import Participant
 from ...models.subjects import (
     SubjectPayment, SubjectRegistrationParticipant, SubjectType,
@@ -55,7 +55,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             for course in Course.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.CoursePaymentsStatusSums(
-            registrations=sum(len(r.registrations) for r in context['reports']),
+            registrations=sum(len(r.registration_statuses) for r in context['reports']),
             status=sum(r.status for r in context['reports']),
         )
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
@@ -65,12 +65,6 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             self.course = course
             self.date = d
 
-        @cached_property
-        def registrations(self):
-            return list(self.course.registrations.filter(
-                approved__lte=self.date,
-            ))
-
         RegPaymentStatus = namedtuple('RegPaymentStatus', ('registration', 'status'))
 
         @cached_property
@@ -79,9 +73,12 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
                 registration_status for registration_status in (
                     self.RegPaymentStatus(
                         registration=registration,
-                        status=registration.courseregistration.get_payment_statuses(self.date).total,
+                        status=registration.get_payment_status(self.date),
                     )
-                    for registration in self.registrations
+                    for registration in CourseRegistration.objects.filter(
+                        subject=self.course,
+                        approved__date__lte=self.date,
+                    )
                 ) if registration_status.status.receivable
             ]
 
@@ -113,7 +110,7 @@ class ReportCourseStatsView(ReportBaseView):
         if paid_only:
             participants = [
                 participant for participant in participants
-                if participant.registration.courseregistration.get_payment_statuses(d).partial.balance >= 0
+                if participant.registration.courseregistration.get_payment_status(d).amount_due == 0
             ]
         else:
             participants = list(participants)

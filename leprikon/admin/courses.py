@@ -142,8 +142,8 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     actions = ('add_full_discount_for_period',)
     list_display = (
-        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
-        'payments_partial_status', 'payments_total_status', 'course_discounts', 'course_payments',
+        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html',
+        'price', 'course_discounts', 'course_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note',
     )
     list_filter = (
@@ -180,7 +180,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
     def course_discounts(self, obj):
         html = []
-        for period in obj.get_period_payment_statuses():
+        for period in obj.period_payment_statuses:
             html.append(format_html(
                 '{period}: <a href="{href}"><b>{amount}</b></a>',
                 period=period.period.name,
@@ -201,7 +201,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
     def course_payments(self, obj):
         html = []
-        for period in obj.get_period_payment_statuses():
+        for period in obj.period_payment_statuses:
             html.append(format_html(
                 '{period}: <a class="popup-link" style="color: {color}" href="{href}" title="{title}">'
                 '<b>{amount}</b></a>',
@@ -221,16 +221,6 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         return '<br/>'.join(html)
     course_payments.allow_tags = True
     course_payments.short_description = _('course payments')
-
-    def payments_partial_status(self, obj):
-        return str(obj.payment_statuses.partial)
-    payments_partial_status.allow_tags = True
-    payments_partial_status.short_description = _('actual balance')
-
-    def payments_total_status(self, obj):
-        return str(obj.payment_statuses.total)
-    payments_total_status.allow_tags = True
-    payments_total_status.short_description = _('total balance')
 
 
 @admin.register(CourseDiscount)

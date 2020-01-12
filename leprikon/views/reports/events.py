@@ -11,7 +11,7 @@ from ...forms.reports.events import (
 )
 from ...models.agegroup import AgeGroup
 from ...models.citizenship import Citizenship
-from ...models.events import Event
+from ...models.events import Event, EventRegistration
 from ...models.roles import Participant
 from ...models.subjects import (
     SubjectPayment, SubjectRegistrationParticipant, SubjectType,
@@ -55,7 +55,7 @@ class ReportEventPaymentsStatusView(ReportBaseView):
             for event in Event.objects.filter(school_year=self.request.school_year)
         ]
         context['sum'] = self.EventPaymentsStatusSums(
-            registrations=sum(len(r.registrations) for r in context['reports']),
+            registrations=sum(len(r.registration_statuses) for r in context['reports']),
             status=sum(r.status for r in context['reports']),
         )
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
@@ -65,12 +65,6 @@ class ReportEventPaymentsStatusView(ReportBaseView):
             self.event = event
             self.date = d
 
-        @cached_property
-        def registrations(self):
-            return list(self.event.registrations.filter(
-                approved__lte=self.date,
-            ))
-
         RegPaymentStatus = namedtuple('RegPaymentStatus', ('registration', 'status'))
 
         @cached_property
@@ -79,9 +73,12 @@ class ReportEventPaymentsStatusView(ReportBaseView):
                 registration_status for registration_status in (
                     self.RegPaymentStatus(
                         registration=registration,
-                        status=registration.eventregistration.get_payment_status(self.date),
+                        status=registration.get_payment_status(self.date),
                     )
-                    for registration in self.registrations
+                    for registration in EventRegistration.objects.filter(
+                        subject=self.event,
+                        approved__date__lte=self.date,
+                    )
                 ) if registration_status.status.receivable
             ]
 

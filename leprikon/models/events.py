@@ -23,6 +23,8 @@ class Event(Subject):
     end_date = models.DateField(_('end date'))
     start_time = models.TimeField(_('start time'), blank=True, null=True)
     end_time = models.TimeField(_('end time'), blank=True, null=True)
+    due_from = models.DateField(_('due from'))
+    due_date = models.DateField(_('due date'))
 
     class Meta:
         app_label = 'leprikon'
@@ -138,24 +140,31 @@ class EventRegistration(SubjectRegistration):
         verbose_name = _('event registration')
         verbose_name_plural = _('event registrations')
 
+    def get_payment_status(self, d=None):
+        if d is None:
+            d = date.today()
+        explanation = ',\n'.join(
+            discount.explanation.strip()
+            for discount in self.all_discounts
+            if discount.accounted.date() <= d and discount.explanation.strip()
+        )
+        return PaymentStatus(
+            price=self.price if self.approved and self.approved.date() < d else 0,
+            discount=self.get_discounted(d),
+            explanation=explanation,
+            paid=self.get_paid(d),
+            current_date=d,
+            due_from=self.subject.event.due_from,
+            due_date=self.subject.event.due_date,
+        )
+
     @cached_property
     def payment_status(self):
         return self.get_payment_status()
 
-    def get_payment_status(self, d=None):
-        return PaymentStatus(
-            price=self.price if self.approved and (d is None or d >= self.approved.date()) else 0,
-            discount=self.get_discounted(d),
-            paid=self.get_paid(d),
-        )
-
     @cached_property
-    def current_receivable(self):
-        d = date.today()
-        price = self.price
-        discount = self.get_discounted(d)
-        paid = self.get_paid(d)
-        return max(price - discount - paid, 0)
+    def payment_statuses(self):
+        return [self.payment_status]
 
 
 class EventDiscount(SubjectDiscount):

@@ -108,6 +108,8 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
     name = models.CharField(_('name'), max_length=150)
     start = models.DateField(_('start date'))
     end = models.DateField(_('end date'))
+    due_from = models.DateField(_('due from'))
+    due_date = models.DateField(_('due date'))
 
     class Meta:
         app_label = 'leprikon'

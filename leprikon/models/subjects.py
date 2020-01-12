@@ -858,8 +858,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.payments.all())
 
     @cached_property
-    def current_receivable(self):
-        return self.subjectregistration.current_receivable
+    def payment_status_sum(self):
+        return sum(self.subjectregistration.payment_statuses)
 
     @cached_property
     def organization(self):
@@ -875,7 +875,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         org = self.organization
         return spayd(
             ('ACC', ('%s+%s' % (org.iban, org.bic)) if org.bic else org.iban),
-            ('AM', self.current_receivable),
+            ('AM', self.payment_status_sum.amount_due),
             ('CC', localeconv['int_curr_symbol'].strip()),
             ('MSG', '%s, %s' % (self.subject.name[:29], str(self)[:29])),
             ('RN', slugify(self.organization.name).replace('*', '')[:35]),
@@ -888,7 +888,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return pays_payment_url(
             gateway=leprikon_site.payment_gateway,
             order_id=self.variable_symbol,
-            amount=self.current_receivable,
+            amount=self.payment_status_sum.amount_due,
             email=self.user.email,
         )
 
@@ -1001,7 +1001,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             if self.payment_requested is None:
                 self.payment_requested = timezone.now()
                 self.save()
-            if self.current_receivable:
+            if self.payment_status_sum.amount_due:
                 self.send_mail('payment_request')
 
     def refuse(self):

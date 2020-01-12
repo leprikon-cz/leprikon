@@ -8,64 +8,49 @@
         {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
     </div>
 </div>
-{% if reg.subject.subject_type.subject_type == 'event' and reg.all_discounts %}{# events #}
 <div class="row">
-    <label class="col-sm-4">{% trans 'Discount' %}:</label>
+    <label class="col-sm-4">{% trans 'Payments status' %}:</label>
     <div class="col-sm-8">
-        <strong class="clickable" data-toggle="collapse" id="discount-{{ reg.id }}" data-target="#explanation-{{ reg.id }}">
-            {{ reg.discount | currency }}
-        </strong>
-        <div class="collapse out" id="explanation-{{ reg.id }}">
-            {% for discount in reg.all_discounts %}
-            {{ discount.explanation | linebreaks }}
-            {% endfor %}
+        <div class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#payments-{{ reg.id }}-details">
+            <strong style="color: {{ reg.payment_status_sum.color }}">{{ reg.payment_status_sum.title }}</strong>
         </div>
-    </div>
-</div>
-{% endif %}
-<div class="row">
-    <label class="col-sm-4">{% trans 'Payments' %}:</label>
-    <div class="col-sm-8">
-        {% if reg.payment_status %}{# events #}
-        <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
-            {{ reg.payment_status.paid | currency }}
-        </strong>
-        {% else %}{# courses #}
-        <strong class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#period-payments-{{ reg.id }}"
-            style="color: {{ reg.payment_statuses.partial.color }}" title="{{ reg.payment_statuses.total.title }}">
-            {{ reg.payment_statuses.total.paid | currency }}
-        </strong>
-        <div class="collapse out" id="period-payments-{{ reg.id }}">
-            {% for ps in reg.get_period_payment_statuses %}
-            {{ ps.period.name }}:
-            <strong style="color: {{ ps.status.color }}" title="{{ ps.status.title }}">
-                {{ ps.status.paid | currency }}
-            </strong>
-            {% if ps.status.discount %}({% trans 'discount' %}: {{ ps.status.discount | currency }}{% if ps.status.explanation %} - {{ ps.status.explanation }}{% endif %}){% endif %}
-            <br />
-            {% endfor %}
+        <div class="collapse out" id="payments-{{ reg.id }}-details">
+            {% if reg.subject.subject_type.subject_type == 'course' %}
+                {% for pps in reg.period_payment_statuses %}
+                {{ pps.period.name }}:
+                <strong style="color: {{ pps.status.color }}" title="{{ pps.status.title }}">
+                    {% blocktrans with paid=pps.status.paid|currency %}paid {{ paid }}{% endblocktrans %}
+                </strong>
+                {% if pps.status.discount %}({% trans 'discount' %}: {{ pps.status.discount | currency }}{% if pps.status.explanation %} - {{ pps.status.explanation }}{% endif %}){% endif %}
+                <br />
+                {% endfor %}
+            {% else %}
+                <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
+                    {% blocktrans with paid=reg.payment_status.paid|currency %}paid {{ paid }}{% endblocktrans %}
+                </strong>
+                {% if reg.payment_status.discount %}({% trans 'discount' %}: {{ reg.payment_status.discount | currency }}{% if reg.payment_status.explanation %} - {{ reg.payment_status.explanation }}{% endif %}){% endif %}
+            {% endif %}
+            {% if reg.payment_requested and reg.payment_status_sum.amount_due %}
+                {% if site.payment_gateway %}
+                    <h4>{% trans 'Online payment' %}</h4>
+                    <p><a class="btn btn-primary" href="{{ reg.payment_url }}">{% trans 'pay online' %}</a></p>
+                {% endif %}
+                {% if reg.organization.bank_account %}
+                    <h4>{% trans 'Bank transfer' %}</h4>
+                    <p>
+                        {% trans 'Please, use following information for bank transfer' %}:<br/>
+                        {% trans 'Bank account' %}: {{ reg.organization.bank_account }}<br/>
+                        {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
+                    </p>
+                    <p>
+                        {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
+                        {% qr_from_text reg.spayd border=1 %}
+                    </p>
+                {% endif %}
+                {% if not reg.organization.bank_account and not site.payment_gateway %}
+                    <p>{% trans 'Currently we only accept payments in cash.' %}</p>
+                {% endif %}
+            {% endif %}
         </div>
-        {% endif %}
-        {% if reg.payment_requested and reg.current_receivable %}
-            {% if site.payment_gateway %}
-                <h4>{% trans 'Online payment' %}</h4>
-                <p><a class="btn btn-primary" href="{{ reg.payment_url }}">{% trans 'pay online' %}</a></p>
-            {% endif %}
-            {% if reg.organization.bank_account %}
-                <h4>{% trans 'Bank transfer' %}</h4>
-                <p>
-                    {% trans 'Please, use following information for bank transfer' %}:<br/>
-                    {% trans 'Bank account' %}: {{ reg.organization.bank_account }}<br/>
-                    {% trans 'Variable symbol' %}: {{ reg.variable_symbol }}<br/>
-                </p>
-                <p>
-                    {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
-                    {% qr_from_text reg.spayd border=1 %}
-                </p>
-            {% endif %}
-            {% if not reg.organization.bank_account and not site.payment_gateway %}
-                <p>{% trans 'Currently we only accept payments in cash.' %}</p>
-            {% endif %}
-        {% endif %}
     </div>
 </div>

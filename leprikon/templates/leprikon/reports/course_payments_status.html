@@ -20,7 +20,7 @@
         <th>{% trans 'Balance' %}</th>
     </tr>
     {% for report in reports %}
-    {% if report.registrations %}
+    {% if report.registration_statuses %}
     <tr id="report-{{ report.course.id }}" class="clickable" data-toggle="collapse" data-target=".{{ report.course.id }}-collapsed">
     {% else %}
     <tr id="report-{{ report.course.id }}">
