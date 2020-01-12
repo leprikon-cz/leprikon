@@ -416,7 +416,6 @@ class Subject(models.Model):
         if self.subject_type.subject_type == SubjectType.COURSE:
             qs = qs.filter(
                 models.Q(registration__courseregistration__course_history__course_id=self.id) &
-                models.Q(registration__courseregistration__course_history__start__lte=d) &
                 (
                     models.Q(registration__courseregistration__course_history__end__isnull=True) |
                     models.Q(registration__courseregistration__course_history__end__gte=d)
@@ -425,11 +424,9 @@ class Subject(models.Model):
         else:  # self.subject_type.subject_type == SubjectType.EVENT:
             qs = qs.filter(
                 registration__subject_id=self.id,
-                registration__approved__date__lte=d,
+                registration__approved__isnull=False,
             )
-        return qs.exclude(
-            registration__canceled__date__lt=d,
-        )
+        return qs.exclude(registration__canceled__date__lt=d)
 
     @cached_property
     def all_approved_participants(self):
