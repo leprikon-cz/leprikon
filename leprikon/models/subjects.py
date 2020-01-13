@@ -1,6 +1,7 @@
 import colorsys
 import logging
 from collections import OrderedDict, namedtuple
+from datetime import datetime, time
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
@@ -1298,7 +1299,7 @@ class TransactionMixin(object):
             errors['amount'] = [_('Amount can not be zero.')]
         if self.accounted:
             max_closure_date = LeprikonSite.objects.get_current().max_closure_date
-            if max_closure_date and self.accounted.date() <= max_closure_date:
+            if max_closure_date and self.accounted <= max_closure_date:
                 errors['accounted'] = [
                     _('Date must be after the last account closure ({}).').format(
                         formats.date_format(max_closure_date)
@@ -1510,7 +1511,7 @@ def transaction_create_subject_payment(instance, **kwargs):
     # create payment
     SubjectPayment.objects.create(
         registration=registration,
-        accounted=transaction.accounted_date,
+        accounted=timezone.make_aware(datetime.combine(transaction.accounted_date, time(12))),
         payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
         amount=transaction.amount,
         note=_('imported from account statement'),
