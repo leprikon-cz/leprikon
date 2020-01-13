@@ -8,6 +8,7 @@
         {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
     </div>
 </div>
+{% if reg.approved %}
 <div class="row">
     <label class="col-sm-4">{% trans 'Payments status' %}:</label>
     <div class="col-sm-8">
@@ -54,3 +55,4 @@
         </div>
     </div>
 </div>
+{% endif %}

@@ -17,11 +17,13 @@ class SummaryView(TemplateView):
             sum(reg.payment_statuses)
             for reg in CourseRegistration.objects.filter(
                 user=self.request.user,
+                approved__isnull=False,
             )
         ) + sum(
             reg.payment_status
             for reg in EventRegistration.objects.filter(
                 user=self.request.user,
+                approved__isnull=False,
             )
         ) + PaymentStatusSum(0, 0, 0, 0, 0, 0)
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)
