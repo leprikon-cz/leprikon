@@ -12,12 +12,12 @@ def set_due_dates(apps, schema_editor):
     Event = apps.get_model('leprikon', 'Event')
     Event.objects.update(
         due_from=models.F('start_date') - timedelta(180),
-        due_date=models.F('start_date') + timedelta(30),
+        due_date=models.F('start_date'),
     )
 
     SchoolYearPeriod = apps.get_model('leprikon', 'SchoolYearPeriod')
     SchoolYearPeriod.objects.update(
-        due_from=models.F('start'),
+        due_from=models.F('start') - timedelta(30),
         due_date=models.F('start') + timedelta(30),
     )
 
