@@ -149,7 +149,7 @@ class EventRegistration(SubjectRegistration):
             if discount.accounted.date() <= d and discount.explanation.strip()
         )
         return PaymentStatus(
-            price=self.price if self.approved and self.approved.date() <= d else 0,
+            price=self.price,
             discount=self.get_discounted(d),
             explanation=explanation,
             paid=self.get_paid(d),

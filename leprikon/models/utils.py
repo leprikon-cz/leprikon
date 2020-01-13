@@ -27,6 +27,20 @@ class PaymentStatusMixin:
         return settings.LEPRIKON_COLOR_PAID
 
     @property
+    def amount_due_color(self):
+        if self.overdue:
+            return settings.LEPRIKON_COLOR_OVERDUE
+        if self.amount_due:
+            return settings.LEPRIKON_COLOR_NOTPAID
+        return settings.LEPRIKON_COLOR_PAID
+
+    @property
+    def overpaid_color(self):
+        if self.overpaid:
+            return settings.LEPRIKON_COLOR_OVERPAID
+        return settings.LEPRIKON_COLOR_PAID
+
+    @property
     def title(self):
         titles = []
         if self.overdue:
