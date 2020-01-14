@@ -1299,7 +1299,7 @@ class TransactionMixin(object):
             errors['amount'] = [_('Amount can not be zero.')]
         if self.accounted:
             max_closure_date = LeprikonSite.objects.get_current().max_closure_date
-            if max_closure_date and self.accounted <= max_closure_date:
+            if max_closure_date and self.accounted.date() <= max_closure_date:
                 errors['accounted'] = [
                     _('Date must be after the last account closure ({}).').format(
                         formats.date_format(max_closure_date)
