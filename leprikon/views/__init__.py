@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import user_passes_test
-from django.core.urlresolvers import reverse_lazy as reverse
+from django.urls import reverse_lazy as reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from ..conf import settings
@@ -19,12 +19,12 @@ def _user_is_leader(u):
     try:
         u.leprikon_leader
         return True
-    except AttributeError:
+    except Exception:
         return False
 
 
 login_required = user_passes_test(
-    lambda u: u.is_authenticated(),
+    lambda u: u.is_authenticated,
     login_url=login_url,
     redirect_field_name=settings.LEPRIKON_PARAM_BACK,
 )
@@ -55,12 +55,12 @@ user_agreement = login_required(user.UserAgreementView.as_view())
 user_update = login_required(user.UserUpdateView.as_view())
 user_email = login_required(user.UserEmailView.as_view())
 user_login = user.UserLoginView.as_view()
-user_logout = user.user_logout
-user_password = user.user_password
-password_reset = user.password_reset
-password_reset_done = user.password_reset_done
-password_reset_confirm = user.password_reset_confirm
-password_reset_complete = user.password_reset_complete
+user_logout = user.UserLogoutView.as_view()
+user_password = user.UserPasswordView.as_view()
+password_reset = user.PasswordResetView.as_view()
+password_reset_done = user.PasswordResetDoneView.as_view()
+password_reset_confirm = user.PasswordResetConfirmView.as_view()
+password_reset_complete = user.PasswordResetCompleteView.as_view()
 
 registration_list = login_required(registrations.RegistrationsListView.as_view())
 registration_pdf = login_required(subjects.SubjectRegistrationPdfView.as_view())

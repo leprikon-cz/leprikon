@@ -1,10 +1,7 @@
-from django.contrib.auth import get_user_model, login as auth_login
-from django.contrib.auth.views import (
-    LoginView as _LoginView, logout, password_change, password_reset as pr,
-    password_reset_complete as pr_complete,
-    password_reset_confirm as pr_confirm, password_reset_done as pr_done,
+from django.contrib.auth import (
+    get_user_model, login as auth_login, views as auth_views,
 )
-from django.core.urlresolvers import reverse_lazy as reverse
+from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,13 +13,6 @@ from ..forms.user import (
 from ..models.roles import Parent
 from ..models.useragreement import UserAgreement
 from .generic import CreateView, FormView, UpdateView
-
-__all__ = [
-    'UserCreateView', 'UserLoginView', 'UserUpdateView',
-    'user_password', 'user_logout',
-    'password_reset', 'password_reset_done',
-    'password_reset_confirm', 'password_reset_complete',
-]
 
 
 class UserCreateView(CreateView):
@@ -105,68 +95,70 @@ class UserEmailView(UserUpdateView):
             return _('Set e-mail address')
 
 
-class UserLoginView(_LoginView):
+class UserPasswordView(auth_views.PasswordChangeView):
+    template_name = 'leprikon/password.html'
+    form_class = UserPasswordForm
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({
+            'submit_label': _('Change password'),
+            'back_label': _('Back'),
+            'back_url': reverse_lazy('leprikon:summary'),
+            'placeholder': 'user_password',
+        })
+        return super().get_context_data(**kwargs)
+
+
+class UserLoginView(auth_views.LoginView):
     template_name = 'leprikon/login.html'
-    authentication_form = UserLoginForm
+    form_class = UserLoginForm
     redirect_field_name = settings.LEPRIKON_PARAM_BACK
 
 
-def user_password(request):
-    return password_change(
-        request,
-        template_name='leprikon/password.html',
-        password_change_form=UserPasswordForm,
-        post_change_redirect=reverse('leprikon:summary'),
-        extra_context={
-            'submit_label': _('Change password'),
-            'back_label': _('Back'),
-            'back_url': reverse('leprikon:summary'),
-            'placeholder': 'user_password',
-        },
-    )
+class UserLogoutView(auth_views.LogoutView):
+    next_page = settings.LOGOUT_REDIRECT_URL or '/'
+    redirect_field_name = settings.LEPRIKON_PARAM_BACK
 
 
-def user_logout(request):
-    return logout(request, next_page='/', redirect_field_name=settings.LEPRIKON_PARAM_BACK)
+class PasswordResetView(auth_views.PasswordResetView):
+    template_name = 'leprikon/password_reset.html'
+    form_class = PasswordResetForm
+    email_template_name = 'leprikon/password_reset_email.html'
+    from_email = settings.SERVER_EMAIL
 
-
-def password_reset(request):
-    return pr(
-        request,
-        template_name='leprikon/password_reset.html',
-        password_reset_form=PasswordResetForm,
-        email_template_name='leprikon/password_reset_email.html',
-        from_email=settings.SERVER_EMAIL,
-        extra_context={
+    def get_context_data(self, **kwargs):
+        kwargs.update({
             'instructions': '<p>{}<p>'.format(
                 _('Enter your email address, and we\'ll email instructions for setting a new one.')
             ),
             'submit_label': _('Reset my password'),
             'placeholder': 'password_reset',
-        },
-        post_reset_redirect=reverse('leprikon:password_reset_done'),
-    )
+        })
+        return super().get_context_data(**kwargs)
+
+    success_url = reverse_lazy('leprikon:password_reset_done')
 
 
-def password_reset_done(request):
-    return pr_done(request, template_name='leprikon/password_reset_done.html')
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'leprikon/password_reset_done.html'
 
 
-def password_reset_confirm(request, uidb64=None, token=None):
-    return pr_confirm(
-        request, uidb64, token,
-        template_name='leprikon/password_reset_confirm.html',
-        set_password_form=SetPasswordForm,
-        extra_context={
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'leprikon/password_reset_confirm.html'
+    form_class = SetPasswordForm
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({
             'instructions': '<p>{}<p>'.format(
                 _('Please enter your new password twice so we can verify you typed it in correctly.')
             ),
             'submit_label': _('Set my password'),
             'placeholder': 'password_set',
-        },
-        post_reset_redirect=reverse('leprikon:password_reset_complete'),
-    )
+        })
+        return super().get_context_data(**kwargs)
+
+    success_url = reverse_lazy('leprikon:password_reset_complete')
 
 
-def password_reset_complete(request):
-    return pr_complete(request, template_name='leprikon/password_reset_complete.html')
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'leprikon/password_reset_complete.html'
