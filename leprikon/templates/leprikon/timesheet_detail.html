@@ -7,6 +7,11 @@
 
 {% if not object.submitted %}
 <div class="right">
+    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheetentry_create' %}">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        {% trans 'add entry' %}
+    </a>
+
     <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:timesheet_submit' object.id %}">
         <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
         {% trans 'submit' %}
