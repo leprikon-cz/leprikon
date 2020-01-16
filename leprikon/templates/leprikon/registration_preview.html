@@ -34,7 +34,11 @@
             <label class="col-sm-4">{% trans 'Status' %}:</label>
             <div class="col-sm-8">
                 {% if reg.canceled %}
-                    {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
+                    {% if reg.approved %}
+                        {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
+                    {% else %}
+                        {% blocktrans with d=reg.canceled %}registration refused on {{ d }}{% endblocktrans %}
+                    {% endif %}
                 {% elif reg.cancel_request %}
                     {% trans 'cancellation requested' %}
                 {% elif reg.approved %}

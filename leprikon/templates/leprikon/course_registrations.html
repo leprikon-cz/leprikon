@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>{% block title %}{% blocktrans with name=course.name %}Registrations for course {{ name }}{% endblocktrans %}{% endblock %}</h1>
+<h1>{% block title %}{% blocktrans with name=course.name %}Registrations for {{ course.subject_type.name_akuzativ }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
 
 <h2>{% trans 'Active Registrations' %}</h2>
 

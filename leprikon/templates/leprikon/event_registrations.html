@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>{% block title %}{% blocktrans with name=event.name %}Registrations for event {{ name }}{% endblocktrans %}{% endblock %}</h1>
+<h1>{% block title %}{% blocktrans with name=event.name %}Registrations for {{ event.subject_type.name_akuzativ }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
 
 <h2>{% trans 'Active Registrations' %}</h2>
 
