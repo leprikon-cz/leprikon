@@ -123,7 +123,11 @@ class UserPasswordForm(FormMixin, _PasswordChangeForm):
 
 
 class PasswordResetForm(FormMixin, _PasswordResetForm):
-    pass
+    def get_users(self, email):
+        return User.objects.filter(**{
+            'email__iexact': email,
+            'is_active': True,
+        })
 
 
 class SetPasswordForm(FormMixin, _SetPasswordForm):
