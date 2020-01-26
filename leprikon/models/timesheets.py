@@ -2,8 +2,8 @@ import calendar
 from collections import namedtuple
 from datetime import date, datetime, timedelta
 
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models
+from django.urls import reverse_lazy as reverse
 from django.utils.dateformat import DateFormat
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _

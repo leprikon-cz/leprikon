@@ -1,5 +1,5 @@
 from django.contrib.auth.views import redirect_to_login
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from . import __version__
 from .conf import settings

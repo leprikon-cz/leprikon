@@ -1,8 +1,8 @@
 from collections import namedtuple
 from itertools import chain
 
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.template.response import TemplateResponse
+from django.urls import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ...forms.reports.debtors import DebtorsForm

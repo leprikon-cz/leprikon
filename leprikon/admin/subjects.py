@@ -8,11 +8,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.http import (
     HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
 )
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 

@@ -7,8 +7,8 @@ from datetime import date
 from urllib.parse import urlencode
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import IntegrityError, transaction
+from django.urls import reverse_lazy as reverse
 from django.utils.encoding import iri_to_uri, smart_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _

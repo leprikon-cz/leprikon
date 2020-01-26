@@ -1,12 +1,12 @@
 from django import forms
 from django.conf.urls import url
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.messages import MessageAdminForm

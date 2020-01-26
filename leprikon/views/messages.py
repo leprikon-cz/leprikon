@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse_lazy as reverse
+from django.urls import reverse_lazy as reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 

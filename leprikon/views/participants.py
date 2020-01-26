@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse_lazy as reverse
+from django.urls import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.participant import ParticipantForm

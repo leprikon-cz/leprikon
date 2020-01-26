@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy as reverse
+from django.urls import reverse_lazy as reverse
 from django.utils.http import is_safe_url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (

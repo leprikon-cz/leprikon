@@ -1,7 +1,7 @@
 from cms.views import details as cms_view_details
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (

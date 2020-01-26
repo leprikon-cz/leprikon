@@ -1,8 +1,8 @@
 from io import BytesIO
 
 from django.conf.urls import url as urls_url
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from PyPDF2 import PdfFileReader, PdfFileWriter

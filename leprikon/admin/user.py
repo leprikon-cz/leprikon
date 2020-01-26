@@ -5,9 +5,9 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.decorators import permission_required
 from django.contrib.messages import ERROR
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.user import UserAdminChangeForm, UserAdminCreateForm

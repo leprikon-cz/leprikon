@@ -14,10 +14,10 @@ from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse_lazy as reverse
 from django.db import models, transaction
 from django.dispatch import receiver
 from django.template.loader import select_template
+from django.urls import reverse_lazy as reverse
 from django.utils import formats, timezone
 from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
