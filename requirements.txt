@@ -12,8 +12,8 @@ cmsplugin-filer==1.1.3
 decorator==4.4.1          # via ipython, traitlets
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 django-appconf==1.0.3     # via cmsplugin-filer
-django-bankreader==0.6.0
-django-classy-tags==0.9.0  # via django-cms, django-sekizai
+django-bankreader==0.6.1
+django-classy-tags==1.0.0  # via django-cms, django-sekizai
 django-cms==3.6.0
 django-countries==5.5
 django-excel==0.0.10
@@ -23,18 +23,18 @@ django-ganalytics==0.7.0
 django-haystack==2.7.0
 django-js-asset==1.2.2    # via django-mptt
 django-localflavor==1.6.2
-django-mptt==0.10.0       # via django-filer
+django-mptt==0.11.0       # via django-filer
 django-pays==0.1.0
 django-polymorphic==2.0.3  # via django-filer
 django-qr-code==1.1.0
-django-sekizai==1.0.0     # via cmsplugin-filer, django-cms
+django-sekizai==1.1.0     # via cmsplugin-filer, django-cms
 django-staticfiles-downloader==0.1.5
 django-template-admin==1.1.1
 django-treebeard==4.3.1   # via django-cms
 django-verified-email-field==1.6.1
 django==1.11.27
-djangocms-admin-style==1.4.0  # via django-cms
-djangocms-attributes-field==1.1.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
+djangocms-admin-style==1.5.0  # via django-cms
+djangocms-attributes-field==1.2.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
 djangocms-googlemap==1.3.0
 djangocms-link==2.5.0
 djangocms-snippet==2.2.0
@@ -47,16 +47,16 @@ html5lib==1.0.1           # via djangocms-text-ckeditor
 idna==2.8                 # via requests
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.11.1
-jedi==0.15.2              # via ipython
+jedi==0.16.0              # via ipython
 lml==0.0.9                # via pyexcel, pyexcel-io
 lxml==4.4.2
 mysqlclient==1.4.6
 oauthlib==3.1.0           # via requests-oauthlib, social-auth-core
-parso==0.5.2              # via jedi
-pexpect==4.7.0            # via ipython
+parso==0.6.0              # via jedi
+pexpect==4.8.0            # via ipython
 pickleshare==0.7.5        # via ipython
 pillow==7.0.0             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
-prompt-toolkit==3.0.2     # via ipython
+prompt-toolkit==3.0.3     # via ipython
 psycopg2-binary==2.8.4
 ptyprocess==0.6.0         # via pexpect
 pyexcel-io==0.5.20        # via pyexcel, pyexcel-xlsxw
@@ -74,14 +74,14 @@ qrcode==6.1               # via django-qr-code
 reportlab==3.5.34
 requests-oauthlib==1.3.0  # via social-auth-core
 requests==2.22.0
-sentry-sdk==0.14.0
-six==1.14.0               # via django-appconf, django-countries, html5lib, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
+sentry-sdk==0.14.1
+six==1.14.0               # via django-appconf, django-classy-tags, django-countries, django-sekizai, html5lib, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0
 social-auth-core==3.2.0   # via social-auth-app-django
 texttable==1.6.2          # via pyexcel
 traitlets==4.3.3          # via ipython
 unidecode==1.0.23         # via django-filer
-urllib3==1.25.7           # via requests, sentry-sdk
+urllib3==1.25.8           # via requests, sentry-sdk
 uwsgi==2.0.18
 wcwidth==0.1.8            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
@@ -89,4 +89,4 @@ whoosh==2.7.4
 xlsxwriter==0.9.3         # via pyexcel-xlsxw
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==45.0.0        # via ipython
+# setuptools==45.1.0        # via ipython
