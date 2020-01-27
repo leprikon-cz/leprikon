@@ -274,8 +274,10 @@ class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, form
             age = None
 
         if age is not None and age < 18:
+            self.hide_parents = False
             self.fields['has_parent1'].required = True
         else:
+            self.hide_parents = True
             self.fields['phone'].required = True
             self.fields['email'].required = True
 

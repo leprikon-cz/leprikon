@@ -115,7 +115,7 @@
             {% include 'leprikon/form_item.html' %}
         {% endfor %}
 
-        <div id="{{ participant_form.prefix }}-parents" class="hidden">
+        <div id="{{ participant_form.prefix }}-parents"{% if participant_form.hide_parents %} class="hidden"{% endif %}>
             <h3>{% trans 'Parents' %}</h3>
 
             <div id="{{ participant_form.prefix }}-parent1_switch">
@@ -376,9 +376,9 @@ $(document).ready(function() {
         toggle_section(child, '{{ participant_form.prefix }}-parents', adult);
         toggle_section(child, '{{ participant_form.prefix }}-parent1_switch', true);
         $('#id_{{ participant_form.prefix }}-has_parent1').prop('checked', child).change();
+        $('#id_{{ participant_form.prefix }}-has_parent2').prop('checked', child).change();
         if (adult) $('#id_{{ participant_form.prefix }}-has_parent2').prop('checked', false).change();
     });
-    $('#id_{{ participant_form.prefix }}-birth_num').trigger('change');
 
     /* Set callback on school change */
     $('#id_{{ participant_form.prefix }}-school').change(function() {
