@@ -13,7 +13,7 @@
 
 <p>
     {% trans 'You may download the registration in PDF using the following link:' %}<br/>
-    <a href="https://{{ site.domain }}{{ object.get_absolute_url }}">
-        https://{{ site.domain }}{{ object.get_absolute_url }}
+    <a href="{{ site.url }}{{ object.get_absolute_url }}">
+        {{ site.url }}{{ object.get_absolute_url }}
     </a>
 </p>

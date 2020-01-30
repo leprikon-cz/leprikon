@@ -5,4 +5,4 @@
 {% endif %}
 
 {% trans 'You may download the registration in PDF using the following link:' %}
-https://{{ site.domain }}{{ object.get_absolute_url }}
+{{ site.url }}{{ object.get_absolute_url }}

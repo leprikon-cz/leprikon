@@ -4,5 +4,5 @@
 ~ ~ ~
 
 {% blocktrans with name=site.name %}Show this message on site {{ name }}:{% endblocktrans %}
-http://{{ site.domain }}{{ message_recipient.get_absolute_url }}
+{{ site.url }}{{ message_recipient.get_absolute_url }}
 

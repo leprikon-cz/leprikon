@@ -5,7 +5,7 @@
 
 <p>
     {% blocktrans with name=site.name %}Show this message on site {{ name }}:{% endblocktrans %}<br/>
-    <a href="http://{{ site.domain }}{{ message_recipient.get_absolute_url }}">
-        http://{{ site.domain }}{{ message_recipient.get_absolute_url }}
+    <a href="{{ site.url }}{{ message_recipient.get_absolute_url }}">
+        {{ site.url }}{{ message_recipient.get_absolute_url }}
     </a>
 </p>

@@ -61,3 +61,7 @@ class LeprikonSite(Site):
     @cached_property
     def max_closure_date(self):
         return AccountClosure.objects.max_closure_date()
+
+    @cached_property
+    def url(self):
+        return settings.LEPRIKON_URL or f'https://{self.domain}'
