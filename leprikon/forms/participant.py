@@ -7,7 +7,7 @@ from .form import FormMixin
 class ParticipantForm(FormMixin, forms.ModelForm):
 
     def __init__(self, user, **kwargs):
-        super(ParticipantForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.instance.user = user
 
     class Meta:

@@ -72,9 +72,11 @@ payment_pdf = login_required(subjects.SubjectPaymentPdfView.as_view())
 participant_list = login_required(participants.ParticipantListView.as_view())
 participant_create = login_required(participants.ParticipantCreateView.as_view())
 participant_update = login_required(participants.ParticipantUpdateView.as_view())
+participant_delete = login_required(participants.ParticipantDeleteView.as_view())
 
 parent_create = login_required(parents.ParentCreateView.as_view())
 parent_update = login_required(parents.ParentUpdateView.as_view())
+parent_delete = login_required(parents.ParentDeleteView.as_view())
 
 leader_summary = leader_required(summaries.LeaderSummaryView.as_view())
 alternating = leader_required(journals.AlternatingView.as_view())

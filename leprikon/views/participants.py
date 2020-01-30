@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.participant import ParticipantForm
 from ..models.roles import Participant
 from ..utils import reverse_with_back
-from .generic import CreateView, ListView, UpdateView
+from .generic import CreateView, DeleteView, ListView, UpdateView
 
 
 class ParticipantListView(ListView):
@@ -30,7 +30,7 @@ class ParticipantCreateView(CreateView):
     title = _('New participant')
 
     def get_form_kwargs(self):
-        kwargs = super(ParticipantCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         parent = self.request.user.leprikon_parents.first()
         if parent:
@@ -49,12 +49,27 @@ class ParticipantUpdateView(UpdateView):
 
     def get_queryset(self):
         # only allow to edit user's own participants
-        return super(ParticipantUpdateView, self).get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user)
 
     def get_form_kwargs(self):
-        kwargs = super(ParticipantUpdateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
     def get_message(self):
         return _('The participant {} has been updated.').format(self.object)
+
+
+class ParticipantDeleteView(DeleteView):
+    model = Participant
+    title = _('Delete information about participant')
+    message = _('Information about participant has been deleted.')
+
+    def get_queryset(self):
+        # only allow to delete user's own participants
+        return super().get_queryset().filter(user=self.request.user)
+
+    def get_question(self):
+        return _('Do You really want to delete the information about participant: {}?').format(
+            self.object
+        )
