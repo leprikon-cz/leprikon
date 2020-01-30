@@ -1,4 +1,5 @@
 from collections import namedtuple
+from datetime import date, datetime
 
 from django.utils.functional import cached_property, lazy
 from django.utils.translation import ugettext_lazy as _
@@ -164,3 +165,18 @@ def html_help_text_with_default(default):
 
 
 lazy_html_help_text_with_default = lazy(html_help_text_with_default, str)
+
+
+def change_year(d, year_delta):
+    if isinstance(d, date):
+        try:
+            return date(d.year + year_delta, d.month, d.day)
+        except ValueError:
+            # handle leap-year
+            return date(d.year + year_delta, d.month, d.day - 1)
+    else:
+        try:
+            return datetime(d.year + year_delta, d.month, d.day)
+        except ValueError:
+            # handle leap-year
+            return datetime(d.year + year_delta, d.month, d.day - 1, d.hour, d.minute, d.second)

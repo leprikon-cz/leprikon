@@ -5,6 +5,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from .startend import StartEndMixin
+from .utils import change_year
 
 
 class SchoolYearManager(models.Manager):
@@ -73,24 +74,16 @@ class SchoolYearDivision(models.Model):
         new.id, new.pk = None, None
         new.school_year = school_year
         new.save()
-        year_offset = school_year.year - old.school_year.year
+        year_delta = school_year.year - old.school_year.year
         periods = []
         for period in old.all_periods:
-            try:
-                start = date(period.start.year + year_offset, period.start.month, period.start.day)
-            except ValueError:
-                # handle leap-year
-                start = date(period.start.year + year_offset, period.start.month, period.start.day - 1)
-            try:
-                end = date(period.end.year + year_offset, period.end.month, period.end.day)
-            except ValueError:
-                # handle leap-year
-                end = date(period.end.year + year_offset, period.end.month, period.end.day - 1)
             periods.append(SchoolYearPeriod(
                 school_year_division=new,
                 name=period.name,
-                start=start,
-                end=end,
+                start=change_year(period.start, year_delta),
+                end=change_year(period.end, year_delta),
+                due_from=change_year(period.due_from, year_delta),
+                due_date=change_year(period.due_date, year_delta),
             ))
         SchoolYearPeriod.objects.bulk_create(periods)
         return new

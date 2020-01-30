@@ -15,7 +15,7 @@ from .schoolyear import SchoolYear
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
 )
-from .utils import PaymentStatus
+from .utils import PaymentStatus, change_year
 
 
 class Event(Subject):
@@ -72,63 +72,19 @@ class Event(Subject):
         new.public = False
         new.evaluation = ''
         new.note = ''
-        year_offset = school_year.year - old.school_year.year
-        if new.reg_from:
-            try:
-                new.reg_from = datetime(
-                    new.reg_from.year + year_offset,
-                    new.reg_from.month,
-                    new.reg_from.day,
-                    new.reg_from.hour,
-                    new.reg_from.minute,
-                    new.reg_from.second,
-                )
-            except ValueError:
-                # handle leap-year
-                new.reg_from = datetime(
-                    new.reg_from.year + year_offset,
-                    new.reg_from.month,
-                    new.reg_from.day - 1,
-                    new.reg_from.hour,
-                    new.reg_from.minute,
-                    new.reg_from.second,
-                )
-        if new.reg_to:
-            try:
-                new.reg_to = datetime(
-                    new.reg_to.year + year_offset,
-                    new.reg_to.month,
-                    new.reg_to.day,
-                    new.reg_to.hour,
-                    new.reg_to.minute,
-                    new.reg_to.second,
-                )
-            except ValueError:
-                # handle leap-year
-                new.reg_to = datetime(
-                    new.reg_to.year + year_offset,
-                    new.reg_to.month,
-                    new.reg_to.day - 1,
-                    new.reg_to.hour,
-                    new.reg_to.minute,
-                    new.reg_to.second,
-                )
-        try:
-            new.start_date = date(new.start_date.year + year_offset, new.start_date.month, new.start_date.day)
-        except ValueError:
-            # handle leap-year
-            new.start_date = date(new.start_date.year + year_offset, new.start_date.month, new.start_date.day - 1)
-        try:
-            new.end_date = date(new.end_date.year + year_offset, new.end_date.month, new.end_date.day)
-        except ValueError:
-            # handle leap-year
-            new.end_date = date(new.end_date.year + year_offset, new.end_date.month, new.end_date.day - 1)
+        year_delta = school_year.year - old.school_year.year
+        new.reg_from = new.reg_form and change_year(new.reg_form, year_delta)
+        new.reg_to = new.reg_to and change_year(new.reg_form, year_delta)
+        new.due_from = change_year(new.due_from, year_delta)
+        new.due_date = change_year(new.due_date, year_delta)
+        new.start_date = change_year(new.start_date, year_delta)
+        new.end_date = change_year(new.end_date, year_delta)
         new.save()
-        new.groups = old.groups.all()
-        new.age_groups = old.age_groups.all()
-        new.leaders = old.leaders.all()
-        new.questions = old.questions.all()
-        new.attachments = old.attachments.all()
+        new.groups.set(old.groups.all())
+        new.age_groups.set(old.age_groups.all())
+        new.leaders.set(old.leaders.all())
+        new.questions.set(old.questions.all())
+        new.attachments.set(old.attachments.all())
         return new
 
 

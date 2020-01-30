@@ -21,7 +21,7 @@ from .startend import StartEndMixin
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
 )
-from .utils import PaymentStatus
+from .utils import PaymentStatus, change_year
 
 
 class Course(Subject):
@@ -76,61 +76,20 @@ class Course(Subject):
         new.public = False
         new.evaluation = ''
         new.note = ''
-        try:
-            new.school_year_division = SchoolYearDivision.objects.get(
-                school_year=school_year,
-                name=old.school_year_division.name,
-            )
-        except SchoolYearDivision.DoesNotExist:
-            new.school_year_division = old.school_year_division.copy_to_school_year(school_year)
+        year_delta = school_year.year - old.school_year.year
+        new.school_year_division = SchoolYearDivision.objects.filter(
+            school_year=school_year,
+            name=old.school_year_division.name,
+        ).first() or old.school_year_division.copy_to_school_year(school_year)
+        new.reg_from = new.reg_form and change_year(new.reg_form, year_delta)
+        new.reg_to = new.reg_to and change_year(new.reg_form, year_delta)
         new.save()
-        new.groups = old.groups.all()
-        new.age_groups = old.age_groups.all()
-        new.leaders = old.leaders.all()
-        new.questions = old.questions.all()
-        new.times = old.times.all()
-        new.attachments = old.attachments.all()
-        year_offset = school_year.year - old.school_year.year
-        if new.reg_from:
-            try:
-                new.reg_from = datetime(
-                    new.reg_from.year + year_offset,
-                    new.reg_from.month,
-                    new.reg_from.day,
-                    new.reg_from.hour,
-                    new.reg_from.minute,
-                    new.reg_from.second,
-                )
-            except ValueError:
-                # handle leap-year
-                new.reg_from = datetime(
-                    new.reg_from.year + year_offset,
-                    new.reg_from.month,
-                    new.reg_from.day - 1,
-                    new.reg_from.hour,
-                    new.reg_from.minute,
-                    new.reg_from.second,
-                )
-        if new.reg_to:
-            try:
-                new.reg_to = datetime(
-                    new.reg_to.year + year_offset,
-                    new.reg_to.month,
-                    new.reg_to.day,
-                    new.reg_to.hour,
-                    new.reg_to.minute,
-                    new.reg_to.second,
-                )
-            except ValueError:
-                # handle leap-year
-                new.reg_to = datetime(
-                    new.reg_to.year + year_offset,
-                    new.reg_to.month,
-                    new.reg_to.day - 1,
-                    new.reg_to.hour,
-                    new.reg_to.minute,
-                    new.reg_to.second,
-                )
+        new.times.set(old.times.all())
+        new.groups.set(old.groups.all())
+        new.age_groups.set(old.age_groups.all())
+        new.leaders.set(old.leaders.all())
+        new.questions.set(old.questions.all())
+        new.attachments.set(old.attachments.all())
         return new
 
 
