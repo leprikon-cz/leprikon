@@ -31,9 +31,9 @@ from ..models.utils import lazy_html_help_text_with_default
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
-    ApprovedListFilter, CanceledListFilter, LeaderListFilter,
-    SchoolYearListFilter, SubjectGroupListFilter, SubjectListFilter,
-    SubjectTypeListFilter,
+    ApprovedListFilter, CanceledListFilter, IsNullFieldListFilter,
+    LeaderListFilter, SchoolYearListFilter, SubjectGroupListFilter,
+    SubjectListFilter, SubjectTypeListFilter,
 )
 from .messages import SendMessageAdminMixin
 from .pdf import PdfExportAdminMixin
@@ -462,6 +462,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'subject__registration_type',
         ApprovedListFilter,
         CanceledListFilter,
+        ('billing_info', IsNullFieldListFilter),
         ('subject', SubjectListFilter),
         ('subject__leaders', LeaderListFilter),
     )

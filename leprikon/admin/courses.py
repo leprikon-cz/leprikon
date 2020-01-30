@@ -18,8 +18,8 @@ from ..models.subjects import SubjectType
 from ..utils import currency
 from .filters import (
     ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
-    CourseListFilter, CourseTypeListFilter, LeaderListFilter,
-    SchoolYearListFilter,
+    CourseListFilter, CourseTypeListFilter, IsNullFieldListFilter,
+    LeaderListFilter, SchoolYearListFilter,
 )
 from .pdf import PdfExportAdminMixin
 from .subjects import (
@@ -153,6 +153,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         ('subject__subject_type', CourseTypeListFilter),
         ApprovedListFilter,
         CanceledListFilter,
+        ('billing_info', IsNullFieldListFilter),
         ('subject', CourseListFilter),
         ('subject__leaders', LeaderListFilter),
     )

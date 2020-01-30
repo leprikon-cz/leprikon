@@ -202,3 +202,31 @@ class LeaderListFilter(admin.RelatedFieldListFilter):
 
     def field_choices(self, field, request, model_admin):
         return [(leader.id, leader) for leader in self.leaders]
+
+
+class IsNullFieldListFilter(admin.FieldListFilter):
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        self.lookup_kwarg = '%s__isnull' % field_path
+        self.lookup_val = request.GET.get(self.lookup_kwarg)
+        if not hasattr(field, 'verbose_name') and hasattr(field, 'related_model'):
+            field.verbose_name = field.related_model._meta.verbose_name
+        super().__init__(field, request, params, model, model_admin, field_path)
+        if (self.used_parameters and self.lookup_kwarg in self.used_parameters and
+                self.used_parameters[self.lookup_kwarg] in ('1', '0')):
+            self.used_parameters[self.lookup_kwarg] = bool(int(self.used_parameters[self.lookup_kwarg]))
+
+    def expected_parameters(self):
+        return [self.lookup_kwarg]
+
+    def choices(self, changelist):
+        for lookup, title in (
+                (None, _('All')),
+                ('0', _('Set')),
+                ('1', _('Not set'))):
+            yield {
+                'selected': self.lookup_val == lookup,
+                'query_string': changelist.get_query_string({
+                    self.lookup_kwarg: lookup,
+                }),
+                'display': title,
+            }

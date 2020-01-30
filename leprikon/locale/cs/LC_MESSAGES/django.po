@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-30 02:21+0100\n"
+"POT-Creation-Date: 2020-01-30 12:13+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -57,34 +57,34 @@ msgstr "Vyberte cílový školní rok"
 msgid "Copy selected courses to another school year"
 msgstr "Kopírovat vybrané kurzy do jiného školního roku"
 
-#: admin/courses.py:170
+#: admin/courses.py:171
 msgid "full discount for current period"
 msgstr "sleva v plné výši pro aktuální období"
 
-#: admin/courses.py:177
+#: admin/courses.py:178
 msgid ""
 "The discounts have been created for each selected registration and current "
 "period."
 msgstr ""
 "Pro vybrané přihlášky byly vytvořeny slevy v plné výši pro aktuální období."
 
-#: admin/courses.py:179
+#: admin/courses.py:180
 msgid "Add full discount for current period"
 msgstr "Přidat slevu v plné výši pro aktuální období"
 
-#: admin/courses.py:195 admin/events.py:138
+#: admin/courses.py:196 admin/events.py:139
 msgid "add discount"
 msgstr "přidat slevu"
 
-#: admin/courses.py:200
+#: admin/courses.py:201
 msgid "course discounts"
 msgstr "slevy na kurz"
 
-#: admin/courses.py:218 admin/events.py:155
+#: admin/courses.py:219 admin/events.py:156
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/courses.py:223
+#: admin/courses.py:224
 msgid "course payments"
 msgstr "platby za kurzy"
 
@@ -116,23 +116,23 @@ msgstr "Vybrané akce byly zkopírovány do školního roku {}."
 msgid "Copy selected events to another school year"
 msgstr "Kopírovat vybrané akce do jiného školního roku"
 
-#: admin/events.py:121
+#: admin/events.py:122
 msgid "full discount"
 msgstr "sleva v plné vyši"
 
-#: admin/events.py:125
+#: admin/events.py:126
 msgid "The discounts have been created for each selected registration."
 msgstr "Pro vybrané přihlášky byly vytvořeny slevy v plné výši."
 
-#: admin/events.py:126
+#: admin/events.py:127
 msgid "Add full discount"
 msgstr "Přidat slevu v plné výši"
 
-#: admin/events.py:141
+#: admin/events.py:142
 msgid "event discounts"
 msgstr "slevy na akce"
 
-#: admin/events.py:158
+#: admin/events.py:159
 msgid "event payments"
 msgstr "platby za akce"
 
@@ -181,6 +181,18 @@ msgstr "neodhlášeno"
 msgid "canceled"
 msgstr "odhlášeno"
 
+#: admin/filters.py:221
+msgid "All"
+msgstr "Vše"
+
+#: admin/filters.py:222
+msgid "Set"
+msgstr "Nastaveno"
+
+#: admin/filters.py:223
+msgid "Not set"
+msgstr "Nenastaveno"
+
 #: admin/journals.py:60 admin/timesheets.py:61
 msgid "update entry"
 msgstr "upravit záznam"
@@ -199,7 +211,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:615 admin/subjects.py:707
+#: admin/journals.py:100 admin/subjects.py:616 admin/subjects.py:708
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:264 models/subjects.py:346 models/subjects.py:622
 #: models/subjects.py:640 models/subjects.py:749
@@ -411,42 +423,42 @@ msgstr "Vyberte datumy přihlašování"
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:505
+#: admin/subjects.py:506
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:507
+#: admin/subjects.py:508
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:517
+#: admin/subjects.py:518
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:519
+#: admin/subjects.py:520
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:524
+#: admin/subjects.py:525
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:525
+#: admin/subjects.py:526
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:535
+#: admin/subjects.py:536
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:537
+#: admin/subjects.py:538
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:715 models/subjects.py:1378
+#: admin/subjects.py:716 models/subjects.py:1378
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -578,7 +590,7 @@ msgid "Participants"
 msgstr "Účastníci"
 
 #: cms_menus.py:85 templates/leprikon/subject_registration_form.html:209
-#: views/billing_info.py:20
+#: views/billing_info.py:19
 msgid "Billing information"
 msgstr "Fakturační údaje"
 
@@ -904,7 +916,7 @@ msgstr "Škola"
 msgid "other school"
 msgstr "jiná škola"
 
-#: forms/subjects.py:292 forms/subjects.py:303 forms/subjects.py:562
+#: forms/subjects.py:292 forms/subjects.py:303 forms/subjects.py:561
 msgid "Choose"
 msgstr "Vyberte"
 
@@ -916,11 +928,11 @@ msgstr "nový účastník"
 msgid "new parent"
 msgstr "nový zástupce"
 
-#: forms/subjects.py:564
+#: forms/subjects.py:563
 msgid "no billing information"
 msgstr "bez fakturačních údajů"
 
-#: forms/subjects.py:565
+#: forms/subjects.py:564
 msgid "new billing information"
 msgstr "nové fakturační údaje"
 
@@ -3291,35 +3303,35 @@ msgstr "Nepřihlášený uživatel"
 msgid ", and "
 msgstr " a "
 
-#: views/billing_info.py:16
+#: views/billing_info.py:15
 msgid "add billing information"
 msgstr "přidat fakturační údaje"
 
-#: views/billing_info.py:35
+#: views/billing_info.py:34
 msgid "New billing information"
 msgstr "Nové fakturační údaje"
 
-#: views/billing_info.py:38
+#: views/billing_info.py:37
 msgid "New billing information {} have been created."
 msgstr "Nové fakturační údaje {} byly vytvořeny."
 
-#: views/billing_info.py:43
+#: views/billing_info.py:42
 msgid "Billing information have been updated."
 msgstr "Fakturační údaje byly upraveny."
 
-#: views/billing_info.py:44
+#: views/billing_info.py:43
 msgid "Change billing information"
 msgstr "Upravit fakturační údaje"
 
-#: views/billing_info.py:49
+#: views/billing_info.py:48
 msgid "Delete billing information"
 msgstr "Smazat fakturační údaje"
 
-#: views/billing_info.py:50
+#: views/billing_info.py:49
 msgid "Billing information have been deleted."
 msgstr "Fakturační údaje byly smazány."
 
-#: views/billing_info.py:53
+#: views/billing_info.py:52
 msgid "Do You really want to delete the billing information: {}?"
 msgstr "Opravdu chcete smazat fakturační údaje: {}?"
 
