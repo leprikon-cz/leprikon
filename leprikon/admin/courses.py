@@ -141,6 +141,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     actions = ('add_full_discount_for_period',)
+    inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html',
         'price', 'course_discounts', 'course_payments',
@@ -155,7 +156,6 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         ('subject', CourseListFilter),
         ('subject__leaders', LeaderListFilter),
     )
-    inlines = (CourseRegistrationHistoryInlineAdmin,)
 
     def add_full_discount_for_period(self, request, queryset):
         current_period = {

@@ -43,7 +43,7 @@
                     </div>
                 </div>
             {% endfor %}
-            
+
             {% for error in form.subject_variant.errors %}
                 <div>{{ error }}</div>
             {% endfor %}
@@ -206,6 +206,20 @@
         {% endif %}
     {% endfor %}
 
+    <h3>{% trans 'Billing information' %}</h3>
+
+    <div id="billing_info_select">
+        {% include 'leprikon/form_item.html' with item=form.billing_info_select_form.billing_info %}
+    </div>
+    <div id="billing_info_form"{% if form.billing_info_select_form.billing_info.value == 'none' %} class="hidden"{% endif %}>
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.name %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.street %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.city %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.postal_code %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.company_num %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.vat_number %}
+    </div>
+
     {% for agreement_form in form.agreement_forms %}
         {% if agreement_form.agreement.heading %}
             <h3>{{ agreement_form.agreement.heading }}</h3>
@@ -345,8 +359,8 @@ $(document).ready(function() {
             $('#id_{{ participant_form.prefix }}-parent1_email').val('{{ parent.email | escapejs }}');
         }{% endfor %}
     });
-                                                                                                           
-    /* Select second parent */                                                                             
+
+    /* Select second parent */
     $('input[type=radio][name={{ participant_form.prefix }}-parent2_select-parent]').change(function() {
         if (this.value == 'new') {
             $('#id_{{ participant_form.prefix }}-parent2_first_name').val('');
@@ -408,6 +422,26 @@ $(document).ready(function() {
     });
     $('#id_{{ group_form.prefix }}-target_group').trigger('change');
     {% endfor %}
+
+    /* Select billing info */
+    $('input[type=radio][name=billing_info_select-billing_info]').change(function() {
+        if (this.value == 'new') {
+            $('#id_billing_info-name').val('');
+            $('#id_billing_info-street').val('');
+            $('#id_billing_info-city').val('');
+            $('#id_billing_info-postal_code').val('');
+            $('#id_billing_info-company_num').val('');
+            $('#id_billing_info-vat_number').val('');
+        }{% for billing_info in form.user_billing_info %} else if (this.value == {{ billing_info.id }}) {
+            $('#id_billing_info-name').val('{{ billing_info.name | escapejs }}');
+            $('#id_billing_info-street').val('{{ billing_info.street | escapejs }}');
+            $('#id_billing_info-city').val('{{ billing_info.city | escapejs }}');
+            $('#id_billing_info-postal_code').val('{{ billing_info.postal_code | escapejs }}');
+            $('#id_billing_info-company_num').val('{{ billing_info.company_num | escapejs }}');
+            $('#id_billing_info-vat_number').val('{{ billing_info.vat_number | escapejs }}');
+        }{% endfor %}
+        toggle_section(this.value != 'none', 'billing_info_form', false);
+    });
 });
 
 </script>

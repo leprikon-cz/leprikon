@@ -4,8 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..conf import settings
 from . import (
-    journals, leaders, messages, parents, participants, registrations, reports,
-    schoolyear, subjects, summaries, terms_conditions, timesheets, user,
+    billing_info, journals, leaders, messages, parents, participants,
+    registrations, reports, schoolyear, subjects, summaries, terms_conditions,
+    timesheets, user,
 )
 from .reports import (
     courses as reports_courses, debtors as reports_debtors,
@@ -77,6 +78,11 @@ participant_delete = login_required(participants.ParticipantDeleteView.as_view()
 parent_create = login_required(parents.ParentCreateView.as_view())
 parent_update = login_required(parents.ParentUpdateView.as_view())
 parent_delete = login_required(parents.ParentDeleteView.as_view())
+
+billing_info_list = login_required(billing_info.BillingInfoListView.as_view())
+billing_info_create = login_required(billing_info.BillingInfoCreateView.as_view())
+billing_info_update = login_required(billing_info.BillingInfoUpdateView.as_view())
+billing_info_delete = login_required(billing_info.BillingInfoDeleteView.as_view())
 
 leader_summary = leader_required(summaries.LeaderSummaryView.as_view())
 alternating = leader_required(journals.AlternatingView.as_view())

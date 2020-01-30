@@ -81,6 +81,12 @@ class LeprikonMenu(CMSAttachMenu):
                 len(nodes),
                 attr={'visible_for_anonymous': False},
             ))
+            nodes.append(NavigationNode(
+                _('Billing information'),
+                reverse('leprikon:billing_info_list'),
+                len(nodes),
+                attr={'visible_for_anonymous': False},
+            ))
             return nodes
         except NoReverseMatch:
             return []

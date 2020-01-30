@@ -18,12 +18,12 @@ from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
 from ..models.leprikonsite import LeprikonSite
 from ..models.place import Place
-from ..models.roles import Leader, Parent, Participant
+from ..models.roles import BillingInfo, Leader, Parent, Participant
 from ..models.school import School
 from ..models.subjects import (
-    Subject, SubjectGroup, SubjectRegistration, SubjectRegistrationGroup,
-    SubjectRegistrationGroupMember, SubjectRegistrationParticipant,
-    SubjectType,
+    Subject, SubjectGroup, SubjectRegistration, SubjectRegistrationBillingInfo,
+    SubjectRegistrationGroup, SubjectRegistrationGroupMember,
+    SubjectRegistrationParticipant, SubjectType,
 )
 from ..utils import get_age, get_birth_date
 from .fields import AgreementBooleanField
@@ -452,6 +452,13 @@ class RegistrationGroupMemberForm(FormMixin, forms.ModelForm):
     pass
 
 
+class RegistrationBillingInfoForm(FormMixin, forms.ModelForm):
+
+    class Meta:
+        model = SubjectRegistrationBillingInfo
+        exclude = ['registration']
+
+
 class RegistrationForm(FormMixin, forms.ModelForm):
     def __init__(self, subject, user, **kwargs):
         super(RegistrationForm, self).__init__(**kwargs)
@@ -478,7 +485,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                     'user_participants': user.leprikon_participants.exclude(
                         birth_num__in=registered_birth_nums,
                     ),
-                    'user_parents': user.leprikon_parents.all()
+                    'user_parents': list(user.leprikon_parents.all())
                 }
             )
 
@@ -547,10 +554,30 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             AgreementForm = type(str('AgreementForm'), (FormMixin, forms.Form), form_attributes)
             self.agreement_forms.append(AgreementForm(**kwargs))
 
+        self.user_billing_info = list(self.user.leprikon_billing_info.all())
+
+        class BillingInfoSelectForm(FormMixin, forms.Form):
+            billing_info = forms.ChoiceField(
+                label=_('Choose'),
+                choices=[
+                    ('none', _('no billing information')),
+                    ('new', _('new billing information')),
+                ] + list((bi.id, bi) for bi in self.user_billing_info),
+                initial='none',
+                widget=RadioSelectBootstrap(),
+            )
+
+        kwargs['prefix'] = 'billing_info_select'
+        self.billing_info_select_form = BillingInfoSelectForm(**kwargs)
+
+        kwargs['prefix'] = 'billing_info'
+        self.billing_info_form = RegistrationBillingInfoForm(**kwargs)
+
     @cached_property
     def required_forms(self):
         return [
             super(RegistrationForm, self),
+            self.billing_info_select_form,
         ] + self.agreement_forms
 
     @cached_property
@@ -560,6 +587,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             all_forms += self.participants_formset.forms
         elif self.instance.subject.registration_type_groups:
             all_forms += self.group_formset.forms + self.group_members_formset.forms
+        all_forms.append(self.billing_info_form)
         return all_forms
 
     def is_valid(self):
@@ -572,6 +600,11 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 self.group_formset.is_valid(),
                 self.group_members_formset.is_valid(),
             ]
+        if (
+            not self.billing_info_select_form.is_valid() or
+            self.billing_info_select_form.cleaned_data['billing_info'] != 'none'
+        ):
+            results.append(self.billing_info_form.is_valid())
         return all(results)
 
     @cached_property
@@ -623,6 +656,23 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             for option_id, checked in agreement_form.cleaned_data.items():
                 if checked:
                     self.instance.agreement_options.add(agreement_form.options[option_id])
+
+        if self.billing_info_select_form.cleaned_data['billing_info'] != 'none':
+
+            # save registration billing info
+            registration_billing_info = self.billing_info_form.save(commit=False)
+            registration_billing_info.registration = self.instance
+            registration_billing_info.save()
+
+            # save / update user billing info
+            if self.billing_info_select_form.cleaned_data['billing_info'] == 'new':
+                billing_info = BillingInfo()
+                billing_info.user = self.instance.user
+            else:
+                billing_info = BillingInfo.objects.get(id=self.billing_info_select_form.cleaned_data['billing_info'])
+            for attr in ['name', 'street', 'city', 'postal_code', 'company_num', 'vat_number']:
+                setattr(billing_info, attr, getattr(registration_billing_info, attr))
+            billing_info.save()
 
         # send mail
         self.instance.send_mail()

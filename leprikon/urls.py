@@ -69,6 +69,11 @@ urlpatterns = [
     d_url(r'^{participants}/{parent}/(?P<pk>[0-9]+)/$', 'parent_update'),
     d_url(r'^{participants}/{parent}/(?P<pk>[0-9]+)/{delete}/$', 'parent_delete'),
 
+    d_url(r'^{billing_info}/$', 'billing_info_list'),
+    d_url(r'^{billing_info}/{add}/$', 'billing_info_create'),
+    d_url(r'^{billing_info}/(?P<pk>[0-9]+)/$', 'billing_info_update'),
+    d_url(r'^{billing_info}/(?P<pk>[0-9]+)/{delete}/$', 'billing_info_delete'),
+
     d_url(r'^{messages}/$', 'message_list'),
     d_url(r'^{messages}/(?P<slug>[^.]+)/$', 'message_detail'),
 

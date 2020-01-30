@@ -1,0 +1,27 @@
+{% load i18n leprikon_tags %}
+<div class="box box-billing-info">
+
+    <div class="box-header">
+        <strong>{{ object.name }}</strong>
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:billing_info_update' object.id %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            {% trans 'edit' %}
+        </a>
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:billing_info_delete' object.id %}">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            {% trans 'delete' %}
+        </a>
+    </div>
+
+    <div class="box-content">
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Address' %}:</label>
+            <div class="col-sm-8">
+                {{ object.address }}
+                {% if object.company_num %}<br/>{% trans 'Company number' %}: {{ object.company_num }}{% endif %}
+                {% if object.vat_number %}<br/>{% trans 'VAT number' %}: {{ object.vat_number }}{% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>

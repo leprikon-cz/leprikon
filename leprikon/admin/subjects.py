@@ -22,9 +22,10 @@ from ..forms.subjects import (
 )
 from ..models.subjects import (
     DEFAULT_TEXTS, Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
-    SubjectRegistration, SubjectRegistrationGroup,
-    SubjectRegistrationGroupMember, SubjectRegistrationParticipant,
-    SubjectType, SubjectTypeAttachment, SubjectVariant,
+    SubjectRegistration, SubjectRegistrationBillingInfo,
+    SubjectRegistrationGroup, SubjectRegistrationGroupMember,
+    SubjectRegistrationParticipant, SubjectType, SubjectTypeAttachment,
+    SubjectVariant,
 )
 from ..models.utils import lazy_html_help_text_with_default
 from ..utils import amount_color, currency
@@ -423,7 +424,14 @@ class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
         return request.subject.max_group_members_count
 
 
+class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
+    model = SubjectRegistrationBillingInfo
+    max_num = 1
+    extra = 0
+
+
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    inlines = (RegistrationBillingInfoInlineAdmin,)
     list_editable = ('note',)
     list_export = (
         'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
@@ -444,6 +452,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'group__street', 'group__city', 'group__postal_code',
         'group__phone', 'group__email',
         'group__school__name', 'group__school_other', 'group__school_class',
+        'billing_info__name', 'billing_info__street', 'billing_info__city', 'billing_info__postal_code',
+        'billing_info__company_num', 'billing_info__vat_number',
     )
     list_filter = (
         ('subject__school_year', SchoolYearListFilter),

@@ -219,6 +219,31 @@ class Participant(models.Model):
             return self.school_name or self.school_class or ''
 
 
+class BillingInfo(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='leprikon_billing_info', verbose_name=_('user'))
+    name = models.CharField(_('name'), max_length=150)
+    street = models.CharField(_('street'), max_length=150, blank=True, null=True)
+    city = models.CharField(_('city'), max_length=150, blank=True, null=True)
+    postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
+    company_num = models.CharField(_('company number'), max_length=8, blank=True, null=True)
+    vat_number = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
+
+    class Meta:
+        app_label = 'leprikon'
+        ordering = ('name',)
+        verbose_name = _('billing information')
+        verbose_name_plural = _('billing information')
+
+    def __str__(self):
+        return self.name
+
+    @cached_property
+    def address(self):
+        return ', '.join(filter(bool, (self.street, self.city, self.postal_code)))
+    address.short_description = _('address')
+
+
 class LeaderPlugin(CMSPlugin):
     leader = models.ForeignKey(Leader, on_delete=models.CASCADE, related_name='+', verbose_name=_('leader'))
     template = models.CharField(
