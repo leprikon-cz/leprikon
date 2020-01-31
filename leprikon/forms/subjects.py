@@ -588,7 +588,11 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             all_forms += self.participants_formset.forms
         elif self.instance.subject.registration_type_groups:
             all_forms += self.group_formset.forms + self.group_members_formset.forms
-        all_forms.append(self.billing_info_form)
+        if (
+            not self.billing_info_select_form.is_valid() or
+            self.billing_info_select_form.cleaned_data['billing_info'] != 'none'
+        ):
+            all_forms.append(self.billing_info_form)
         return all_forms
 
     def is_valid(self):
