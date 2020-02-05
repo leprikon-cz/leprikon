@@ -21,13 +21,15 @@ from ..forms.subjects import (
     RegistrationParticipantAdminForm, SubjectAdminForm,
 )
 from ..models.subjects import (
-    DEFAULT_TEXTS, Subject, SubjectAttachment, SubjectGroup, SubjectPayment,
-    SubjectRegistration, SubjectRegistrationBillingInfo,
-    SubjectRegistrationGroup, SubjectRegistrationGroupMember,
-    SubjectRegistrationParticipant, SubjectType, SubjectTypeAttachment,
-    SubjectVariant,
+    CHAT_GROUP_TYPE_LABELS, DEFAULT_TEXTS, Subject, SubjectAttachment,
+    SubjectGroup, SubjectPayment, SubjectRegistration,
+    SubjectRegistrationBillingInfo, SubjectRegistrationGroup,
+    SubjectRegistrationGroupMember, SubjectRegistrationParticipant,
+    SubjectType, SubjectTypeAttachment, SubjectVariant,
 )
-from ..models.utils import lazy_help_text_with_html_default
+from ..models.utils import (
+    lazy_help_text_with_default, lazy_help_text_with_html_default,
+)
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -201,6 +203,10 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
                     form.base_fields[field_name].help_text,
                     getattr(request.subject_type, field_name) or DEFAULT_TEXTS[field_name],
                 )
+            form.base_fields['chat_group_type'].help_text = lazy_help_text_with_default(
+                form.base_fields['chat_group_type'].help_text,
+                CHAT_GROUP_TYPE_LABELS[request.subject_type.chat_group_type],
+            )
 
         return form
 
