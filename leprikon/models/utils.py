@@ -2,6 +2,7 @@ from collections import namedtuple
 from datetime import date, datetime
 
 from django.utils.functional import cached_property, lazy
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
@@ -160,11 +161,29 @@ def generate_variable_symbol(registration):
     return variable_symbol * 10 + check_digit
 
 
-def html_help_text_with_default(default):
-    return paragraph(_('Keep empty to use default value:\n{}').format(default))
+def help_text_with_html_default(help_text, html_default):
+    keep_empty = paragraph(_('Keep empty to use default value:'))
+    return mark_safe('{}{}{}'.format(
+        paragraph(help_text),
+        keep_empty,
+        html_default,
+    ) if help_text else '{}{}'.format(
+        keep_empty,
+        html_default,
+    ))
 
 
-lazy_html_help_text_with_default = lazy(html_help_text_with_default, str)
+lazy_help_text_with_html_default = lazy(help_text_with_html_default, str)
+
+
+def help_text_with_default(help_text, default):
+    keep_empty_default = _('Keep empty to use default value: {}').format(default)
+    return paragraph(
+        '{}\n\n{}'.format(help_text, keep_empty_default) if help_text else keep_empty_default
+    )
+
+
+lazy_help_text_with_default = lazy(help_text_with_default, str)
 
 
 def change_year(d, year_delta):

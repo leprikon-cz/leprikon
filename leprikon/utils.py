@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, transaction
 from django.urls import reverse_lazy as reverse
 from django.utils.encoding import iri_to_uri, smart_text
+from django.utils.functional import lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -249,3 +250,6 @@ def paragraph(text):
         .replace('\n', '<br/>\n')
         .replace('<br/>\n<br/>\n', '</p>\n\n<p>')
     )
+
+
+lazy_paragraph = lazy(paragraph, str)

@@ -27,7 +27,7 @@ from ..models.subjects import (
     SubjectRegistrationParticipant, SubjectType, SubjectTypeAttachment,
     SubjectVariant,
 )
-from ..models.utils import lazy_html_help_text_with_default
+from ..models.utils import lazy_help_text_with_html_default
 from ..utils import amount_color, currency
 from .export import AdminExportMixin
 from .filters import (
@@ -197,8 +197,9 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
                 'text_discount_granted',
                 'text_payment_received',
             ]:
-                form.base_fields[field_name].help_text = lazy_html_help_text_with_default(
-                    getattr(request.subject_type, field_name) or DEFAULT_TEXTS[field_name]
+                form.base_fields[field_name].help_text = lazy_help_text_with_html_default(
+                    form.base_fields[field_name].help_text,
+                    getattr(request.subject_type, field_name) or DEFAULT_TEXTS[field_name],
                 )
 
         return form
