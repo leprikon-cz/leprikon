@@ -139,7 +139,7 @@
                 {% for agreement in reg.all_agreements %}
                     <strong>{{ agreement.name }}:</strong><br/>
                     {% for option in agreement.all_options %}
-                        {% if option.required or option in object.all_agreement_options %}☑{% else %}☐{% endif %}
+                        {% if option.required or option in reg.all_agreement_options %}☑{% else %}☐{% endif %}
                         {{ option.name }}<br/>
                     {% endfor %}
                 {% endfor %}
