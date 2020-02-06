@@ -73,8 +73,8 @@ class Event(Subject):
         new.evaluation = ''
         new.note = ''
         year_delta = school_year.year - old.school_year.year
-        new.reg_from = new.reg_form and change_year(new.reg_form, year_delta)
-        new.reg_to = new.reg_to and change_year(new.reg_form, year_delta)
+        new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
+        new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
         new.due_from = change_year(new.due_from, year_delta)
         new.due_date = change_year(new.due_date, year_delta)
         new.start_date = change_year(new.start_date, year_delta)
