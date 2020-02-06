@@ -42,11 +42,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='coursediscount',
-            options={'ordering': ('accounted',), 'verbose_name': 'discount', 'verbose_name_plural': 'discounts'},
+            options={'ordering': ('accounted',), 'verbose_name': 'course discount', 'verbose_name_plural': 'course discounts'},
         ),
         migrations.AlterModelOptions(
             name='eventdiscount',
-            options={'ordering': ('accounted',), 'verbose_name': 'discount', 'verbose_name_plural': 'discounts'},
+            options={'ordering': ('accounted',), 'verbose_name': 'event discount', 'verbose_name_plural': 'event discounts'},
         ),
         migrations.AlterModelOptions(
             name='subjectpayment',

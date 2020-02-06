@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 17:54+0100\n"
+"POT-Creation-Date: 2020-02-06 14:18+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "Přidat slevu v plné výši pro aktuální období"
 msgid "add discount"
 msgstr "přidat slevu"
 
-#: admin/courses.py:201
+#: admin/courses.py:201 models/courses.py:231
 msgid "course discounts"
 msgstr "slevy na kurz"
 
@@ -128,7 +128,7 @@ msgstr "Pro vybrané přihlášky byly vytvořeny slevy v plné výši."
 msgid "Add full discount"
 msgstr "Přidat slevu v plné výši"
 
-#: admin/events.py:142
+#: admin/events.py:142 models/events.py:133
 msgid "event discounts"
 msgstr "slevy na akce"
 
@@ -1025,7 +1025,7 @@ msgstr "vyžadovat školu"
 msgid "age group"
 msgstr "věková skupina"
 
-#: models/agegroup.py:16 models/courses.py:310 models/events.py:151
+#: models/agegroup.py:16 models/courses.py:316 models/events.py:157
 #: models/subjects.py:280
 msgid "age groups"
 msgstr "věkové skupiny"
@@ -1074,8 +1074,8 @@ msgstr "státní občanství"
 msgid "school year division"
 msgstr "členění školního roku"
 
-#: models/courses.py:34 models/courses.py:98 models/courses.py:231
-#: models/courses.py:233 models/courses.py:291 models/subjects.py:117
+#: models/courses.py:34 models/courses.py:98 models/courses.py:237
+#: models/courses.py:239 models/courses.py:297 models/subjects.py:117
 msgid "course"
 msgstr "kurz"
 
@@ -1128,64 +1128,68 @@ msgstr "přihláška"
 msgid "period"
 msgstr "období"
 
-#: models/courses.py:240 models/courses.py:241
+#: models/courses.py:230
+msgid "course discount"
+msgstr "sleva na kurz"
+
+#: models/courses.py:246 models/courses.py:247
 msgid "course registration history"
 msgstr "historie přihlášky na kurz"
 
-#: models/courses.py:247
+#: models/courses.py:253
 msgid "now"
 msgstr "nyní"
 
-#: models/courses.py:292 models/courses.py:316 models/events.py:133
-#: models/events.py:157 models/roles.py:250 models/roles.py:266
+#: models/courses.py:298 models/courses.py:322 models/events.py:139
+#: models/events.py:163 models/roles.py:250 models/roles.py:266
 msgid "template"
 msgstr "šablona"
 
-#: models/courses.py:295 models/courses.py:319 models/events.py:136
-#: models/events.py:160 models/roles.py:253 models/roles.py:269
+#: models/courses.py:301 models/courses.py:325 models/events.py:142
+#: models/events.py:166 models/roles.py:253 models/roles.py:269
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
-#: models/courses.py:303 models/courses.py:387 models/events.py:144
-#: models/events.py:228 models/roles.py:262 models/roles.py:297
+#: models/courses.py:309 models/courses.py:393 models/events.py:150
+#: models/events.py:234 models/roles.py:262 models/roles.py:297
 #: models/schoolyear.py:36 models/schoolyear.py:54 models/subjects.py:268
 msgid "school year"
 msgstr "školní rok"
 
-#: models/courses.py:304 models/department.py:13 models/events.py:145
+#: models/courses.py:310 models/department.py:13 models/events.py:151
 msgid "departments"
 msgstr "oddělení"
 
-#: models/courses.py:305 models/events.py:146
+#: models/courses.py:311 models/events.py:152
 msgid "Keep empty to skip searching by departments."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle oddělení."
 
-#: models/courses.py:308 models/courses.py:389
+#: models/courses.py:314 models/courses.py:395
 msgid "course types"
 msgstr "typy kurzů"
 
-#: models/courses.py:309
+#: models/courses.py:315
 msgid "Keep empty to skip searching by course types."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle typů kurzů."
 
-#: models/courses.py:311 models/events.py:152
+#: models/courses.py:317 models/events.py:158
 msgid "Keep empty to skip searching by age groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle věkových skupin."
 
-#: models/courses.py:312
+#: models/courses.py:318
 msgid "course groups"
 msgstr "skupiny kurzů"
 
-#: models/courses.py:313 models/events.py:154
+#: models/courses.py:319 models/events.py:160
 msgid "Keep empty to skip searching by groups."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin."
 
-#: models/courses.py:314 models/events.py:155 models/roles.py:34
+#: models/courses.py:320 models/events.py:161 models/roles.py:34
 #: models/subjects.py:282
 msgid "leaders"
 msgstr "vedoucí"
 
-#: models/courses.py:315 models/events.py:156
+#: models/courses.py:321 models/events.py:162
 msgid "Keep empty to skip searching by leaders."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle vedoucích."
 
@@ -1213,7 +1217,7 @@ msgstr "splatnost od"
 msgid "due date"
 msgstr "datum splatnosti"
 
-#: models/events.py:32 models/events.py:132 models/subjects.py:118
+#: models/events.py:32 models/events.py:138 models/subjects.py:118
 msgid "event"
 msgstr "akce"
 
@@ -1225,15 +1229,19 @@ msgstr "přihláška na akci"
 msgid "event registrations"
 msgstr "přihlášky na akce"
 
-#: models/events.py:149 models/events.py:230
+#: models/events.py:132
+msgid "event discount"
+msgstr "sleva na akci"
+
+#: models/events.py:155 models/events.py:236
 msgid "event types"
 msgstr "druhy akcí"
 
-#: models/events.py:150
+#: models/events.py:156
 msgid "Keep empty to skip searching by event types."
 msgstr "Ponechte prázdné, pokud nechcete hledat podle skupin akcí."
 
-#: models/events.py:153
+#: models/events.py:159
 msgid "event groups"
 msgstr "skupiny akcí"
 

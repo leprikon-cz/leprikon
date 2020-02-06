@@ -225,6 +225,12 @@ class CourseDiscount(SubjectDiscount):
     period = models.ForeignKey(SchoolYearPeriod, on_delete=models.PROTECT,
                                related_name='discounts', verbose_name=_('period'))
 
+    class Meta:
+        app_label = 'leprikon'
+        verbose_name = _('course discount')
+        verbose_name_plural = _('course discounts')
+        ordering = ('accounted',)
+
 
 class CourseRegistrationHistory(StartEndMixin, models.Model):
     registration = models.ForeignKey(CourseRegistration, editable=False, on_delete=models.PROTECT,

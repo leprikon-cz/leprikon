@@ -127,6 +127,12 @@ class EventDiscount(SubjectDiscount):
     registration = models.ForeignKey(EventRegistration, on_delete=models.CASCADE,
                                      related_name='discounts', verbose_name=_('registration'))
 
+    class Meta:
+        app_label = 'leprikon'
+        verbose_name = _('event discount')
+        verbose_name_plural = _('event discounts')
+        ordering = ('accounted',)
+
 
 class EventPlugin(CMSPlugin):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='+', verbose_name=_('event'))
