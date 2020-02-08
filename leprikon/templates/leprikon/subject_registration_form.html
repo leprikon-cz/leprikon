@@ -75,11 +75,6 @@
         </div>
     </div>
 
-    {% if form.email_form %}
-    <h3>{% trans 'User' %}</h3>
-    {% include 'leprikon/form_item.html' with item=form.email_form.email %}
-    {% endif %}
-
     {{ form.participants_formset.management_form }}
 
     {% for participant_form in form.participants_formset %}
