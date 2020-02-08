@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
+from django.db.models.expressions import Random
 from django.http import (
     HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
 )
@@ -502,6 +503,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             del(actions['delete_selected'])
         return actions
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(random_number=Random())
+
     def approve(self, request, queryset):
         for registration in queryset.all():
             try:
@@ -624,6 +628,11 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_registrations__in=queryset).distinct()
+
+    def random_number(self, obj):
+        return int(obj.random_number*1000000000000)
+    random_number.admin_order_field = 'random_number'
+    random_number.short_description = _('random number')
 
 
 @admin.register(SubjectRegistration)

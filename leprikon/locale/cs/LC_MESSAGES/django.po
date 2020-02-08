@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-06 14:18+0100\n"
+"POT-Creation-Date: 2020-02-08 17:41+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -211,7 +211,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:623 admin/subjects.py:715
+#: admin/journals.py:100 admin/subjects.py:627 admin/subjects.py:724
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:264 models/subjects.py:346 models/subjects.py:622
 #: models/subjects.py:640 models/subjects.py:749
@@ -350,7 +350,7 @@ msgstr "kurzy"
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:120 admin/subjects.py:299 admin/subjects.py:366
+#: admin/roles.py:120 admin/subjects.py:300 admin/subjects.py:367
 #: models/roles.py:26 models/subjects.py:287
 msgid "photo"
 msgstr "fotka"
@@ -369,96 +369,100 @@ msgstr "Vybraná členění školního roku byla zkopírována do školního rok
 msgid "Copy selected school year divisions to another school year"
 msgstr "Kopírovat vybraná členění školního roku do jiného školního roku"
 
-#: admin/subjects.py:231
+#: admin/subjects.py:232
 msgid "printable journal"
 msgstr "tisknutelný deník"
 
-#: admin/subjects.py:232 admin/subjects.py:234
+#: admin/subjects.py:233 admin/subjects.py:235
 #: templates/leprikon/subject_preview.html:107
 msgid "journal"
 msgstr "deník"
 
-#: admin/subjects.py:248
+#: admin/subjects.py:249
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:250
+#: admin/subjects.py:251
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:252
+#: admin/subjects.py:253
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:273
+#: admin/subjects.py:274
 msgid "add registration"
 msgstr "vytvořit přihlášku"
 
-#: admin/subjects.py:276 models/subjects.py:769
+#: admin/subjects.py:277 models/subjects.py:769
 #: templates/leprikon/subject_preview.html:103
 msgid "registrations"
 msgstr "přihlášky"
 
-#: admin/subjects.py:281
+#: admin/subjects.py:282
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:285
+#: admin/subjects.py:286
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:290
+#: admin/subjects.py:291
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:312
+#: admin/subjects.py:313
 msgid "Registration dates were updated."
 msgstr "Datumy přihlašování byly uloženy."
 
-#: admin/subjects.py:317
+#: admin/subjects.py:318
 msgid "Select registration dates"
 msgstr "Vyberte datumy přihlašování"
 
-#: admin/subjects.py:325
+#: admin/subjects.py:326
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:513
+#: admin/subjects.py:517
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:515
+#: admin/subjects.py:519
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:525
+#: admin/subjects.py:529
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:527
+#: admin/subjects.py:531
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:532
+#: admin/subjects.py:536
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:533
+#: admin/subjects.py:537
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:543
+#: admin/subjects.py:547
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:545
+#: admin/subjects.py:549
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:723 models/subjects.py:1378
+#: admin/subjects.py:635
+msgid "random number"
+msgstr "náhodné číslo"
+
+#: admin/subjects.py:732 models/subjects.py:1378
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -589,7 +593,7 @@ msgstr "Platby"
 msgid "Participants"
 msgstr "Účastníci"
 
-#: cms_menus.py:85 templates/leprikon/subject_registration_form.html:209
+#: cms_menus.py:85 templates/leprikon/subject_registration_form.html:204
 #: views/billing_info.py:19
 msgid "Billing information"
 msgstr "Fakturační údaje"
@@ -866,7 +870,7 @@ msgid "Department"
 msgstr "Oddělení"
 
 #: forms/subjects.py:41 templates/leprikon/registration_pdf/subject.rml:199
-#: templates/leprikon/subject_registration_form.html:161
+#: templates/leprikon/subject_registration_form.html:156
 msgid "Group"
 msgstr "Skupina"
 
@@ -2643,7 +2647,7 @@ msgstr "Údaje o zdravotní způsobilosti účastníka (případná omezení)"
 #: templates/leprikon/participants.html:7
 #: templates/leprikon/registration_pdf/subject.rml:169
 #: templates/leprikon/registration_preview.html:61
-#: templates/leprikon/subject_registration_form.html:119
+#: templates/leprikon/subject_registration_form.html:114
 msgid "Parents"
 msgstr "Zástupci"
 
@@ -2802,7 +2806,7 @@ msgstr "čeká na schválení"
 #: templates/leprikon/registration_mail_details.txt:2
 #: templates/leprikon/registration_pdf/subject.rml:94
 #: templates/leprikon/registration_preview.html:54
-#: templates/leprikon/subject_registration_form.html:86
+#: templates/leprikon/subject_registration_form.html:81
 msgid "Participant"
 msgstr "Účastník"
 
@@ -2833,7 +2837,7 @@ msgstr "Cílová skupina"
 #: templates/leprikon/registration_mail_details.txt:3
 #: templates/leprikon/registration_pdf/subject.rml:223
 #: templates/leprikon/registration_preview.html:78
-#: templates/leprikon/subject_registration_form.html:171
+#: templates/leprikon/subject_registration_form.html:166
 msgid "Contact person"
 msgstr "Kontaktní osoba"
 
@@ -3014,6 +3018,7 @@ msgid "Last name"
 msgstr "Příjmení"
 
 #: templates/leprikon/registration_pdf/subject.rml:260
+#: templates/leprikon/subject_registration_form.html:218
 msgid "Note"
 msgstr "Poznámka"
 
@@ -3277,11 +3282,7 @@ msgstr ""
 "Vaše přihláška nemusí být schválena. O jejím zpracování Vás budeme dále "
 "informovat."
 
-#: templates/leprikon/subject_registration_form.html:79
-msgid "User"
-msgstr "Uživatel"
-
-#: templates/leprikon/subject_registration_form.html:187
+#: templates/leprikon/subject_registration_form.html:182
 msgid "Participants list"
 msgstr "Seznam účastníků"
 
