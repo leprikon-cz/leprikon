@@ -215,6 +215,10 @@
         {% include 'leprikon/form_item.html' with item=form.billing_info_form.vat_number %}
     </div>
 
+    <h3>{% trans 'Note' %}</h3>
+
+    {% include 'leprikon/form_item.html' with item=form.note %}
+
     {% for agreement_form in form.agreement_forms %}
         {% if agreement_form.agreement.heading %}
             <h3>{{ agreement_form.agreement.heading }}</h3>
