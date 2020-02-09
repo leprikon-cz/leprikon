@@ -16,11 +16,6 @@ from ..models.courses import (
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
-from .filters import (
-    ApprovedListFilter, CanceledListFilter, CourseGroupListFilter,
-    CourseListFilter, CourseTypeListFilter, IsNullFieldListFilter,
-    LeaderListFilter, SchoolYearListFilter,
-)
 from .pdf import PdfExportAdminMixin
 from .subjects import (
     SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin,
@@ -34,7 +29,7 @@ class CourseTimeInlineAdmin(admin.TabularInline):
 
 @admin.register(Course)
 class CourseAdmin(SubjectBaseAdmin):
-    subject_type = SubjectType.COURSE
+    subject_type_type = SubjectType.COURSE
     registration_model = CourseRegistration
     list_export = (
         'id', 'school_year', 'code', 'name', 'department', 'subject_type', 'registration_type',
@@ -43,13 +38,6 @@ class CourseAdmin(SubjectBaseAdmin):
         'min_participants_count', 'max_participants_count', 'min_group_members_count', 'max_group_members_count',
         'min_registrations_count', 'max_registrations_count',
         'get_approved_registrations_count', 'get_unapproved_registrations_count', 'note',
-    )
-    list_filter = (
-        ('school_year', SchoolYearListFilter),
-        'department',
-        ('subject_type', CourseTypeListFilter),
-        ('groups', CourseGroupListFilter),
-        ('leaders', LeaderListFilter),
     )
     inlines = (
         CourseTimeInlineAdmin,
@@ -140,22 +128,13 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
+    subject_type_type = SubjectType.COURSE
     actions = ('add_full_discount_for_period',)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html',
         'price', 'course_discounts', 'course_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note', 'random_number',
-    )
-    list_filter = (
-        ('subject__school_year', SchoolYearListFilter),
-        'subject__department',
-        ('subject__subject_type', CourseTypeListFilter),
-        ApprovedListFilter,
-        CanceledListFilter,
-        ('billing_info', IsNullFieldListFilter),
-        ('subject', CourseListFilter),
-        ('subject__leaders', LeaderListFilter),
     )
 
     def add_full_discount_for_period(self, request, queryset):

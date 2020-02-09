@@ -87,7 +87,6 @@ class SubjectVariantInlineAdmin(admin.TabularInline):
 
 
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
-    subject_type = None
     registration_model = None
     list_display = (
         'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
@@ -217,7 +216,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == 'subject_type':
-            limit_choices_to = {'subject_type__exact': self.subject_type}
+            limit_choices_to = {'subject_type__exact': self.subject_type_type}
             formfield.limit_choices_to = limit_choices_to
         return formfield
 
