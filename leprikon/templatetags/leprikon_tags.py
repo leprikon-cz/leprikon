@@ -3,6 +3,9 @@ from traceback import print_exc
 
 import requests
 from django import template
+from django.contrib.admin.templatetags.admin_list import (
+    result_list as _result_list,
+)
 from django.contrib.staticfiles import finders
 from django.core.cache import InvalidCacheBackendError, caches
 from django.urls import reverse
@@ -192,3 +195,12 @@ def query_string(context, key, value):
 @register.simple_tag
 def font(name):
     return finders.find(name)
+
+
+@register.inclusion_tag('admin/change_list_results.html')
+def css_result_list(cl):
+    context = _result_list(cl)
+    if hasattr(cl.model_admin, 'get_css'):
+        for result, obj in zip(context['results'], cl.result_list):
+            result.css = cl.model_admin.get_css(obj)
+    return context

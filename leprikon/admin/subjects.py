@@ -490,6 +490,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def media(self):
         m = super(SubjectRegistrationBaseAdmin, self).media
         m.add_js(['leprikon/js/Popup.js'])
+        m.add_css({'all': ['leprikon/css/registrations.changelist.css']})
         return m
 
     def has_delete_permission(self, request, obj=None):
@@ -622,6 +623,20 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
             # send mail
             obj.send_mail()
+
+    def get_css(self, obj):
+        classes = []
+        if obj.cancel_request:
+            classes.append('reg-cancel-request')
+        if obj.approved:
+            classes.append('reg-approved')
+        else:
+            classes.append('reg-new')
+        if obj.canceled:
+            classes.append('reg-canceled')
+        else:
+            classes.append('reg-active')
+        return ' '.join(classes)
 
     def subject_name(self, obj):
         return obj.subject.name

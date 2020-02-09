@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-09 16:19+0100\n"
+"POT-Creation-Date: 2020-02-09 18:55+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -211,7 +211,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:628 admin/subjects.py:725
+#: admin/journals.py:100 admin/subjects.py:643 admin/subjects.py:740
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:268 models/subjects.py:349 models/subjects.py:635
 #: models/subjects.py:653 models/subjects.py:762
@@ -428,46 +428,46 @@ msgstr "Vyberte datumy přihlašování"
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:518
+#: admin/subjects.py:519
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:520
+#: admin/subjects.py:521
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:530
+#: admin/subjects.py:531
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:532
+#: admin/subjects.py:533
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:537
+#: admin/subjects.py:538
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:538
+#: admin/subjects.py:539
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:548
+#: admin/subjects.py:549
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:550
+#: admin/subjects.py:551
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:636
+#: admin/subjects.py:651
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:733 models/subjects.py:1400
+#: admin/subjects.py:748 models/subjects.py:1400
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -1991,15 +1991,15 @@ msgstr "Nastavte pouze pokud je hodnota specifická pro tento předmět."
 msgid "chat group type"
 msgstr "typ diskuzní skupiny"
 
-#: models/subjects.py:467 templatetags/leprikon_tags.py:113
+#: models/subjects.py:467 templatetags/leprikon_tags.py:116
 msgid "Registering will start on {}."
 msgstr "Přihlašování bude zahájeno {}."
 
-#: models/subjects.py:469 templatetags/leprikon_tags.py:100
+#: models/subjects.py:469 templatetags/leprikon_tags.py:103
 msgid "Registering ended on {}"
 msgstr "Přihlašování bylo ukončeno {}."
 
-#: models/subjects.py:470 templatetags/leprikon_tags.py:97
+#: models/subjects.py:470 templatetags/leprikon_tags.py:100
 msgid "Registering is currently not allowed."
 msgstr "Přihlašování momentálně není povoleno."
 
@@ -2354,6 +2354,19 @@ msgstr "Zobrazení webu"
 #: templates/admin/base.html:10 templates/admin/inc/branding.html:16
 msgid "Documentation"
 msgstr "Dokumentace"
+
+#: templates/admin/change_list_results.html:17
+msgid "Remove from sorting"
+msgstr ""
+
+#: templates/admin/change_list_results.html:18
+#, python-format
+msgid "Sorting priority: %(priority_number)s"
+msgstr ""
+
+#: templates/admin/change_list_results.html:19
+msgid "Toggle sorting"
+msgstr ""
 
 #: templates/admin/inc/branding.html:5 templates/cms/toolbar/items/logo.html:4
 msgid "Version"
@@ -3352,7 +3365,7 @@ msgstr "typ"
 msgid "Anonymous user"
 msgstr "Nepřihlášený uživatel"
 
-#: templatetags/leprikon_tags.py:105
+#: templatetags/leprikon_tags.py:108
 msgid "Registering will end on {}."
 msgstr "Přihlašování bude ukončeno {}."
 

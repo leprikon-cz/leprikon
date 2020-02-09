@@ -1,0 +1,30 @@
+.change-list table .row1.reg-new,
+.change-list table .row2.reg-new
+{
+    background: #dfd;
+}
+.change-list table .row1.reg-new:hover,
+.change-list table .row2.reg-new:hover
+{
+    background: #efe;
+}
+.change-list table .row1.reg-approved,
+.change-list table .row2.reg-approved
+{
+    background: #ddf;
+}
+.change-list table .row1.reg-approved:hover,
+.change-list table .row2.reg-approved:hover
+{
+    background: #eef;
+}
+.change-list table .row1.reg-cancel-request,
+.change-list table .row2.reg-cancel-request
+{
+    background: #fdd;
+}
+.change-list table .row1.reg-cancel-request:hover,
+.change-list table .row2.reg-cancel-request:hover
+{
+    background: #fee;
+}
