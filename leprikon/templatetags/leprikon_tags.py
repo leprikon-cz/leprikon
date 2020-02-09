@@ -101,12 +101,12 @@ def registration_links(context, subject):
 
     if subject.price and source.reg_to:
         context['registration_ended_message'] = _('Registering ended on {}').format(
-            date_format(source.reg_to, 'SHORT_DATETIME_FORMAT')
+            date_format(timezone.localtime(source.reg_to), 'DATETIME_FORMAT')
         )
         if source.reg_to > now:
             context['registration_end_in'] = (source.reg_to - now).seconds
             context['registration_ends_message'] = _('Registering will end on {}.').format(
-                date_format(source.reg_to, 'SHORT_DATETIME_FORMAT')
+                date_format(timezone.localtime(source.reg_to), 'DATETIME_FORMAT')
             )
             context['registration_message'] = context['registration_ends_message']
         else:
@@ -114,7 +114,7 @@ def registration_links(context, subject):
     if subject.price and source.reg_from and source.reg_from > now:
         context['registration_start_in'] = (source.reg_from - now).seconds
         context['registration_starts_message'] = _('Registering will start on {}.').format(
-            date_format(source.reg_from, 'SHORT_DATETIME_FORMAT')
+            date_format(timezone.localtime(source.reg_from), 'DATETIME_FORMAT')
         )
         context['registration_message'] = context['registration_starts_message']
     return context
