@@ -562,8 +562,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 label=_('Choose'),
                 choices=[
                     ('none', _('no billing information')),
+                ] + list((bi.id, bi) for bi in self.user_billing_info) + [
                     ('new', _('new billing information')),
-                ] + list((bi.id, bi) for bi in self.user_billing_info),
+                ],
                 initial='none',
                 widget=RadioSelectBootstrap(),
             )

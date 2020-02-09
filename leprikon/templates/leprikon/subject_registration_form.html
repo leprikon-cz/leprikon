@@ -435,6 +435,10 @@ $(document).ready(function() {
             $('#id_billing_info-postal_code').val('');
             $('#id_billing_info-company_num').val('');
             $('#id_billing_info-vat_number').val('');
+            $('#id_billing_info-contact_person').val('');
+            $('#id_billing_info-phone').val('');
+            $('#id_billing_info-email').val('');
+            $('#id_billing_info-employee').val('');
         }{% for billing_info in form.user_billing_info %} else if (this.value == {{ billing_info.id }}) {
             $('#id_billing_info-name').val('{{ billing_info.name | escapejs }}');
             $('#id_billing_info-street').val('{{ billing_info.street | escapejs }}');
@@ -442,6 +446,10 @@ $(document).ready(function() {
             $('#id_billing_info-postal_code').val('{{ billing_info.postal_code | escapejs }}');
             $('#id_billing_info-company_num').val('{{ billing_info.company_num | escapejs }}');
             $('#id_billing_info-vat_number').val('{{ billing_info.vat_number | escapejs }}');
+            $('#id_billing_info-contact_person').val('{{ billing_info.contact_person | escapejs }}');
+            $('#id_billing_info-phone').val('{{ billing_info.phone | escapejs }}');
+            $('#id_billing_info-email').val('{{ billing_info.email | escapejs }}');
+            $('#id_billing_info-employee').val('{{ billing_info.employee | escapejs }}');
         }{% endfor %}
         toggle_section(this.value != 'none', 'billing_info_form', false);
     });
