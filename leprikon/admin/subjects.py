@@ -470,6 +470,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'subject__registration_type',
         ApprovedListFilter,
         CanceledListFilter,
+        'registration_link',
         ('billing_info', IsNullFieldListFilter),
         ('subject', SubjectListFilter),
         ('subject__leaders', LeaderListFilter),

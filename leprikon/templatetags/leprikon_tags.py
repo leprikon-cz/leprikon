@@ -5,6 +5,7 @@ import requests
 from django import template
 from django.contrib.staticfiles import finders
 from django.core.cache import InvalidCacheBackendError, caches
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from lxml.html import fromstring, tostring
 
@@ -73,7 +74,17 @@ def registration_links(context, subject):
         context['registrations'] = subject.registrations.filter(user=context['request'].user, canceled=None)
     else:
         context['registrations'] = []
-    context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
+
+    if hasattr(context['view'], 'registration_link'):
+        registration_link = context['view'].registration_link
+        context['registration_allowed'] = registration_link.registration_allowed
+        context['registration_url'] = _url_with_back(
+            reverse('leprikon:registration_link_form', args=(registration_link.slug, subject.id)),
+            current_url(context),
+        )
+    else:
+        context['registration_allowed'] = subject.registration_allowed
+        context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
     return context
 
 

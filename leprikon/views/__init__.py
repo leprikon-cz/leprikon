@@ -5,8 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from ..conf import settings
 from . import (
     billing_info, journals, leaders, messages, parents, participants,
-    registrations, reports, schoolyear, subjects, summaries, terms_conditions,
-    timesheets, user,
+    registrationlink, registrations, reports, schoolyear, subjects, summaries,
+    terms_conditions, timesheets, user,
 )
 from .reports import (
     courses as reports_courses, debtors as reports_debtors,
@@ -66,6 +66,9 @@ password_reset_complete = user.PasswordResetCompleteView.as_view()
 registration_list = login_required(registrations.RegistrationsListView.as_view())
 registration_pdf = login_required(subjects.SubjectRegistrationPdfView.as_view())
 registration_cancel = login_required(subjects.SubjectRegistrationCancelView.as_view())
+
+registration_link = registrationlink.RegistrationLinkView.as_view()
+registration_link_form = registrationlink.RegistrationLinkFormView.as_view()
 
 payment_list = login_required(subjects.SubjectPaymentsListView.as_view())
 payment_pdf = login_required(subjects.SubjectPaymentPdfView.as_view())

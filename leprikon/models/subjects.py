@@ -199,6 +199,9 @@ class SubjectType(models.Model):
     def all_attachments(self):
         return list(self.attachments.all())
 
+    def get_absolute_url(self):
+        return reverse(self.slug + ':subject_list')
+
 
 class SubjectTypeAttachment(models.Model):
     subject_type = models.ForeignKey(SubjectType, on_delete=models.CASCADE,
@@ -762,6 +765,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     agreement_options = models.ManyToManyField(AgreementOption, blank=True, verbose_name=_('legal agreements'))
 
     variable_symbol = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
+
+    registration_link = models.ForeignKey(
+        'leprikon.RegistrationLink', editable=False, null=True,
+        on_delete=models.SET_NULL, related_name='registrations', verbose_name=_('registration link'),
+    )
 
     class Meta:
         app_label = 'leprikon'

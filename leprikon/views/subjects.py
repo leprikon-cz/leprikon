@@ -29,13 +29,13 @@ class SubjectTypeMixin(object):
     def dispatch(self, request, subject_type, *args, **kwargs):
         self.subject_type = get_object_or_404(SubjectType, slug=subject_type)
         self.model = self._models[self.subject_type.subject_type]
-        return super(SubjectTypeMixin, self).dispatch(request, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_placeholder(self):
-        return super(SubjectTypeMixin, self).get_placeholder() + ':' + self.subject_type.slug
+        return super().get_placeholder() + ':' + self.subject_type.slug
 
     def get_queryset(self):
-        return super(SubjectTypeMixin, self).get_queryset().filter(subject_type=self.subject_type)
+        return super().get_queryset().filter(subject_type=self.subject_type)
 
     def get_template_names(self):
         return [
@@ -156,7 +156,7 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
         return qs
 
 
-class SubjectMixin(object):
+class SubjectMixin:
     def dispatch(self, request, pk, **kwargs):
         lookup_kwargs = {'subject_type': self.subject_type, 'id': int(pk)}
         if not self.request.user.is_staff:
@@ -165,24 +165,18 @@ class SubjectMixin(object):
         if not self.subject.registration_allowed:
             return redirect(self.subject)
         self.request.school_year = self.subject.school_year
-        return super(SubjectMixin, self).dispatch(request, **kwargs)
+        return super().dispatch(request, **kwargs)
 
 
-class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, CreateView):
+class SubjectRegistrationFormBaseView(CreateView):
     back_url = reverse('leprikon:registration_list')
     submit_label = _('Submit registration')
     message = _('The registration has been saved. We will inform you about its further processing.')
+    template_name_suffix = '_registration_form'
     _form_classes = {
         SubjectType.COURSE: CourseRegistrationForm,
         SubjectType.EVENT: EventRegistrationForm,
     }
-
-    def get_template_names(self):
-        return [
-            'leprikon/{}_registration_form.html'.format(self.subject_type.slug, self.template_name_suffix),
-            'leprikon/{}_registration_form.html'.format(self.subject_type.subject_type, self.template_name_suffix),
-            'leprikon/subject_registration_form.html'.format(self.template_name_suffix),
-        ]
 
     def get_title(self):
         return _('Registration for {subject_type} {subject}').format(
@@ -194,10 +188,14 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, CreateView)
         return self._form_classes[self.subject_type.subject_type]
 
     def get_form_kwargs(self):
-        kwargs = super(SubjectRegistrationFormView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['subject'] = self.subject
         kwargs['user'] = self.request.user
         return kwargs
+
+
+class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegistrationFormBaseView):
+    pass
 
 
 class UserRegistrationMixin(object):

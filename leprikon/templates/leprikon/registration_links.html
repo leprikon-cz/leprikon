@@ -4,7 +4,7 @@
 <a class="btn btn-default btn-xs" href="{% url 'leprikon:registration_list' %}#{{ reg.slug }}">{% trans 'registration' %}: {{ reg }}</a>
 {% endfor %}
 
-{% if subject.registration_allowed %}
+{% if registration_allowed %}
     <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
         {% trans 'register' %}
     </a>
