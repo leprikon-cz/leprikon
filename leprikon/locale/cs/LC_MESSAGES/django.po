@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-09 16:16+0100\n"
+"POT-Creation-Date: 2020-02-09 16:19+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -211,9 +211,9 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:627 admin/subjects.py:724
+#: admin/journals.py:100 admin/subjects.py:628 admin/subjects.py:725
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
-#: models/roles.py:264 models/subjects.py:349 models/subjects.py:635
+#: models/roles.py:268 models/subjects.py:349 models/subjects.py:635
 #: models/subjects.py:653 models/subjects.py:762
 #: templates/leprikon/alternating.html:15
 msgid "subject"
@@ -428,46 +428,46 @@ msgstr "Vyberte datumy přihlašování"
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:517
+#: admin/subjects.py:518
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:519
+#: admin/subjects.py:520
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:529
+#: admin/subjects.py:530
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:531
+#: admin/subjects.py:532
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:536
+#: admin/subjects.py:537
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:537
+#: admin/subjects.py:538
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:547
+#: admin/subjects.py:548
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:549
+#: admin/subjects.py:550
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:635
+#: admin/subjects.py:636
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:732 models/subjects.py:1396
+#: admin/subjects.py:733 models/subjects.py:1400
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -678,9 +678,9 @@ msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
 #: conf/default_settings.py:12 models/organizations.py:16 models/roles.py:116
-#: models/roles.py:154 models/subjects.py:1142 models/subjects.py:1157
-#: models/subjects.py:1166 models/subjects.py:1268
-#: templates/leprikon/payment_pdf/recipe.rml:20
+#: models/roles.py:154 models/roles.py:232 models/subjects.py:1142
+#: models/subjects.py:1157 models/subjects.py:1166 models/subjects.py:1268
+#: models/subjects.py:1319 templates/leprikon/payment_pdf/recipe.rml:20
 msgid "phone"
 msgstr "telefon"
 
@@ -1128,7 +1128,7 @@ msgstr "přihlášky na kurzy"
 
 #: models/courses.py:224 models/events.py:128 models/subjects.py:786
 #: models/subjects.py:1127 models/subjects.py:1259 models/subjects.py:1288
-#: models/subjects.py:1311 models/subjects.py:1393
+#: models/subjects.py:1311 models/subjects.py:1397
 #: templates/leprikon/registration_links.html:4
 msgid "registration"
 msgstr "přihláška"
@@ -1150,18 +1150,18 @@ msgid "now"
 msgstr "nyní"
 
 #: models/courses.py:298 models/courses.py:322 models/events.py:139
-#: models/events.py:163 models/roles.py:250 models/roles.py:266
+#: models/events.py:163 models/roles.py:254 models/roles.py:270
 msgid "template"
 msgstr "šablona"
 
 #: models/courses.py:301 models/courses.py:325 models/events.py:142
-#: models/events.py:166 models/roles.py:253 models/roles.py:269
+#: models/events.py:166 models/roles.py:257 models/roles.py:273
 msgid "The template used to render plugin."
 msgstr "Šablona, která bude použita k zobrazení."
 
 #: models/courses.py:309 models/courses.py:393 models/events.py:150
-#: models/events.py:234 models/registrationlink.py:14 models/roles.py:262
-#: models/roles.py:297 models/schoolyear.py:36 models/schoolyear.py:54
+#: models/events.py:234 models/registrationlink.py:14 models/roles.py:266
+#: models/roles.py:301 models/schoolyear.py:36 models/schoolyear.py:54
 #: models/subjects.py:271
 msgid "school year"
 msgstr "školní rok"
@@ -1443,8 +1443,8 @@ msgid "postal code"
 msgstr "PSČ"
 
 #: models/organizations.py:15 models/roles.py:115 models/roles.py:153
-#: models/subjects.py:1143 models/subjects.py:1158 models/subjects.py:1167
-#: models/subjects.py:1269
+#: models/roles.py:233 models/subjects.py:1143 models/subjects.py:1158
+#: models/subjects.py:1167 models/subjects.py:1269 models/subjects.py:1320
 msgid "email address"
 msgstr "e-mail"
 
@@ -1474,7 +1474,7 @@ msgstr "organizace"
 msgid "organizations"
 msgstr "organizace"
 
-#: models/organizations.py:33 models/roles.py:244 models/subjects.py:1330
+#: models/organizations.py:33 models/roles.py:248 models/subjects.py:1334
 #: templates/leprikon/payment_pdf/recipe.rml:15
 msgid "address"
 msgstr "adresa"
@@ -1591,7 +1591,7 @@ msgstr "stránka"
 msgid "school years"
 msgstr "školní roky"
 
-#: models/roles.py:33 models/roles.py:84 models/roles.py:248
+#: models/roles.py:33 models/roles.py:84 models/roles.py:252
 #: models/timesheets.py:68
 msgid "leader"
 msgstr "vedoucí"
@@ -1659,12 +1659,21 @@ msgstr "{first_name} {last_name} ({birth_num})"
 msgid "You have already entered participant with this birth number"
 msgstr "Účastníka s tímto rodným číslem již máte vytvořeného."
 
-#: models/roles.py:235 models/roles.py:236 models/subjects.py:1321
-#: models/subjects.py:1322
+#: models/roles.py:231 models/subjects.py:1318
+#: templates/leprikon/payment_pdf/recipe.rml:69
+msgid "contact person"
+msgstr "kontaktní osoba"
+
+#: models/roles.py:234 models/subjects.py:1321
+msgid "employee ID"
+msgstr "identifikace zaměstnance"
+
+#: models/roles.py:239 models/roles.py:240 models/subjects.py:1325
+#: models/subjects.py:1326
 msgid "billing information"
 msgstr "fakturační údaje"
 
-#: models/roles.py:278 models/roles.py:279
+#: models/roles.py:282 models/roles.py:283
 msgid "Selected subject is not in the selected school year."
 msgstr "Vybraná aktivita není ve vybraném školním roce."
 
@@ -1965,7 +1974,7 @@ msgid "evaluation"
 msgstr "evaluace"
 
 #: models/subjects.py:317 models/subjects.py:771 models/subjects.py:1291
-#: models/subjects.py:1397
+#: models/subjects.py:1401
 msgid "note"
 msgstr "poznámka"
 
@@ -2148,117 +2157,117 @@ msgstr "přihlášené skupiny"
 msgid "group member"
 msgstr "člen skupiny"
 
-#: models/subjects.py:1341
+#: models/subjects.py:1345
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:1346
+#: models/subjects.py:1350
 msgid "Date must be after the last account closure ({})."
 msgstr "Datum musí být vyšší než datum posledního uzavření účtu ({})."
 
-#: models/subjects.py:1355 models/subjects.py:1394
+#: models/subjects.py:1359 models/subjects.py:1398
 msgid "accounted time"
 msgstr "čas zaúčtování"
 
-#: models/subjects.py:1356 models/subjects.py:1362
+#: models/subjects.py:1360 models/subjects.py:1366
 #: templates/leprikon/registration_payments.html:25
 #: templates/leprikon/registration_payments.html:32
 msgid "discount"
 msgstr "sleva"
 
-#: models/subjects.py:1357
+#: models/subjects.py:1361
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:1363
+#: models/subjects.py:1367
 msgid "discounts"
 msgstr "slevy"
 
-#: models/subjects.py:1381
+#: models/subjects.py:1385
 msgid "payment - cash"
 msgstr "platba v hotovosti"
 
-#: models/subjects.py:1382
+#: models/subjects.py:1386
 msgid "payment - bank"
 msgstr "platba na bankovní účet"
 
-#: models/subjects.py:1383
+#: models/subjects.py:1387
 msgid "payment - online"
 msgstr "platba on-line"
 
-#: models/subjects.py:1384
+#: models/subjects.py:1388
 msgid "payment - transfer from return"
 msgstr "platba z přeplatku"
 
-#: models/subjects.py:1385
+#: models/subjects.py:1389
 msgid "return - cash"
 msgstr "navrácení přeplatku v hotovosti"
 
-#: models/subjects.py:1386
+#: models/subjects.py:1390
 msgid "return - bank"
 msgstr "navrácení přeplatku na bankovní účet"
 
-#: models/subjects.py:1387
+#: models/subjects.py:1391
 msgid "return - transfer to payment"
 msgstr "navrácení přeplatku převodem na platbu"
 
-#: models/subjects.py:1395 models/subjects.py:1433
+#: models/subjects.py:1399 models/subjects.py:1437
 #: templates/leprikon/payment_pdf/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
 
-#: models/subjects.py:1396
+#: models/subjects.py:1400
 msgid "positive value for payment, negative value for return"
 msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 
-#: models/subjects.py:1400
+#: models/subjects.py:1404
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:1402
+#: models/subjects.py:1406
 msgid "bank account transaction"
 msgstr "transakce na účtu"
 
-#: models/subjects.py:1405
+#: models/subjects.py:1409
 msgid "online payment"
 msgstr "platba on-line"
 
-#: models/subjects.py:1407
+#: models/subjects.py:1411
 msgid "received by"
 msgstr "přijal(a)"
 
-#: models/subjects.py:1411
+#: models/subjects.py:1415
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:1412
+#: models/subjects.py:1416
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:1453
+#: models/subjects.py:1457
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment confirmation"
 msgstr "Přihláška na {subject_type} {subject} - potvrzení platby"
 
-#: models/subjects.py:1474
+#: models/subjects.py:1478
 msgid "Payment can only have one relation."
 msgstr "Platba může mít jen jeden související objekt."
 
-#: models/subjects.py:1497
+#: models/subjects.py:1501
 #, python-brace-format
 msgid "Payment type must be {valid_payment_type}."
 msgstr "Typ platby musí být {valid_payment_type}."
 
-#: models/subjects.py:1503
+#: models/subjects.py:1507
 #, python-brace-format
 msgid "Amount must be {valid_amount}."
 msgstr "Částka musí být {valid_amount}"
 
-#: models/subjects.py:1534
+#: models/subjects.py:1538
 msgid "received online payment"
 msgstr "přijatá on-line platba"
 
-#: models/subjects.py:1559
+#: models/subjects.py:1563
 msgid "imported from account statement"
 msgstr "imporováno z výpisu z účtu"
 
@@ -2752,10 +2761,6 @@ msgstr "datum přijetí platby"
 msgid "name of %(subject_type)s"
 msgstr "název %(subject_type)s"
 
-#: templates/leprikon/payment_pdf/recipe.rml:69
-msgid "contact person"
-msgstr "kontaktní osoba"
-
 #: templates/leprikon/payment_pdf/recipe.rml:79
 msgid "payment received by"
 msgstr "platbu přijal(a)"
@@ -3031,7 +3036,7 @@ msgid "Last name"
 msgstr "Příjmení"
 
 #: templates/leprikon/registration_pdf/subject.rml:260
-#: templates/leprikon/subject_registration_form.html:218
+#: templates/leprikon/subject_registration_form.html:222
 msgid "Note"
 msgstr "Poznámka"
 

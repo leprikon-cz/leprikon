@@ -228,6 +228,10 @@ class BillingInfo(models.Model):
     postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
     company_num = models.CharField(_('company number'), max_length=8, blank=True, null=True)
     vat_number = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
+    contact_person = models.CharField(_('contact person'), max_length=60, blank=True, null=True)
+    phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
+    email = EmailField(_('email address'), blank=True, default='')
+    employee = models.CharField(_('employee ID'), max_length=150, blank=True, default='')
 
     class Meta:
         app_label = 'leprikon'

@@ -213,6 +213,10 @@
         {% include 'leprikon/form_item.html' with item=form.billing_info_form.postal_code %}
         {% include 'leprikon/form_item.html' with item=form.billing_info_form.company_num %}
         {% include 'leprikon/form_item.html' with item=form.billing_info_form.vat_number %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.contact_person %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.phone %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.email %}
+        {% include 'leprikon/form_item.html' with item=form.billing_info_form.employee %}
     </div>
 
     <h3>{% trans 'Note' %}</h3>

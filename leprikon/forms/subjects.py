@@ -675,7 +675,10 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 billing_info.user = self.instance.user
             else:
                 billing_info = BillingInfo.objects.get(id=self.billing_info_select_form.cleaned_data['billing_info'])
-            for attr in ['name', 'street', 'city', 'postal_code', 'company_num', 'vat_number']:
+            for attr in [
+                'name', 'street', 'city', 'postal_code', 'company_num', 'vat_number',
+                'contact_person', 'phone', 'email', 'employee',
+            ]:
                 setattr(billing_info, attr, getattr(registration_billing_info, attr))
             billing_info.save()
 

@@ -460,7 +460,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'group__phone', 'group__email',
         'group__school__name', 'group__school_other', 'group__school_class',
         'billing_info__name', 'billing_info__street', 'billing_info__city', 'billing_info__postal_code',
-        'billing_info__company_num', 'billing_info__vat_number',
+        'billing_info__company_num', 'billing_info__vat_number', 'billing_info__contact_person',
+        'billing_info__phone', 'billing_info__email', 'billing_info__employee',
     )
     list_filter = (
         ('subject__school_year', SchoolYearListFilter),
