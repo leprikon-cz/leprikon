@@ -1,14 +1,30 @@
 {% load i18n leprikon_tags %}
 
 {% for reg in registrations %}
-<a class="btn btn-default btn-xs" href="{% url 'leprikon:registration_list' %}#{{ reg.slug }}">{% trans 'registration' %}: {{ reg }}</a>
+<a class="btn btn-default btn-xs" href="{% url 'leprikon:registration_list' %}#{{ reg.slug }}">{% trans 'registration' %}: {{ reg }}</a><br/>
 {% endfor %}
 
-{% if registration_allowed %}
-    <a href="{{ registration_url }}" class="btn btn-primary btn-xs">
-        {% trans 'register' %}
-    </a>
-{% else %}
-    {% trans 'Registering is currently not allowed.' %}
-    {% if subject.full %}{% trans 'The capacity is full.' %}{% endif %}
+
+<a href="{{ registration_url }}" id="subject-{{ subject.id }}-registration-link" class="btn btn-primary btn-xs{% if not registration_allowed %} hidden{% endif %}">
+    {% trans 'fill in the registration form' %}
+</a>
+<span id="subject-{{ subject.id }}-registration-message">{{ registration_message }}</span>
+{% if subject.full %}{% trans 'The capacity is full.' %}{% endif %}
+
+{% if registration_start_in or registration_end_in %}
+<script defer="defer" async="async" type="text/javascript">
+{% if registration_start_in %}
+setTimeout(function(){
+    $('#subject-{{ subject.id }}-registration-link').removeClass('hidden');
+    $('#subject-{{ subject.id }}-registration-message').html('{{ registration_ends_message }}');
+}, {{ registration_start_in }}000);
+{% endif %}
+
+{% if registration_end_in %}
+setTimeout(function(){
+    $('#subject-{{ subject.id }}-registration-link').addClass('hidden');
+    $('#subject-{{ subject.id }}-registration-message').html('{{ registration_ended_message }}');
+}, {{ registration_end_in }}000);
+{% endif %}
+</script>
 {% endif %}

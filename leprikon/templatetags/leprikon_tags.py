@@ -6,7 +6,10 @@ from django import template
 from django.contrib.staticfiles import finders
 from django.core.cache import InvalidCacheBackendError, caches
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from lxml.html import fromstring, tostring
 
 from ..conf import settings
@@ -68,6 +71,7 @@ def current_url(context):
 
 @register.inclusion_tag('leprikon/registration_links.html', takes_context=True)
 def registration_links(context, subject):
+    now = timezone.now()
     context = context.__copy__()
     context['subject'] = subject
     if context['request'].user.is_authenticated():
@@ -76,15 +80,40 @@ def registration_links(context, subject):
         context['registrations'] = []
 
     if hasattr(context['view'], 'registration_link'):
-        registration_link = context['view'].registration_link
-        context['registration_allowed'] = registration_link.registration_allowed
+        source = context['view'].registration_link
         context['registration_url'] = _url_with_back(
-            reverse('leprikon:registration_link_form', args=(registration_link.slug, subject.id)),
+            reverse('leprikon:registration_link_form', args=(source.slug, subject.id)),
             current_url(context),
         )
     else:
-        context['registration_allowed'] = subject.registration_allowed
+        source = subject
         context['registration_url'] = _url_with_back(subject.get_registration_url(), current_url(context))
+
+    context['registration_allowed'] = source.registration_allowed
+
+    if context['registration_allowed']:
+        context['registration_message'] = ''
+    else:
+        context['registration_message'] = _('Registering is currently not allowed.')
+
+    if subject.price and source.reg_to:
+        context['registration_ended_message'] = _('Registering ended on {}').format(
+            date_format(source.reg_to, 'SHORT_DATETIME_FORMAT')
+        )
+        if source.reg_to > now:
+            context['registration_end_in'] = (source.reg_to - now).seconds
+            context['registration_ends_message'] = _('Registering will end on {}.').format(
+                date_format(source.reg_to, 'SHORT_DATETIME_FORMAT')
+            )
+            context['registration_message'] = context['registration_ends_message']
+        else:
+            context['registration_message'] = context['registration_ended_message']
+    if subject.price and source.reg_from and source.reg_from > now:
+        context['registration_start_in'] = (source.reg_from - now).seconds
+        context['registration_starts_message'] = _('Registering will start on {}.').format(
+            date_format(source.reg_from, 'SHORT_DATETIME_FORMAT')
+        )
+        context['registration_message'] = context['registration_starts_message']
     return context
 
 

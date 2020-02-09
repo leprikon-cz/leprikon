@@ -454,10 +454,20 @@ class Subject(models.Model):
         now = timezone.now()
         return (
             self.price is not None and
-            self.reg_from is not None and
-            self.reg_from <= now and
+            (self.reg_from or self.reg_to) and
+            (self.reg_from is None or self.reg_from <= now) and
             (self.reg_to is None or self.reg_to > now)
         )
+
+    @property
+    def registration_not_allowed_message(self):
+        now = timezone.now()
+        if self.price is not None:
+            if self.reg_from > now:
+                return _('Registering will start on {}.').format(self.reg_from)
+            if self.reg_to < now:
+                return _('Registering ended on {}').format(self.reg_to)
+        return _('Registering is currently not allowed.')
 
     @property
     def full(self):

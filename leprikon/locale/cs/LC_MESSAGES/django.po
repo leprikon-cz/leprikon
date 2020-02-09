@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-09 10:12+0100\n"
+"POT-Creation-Date: 2020-02-09 16:16+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -19,120 +19,120 @@ msgstr ""
 msgid "Leprikon administration"
 msgstr "Správa systému Leprikón"
 
-#: admin/courses.py:84
+#: admin/courses.py:76
 msgid "Selected courses were published."
 msgstr "Vybrané kurzy byly zveřejněny."
 
-#: admin/courses.py:85
+#: admin/courses.py:77
 msgid "Publish selected courses"
 msgstr "Zveřejnit vybrané kurzy"
 
-#: admin/courses.py:89
+#: admin/courses.py:81
 msgid "Selected courses were unpublished."
 msgstr "Vybrané kurzy byly skryty."
 
-#: admin/courses.py:90
+#: admin/courses.py:82
 msgid "Unpublish selected courses"
 msgstr "Skrýt vybrané kurzy"
 
-#: admin/courses.py:95 admin/events.py:64 admin/roles.py:37
+#: admin/courses.py:87 admin/events.py:56 admin/roles.py:37
 #: admin/schoolyear.py:47
 msgid "Target school year"
 msgstr "Cílový školní rok"
 
-#: admin/courses.py:96
+#: admin/courses.py:88
 msgid "All selected courses will be copied to selected school year."
 msgstr "Vybrané kurzy budou zkopírovány do vybraného školního roku."
 
-#: admin/courses.py:105
+#: admin/courses.py:97
 msgid "Selected courses were copied to school year {}."
 msgstr "Vybrané kurzy byly zkopírovány do školního roku {}."
 
-#: admin/courses.py:113 admin/events.py:82 admin/roles.py:52
+#: admin/courses.py:105 admin/events.py:74 admin/roles.py:52
 #: admin/schoolyear.py:72
 msgid "Select target school year"
 msgstr "Vyberte cílový školní rok"
 
-#: admin/courses.py:121
+#: admin/courses.py:113
 msgid "Copy selected courses to another school year"
 msgstr "Kopírovat vybrané kurzy do jiného školního roku"
 
-#: admin/courses.py:171
+#: admin/courses.py:154
 msgid "full discount for current period"
 msgstr "sleva v plné výši pro aktuální období"
 
-#: admin/courses.py:178
+#: admin/courses.py:161
 msgid ""
 "The discounts have been created for each selected registration and current "
 "period."
 msgstr ""
 "Pro vybrané přihlášky byly vytvořeny slevy v plné výši pro aktuální období."
 
-#: admin/courses.py:180
+#: admin/courses.py:163
 msgid "Add full discount for current period"
 msgstr "Přidat slevu v plné výši pro aktuální období"
 
-#: admin/courses.py:196 admin/events.py:139
+#: admin/courses.py:179 admin/events.py:122
 msgid "add discount"
 msgstr "přidat slevu"
 
-#: admin/courses.py:201 models/courses.py:231
+#: admin/courses.py:184 models/courses.py:231
 msgid "course discounts"
 msgstr "slevy na kurz"
 
-#: admin/courses.py:219 admin/events.py:156
+#: admin/courses.py:202 admin/events.py:139
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/courses.py:224
+#: admin/courses.py:207
 msgid "course payments"
 msgstr "platby za kurzy"
 
-#: admin/events.py:53
+#: admin/events.py:45
 msgid "Selected events were published."
 msgstr "Vybrané akce byly zveřejněny."
 
-#: admin/events.py:54
+#: admin/events.py:46
 msgid "Publish selected events"
 msgstr "Zveřejnit vybrané akce"
 
-#: admin/events.py:58
+#: admin/events.py:50
 msgid "Selected events were unpublished."
 msgstr "Vybrané akce byly skryty."
 
-#: admin/events.py:59
+#: admin/events.py:51
 msgid "Unpublish selected events"
 msgstr "Skrýt vybrané akce"
 
-#: admin/events.py:65
+#: admin/events.py:57
 msgid "All selected events will be copied to selected school year."
 msgstr "Vybrané akce budou zkopírovány do vybraného školního roku."
 
-#: admin/events.py:74
+#: admin/events.py:66
 msgid "Selected events were copied to school year {}."
 msgstr "Vybrané akce byly zkopírovány do školního roku {}."
 
-#: admin/events.py:90
+#: admin/events.py:82
 msgid "Copy selected events to another school year"
 msgstr "Kopírovat vybrané akce do jiného školního roku"
 
-#: admin/events.py:122
+#: admin/events.py:105
 msgid "full discount"
 msgstr "sleva v plné vyši"
 
-#: admin/events.py:126
+#: admin/events.py:109
 msgid "The discounts have been created for each selected registration."
 msgstr "Pro vybrané přihlášky byly vytvořeny slevy v plné výši."
 
-#: admin/events.py:127
+#: admin/events.py:110
 msgid "Add full discount"
 msgstr "Přidat slevu v plné výši"
 
-#: admin/events.py:142 models/events.py:133
+#: admin/events.py:125 models/events.py:133
 msgid "event discounts"
 msgstr "slevy na akce"
 
-#: admin/events.py:159
+#: admin/events.py:142
 msgid "event payments"
 msgstr "platby za akce"
 
@@ -181,15 +181,15 @@ msgstr "neodhlášeno"
 msgid "canceled"
 msgstr "odhlášeno"
 
-#: admin/filters.py:223
+#: admin/filters.py:194
 msgid "All"
 msgstr "Vše"
 
-#: admin/filters.py:224
+#: admin/filters.py:195
 msgid "Set"
 msgstr "Nastaveno"
 
-#: admin/filters.py:225
+#: admin/filters.py:196
 msgid "Not set"
 msgstr "Nenastaveno"
 
@@ -211,10 +211,10 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:628 admin/subjects.py:725
+#: admin/journals.py:100 admin/subjects.py:627 admin/subjects.py:724
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
-#: models/roles.py:264 models/subjects.py:349 models/subjects.py:625
-#: models/subjects.py:643 models/subjects.py:752
+#: models/roles.py:264 models/subjects.py:349 models/subjects.py:635
+#: models/subjects.py:653 models/subjects.py:762
 #: templates/leprikon/alternating.html:15
 msgid "subject"
 msgstr "předmět"
@@ -305,11 +305,11 @@ msgid "download"
 msgstr "stažení"
 
 #: admin/registrationlink.py:104 admin/registrationlink.py:106
-#: models/registrationlink.py:27
+#: models/registrationlink.py:27 models/subjects.py:781
 msgid "registration link"
 msgstr "přihlášovací odkaz"
 
-#: admin/registrationlink.py:126 admin/subjects.py:277 models/subjects.py:775
+#: admin/registrationlink.py:126 admin/subjects.py:276 models/subjects.py:787
 #: templates/leprikon/subject_preview.html:103
 msgid "registrations"
 msgstr "přihlášky"
@@ -327,14 +327,14 @@ msgid "Add selected leaders to another school year"
 msgstr "Přidat vybrané vedoucí do jiného školního roku"
 
 #: admin/roles.py:63 models/roles.py:110 models/roles.py:147
-#: models/subjects.py:1120 models/subjects.py:1140 models/subjects.py:1149
-#: models/subjects.py:1251 models/subjects.py:1277
+#: models/subjects.py:1132 models/subjects.py:1152 models/subjects.py:1161
+#: models/subjects.py:1263 models/subjects.py:1289
 msgid "first name"
 msgstr "jméno"
 
 #: admin/roles.py:68 models/roles.py:111 models/roles.py:148
-#: models/subjects.py:1121 models/subjects.py:1141 models/subjects.py:1150
-#: models/subjects.py:1252 models/subjects.py:1278
+#: models/subjects.py:1133 models/subjects.py:1153 models/subjects.py:1162
+#: models/subjects.py:1264 models/subjects.py:1290
 msgid "last name"
 msgstr "příjmení"
 
@@ -348,7 +348,7 @@ msgid "contacts"
 msgstr "kontakty"
 
 #: admin/roles.py:86 models/roles.py:24 models/roles.py:109 models/roles.py:144
-#: models/roles.py:224 models/subjects.py:750 models/useragreement.py:8
+#: models/roles.py:224 models/subjects.py:760 models/useragreement.py:8
 msgid "user"
 msgstr "uživatel"
 
@@ -360,7 +360,7 @@ msgstr "kurzy"
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:120 admin/subjects.py:300 admin/subjects.py:367
+#: admin/roles.py:120 admin/subjects.py:299 admin/subjects.py:366
 #: models/roles.py:26 models/subjects.py:290
 msgid "photo"
 msgstr "fotka"
@@ -379,95 +379,95 @@ msgstr "Vybraná členění školního roku byla zkopírována do školního rok
 msgid "Copy selected school year divisions to another school year"
 msgstr "Kopírovat vybraná členění školního roku do jiného školního roku"
 
-#: admin/subjects.py:232
+#: admin/subjects.py:231
 msgid "printable journal"
 msgstr "tisknutelný deník"
 
-#: admin/subjects.py:233 admin/subjects.py:235
+#: admin/subjects.py:232 admin/subjects.py:234
 #: templates/leprikon/subject_preview.html:107
 msgid "journal"
 msgstr "deník"
 
-#: admin/subjects.py:249
+#: admin/subjects.py:248
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:251
+#: admin/subjects.py:250
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:253
+#: admin/subjects.py:252
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:274
+#: admin/subjects.py:273
 msgid "add registration"
 msgstr "vytvořit přihlášku"
 
-#: admin/subjects.py:282
+#: admin/subjects.py:281
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:286
+#: admin/subjects.py:285
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:291
+#: admin/subjects.py:290
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:313
+#: admin/subjects.py:312
 msgid "Registration dates were updated."
 msgstr "Datumy přihlašování byly uloženy."
 
-#: admin/subjects.py:318
+#: admin/subjects.py:317
 msgid "Select registration dates"
 msgstr "Vyberte datumy přihlašování"
 
-#: admin/subjects.py:326
+#: admin/subjects.py:325
 msgid "Set registration dates"
 msgstr "Nastavit datumy přihlašování"
 
-#: admin/subjects.py:518
+#: admin/subjects.py:517
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:520
+#: admin/subjects.py:519
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:530
+#: admin/subjects.py:529
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:532
+#: admin/subjects.py:531
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:537
+#: admin/subjects.py:536
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:538
+#: admin/subjects.py:537
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:548
+#: admin/subjects.py:547
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:550
+#: admin/subjects.py:549
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:636
+#: admin/subjects.py:635
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:733 models/subjects.py:1384
+#: admin/subjects.py:732 models/subjects.py:1396
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
@@ -625,8 +625,8 @@ msgstr "Změnit údaje o uživateli"
 msgid "Change e-mail"
 msgstr "Změnit e-mail"
 
-#: cms_menus.py:137 templates/admin/base.html:43
-#: templates/admin/inc/branding.html:23 views/user.py:104
+#: cms_menus.py:137 templates/admin/base.html:13
+#: templates/admin/inc/branding.html:23 views/user.py:105
 msgid "Change password"
 msgstr "Změnit heslo"
 
@@ -638,7 +638,7 @@ msgstr "Propojit s účtem Google"
 msgid "Link with Facebook account"
 msgstr "Propojit s účtem Facebook"
 
-#: cms_menus.py:157 templates/admin/base.html:44
+#: cms_menus.py:157 templates/admin/base.html:14
 #: templates/admin/inc/branding.html:29
 msgid "Log out"
 msgstr "Odhlásit se"
@@ -678,8 +678,8 @@ msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
 
 #: conf/default_settings.py:12 models/organizations.py:16 models/roles.py:116
-#: models/roles.py:154 models/subjects.py:1130 models/subjects.py:1145
-#: models/subjects.py:1154 models/subjects.py:1256
+#: models/roles.py:154 models/subjects.py:1142 models/subjects.py:1157
+#: models/subjects.py:1166 models/subjects.py:1268
 #: templates/leprikon/payment_pdf/recipe.rml:20
 msgid "phone"
 msgstr "telefon"
@@ -921,7 +921,7 @@ msgid "School"
 msgstr "Škola"
 
 #: forms/subjects.py:245 forms/subjects.py:402 models/roles.py:159
-#: models/subjects.py:1135 models/subjects.py:1260
+#: models/subjects.py:1147 models/subjects.py:1272
 msgid "other school"
 msgstr "jiná škola"
 
@@ -1014,15 +1014,15 @@ msgstr "uzavření účtu"
 #: models/citizenship.py:6 models/department.py:6 models/place.py:6
 #: models/printsetup.py:11 models/question.py:14 models/registrationlink.py:18
 #: models/roles.py:225 models/school.py:7 models/schoolyear.py:101
-#: models/subjects.py:223 models/subjects.py:276 models/subjects.py:1300
+#: models/subjects.py:223 models/subjects.py:276 models/subjects.py:1312
 #: models/targetgroup.py:8 models/timesheets.py:122
 msgid "name"
 msgstr "název"
 
 #: models/agegroup.py:9 models/agreements.py:9 models/agreements.py:32
 #: models/citizenship.py:7 models/roles.py:88 models/subjects.py:130
-#: models/subjects.py:210 models/subjects.py:226 models/subjects.py:629
-#: models/subjects.py:645 models/targetgroup.py:9 models/timesheets.py:123
+#: models/subjects.py:210 models/subjects.py:226 models/subjects.py:639
+#: models/subjects.py:655 models/targetgroup.py:9 models/timesheets.py:123
 msgid "order"
 msgstr "pořadí"
 
@@ -1030,7 +1030,7 @@ msgstr "pořadí"
 msgid "require school"
 msgstr "vyžadovat školu"
 
-#: models/agegroup.py:15 models/roles.py:146 models/subjects.py:1124
+#: models/agegroup.py:15 models/roles.py:146 models/subjects.py:1136
 msgid "age group"
 msgstr "věková skupina"
 
@@ -1051,7 +1051,7 @@ msgstr "souhlas"
 msgid "legal agreement"
 msgstr "právní ujednání"
 
-#: models/agreements.py:18 models/subjects.py:765
+#: models/agreements.py:18 models/subjects.py:775
 msgid "legal agreements"
 msgstr "právní ujednání"
 
@@ -1067,11 +1067,11 @@ msgstr "volba"
 msgid "agreement option"
 msgstr "volba souhlasu"
 
-#: models/agreements.py:41 models/subjects.py:841
+#: models/agreements.py:41 models/subjects.py:853
 msgid "agreement options"
 msgstr "volby souhlasu"
 
-#: models/citizenship.py:12 models/roles.py:156 models/subjects.py:1129
+#: models/citizenship.py:12 models/roles.py:156 models/subjects.py:1141
 msgid "citizenship"
 msgstr "státní občanství"
 
@@ -1126,9 +1126,9 @@ msgstr "přihláška na kurz"
 msgid "course registrations"
 msgstr "přihlášky na kurzy"
 
-#: models/courses.py:224 models/events.py:128 models/subjects.py:774
-#: models/subjects.py:1115 models/subjects.py:1247 models/subjects.py:1276
-#: models/subjects.py:1299 models/subjects.py:1381
+#: models/courses.py:224 models/events.py:128 models/subjects.py:786
+#: models/subjects.py:1127 models/subjects.py:1259 models/subjects.py:1288
+#: models/subjects.py:1311 models/subjects.py:1393
 #: templates/leprikon/registration_links.html:4
 msgid "registration"
 msgstr "přihláška"
@@ -1303,7 +1303,7 @@ msgid "session agenda"
 msgstr "program schůzky"
 
 #: models/journals.py:21 models/roles.py:170 models/subjects.py:265
-#: models/subjects.py:801 models/subjects.py:805 models/subjects.py:1163
+#: models/subjects.py:813 models/subjects.py:817 models/subjects.py:1175
 #: templates/leprikon/payment_pdf/recipe.rml:63
 msgid "participants"
 msgstr "účastníci"
@@ -1410,11 +1410,11 @@ msgstr "odesláno"
 msgid "sent by email"
 msgstr "odesláno e-mailem"
 
-#: models/messages.py:105 models/subjects.py:215 models/subjects.py:650
+#: models/messages.py:105 models/subjects.py:215 models/subjects.py:660
 msgid "attachment"
 msgstr "příloha"
 
-#: models/messages.py:106 models/subjects.py:216 models/subjects.py:651
+#: models/messages.py:106 models/subjects.py:216 models/subjects.py:661
 msgid "attachments"
 msgstr "přílohy"
 
@@ -1423,37 +1423,37 @@ msgid "organization name"
 msgstr "název organizace"
 
 #: models/organizations.py:12 models/roles.py:112 models/roles.py:150
-#: models/roles.py:226 models/school.py:8 models/subjects.py:1125
-#: models/subjects.py:1142 models/subjects.py:1151 models/subjects.py:1253
-#: models/subjects.py:1301
+#: models/roles.py:226 models/school.py:8 models/subjects.py:1137
+#: models/subjects.py:1154 models/subjects.py:1163 models/subjects.py:1265
+#: models/subjects.py:1313
 msgid "street"
 msgstr "ulice a číslo popisné"
 
 #: models/organizations.py:13 models/roles.py:113 models/roles.py:151
-#: models/roles.py:227 models/school.py:9 models/subjects.py:1126
-#: models/subjects.py:1143 models/subjects.py:1152 models/subjects.py:1254
-#: models/subjects.py:1302
+#: models/roles.py:227 models/school.py:9 models/subjects.py:1138
+#: models/subjects.py:1155 models/subjects.py:1164 models/subjects.py:1266
+#: models/subjects.py:1314
 msgid "city"
 msgstr "město (pošta)"
 
 #: models/organizations.py:14 models/roles.py:114 models/roles.py:152
-#: models/roles.py:228 models/subjects.py:1127 models/subjects.py:1144
-#: models/subjects.py:1153 models/subjects.py:1255 models/subjects.py:1303
+#: models/roles.py:228 models/subjects.py:1139 models/subjects.py:1156
+#: models/subjects.py:1165 models/subjects.py:1267 models/subjects.py:1315
 msgid "postal code"
 msgstr "PSČ"
 
 #: models/organizations.py:15 models/roles.py:115 models/roles.py:153
-#: models/subjects.py:1131 models/subjects.py:1146 models/subjects.py:1155
-#: models/subjects.py:1257
+#: models/subjects.py:1143 models/subjects.py:1158 models/subjects.py:1167
+#: models/subjects.py:1269
 msgid "email address"
 msgstr "e-mail"
 
-#: models/organizations.py:17 models/roles.py:229 models/subjects.py:1304
+#: models/organizations.py:17 models/roles.py:229 models/subjects.py:1316
 #: templates/leprikon/payment_pdf/recipe.rml:22
 msgid "company number"
 msgstr "IČ"
 
-#: models/organizations.py:18 models/roles.py:230 models/subjects.py:1305
+#: models/organizations.py:18 models/roles.py:230 models/subjects.py:1317
 #: templates/leprikon/billing_info_preview.html:22
 msgid "VAT number"
 msgstr "DIČ"
@@ -1474,7 +1474,7 @@ msgstr "organizace"
 msgid "organizations"
 msgstr "organizace"
 
-#: models/organizations.py:33 models/roles.py:244 models/subjects.py:1318
+#: models/organizations.py:33 models/roles.py:244 models/subjects.py:1330
 #: templates/leprikon/payment_pdf/recipe.rml:15
 msgid "address"
 msgstr "adresa"
@@ -1616,36 +1616,36 @@ msgstr "zástupce"
 msgid "parents"
 msgstr "zástupci"
 
-#: models/roles.py:149 models/subjects.py:1122
+#: models/roles.py:149 models/subjects.py:1134
 msgid "birth number"
 msgstr "rodné číslo"
 
-#: models/roles.py:158 models/school.py:14 models/subjects.py:1134
-#: models/subjects.py:1259
+#: models/roles.py:158 models/school.py:14 models/subjects.py:1146
+#: models/subjects.py:1271
 msgid "school"
 msgstr "škola"
 
-#: models/roles.py:160 models/subjects.py:1136 models/subjects.py:1261
+#: models/roles.py:160 models/subjects.py:1148 models/subjects.py:1273
 msgid "class"
 msgstr "třída"
 
-#: models/roles.py:161 models/subjects.py:1137
+#: models/roles.py:161 models/subjects.py:1149
 msgid "health"
 msgstr "údaje o zdravotní způsobilosti účastníka (případná omezení)"
 
-#: models/roles.py:164 models/subjects.py:1118
+#: models/roles.py:164 models/subjects.py:1130
 msgid "gender"
 msgstr "pohlaví"
 
-#: models/roles.py:165 models/subjects.py:1119
+#: models/roles.py:165 models/subjects.py:1131
 msgid "male"
 msgstr "muž"
 
-#: models/roles.py:165 models/subjects.py:1119
+#: models/roles.py:165 models/subjects.py:1131
 msgid "female"
 msgstr "žena"
 
-#: models/roles.py:169 models/subjects.py:1162
+#: models/roles.py:169 models/subjects.py:1174
 #: templates/leprikon/payment_pdf/recipe.rml:61
 msgid "participant"
 msgstr "účastník"
@@ -1659,8 +1659,8 @@ msgstr "{first_name} {last_name} ({birth_num})"
 msgid "You have already entered participant with this birth number"
 msgstr "Účastníka s tímto rodným číslem již máte vytvořeného."
 
-#: models/roles.py:235 models/roles.py:236 models/subjects.py:1309
-#: models/subjects.py:1310
+#: models/roles.py:235 models/roles.py:236 models/subjects.py:1321
+#: models/subjects.py:1322
 msgid "billing information"
 msgstr "fakturační údaje"
 
@@ -1912,7 +1912,7 @@ msgstr "účetní kód"
 msgid "target groups"
 msgstr "cílové skupiny"
 
-#: models/subjects.py:286 models/subjects.py:628 models/subjects.py:755
+#: models/subjects.py:286 models/subjects.py:638 models/subjects.py:765
 msgid "price"
 msgstr "cena"
 
@@ -1964,8 +1964,8 @@ msgstr "plán"
 msgid "evaluation"
 msgstr "evaluace"
 
-#: models/subjects.py:317 models/subjects.py:761 models/subjects.py:1279
-#: models/subjects.py:1385
+#: models/subjects.py:317 models/subjects.py:771 models/subjects.py:1291
+#: models/subjects.py:1397
 msgid "note"
 msgstr "poznámka"
 
@@ -1982,92 +1982,104 @@ msgstr "Nastavte pouze pokud je hodnota specifická pro tento předmět."
 msgid "chat group type"
 msgstr "typ diskuzní skupiny"
 
-#: models/subjects.py:477
+#: models/subjects.py:467 templatetags/leprikon_tags.py:113
+msgid "Registering will start on {}."
+msgstr "Přihlašování bude zahájeno {}."
+
+#: models/subjects.py:469 templatetags/leprikon_tags.py:100
+msgid "Registering ended on {}"
+msgstr "Přihlašování bylo ukončeno {}."
+
+#: models/subjects.py:470 templatetags/leprikon_tags.py:97
+msgid "Registering is currently not allowed."
+msgstr "Přihlašování momentálně není povoleno."
+
+#: models/subjects.py:487
 msgid "age groups list"
 msgstr "seznam věkových skupin"
 
-#: models/subjects.py:481
+#: models/subjects.py:491
 msgid "groups list"
 msgstr "seznam skupin"
 
-#: models/subjects.py:485
+#: models/subjects.py:495
 msgid "leaders list"
 msgstr "seznam vedoucích"
 
-#: models/subjects.py:489
+#: models/subjects.py:499
 msgid "target groups list"
 msgstr "seznam cílových skupin"
 
-#: models/subjects.py:626
+#: models/subjects.py:636
 msgid "variant name"
 msgstr "název varianty"
 
-#: models/subjects.py:627
+#: models/subjects.py:637
 msgid "variant description"
 msgstr "popis varianty"
 
-#: models/subjects.py:634 models/subjects.py:754
+#: models/subjects.py:644 models/subjects.py:764
 msgid "variant"
 msgstr "varianta"
 
-#: models/subjects.py:635
+#: models/subjects.py:645
 msgid "variants"
 msgstr "varianty"
 
-#: models/subjects.py:748
+#: models/subjects.py:758
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: models/subjects.py:757
+#: models/subjects.py:767
 msgid "time of approval"
 msgstr "čas schválení"
 
-#: models/subjects.py:758
+#: models/subjects.py:768
 msgid "payment request time"
 msgstr "odeslání výzvy k platbě"
 
-#: models/subjects.py:759
+#: models/subjects.py:769
 msgid "time of cancellation"
 msgstr "čas odhlášení"
 
-#: models/subjects.py:760
+#: models/subjects.py:770
 msgid "cancel request"
 msgstr "požadavek na odhlášení"
 
-#: models/subjects.py:767 templates/leprikon/payment_pdf/recipe.rml:30
+#: models/subjects.py:777 templates/leprikon/payment_pdf/recipe.rml:30
 msgid "variable symbol"
 msgstr "variabilní symbol"
 
-#: models/subjects.py:813 models/subjects.py:817 models/subjects.py:1284
+#: models/subjects.py:825 models/subjects.py:829 models/subjects.py:1296
 msgid "group members"
 msgstr "členové skupiny"
 
-#: models/subjects.py:980 views/subjects.py:182
+#: models/subjects.py:992 views/subjects.py:182
 #, python-brace-format
 msgid "Registration for {subject_type} {subject}"
 msgstr "Přihláška na {subject_type} {subject}"
 
-#: models/subjects.py:981
+#: models/subjects.py:993
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment request"
 msgstr "Přihláška na {subject_type} {subject} - výzva k platbě"
 
-#: models/subjects.py:982
+#: models/subjects.py:994
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} was approved"
 msgstr "Přihláška na {subject_type} {subject} byla schválena"
 
-#: models/subjects.py:983
+#: models/subjects.py:995
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} was refused"
 msgstr "Přihláška na {subject_type} {subject} byla odmítnuta"
 
-#: models/subjects.py:984
+#: models/subjects.py:996
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} was canceled"
 msgstr "Přihláška na {subject_type} {subject} byla odhlášena"
 
-#: models/subjects.py:998
+#: models/subjects.py:1010
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to restore canceled registration {r}. "
@@ -2075,178 +2087,178 @@ msgid ""
 msgstr ""
 "Bohužel, odhlášenou přihlášku {r} není možné obnovit. Vytvořte prosím novou."
 
-#: models/subjects.py:1000
+#: models/subjects.py:1012
 #, python-brace-format
 msgid "The registration {r} has already been approved."
 msgstr "Přihláška {r} již byla schválena."
 
-#: models/subjects.py:1019
+#: models/subjects.py:1031
 #, python-brace-format
 msgid "The registration {r} has already been refued."
 msgstr "Přihláška {r} již byla odmítnuta."
 
-#: models/subjects.py:1022
+#: models/subjects.py:1034
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to refuse the registration {r}. However, "
 "You may cancel it."
 msgstr "Bohužel, přihlášku {r} není možné odmítnout. Můžete ji ale odhlásit."
 
-#: models/subjects.py:1033
+#: models/subjects.py:1045
 #, python-brace-format
 msgid "The registration {r} has already been canceled."
 msgstr "Přihláška {r} již byla odhlášena."
 
-#: models/subjects.py:1036
+#: models/subjects.py:1048
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to cancel the registration {r}. However, "
 "You may refuse it."
 msgstr "Bohužel, přihlášku {r} není možné odhlásit. Můžete ji ale odmítnout."
 
-#: models/subjects.py:1139 models/subjects.py:1181
+#: models/subjects.py:1151 models/subjects.py:1193
 msgid "first parent"
 msgstr "první zákonný zástupce"
 
-#: models/subjects.py:1148 models/subjects.py:1189
+#: models/subjects.py:1160 models/subjects.py:1201
 msgid "second parent"
 msgstr "druhý zákonný zástupce"
 
-#: models/subjects.py:1157 models/subjects.py:1263
+#: models/subjects.py:1169 models/subjects.py:1275
 msgid "additional answers"
 msgstr "doplňující odpovědi"
 
-#: models/subjects.py:1249 models/targetgroup.py:15
+#: models/subjects.py:1261 models/targetgroup.py:15
 msgid "target group"
 msgstr "cílová skupina"
 
-#: models/subjects.py:1250 templates/leprikon/payment_pdf/recipe.rml:72
+#: models/subjects.py:1262 templates/leprikon/payment_pdf/recipe.rml:72
 msgid "group name"
 msgstr "název skupiny"
 
-#: models/subjects.py:1267
+#: models/subjects.py:1279
 msgid "registered group"
 msgstr "přihlášená skupina"
 
-#: models/subjects.py:1268
+#: models/subjects.py:1280
 msgid "registered groups"
 msgstr "přihlášené skupiny"
 
-#: models/subjects.py:1283
+#: models/subjects.py:1295
 msgid "group member"
 msgstr "člen skupiny"
 
-#: models/subjects.py:1329
+#: models/subjects.py:1341
 msgid "Amount can not be zero."
 msgstr "Částka nemůže být nula."
 
-#: models/subjects.py:1334
+#: models/subjects.py:1346
 msgid "Date must be after the last account closure ({})."
 msgstr "Datum musí být vyšší než datum posledního uzavření účtu ({})."
 
-#: models/subjects.py:1343 models/subjects.py:1382
+#: models/subjects.py:1355 models/subjects.py:1394
 msgid "accounted time"
 msgstr "čas zaúčtování"
 
-#: models/subjects.py:1344 models/subjects.py:1350
+#: models/subjects.py:1356 models/subjects.py:1362
 #: templates/leprikon/registration_payments.html:25
 #: templates/leprikon/registration_payments.html:32
 msgid "discount"
 msgstr "sleva"
 
-#: models/subjects.py:1345
+#: models/subjects.py:1357
 msgid "discount explanation"
 msgstr "vysvětlení slevy"
 
-#: models/subjects.py:1351
+#: models/subjects.py:1363
 msgid "discounts"
 msgstr "slevy"
 
-#: models/subjects.py:1369
+#: models/subjects.py:1381
 msgid "payment - cash"
 msgstr "platba v hotovosti"
 
-#: models/subjects.py:1370
+#: models/subjects.py:1382
 msgid "payment - bank"
 msgstr "platba na bankovní účet"
 
-#: models/subjects.py:1371
+#: models/subjects.py:1383
 msgid "payment - online"
 msgstr "platba on-line"
 
-#: models/subjects.py:1372
+#: models/subjects.py:1384
 msgid "payment - transfer from return"
 msgstr "platba z přeplatku"
 
-#: models/subjects.py:1373
+#: models/subjects.py:1385
 msgid "return - cash"
 msgstr "navrácení přeplatku v hotovosti"
 
-#: models/subjects.py:1374
+#: models/subjects.py:1386
 msgid "return - bank"
 msgstr "navrácení přeplatku na bankovní účet"
 
-#: models/subjects.py:1375
+#: models/subjects.py:1387
 msgid "return - transfer to payment"
 msgstr "navrácení přeplatku převodem na platbu"
 
-#: models/subjects.py:1383 models/subjects.py:1421
+#: models/subjects.py:1395 models/subjects.py:1433
 #: templates/leprikon/payment_pdf/recipe.rml:43
 msgid "payment type"
 msgstr "typ platby"
 
-#: models/subjects.py:1384
+#: models/subjects.py:1396
 msgid "positive value for payment, negative value for return"
 msgstr "kladné číslo pro platbu, záporné pro navrácení přeplatku"
 
-#: models/subjects.py:1388
+#: models/subjects.py:1400
 msgid "related payment"
 msgstr "související platba"
 
-#: models/subjects.py:1390
+#: models/subjects.py:1402
 msgid "bank account transaction"
 msgstr "transakce na účtu"
 
-#: models/subjects.py:1393
+#: models/subjects.py:1405
 msgid "online payment"
 msgstr "platba on-line"
 
-#: models/subjects.py:1395
+#: models/subjects.py:1407
 msgid "received by"
 msgstr "přijal(a)"
 
-#: models/subjects.py:1399
+#: models/subjects.py:1411
 msgid "payment"
 msgstr "platba"
 
-#: models/subjects.py:1400
+#: models/subjects.py:1412
 msgid "payments"
 msgstr "platby"
 
-#: models/subjects.py:1441
+#: models/subjects.py:1453
 #, python-brace-format
 msgid "Registration for {subject_type} {subject} - payment confirmation"
 msgstr "Přihláška na {subject_type} {subject} - potvrzení platby"
 
-#: models/subjects.py:1462
+#: models/subjects.py:1474
 msgid "Payment can only have one relation."
 msgstr "Platba může mít jen jeden související objekt."
 
-#: models/subjects.py:1485
+#: models/subjects.py:1497
 #, python-brace-format
 msgid "Payment type must be {valid_payment_type}."
 msgstr "Typ platby musí být {valid_payment_type}."
 
-#: models/subjects.py:1491
+#: models/subjects.py:1503
 #, python-brace-format
 msgid "Amount must be {valid_amount}."
 msgstr "Částka musí být {valid_amount}"
 
-#: models/subjects.py:1522
+#: models/subjects.py:1534
 msgid "received online payment"
 msgstr "přijatá on-line platba"
 
-#: models/subjects.py:1547
+#: models/subjects.py:1559
 msgid "imported from account statement"
 msgstr "imporováno z výpisu z účtu"
 
@@ -2326,27 +2338,13 @@ msgstr "Pokud není vyplněno, použije se výchozí hodnota: {}"
 msgid "Czech"
 msgstr "Čeština"
 
-#: templates/admin/base.html:30
-msgid "Welcome,"
-msgstr "Vítejte,"
-
-#: templates/admin/base.html:35
+#: templates/admin/base.html:5
 msgid "View site"
 msgstr "Zobrazení webu"
 
-#: templates/admin/base.html:40 templates/admin/inc/branding.html:16
+#: templates/admin/base.html:10 templates/admin/inc/branding.html:16
 msgid "Documentation"
 msgstr "Dokumentace"
-
-#: templates/admin/base.html:54
-#: templates/admin/leprikon/messagerecipient/change_list.html:6
-#: templates/admin/leprikon/messagerecipient/send_mails.html:32
-#: templates/leprikon/admin/action_form.html:8
-#: templates/leprikon/admin/change_form.html:7
-#: templates/leprikon/admin/merge.html:8
-#: templates/leprikon/admin/send_message.html:8
-msgid "Home"
-msgstr "Domů"
 
 #: templates/admin/inc/branding.html:5 templates/cms/toolbar/items/logo.html:4
 msgid "Version"
@@ -2374,6 +2372,15 @@ msgstr "přidat"
 #: templates/leprikon/subject_journal.html:104
 msgid "back"
 msgstr "zpět"
+
+#: templates/admin/leprikon/messagerecipient/change_list.html:6
+#: templates/admin/leprikon/messagerecipient/send_mails.html:32
+#: templates/leprikon/admin/action_form.html:8
+#: templates/leprikon/admin/change_form.html:7
+#: templates/leprikon/admin/merge.html:8
+#: templates/leprikon/admin/send_message.html:8
+msgid "Home"
+msgstr "Domů"
 
 #: templates/admin/leprikon/messagerecipient/send_mails.html:42
 msgid "Start sending"
@@ -2414,7 +2421,7 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: templates/leprikon/admin/send_message.html:24 views/generic.py:79
-#: views/user.py:105
+#: views/user.py:106
 msgid "Back"
 msgstr "Zpět"
 
@@ -2862,14 +2869,10 @@ msgid "Legal agreements"
 msgstr "Právní ujednání"
 
 #: templates/leprikon/registration_links.html:9
-msgid "register"
-msgstr "přihlásit"
+msgid "fill in the registration form"
+msgstr "vyplnit přihlášku"
 
 #: templates/leprikon/registration_links.html:12
-msgid "Registering is currently not allowed."
-msgstr "Přihlašování momentálně není povoleno."
-
-#: templates/leprikon/registration_links.html:13
 msgid "The capacity is full."
 msgstr "Kapacita je naplněna."
 
@@ -3344,6 +3347,10 @@ msgstr "typ"
 msgid "Anonymous user"
 msgstr "Nepřihlášený uživatel"
 
+#: templatetags/leprikon_tags.py:105
+msgid "Registering will end on {}."
+msgstr "Přihlašování bude ukončeno {}."
+
 #: utils.py:104 utils.py:106
 msgid ", and "
 msgstr " a "
@@ -3663,23 +3670,23 @@ msgstr "Změna e-mailové adresy"
 msgid "Set e-mail address"
 msgstr "Nastavení e-mailové adresy"
 
-#: views/user.py:132
+#: views/user.py:133
 msgid ""
 "Enter your email address, and we'll email instructions for setting a new one."
 msgstr ""
 "Zadejte svou e-mailovou adresu a my Vám pošleme instrukce pro nastavení "
 "nového hesla."
 
-#: views/user.py:134
+#: views/user.py:135
 msgid "Reset my password"
 msgstr "Resetovat heslo"
 
-#: views/user.py:153
+#: views/user.py:154
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 
-#: views/user.py:155
+#: views/user.py:156
 msgid "Set my password"
 msgstr "Nastavit heslo"
