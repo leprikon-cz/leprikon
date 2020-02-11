@@ -128,7 +128,7 @@ def registration_links(context, subject):
 @register.inclusion_tag('leprikon/schoolyear_form.html', takes_context=True)
 def school_year_form(context):
     context = context.__copy__()
-    context['school_year_form'] = SchoolYearForm(context['request'])
+    context['school_year_form'] = SchoolYearForm(context.get('request'))
     return context
 
 
