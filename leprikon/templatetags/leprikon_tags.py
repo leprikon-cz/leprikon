@@ -82,10 +82,15 @@ def registration_links(context, subject):
     else:
         context['registrations'] = []
 
-    if hasattr(context['view'], 'registration_link'):
-        source = context['view'].registration_link
+    try:
+        registration_link = context['view'].registration_link
+    except (AttributeError, KeyError):
+        registration_link = None
+
+    if registration_link:
+        source = registration_link
         context['registration_url'] = _url_with_back(
-            reverse('leprikon:registration_link_form', args=(source.slug, subject.id)),
+            reverse('leprikon:registration_link_form', args=(registration_link.slug, subject.id)),
             current_url(context),
         )
     else:
