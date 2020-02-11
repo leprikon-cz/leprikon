@@ -68,7 +68,7 @@ registration_pdf = login_required(subjects.SubjectRegistrationPdfView.as_view())
 registration_cancel = login_required(subjects.SubjectRegistrationCancelView.as_view())
 
 registration_link = registrationlink.RegistrationLinkView.as_view()
-registration_link_form = registrationlink.RegistrationLinkFormView.as_view()
+registration_link_form = login_required(registrationlink.RegistrationLinkFormView.as_view())
 
 payment_list = login_required(subjects.SubjectPaymentsListView.as_view())
 payment_pdf = login_required(subjects.SubjectPaymentPdfView.as_view())
