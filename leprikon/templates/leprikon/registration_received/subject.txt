@@ -3,6 +3,6 @@
 {% if object.subject.full %}{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
 The registration may be refused.{% endblocktrans %}
 
-{% include 'leprikon/registration_mail_details.txt' %}
+{% endif %}{% include 'leprikon/registration_mail_details.txt' %}
 
-{% endif %}{% include 'leprikon/registration_mail_footer.txt' %}
+{% include 'leprikon/registration_mail_footer.txt' %}
