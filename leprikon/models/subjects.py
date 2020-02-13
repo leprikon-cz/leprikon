@@ -754,7 +754,7 @@ class PdfExportAndMailMixin(object):
 class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     object_name = 'registration'
 
-    slug = models.SlugField(editable=False)
+    slug = models.SlugField(editable=False, max_length=250, null=True)
     created = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                              related_name='leprikon_registrations', verbose_name=_('user'))
@@ -1049,15 +1049,22 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             ).format(r=self))
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify('{}-{}'.format(self.subject.name, self))[:50]
         if self.canceled:
             self.cancel_request = False
-        with transaction.atomic():
-            super(SubjectRegistration, self).save(*args, **kwargs)
-            if not self.variable_symbol:
-                self.variable_symbol = generate_variable_symbol(self)
-                super(SubjectRegistration, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+    def generate_variable_symbol_and_slug(self):
+        self.variable_symbol = generate_variable_symbol(self)
+        self.slug = '{}-{}'.format(
+            slugify('{}-{}'.format(
+                self.subject.name[:100],
+                self.group if self.subject.registration_type_groups else comma_separated([
+                    p.full_name for p in self.all_participants
+                ]),
+            ))[:200],
+            self.variable_symbol,
+        )
+        self.save()
 
     @cached_property
     def print_setup(self):

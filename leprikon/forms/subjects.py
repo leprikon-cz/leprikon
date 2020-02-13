@@ -637,7 +637,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         )
 
         # create
-        super().save(commit)
+        super().save(True)
 
         if self.instance.subject.registration_type_participants:
             # save participants
@@ -683,7 +683,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 setattr(billing_info, attr, getattr(registration_billing_info, attr))
             billing_info.save()
 
-        # send mail
+        self.instance.generate_variable_symbol_and_slug()
         self.instance.send_mail()
         return self.instance
 

@@ -613,16 +613,15 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
                 if obj.subject_variant
                 else obj.subject.price
             )
+        super().save_model(request, obj, form, change)
 
-        obj.save()
-
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
         if not change:
-            # save questions and agreements
-            obj.questions.set(obj.subject.all_questions)
-            obj.agreements.set(obj.subject.all_registration_agreements)
-
-            # send mail
-            obj.send_mail()
+            form.instance.questions.set(form.instance.subject.all_questions)
+            form.instance.agreements.set(form.instance.subject.all_registration_agreements)
+            form.instance.generate_variable_symbol_and_slug()
+            form.instance.send_mail()
 
     def get_css(self, obj):
         classes = []
