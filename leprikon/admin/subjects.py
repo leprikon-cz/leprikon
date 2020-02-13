@@ -44,7 +44,7 @@ from .pdf import PdfExportAdminMixin
 
 class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
     model = SubjectTypeAttachment
-    extra = 3
+    extra = 0
 
 
 @admin.register(SubjectType)
@@ -78,7 +78,7 @@ class SubjectGroupAdmin(admin.ModelAdmin):
 
 class SubjectAttachmentInlineAdmin(admin.TabularInline):
     model = SubjectAttachment
-    extra = 3
+    extra = 0
 
 
 class SubjectVariantInlineAdmin(admin.TabularInline):
