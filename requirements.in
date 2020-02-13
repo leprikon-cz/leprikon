@@ -10,6 +10,7 @@ django-filer<1.6
 django-ganalytics
 django-haystack<2.8
 django-localflavor<2
+django-multiselectfield
 django-pays
 django-qr-code
 django-staticfiles-downloader

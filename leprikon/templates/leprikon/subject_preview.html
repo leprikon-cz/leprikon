@@ -74,14 +74,11 @@
         </p>
         {% endif %}
 
-        {% if object.subject_type.all_attachments or object.all_attachments %}
+        {% if object.public_attachments %}
         <p>
             {% trans 'Attachments' %}:
-            {% for attachment in object.subject_type.all_attachments %}
-            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
-            {% endfor %}
-            {% for attachment in object.all_attachments %}
-            <a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
+            {% for attachment in object.public_attachments %}
+            <br/><a href="{{ attachment.file.url }}">{{ attachment.file }}</a>
             {% endfor %}
         </p>
         {% endif %}

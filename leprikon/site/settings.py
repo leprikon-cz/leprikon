@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'cms',
     'haystack',
     'menus',
+    'multiselectfield',
     'sekizai',
     'template_admin',
     'treebeard',

@@ -24,6 +24,7 @@ django-haystack==2.7.0
 django-js-asset==1.2.2    # via django-mptt
 django-localflavor==1.6.2
 django-mptt==0.11.0       # via django-filer
+django-multiselectfield==0.1.11
 django-pays==0.1.0
 django-polymorphic==2.0.3  # via django-filer
 django-qr-code==1.1.0
@@ -89,4 +90,4 @@ whoosh==2.7.4
 xlsxwriter==0.9.3         # via pyexcel-xlsxw
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==45.1.0        # via ipython
+# setuptools

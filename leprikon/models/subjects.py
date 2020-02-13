@@ -29,6 +29,7 @@ from django_pays.models import Payment as PaysPayment
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
+from multiselectfield import MultiSelectField
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
@@ -203,13 +204,23 @@ class SubjectType(models.Model):
         return reverse(self.slug + ':subject_list')
 
 
-class SubjectTypeAttachment(models.Model):
-    subject_type = models.ForeignKey(SubjectType, on_delete=models.CASCADE,
-                                     related_name='attachments', verbose_name=_('subject type'))
+class BaseAttachment(models.Model):
     file = FilerFileField(on_delete=models.CASCADE, related_name='+')
+    public = models.BooleanField(_('public'), default=True,
+                                 help_text=_('The attachment will be available before registration.'))
+    events = MultiSelectField(_('send when'), blank=True, choices=(
+        ('registration_received', _('registration received')),
+        ('registration_approved', _('registration approved')),
+        ('registration_refused', _('registration refused')),
+        ('registration_payment_request', _('payment requested')),
+        ('registration_canceled', _('registration canceled')),
+        ('discount_granted', _('discount granted')),
+        ('payment_received', _('payment received')),
+    ), default=[], help_text=_('The attachment will be sent with notification on selected events.'))
     order = models.IntegerField(_('order'), blank=True, default=0)
 
     class Meta:
+        abstract = True
         app_label = 'leprikon'
         ordering = ('order',)
         verbose_name = _('attachment')
@@ -217,6 +228,11 @@ class SubjectTypeAttachment(models.Model):
 
     def __str__(self):
         return force_text(self.file)
+
+
+class SubjectTypeAttachment(BaseAttachment):
+    subject_type = models.ForeignKey(SubjectType, on_delete=models.CASCADE,
+                                     related_name='attachments', verbose_name=_('subject type'))
 
 
 class SubjectGroup(models.Model):
@@ -410,6 +426,14 @@ class Subject(models.Model):
     @cached_property
     def all_attachments(self):
         return list(self.attachments.all())
+
+    @cached_property
+    def public_attachments(self):
+        return [
+            attachment
+            for attachment in (self.subject_type.all_attachments + self.all_attachments)
+            if attachment.public
+        ]
 
     @cached_property
     def all_registrations(self):
@@ -648,20 +672,9 @@ class SubjectVariant(models.Model):
         return self.name
 
 
-class SubjectAttachment(models.Model):
+class SubjectAttachment(BaseAttachment):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE,
                                 related_name='attachments', verbose_name=_('subject'))
-    file = FilerFileField(on_delete=models.CASCADE, related_name='+')
-    order = models.IntegerField(_('order'), blank=True, default=0)
-
-    class Meta:
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
-
-    def __str__(self):
-        return force_text(self.file)
 
 
 class PdfExportAndMailMixin(object):
@@ -1076,17 +1089,19 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         )
 
     def get_attachments(self, event):
-        if event == 'received':
-            return [
-                (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
-                for attachment in self.all_attachments
-            ]
-        elif event == 'payment_request':
-            if self.organization.iban:
-                qr_code = MIMEImage(self.get_qr_code())
-                qr_code.add_header('Content-ID', '<qr_code>')
-                return [qr_code]
-        return None
+        attachments = []
+
+        if event == 'payment_request' and self.organization.iban:
+            qr_code = MIMEImage(self.get_qr_code())
+            qr_code.add_header('Content-ID', '<qr_code>')
+            attachments.append(qr_code)
+
+        attachments += [
+            (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
+            for attachment in self.all_attachments
+            if f'registration_{event}' in attachment.events
+        ]
+        return attachments or None
 
 
 class QuestionsMixin:
@@ -1465,9 +1480,17 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     }
 
     def get_attachments(self, event):
+        attachments = []
+
         if event == 'received':
-            return [self.pdf_attachment]
-        return None
+            attachments.append(self.pdf_attachment)
+
+        attachments += [
+            (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
+            for attachment in self.registration.all_attachments
+            if f'payment_{event}' in attachment.events
+        ]
+        return attachments or None
 
     @cached_property
     def all_recipients(self):
