@@ -7,6 +7,7 @@ from io import BytesIO
 from itertools import chain
 from json import loads
 from os.path import basename
+from tempfile import NamedTemporaryFile
 
 import qrcode
 import trml2pdf
@@ -17,7 +18,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.dispatch import receiver
 from django.template.loader import select_template
-from django.urls import reverse_lazy as reverse
+from django.urls import reverse
 from django.utils import formats, timezone
 from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
@@ -139,6 +140,8 @@ class SubjectType(models.Model):
     )
     reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                         related_name='+', verbose_name=_('registration print setup'))
+    pr_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                       related_name='+', verbose_name=_('payment request print setup'))
     bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                          related_name='+', verbose_name=_('payment print setup'))
     organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
@@ -341,6 +344,9 @@ class Subject(models.Model):
     reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                         related_name='+', verbose_name=_('registration print setup'),
                                         help_text=_('Only use to set value specific for this subject.'))
+    pr_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                       related_name='+', verbose_name=_('payment request print setup'),
+                                       help_text=_('Only use to set value specific for this subject.'))
     bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                          related_name='+', verbose_name=_('payment print setup'),
                                          help_text=_('Only use to set value specific for this subject.'))
@@ -692,8 +698,11 @@ class PdfExportAndMailMixin(object):
             )
         ])
 
-    def get_context(self):
+    def get_context(self, event):
         return {
+            'event': event,
+            'pdf_filename': self.get_pdf_filename(event),
+            'print_setup': self.get_print_setup(event),
             'object': self,
             'site': LeprikonSite.objects.get_current(),
         }
@@ -710,7 +719,7 @@ class PdfExportAndMailMixin(object):
     def send_mail(self, event='received'):
         template_txt = self.select_template(event, 'txt')
         template_html = self.select_template(event, 'html')
-        context = self.get_context()
+        context = self.get_context(event)
         content_txt = template_txt.render(context)
         content_html = template_html.render(context)
         EmailMultiAlternatives(
@@ -723,29 +732,28 @@ class PdfExportAndMailMixin(object):
             attachments=self.get_attachments(event),
         ).send()
 
-    @cached_property
-    def pdf_filename(self):
+    def get_pdf_filename(self, event):
         return self.slug + '.pdf'
 
-    @cached_property
-    def pdf_attachment(self):
-        return (self.pdf_filename, self.get_pdf(), 'application/pdf')
+    def get_pdf_attachment(self, event):
+        return (self.get_pdf_filename(event), self.get_pdf(event), 'application/pdf')
 
-    def get_pdf(self):
+    def get_pdf(self, event):
         output = BytesIO()
-        self.write_pdf(output)
+        self.write_pdf(event, output)
         output.seek(0)
         return output.read()
 
-    def write_pdf(self, output):
+    def write_pdf(self, event, output):
         # get plain pdf from rml
-        template = self.select_template('pdf', 'rml')
-        rml_content = template.render(self.get_context())
+        template = self.select_template(event, 'rml')
+        rml_content = template.render(self.get_context(event))
         pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
+        print_setup = self.get_print_setup(event)
 
         # merge with background
-        if self.print_setup.background:
-            template_pdf = PdfFileReader(self.print_setup.background.file)
+        if print_setup.background:
+            template_pdf = PdfFileReader(print_setup.background.file)
             registration_pdf = PdfFileReader(BytesIO(pdf_content))
             writer = PdfFileWriter()
             # merge pages from both template and registration
@@ -809,6 +817,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     def get_edit_url(self):
         return reverse('admin:leprikon_{}_change'.format(self.subjectregistration._meta.model_name), args=(self.id,))
+
+    def get_payment_request_url(self):
+        return reverse('leprikon:registration_payment_request', args=(self.id, self.variable_symbol))
 
     @cached_property
     def subjectregistration(self):
@@ -989,6 +1000,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         else:
             return self.all_payments
 
+    def get_pdf_filename(self, event):
+        if event == 'payment_request':
+            return basename(self.get_payment_request_url())
+        return self.slug + '.pdf'
+
     def get_discounted(self, d=None):
         return sum(p.amount for p in self.get_discounts(d))
 
@@ -997,9 +1013,22 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     def get_qr_code(self):
         output = BytesIO()
-        qrcode.make(self.spayd, border=1).save(output)
+        self.write_qr_code(output)
         output.seek(0)
         return output.read()
+
+    def write_qr_code(self, output):
+        qrcode.make(self.spayd, border=1).save(output)
+
+    def write_pdf(self, event, output):
+        if event == 'payment_request':
+            with NamedTemporaryFile(buffering=0, suffix='.png') as qr_code_file:
+                self.write_qr_code(qr_code_file)
+                qr_code_file.flush()
+                self.qr_code_filename = qr_code_file.name
+                return super().write_pdf(event, output)
+        else:
+            return super().write_pdf(event, output)
 
     mail_subject_patterns = {
         'received': _('Registration for {subject_type} {subject}'),
@@ -1079,8 +1108,14 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         )
         self.save()
 
-    @cached_property
-    def print_setup(self):
+    def get_print_setup(self, event):
+        if event == 'payment_request':
+            return (
+                self.subject.pr_print_setup or
+                self.subject.subject_type.pr_print_setup or
+                LeprikonSite.objects.get_current().pr_print_setup or
+                PrintSetup()
+            )
         return (
             self.subject.reg_print_setup or
             self.subject.subject_type.reg_print_setup or
@@ -1095,6 +1130,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             qr_code = MIMEImage(self.get_qr_code())
             qr_code.add_header('Content-ID', '<qr_code>')
             attachments.append(qr_code)
+            attachments.append(self.get_pdf_attachment(event))
 
         attachments += [
             (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
@@ -1332,12 +1368,12 @@ class SubjectRegistrationBillingInfo(models.Model):
     registration = models.OneToOneField(SubjectRegistration, on_delete=models.CASCADE,
                                         related_name='billing_info', verbose_name=_('registration'))
     name = models.CharField(_('name'), max_length=150)
-    street = models.CharField(_('street'), max_length=150, blank=True, null=True)
-    city = models.CharField(_('city'), max_length=150, blank=True, null=True)
-    postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    company_num = models.CharField(_('company number'), max_length=8, blank=True, null=True)
-    vat_number = models.CharField(_('VAT number'), max_length=10, blank=True, null=True)
-    contact_person = models.CharField(_('contact person'), max_length=60, blank=True, null=True)
+    street = models.CharField(_('street'), max_length=150, blank=True, default='')
+    city = models.CharField(_('city'), max_length=150, blank=True, default='')
+    postal_code = PostalCodeField(_('postal code'), blank=True, default='')
+    company_num = models.CharField(_('company number'), max_length=8, blank=True, default='')
+    vat_number = models.CharField(_('VAT number'), max_length=12, blank=True, default='')
+    contact_person = models.CharField(_('contact person'), max_length=60, blank=True, default='')
     phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
     email = EmailField(_('email address'), blank=True, default='')
     employee = models.CharField(_('employee ID'), max_length=150, blank=True, default='')
@@ -1462,8 +1498,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     def slug(self):
         return '{}-{}'.format(self.registration.slug, self.id)
 
-    @cached_property
-    def print_setup(self):
+    def get_print_setup(self, event):
         return (
             self.registration.subject.bill_print_setup or
             self.registration.subject.subject_type.bill_print_setup or
@@ -1483,7 +1518,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         attachments = []
 
         if event == 'received':
-            attachments.append(self.pdf_attachment)
+            attachments.append(self.get_pdf_attachment('pdf'))
 
         attachments += [
             (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())

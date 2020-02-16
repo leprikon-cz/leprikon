@@ -1,6 +1,6 @@
 {% load i18n leprikon_tags qr_code %}
 
-{{ object.text_registration_payment_request|striptags }}
+{{ object.text_registration_payment_request }}
 
 {% include 'leprikon/registration_mail_details.html' %}
 {% for ps in object.payment_statuses %}{% if ps.amount_due %}
@@ -24,7 +24,7 @@
     {% trans 'Variable symbol' %}: {{ object.variable_symbol }}<br/>
 </p>
 <p>
-    {% trans 'Or You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
+    {% trans 'You may use following QR code to scan the payment details to your mobile banking application' %}:<br/>
     <img src="cid:qr_code"/>
 </p>
 {% endif %}

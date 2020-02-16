@@ -153,3 +153,7 @@ input.form-control[type="checkbox"] {
   border-color: #f3f3f3;
   border-top-color: #0a0;
 }
+
+.qrcode {
+    background: #fff;
+}

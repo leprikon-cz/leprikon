@@ -65,6 +65,7 @@ password_reset_complete = user.PasswordResetCompleteView.as_view()
 
 registration_list = login_required(registrations.RegistrationsListView.as_view())
 registration_pdf = login_required(subjects.SubjectRegistrationPdfView.as_view())
+registration_payment_request = login_required(subjects.SubjectRegistrationPaymentRequestView.as_view())
 registration_cancel = login_required(subjects.SubjectRegistrationCancelView.as_view())
 
 registration_link = registrationlink.RegistrationLinkView.as_view()

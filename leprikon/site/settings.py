@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_pays',
     'cms',
     'haystack',
+    'mathfilters',
     'menus',
     'multiselectfield',
     'sekizai',

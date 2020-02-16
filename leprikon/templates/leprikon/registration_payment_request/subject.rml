@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+{% load i18n html2rml leprikon_tags mathfilters %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{ pdf_filename }}">
+
+    <docinit>
+        <registerFont fontName="DejaVuSans" fontFile="{% font 'leprikon/fonts/DejaVuSans.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Bold" fontFile="{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Oblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-BoldOblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}"/>
+        <registerFontFamily normal="DejaVuSans" bold="DejaVuSans-Bold" italic="DejaVuSans-Oblique" boldItalic="DejaVuSans-BoldOblique"/>
+    </docinit>
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <pageTemplate id="main">
+            <frame id="first" x1="{{ print_setup.x1 }}" y1="{{ print_setup.y1 }}" width="{{ print_setup.width }}" height="{{ print_setup.height }}"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="DejaVuSans-Bold" fontSize="10"/>
+        <paraStyle name="small" fontName="DejaVuSans" fontSize="8" alignment="LEFT"/>
+        <paraStyle name="left" fontName="DejaVuSans" fontSize="10" alignment="LEFT"/>
+        <paraStyle name="center" fontName="DejaVuSans" fontSize="10" alignment="CENTER"/>
+        <paraStyle name="right" fontName="DejaVuSans" fontSize="10" alignment="RIGHT"/>
+        <paraStyle name="small-right" fontName="DejaVuSans" fontSize="8" alignment="RIGHT"/>
+        <blockTableStyle id="with-borders">
+            <blockFont name="DejaVuSans" size="10"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+            <lineStyle kind="GRID" colorName="silver"/>
+        </blockTableStyle>
+        <blockTableStyle id="without-borders">
+            <blockFont name="DejaVuSans" size="10"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+        </blockTableStyle>
+    </stylesheet>
+    <story>
+        <blockTable style="without-borders">
+            <tr>
+                <td><para style="title">{% trans 'Payment request' %}</para></td>
+                <td><para style="right">{% trans 'registration number' %}: {{ object.variable_symbol }}</para></td>
+            </tr>
+            <tr>
+                <td>
+                    <blockTable style="with-borders">
+                        <tr>
+                            <td>
+                                <para style="left">{% trans 'provider' %}:</para>
+                                <para style="title">{{ object.organization.name }}</para>
+                                <spacer length="2mm"/>
+                                <para style="left">{% trans 'address' %}:</para>
+                                <para style="left">{{ object.organization.street }}</para>
+                                <para style="left">{{ object.organization.postal_code }}, {{ object.organization.city }}</para>
+                                <spacer length="2mm"/>
+                                {% if object.organization.email %}<para style="left">{% trans 'email' %}: {{ object.organization.email }}</para>{% endif %}
+                                {% if object.organization.phone %}<para style="left">{% trans 'phone' %}: {{ object.organization.phone }}</para>{% endif %}
+                                {% if object.organization.email or object.organization.phone %}<spacer length="2mm"/>{% endif %}
+                                <para style="left">{% trans 'company number' %}: {{ object.organization.company_num }}</para>
+                                {% if object.organization.vat_number %}<para style="left">{% trans 'VAT number' %}: {{ object.organization.vat_number }}</para>{% endif %}
+                            </td>
+                        </tr>
+                    </blockTable>
+                </td>
+                <td>
+                    <blockTable style="with-borders">
+                        <tr>
+                            <td>
+                                <para style="left">{% trans 'payer' %}:</para>
+                                {% if object.billing_info %}
+                                <para style="title">{{ object.billing_info.name }}</para>
+                                <spacer length="2mm"/>
+                                {% if object.billing_info.street or object.billing_info.postal_code or object.billing_info.city %}
+                                <para style="left">{% trans 'address' %}:</para>
+                                <para style="left">{{ object.billing_info.street }}</para>
+                                <para style="left">{{ object.billing_info.postal_code }}, {{ object.billing_info.city }}</para>
+                                <spacer length="2mm"/>
+                                {% endif %}
+                                {% if object.billing_info.contact_person %}<para style="left">{% trans 'contact person' %}: {{ object.billing_info.contact_person }}</para>{% endif %}
+                                {% if object.billing_info.email %}<para style="left">{% trans 'email' %}: {{ object.billing_info.email }}</para>{% endif %}
+                                {% if object.billing_info.phone %}<para style="left">{% trans 'phone' %}: {{ object.billing_info.phone }}</para>{% endif %}
+                                {% if object.billing_info.contact_person or object.billing_info.email or object.billing_info.phone %}<spacer length="2mm"/>{% endif %}
+                                {% if object.billing_info.company_num %}<para style="left">{% trans 'company number' %}: {{ object.billing_info.company_num }}</para>{% endif %}
+                                {% if object.billing_info.vat_number %}<para style="left">{% trans 'VAT number' %}: {{ object.billing_info.vat_number }}</para>{% endif %}
+                                {% if object.billing_info.employee %}
+                                <spacer length="2mm"/>
+                                <para style="title">{% trans 'Employee ID' %}: {{ object.billing_info.employee }}</para>
+                                {% endif %}
+                                {% else %}
+                                <para style="title">{% if object.user.get_full_name %}{{ object.user.get_full_name }}{% else %}{{ object.user.username }}{% endif %}</para>
+                                <spacer length="15mm"/>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </blockTable>
+                </td>
+            </tr>
+        </blockTable>
+
+        <spacer length="2mm"/>
+
+        <blockTable colWidths="{{ print_setup.width|sub:94 }},70" style="with-borders">
+            <tr>
+                <td>
+                    <para style="small">{% trans 'description' %}</para>
+                </td>
+                <td>
+                    <para style="small-right">{% trans 'amount due' %}</para>
+                </td>
+            </tr>
+            {% for pps in object.courseregistration.period_payment_statuses %}{% if pps.status.amount_due %}
+            <tr>
+                <td>
+                    <para style="left">
+                        {{ object.subject.subject_type.name }}: {{ object.subject.name }}, {{ pps.period.name }}<br/>
+                        {% if object.subject.registration_type_participants %}
+                            {% if object.registration.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                            {{ object.all_participants|comma_separated }}
+                        {% elif object.subject.registration_type_groups %}
+                            {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
+                            {% trans 'group name' %}: {{ object.group.name }}{% endif %}
+                        {% endif %}
+                    </para>
+                </td>
+                <td>
+                    <para style="right">{{ pps.status.amount_due | currency }}</para>
+                </td>
+            </tr>
+            {% endif %}{% endfor %}
+            {% for ps in object.eventregistration.payment_statuses %}{% if ps.amount_due %}
+            <tr>
+                <td>
+                    <para style="left">
+                        {{ object.subject.subject_type.name }}: {{ object.subject.name }}<br/>
+                        {% if object.subject.registration_type_participants %}
+                            {% if object.registration.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                            {{ object.all_participants|comma_separated }}
+                        {% elif object.subject.registration_type_groups %}
+                            {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
+                            {% trans 'group name' %}: {{ object.group.name }}{% endif %}
+                        {% endif %}
+                    </para>
+                </td>
+                <td>
+                    <para style="right">{{ ps.amount_due | currency }}</para>
+                </td>
+            </tr>
+            {% endif %}{% endfor %}
+        </blockTable>
+
+        <spacer length="2mm"/>
+
+        <blockTable style="without-borders">
+            <tr>
+                <td>
+                    <spacer length="2mm"/>
+                    <para style="small">{% trans 'You may use following QR code to scan the payment details to your mobile banking application' %}:</para>
+                    <illustration width="130" height="130">
+                        <image file="{{ object.qr_code_filename }}" x="15" y="15" width="100" height="100"/>
+                    </illustration>
+                </td>
+                <td>
+                    <blockTable style="with-borders">
+                        <tr>
+                            <td>
+                                <blockTable style="without-borders">
+                                    <tr>
+                                        <td>
+                                            <para style="right">{% trans 'total amount due' %}:</para>
+                                        </td>
+                                        <td>
+                                            <para style="title">{{ object.payment_status_sum.amount_due|currency }}</para>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <para style="right">{% trans 'variable symbol' %}:</para>
+                                        </td>
+                                        <td>
+                                            <para style="title">{{ object.variable_symbol }}</para>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <para style="right">{% trans 'bank account' %}:</para>
+                                        </td>
+                                        <td>
+                                            <para style="title">{{ object.organization.bank_account }}</para>
+                                        </td>
+                                    </tr>
+                                </blockTable>
+                            </td>
+                        </tr>
+                    </blockTable>
+                </td>
+            </tr>
+        </blockTable>
+    </story>
+</document>

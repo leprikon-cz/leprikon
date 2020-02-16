@@ -38,10 +38,12 @@ class LeprikonSiteManager(models.Manager):
 class LeprikonSite(Site):
     organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
                                      related_name='+', verbose_name=_('default organization'))
-    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                         related_name='+', verbose_name=_('default bill print setup'))
     reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
                                         related_name='+', verbose_name=_('default registration print setup'))
+    pr_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                       related_name='+', verbose_name=_('default payment request print setup'))
+    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
+                                         related_name='+', verbose_name=_('default bill print setup'))
     user_agreement = HTMLField(_('user agreement'), blank=True, default='')
     user_agreement_changed = models.DateTimeField(_('last time user agreement changed'), blank=True, null=True)
     registration_agreements = models.ManyToManyField(

@@ -8,15 +8,16 @@ from django.utils.translation import ugettext_lazy as _
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
-class PdfExportAdminMixin(object):
+class PdfExportAdminMixin:
     actions = ('export_pdf',)
+    pdf_event = 'pdf'
 
     def export_pdf(self, request, queryset):
         # create PDF
         writer = PdfFileWriter()
         for obj in queryset.iterator():
             pdf_data = BytesIO()
-            obj.write_pdf(pdf_data)
+            obj.write_pdf(self.pdf_event, pdf_data)
             pdf_data.seek(0)
             pdf = PdfFileReader(pdf_data)
             for i in range(pdf.getNumPages()):
@@ -47,10 +48,10 @@ class PdfExportAdminMixin(object):
 
         # create PDF response object
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.pdf_filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.pdf_event))
 
         # write PDF to response
-        return obj.write_pdf(response)
+        return obj.write_pdf(self.pdf_event, response)
 
     def download_tag(self, obj):
         return '<a href="{}">PDF</a>'.format(reverse(

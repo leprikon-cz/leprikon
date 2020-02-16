@@ -20,7 +20,7 @@ from .generic import (
 )
 
 
-class SubjectTypeMixin(object):
+class SubjectTypeMixin:
     _models = {
         SubjectType.COURSE: Course,
         SubjectType.EVENT: Event,
@@ -198,7 +198,7 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegi
     pass
 
 
-class UserRegistrationMixin(object):
+class UserRegistrationMixin:
     model = SubjectRegistration
 
     def get_queryset(self):
@@ -214,18 +214,22 @@ class UserRegistrationMixin(object):
         ]
 
 
-class SubjectRegistrationPdfView(UserRegistrationMixin, DetailView):
+class PDFMixin:
+    event = 'pdf'
 
     def get(self, request, *args, **kwargs):
-        # get registration
-        registration = self.get_object()
-
-        # create PDF response object
+        obj = self.get_object()
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(registration.pdf_filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.event))
+        return obj.write_pdf(self.event, response)
 
-        # create basic pdf registration from rml template
-        return registration.write_pdf(response)
+
+class SubjectRegistrationPdfView(PDFMixin, UserRegistrationMixin, DetailView):
+    pass
+
+
+class SubjectRegistrationPaymentRequestView(PDFMixin, UserRegistrationMixin, DetailView):
+    event = 'payment_request'
 
 
 class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
@@ -249,7 +253,7 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
             self.object.refuse()
 
 
-class UserPaymentMixin(object):
+class UserPaymentMixin:
     model = SubjectPayment
 
     def get_queryset(self):
@@ -266,14 +270,5 @@ class SubjectPaymentsListView(UserPaymentMixin, ListView):
         return _('Payments')
 
 
-class SubjectPaymentPdfView(UserPaymentMixin, DetailView):
-    def get(self, request, *args, **kwargs):
-        # get payment
-        payment = self.get_object()
-
-        # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(payment.pdf_filename)
-
-        # create basic pdf payment from rml template
-        return payment.write_pdf(response)
+class SubjectPaymentPdfView(PDFMixin, UserPaymentMixin, DetailView):
+    pass

@@ -23,6 +23,7 @@ django-ganalytics==0.7.0
 django-haystack==2.7.0
 django-js-asset==1.2.2    # via django-mptt
 django-localflavor==1.6.2
+django-mathfilters==1.0.0
 django-mptt==0.11.0       # via django-filer
 django-multiselectfield==0.1.11
 django-pays==0.1.0

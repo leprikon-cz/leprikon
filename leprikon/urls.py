@@ -55,6 +55,8 @@ urlpatterns = [
     d_url(r'^{leader}/(?P<subject_type>[^/]+)/(?P<pk>[0-9]+)/{registrations}/$', 'subject_registrations'),
 
     d_url(r'^{registrations}/$', 'registration_list'),
+    d_url(r'^{registrations}/(?P<pk>[^/]+)/{payment_request}-(?P<variable_symbol>[0-9]+).pdf$',
+          'registration_payment_request'),
     d_url(r'^{registrations}/(?P<pk>[^/]+)/(?P<slug>[^.]+).pdf$', 'registration_pdf'),
     d_url(r'^{registrations}/(?P<pk>[^/]+)/{cancel}/$', 'registration_cancel'),
 
