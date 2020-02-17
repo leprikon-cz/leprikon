@@ -12,10 +12,12 @@
 <div class="row">
     <label class="col-sm-4">{% trans 'Payments status' %}:</label>
     <div class="col-sm-8">
+        {% if reg.payment_status_sum.amount_due %}
         <a class="btn btn-primary btn-xs right" href="{{ reg.get_payment_request_url }}">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             {% trans 'payment request' %}
         </a>
+        {% endif %}
         <div class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#payments-{{ reg.id }}-details">
             <strong style="color: {{ reg.payment_status_sum.color }}">{{ reg.payment_status_sum.title }}</strong>
         </div>
