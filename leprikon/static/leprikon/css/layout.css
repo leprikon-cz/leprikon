@@ -69,7 +69,7 @@ html {
     margin-left: 15px;
 }
 
-.box-header a.btn {
+.box-header .btn {
     float: right;
     margin-left: 5px;
 }

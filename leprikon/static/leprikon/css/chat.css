@@ -1,0 +1,68 @@
+#chat-modal {
+}
+
+#chat-modal .modal-dialog {
+    position: fixed;
+    width: 100%;
+    top: 45px;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#chat-modal .container {
+    height: 100%;
+}
+
+#chat-modal .box {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#chat-modal .box-header {
+    flex: 0 1 auto;
+}
+
+#chat-modal .box-header .btn {
+    float: right;
+}
+
+#chat-modal .box-content {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-online,
+a.chat-online:visited {
+    color: #0a0;
+}
+
+a.chat-online:active,
+a.chat-online:focus,
+a.chat-online:hover,
+button.chat-online:active,
+button.chat-online:focus,
+button.chat-online:hover {
+    color: #0b0;
+}
+
+.chat-alert,
+a.chat-alert:visited {
+    color: #e00;
+}
+
+a.chat-alert:active,
+a.chat-alert:focus,
+a.chat-alert:hover,
+button.chat-alert:active,
+button.chat-alert:focus,
+button.chat-alert:hover {
+    color: #f00;
+}

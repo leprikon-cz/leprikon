@@ -19,6 +19,7 @@ django-pays
 django-qr-code
 django-staticfiles-downloader
 django-template-admin
+django-user-unique-email
 django-verified-email-field
 djangocms-googlemap
 djangocms-link
@@ -33,8 +34,10 @@ mysqlclient
 psycopg2-binary
 pyexcel-xlsxw
 pyicu
+pymongo
 python-memcached
 requests
+rocketchat-api
 sentry-sdk
 social-auth-app-django
 uwsgi

@@ -7,6 +7,7 @@ from .models.leprikonsite import LeprikonSite
 from .models.roles import Leader
 from .models.schoolyear import SchoolYear
 from .models.useragreement import UserAgreement
+from .rocketchat import get_rc_id, rc_logout
 
 
 class school_year(object):
@@ -64,7 +65,7 @@ class LeprikonMiddleware(object):
         # check user agreement
         if (
             request.leprikon_site.user_agreement_changed and
-            request.user.is_authenticated() and
+            request.user.is_authenticated and
             not request.session.get('user_agreement_ok')
         ):
             if UserAgreement.objects.filter(
@@ -83,7 +84,7 @@ class LeprikonMiddleware(object):
                 )
 
         # check user email
-        if request.user.is_authenticated() and not request.user.email:
+        if request.user.is_authenticated and not request.user.email:
             if request.path not in (
                 self.user_email_url,
                 self.user_login_url,
@@ -96,10 +97,21 @@ class LeprikonMiddleware(object):
                 )
 
         # set session expiry
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.is_staff:
                 request.session.set_expiry(settings.SESSION_STAFF_COOKIE_AGE)
             else:
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
 
-        return self.get_response(request)
+        response = self.get_response(request)
+
+        if 'rc_uid' in request.COOKIES and (
+            not request.user.is_authenticated or
+            request.COOKIES['rc_uid'] != get_rc_id(request.user)
+        ):
+            rc_logout(
+                auth_token=request.COOKIES['rc_token'],
+                user_id=request.COOKIES['rc_uid'],
+            )
+
+        return response

@@ -1,14 +1,20 @@
-{% if rocketchat_url %}
 <!-- Start of Rocket.Chat Livechat Script -->
-<script type="text/javascript">
+<script defer="defer" async="async" type="text/javascript">
 (function(w, d, s, u) {
     w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
     var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
-    j.async = true; j.src = '{{ rocketchat_url }}/packages/rocketchat_livechat/assets/rocket-livechat.js';
+    j.async = true; j.src = '{{ rocketchat_url }}/livechat/rocketchat-livechat.min.js';
     h.parentNode.insertBefore(j, h);
 })(window, document, 'script', '{{ rocketchat_url }}/livechat');
+{% if user.is_authenticated %}
+RocketChat(function() {
+    if (!JSON.parse(localStorage.getItem('store')).user) {
+        this.registerGuest({
+            name: '{{ user.get_full_name }}',
+            email: '{{ user.email }}',
+        });
+    }
+});
+{% endif %}
 </script>
 <!-- End of Rocket.Chat Livechat Script -->
-{% elif DEBUG %}
-<!-- Rocket.Chat Livechat Script could not be rendered due to missing ROCKETCHAT_URL setting -->
-{% endif %}

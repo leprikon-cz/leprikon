@@ -1,0 +1,152 @@
+{% load i18n %}
+<!-- Rocket.Chat -->
+{% if user.is_authenticated %}
+<button id="chat-button" type="button" class="btn btn-default" data-toggle="modal" data-target="#chat-modal" aria-label="{% trans 'Open chat' %}">
+    <b id="chat-unread"></b>
+    <i class="glyphicon glyphicon-comment" aria-hidden="true"></i>
+</button>
+<div class="modal fade in" id="chat-modal" tabindex="-1" role="dialog" aria-labelledby="chat-modal-label" aria-hidden="true" style="">
+  <div class="modal-dialog" role="document">
+    <div class="container">
+      <div class="box">
+        <div class="box-header">
+          <strong id="chat-modal-label">{% trans 'Messages' %}</strong>
+          <button type="button" class="btn btn-primary btn-xs" data-dismiss="modal" aria-label="{% trans 'Close chat' %}">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <iframe id="chat-iframe" class="box-content"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script defer="defer" async="async" type="text/javascript">
+
+$('#chat-modal').on('show.bs.modal', function (e) {
+    localStorage.removeItem('localforage/subscriptions');
+    document.getElementById('chat-iframe').src = '{{ rocketchat_url }}';
+})
+
+$('#chat-modal').on('hidden.bs.modal', function (e) {
+    document.getElementById('chat-iframe').src = '';
+})
+
+var RC_Connect = function(websocketUrl, userId, loginToken) {
+    var rcButton = $('#chat-button');
+    var rcUnread = document.getElementById('chat-unread');
+
+    var ws = new WebSocket(websocketUrl);
+
+    var methods = {
+        connect: JSON.stringify({
+            'msg': 'connect',
+            'version': '1',
+            'support': ['1']
+        }),
+        login: JSON.stringify({
+            msg: 'method',
+            method: 'login',
+            id: 'login',
+            params: [{'resume': loginToken}]
+        }),
+        subscriptions: JSON.stringify({
+            msg: 'method',
+            method: 'subscriptions/get',
+            id: 'subscriptions'
+        }),
+        subscribe: JSON.stringify({
+            'msg': 'sub',
+            'id': userId + '-subscribe',
+            'name': 'stream-notify-user',
+            'params': [
+                userId + '/subscriptions-changed',
+                false
+            ]
+        })
+    };
+
+    var resultHandlers = {
+        login: function(result) {
+            ws.send(methods.subscribe);
+            ws.send(methods.subscriptions);
+        },
+        subscriptions: function(result) {
+            stat = result.filter(function (s) {
+                return s.open;
+            }).map(function (s) {
+                return {
+                    unread: (s.unread || 0) + (s.userMentions || 0) + (s.groupMentions || 0),
+                    alert: s.alert
+                };
+            }).reduce(function (sum, value) {
+                return {
+                    unread: sum.unread + value.unread,
+                    alert: sum.alert || value.alert
+                };
+            }, {unread: 0, alert: false});
+            if (stat.unread) {
+                rcUnread.innerHTML = '' + stat.unread;
+            } else {
+                rcUnread.innerHTML = '';
+            }
+            if (stat.alert) {
+                rcButton.addClass('chat-alert');
+                rcButton.removeClass('chat-online');
+            } else {
+                rcButton.addClass('chat-online');
+                rcButton.removeClass('chat-alert');
+            }
+        }
+    };
+
+    var messageHandlers = {
+        connected: function() { ws.send(methods.login); },
+        ping: function() { ws.send(JSON.stringify({msg: 'pong'})); },
+        result: function(message) {
+            resultHandler = resultHandlers[message.id];
+            if (resultHandler) resultHandler(message.result);
+        },
+        changed: function() {
+            ws.send(methods.subscriptions);
+        }
+    }
+
+    ws.onopen = function() {
+        ws.send(methods.connect);
+    };
+
+    ws.onmessage = function (evt) {
+        var message = JSON.parse(evt.data);
+        console.log('Message is received.');
+        console.dir(message);
+        messageHandler = messageHandlers[message.msg]
+        if (messageHandler) messageHandler(message);
+    };
+
+    ws.onclose = function() {
+        rcButton.removeClass('chat-online');
+        rcButton.removeClass('chat-alert');
+    };
+};
+
+var loginToken = localStorage.getItem('Meteor.loginToken:/:/_chat');
+var userId = localStorage.getItem('Meteor.userId:/:/_chat');
+var websocketUrl = '{{ websocket_url }}';
+if (userId === '{{ user_id }}' && loginToken) RC_Connect(websocketUrl, userId, loginToken);
+else $.getJSON('{% url 'leprikon:api:rocketchat' %}', function(result) {
+    loginToken = result.loginToken;
+    userId = '{{ user_id }}';
+    localStorage.setItem('Meteor.loginToken:/:/_chat', loginToken);
+    localStorage.setItem('Meteor.userId:/:/_chat', userId);
+    RC_Connect(websocketUrl, userId, loginToken);
+});
+
+</script>
+{% else %}
+<script type = "text/javascript">
+localStorage.removeItem('Meteor.loginToken:/:/_chat');
+localStorage.removeItem('Meteor.userId:/:/_chat');
+</script>
+{% endif %}
+<!-- Rocket.Chat End -->

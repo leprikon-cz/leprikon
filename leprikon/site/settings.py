@@ -24,10 +24,11 @@ DATA_DIR = os.environ.get('DATA_DIR', os.path.join(BASE_DIR, 'data'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', os.environ.get('DEBUG'))
 if not SECRET_KEY:
+    from string import ascii_letters, digits, punctuation
     from django.utils.crypto import get_random_string
     SECRET_KEY = get_random_string(
-        50,
-        'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)',
+        64,
+        ascii_letters + digits + punctuation,
     )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -42,6 +43,7 @@ ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split('
 # Application definition
 
 INSTALLED_APPS = [
+    'user_unique_email',
     'leprikon.site',
     'leprikon',
     'bankreader',
@@ -78,6 +80,7 @@ INSTALLED_APPS = [
     'ganalytics',
     'html2rml',
     'qr_code',
+    'rocketchat_API',
     'social_django',
     'verified_email_field',
 ]
@@ -217,6 +220,12 @@ if DATABASES['default']['ENGINE'].endswith('mysql'):
 LEPRIKON_DOMAIN = os.environ.get('LEPRIKON_DOMAIN')
 LEPRIKON_URL = os.environ.get('LEPRIKON_URL', LEPRIKON_DOMAIN and f'https://{LEPRIKON_DOMAIN}')
 
+# RocketChat API
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/rocketchat')
+ROCKETCHAT_API_URL = os.environ.get('ROCKETCHAT_API_URL', 'http://localhost:3000/_chat')
+LEPRIKON_CHAT_NAME = os.environ.get('LEPRIKON_CHAT_NAME', 'Leprikón')
+LEPRIKON_CHAT_USERNAME = os.environ.get('LEPRIKON_CHAT_USERNAME', 'leprikon')
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -235,6 +244,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ] if not DEBUG else []
 
+# Custom User model
+AUTH_USER_MODEL = 'user_unique_email.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -401,9 +412,6 @@ for key, value in os.environ.items():
         HAYSTACK_CONNECTIONS['default'][key[len('HAYSTACK_'):]] = value
 if HAYSTACK_CONNECTIONS['default']['ENGINE'] == 'haystack.backends.whoosh_backend.WhooshEngine':
     HAYSTACK_CONNECTIONS['default'].setdefault('PATH', os.path.join(DATA_DIR, 'whoosh_index'))
-
-# Rocket.Chat URL
-ROCKETCHAT_URL = os.environ.get('ROCKETCHAT_URL')
 
 # Google Analytics configuration
 GANALYTICS_TRACKING_CODE = os.environ.get('GANALYTICS_TRACKING_CODE')

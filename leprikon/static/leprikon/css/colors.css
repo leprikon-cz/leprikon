@@ -141,12 +141,32 @@ input.form-control[type="checkbox"] {
     background-color: #277616;
 }
 
-.green {
+.green,
+a.green:visited {
     color: #0a0;
 }
 
-.red {
+a.green:active,
+a.green:focus,
+a.green:hover,
+button.green:active,
+button.green:focus,
+button.green:hover {
+    color: #0b0;
+}
+
+.red,
+a.red:visited {
     color: #e00;
+}
+
+a.red:active,
+a.red:focus,
+a.red:hover,
+button.red:active,
+button.red:focus,
+button.red:hover {
+    color: #f00;
 }
 
 .loader {
