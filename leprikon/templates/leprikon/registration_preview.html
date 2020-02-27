@@ -1,9 +1,9 @@
 {% load i18n leprikon_tags %}
-<div class="box box-registration" name="{{ reg.slug }}">
+<div class="box box-registration">
     <div class="box-header">
         <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.subject.name }}{% if reg.canceled %}</s>{% endif %}</strong>
         <small>({% trans 'registration number' %}: {{ reg.variable_symbol }})</small>
-        <a class="btn btn-primary btn-xs" href="{{ reg.get_absolute_url }}">
+        <a class="btn btn-primary btn-xs" href="{{ reg.get_absolute_url }}" name="{{ reg.slug }}">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             {% trans 'download' %}
         </a>
