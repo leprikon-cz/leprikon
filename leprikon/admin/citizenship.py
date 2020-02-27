@@ -5,5 +5,5 @@ from ..models.citizenship import Citizenship
 
 @admin.register(Citizenship)
 class CitizenshipAdmin(admin.ModelAdmin):
-    list_display = ('name', 'order')
-    list_editable = ('order',)
+    list_display = ('name', 'order', 'require_birth_num')
+    list_editable = ('order', 'require_birth_num')

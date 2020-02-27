@@ -339,7 +339,7 @@ class Migration(migrations.Migration):
                 ('school_other', models.CharField(blank=True, default='', max_length=150, verbose_name='other school')),
                 ('school_class', models.CharField(blank=True, default='', max_length=30, verbose_name='class')),
                 ('health', models.TextField(blank=True, default='', verbose_name='health')),
-                ('gender', models.CharField(choices=[('m', 'male'), ('f', 'female')], editable=False, max_length=1, verbose_name='gender')),
+                ('gender', models.CharField(choices=[('m', 'male / boy'), ('f', 'female / girl')], editable=False, max_length=1, verbose_name='gender')),
                 ('age_group', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.AgeGroup', verbose_name='age group')),
                 ('insurance', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='leprikon.Insurance', verbose_name='insurance')),
             ],

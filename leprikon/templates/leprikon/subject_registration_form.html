@@ -87,12 +87,18 @@
 
         {% include 'leprikon/form_item.html' with item=participant_form.first_name %}
         {% include 'leprikon/form_item.html' with item=participant_form.last_name %}
+        {% include 'leprikon/form_item.html' with item=participant_form.citizenship %}
+        <div id="{{ participant_form.prefix }}-birth_num" class="hidden">
         {% include 'leprikon/form_item.html' with item=participant_form.birth_num %}
+        </div>
+        <div id="{{ participant_form.prefix }}-birth_date" class="hidden">
+        {% include 'leprikon/form_item.html' with item=participant_form.birth_date %}
+        {% include 'leprikon/form_item.html' with item=participant_form.gender %}
+        </div>
         {% include 'leprikon/form_item.html' with item=participant_form.age_group %}
         {% include 'leprikon/form_item.html' with item=participant_form.street %}
         {% include 'leprikon/form_item.html' with item=participant_form.city %}
         {% include 'leprikon/form_item.html' with item=participant_form.postal_code %}
-        {% include 'leprikon/form_item.html' with item=participant_form.citizenship %}
         <div id="{{ participant_form.prefix }}-contact" class="hidden">
             {% include 'leprikon/form_item.html' with item=participant_form.phone %}
             {% include 'leprikon/form_item.html' with item=participant_form.email %}
@@ -251,15 +257,26 @@
 
 <script type="text/javascript">
 
-function getAge(birthNum) {
+function getBirthDate(birthNum) {
     birthNum = birthNum.replace("/","");
     y = parseInt(birthNum.substr(0, 2));
     year = (birthNum.length == 10 ? 1900 : 1800) + (y < 54 ? 100 : 0) + y;
     month = parseInt(birthNum.substr(2, 2)) % 50 % 20;
     day = parseInt(birthNum.substr(4, 2));
-    today = new Date();
-    return today.getFullYear() - year - (new Date(today.getFullYear(), month-1, day) > today ? 1 : 0)
+    return new Date(year, month-1, day);
 }
+
+function getAge(birthDate) {
+    today = new Date();
+    birthDay = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
+    return today.getFullYear() - birthDate.getFullYear() - (birthDay > today ? 1 : 0)
+}
+
+{% for participant_form in form.participants_formset %}{% if forloop.first %}
+var citizenship_requires_birth_num = {{% for citizenship in participant_form.all_citizenships %}
+    {{ citizenship.id }}: {% if citizenship.require_birth_num %}true{% else %}false{% endif %},{% endfor %}
+};
+{% endif %}{% endfor %}
 
 var age_group_requires_school = {{% for age_group in form.instance.subject.all_age_groups %}
     {{ age_group.id }}: {% if age_group.require_school %}true{% else %}false{% endif %},{% endfor %}
@@ -300,12 +317,14 @@ $(document).ready(function() {
         if (this.value == 'new') {
             $('#id_{{ participant_form.prefix }}-first_name').val('');
             $('#id_{{ participant_form.prefix }}-last_name').val('');
+            $('#id_{{ participant_form.prefix }}-citizenship').val('').change();
             $('#id_{{ participant_form.prefix }}-birth_num').val('').change();
+            $('#id_{{ participant_form.prefix }}-birth_date').val('');
+            $('#id_{{ participant_form.prefix }}-gender').val('');
             $('#id_{{ participant_form.prefix }}-age_group').val('').change();
             $('#id_{{ participant_form.prefix }}-street').val('');
             $('#id_{{ participant_form.prefix }}-city').val('');
             $('#id_{{ participant_form.prefix }}-postal_code').val('');
-            $('#id_{{ participant_form.prefix }}-citizenship').val('');
             $('#id_{{ participant_form.prefix }}-phone').val('');
             $('#id_{{ participant_form.prefix }}-email').val('');
             $('#id_{{ participant_form.prefix }}-school').val('').change();
@@ -315,12 +334,14 @@ $(document).ready(function() {
         }{% for participant in participant_form.user_participants %} else if (this.value == {{ participant.id }}) {
             $('#id_{{ participant_form.prefix }}-first_name').val('{{ participant.first_name | escapejs }}');
             $('#id_{{ participant_form.prefix }}-last_name').val('{{ participant.last_name | escapejs }}');
+            $('#id_{{ participant_form.prefix }}-citizenship').val('{{ participant.citizenship_id }}').change();
             $('#id_{{ participant_form.prefix }}-birth_num').val('{{ participant.birth_num | escapejs }}').change();
+            $('#id_{{ participant_form.prefix }}-birth_date').val('{{ participant.birth_date | escapejs }}').change();
+            $('#id_{{ participant_form.prefix }}-gender').val('{{ participant.gender | escapejs }}');
             $('#id_{{ participant_form.prefix }}-age_group').val('{{ participant.age_group_id }}').change();
             $('#id_{{ participant_form.prefix }}-street').val('{{ participant.street | escapejs }}');
             $('#id_{{ participant_form.prefix }}-city').val('{{ participant.city | escapejs }}');
             $('#id_{{ participant_form.prefix }}-postal_code').val('{{ participant.postal_code | escapejs }}');
-            $('#id_{{ participant_form.prefix }}-citizenship').val('{{ participant.citizenship_id }}');
             $('#id_{{ participant_form.prefix }}-phone').val('{{ participant.phone | escapejs }}');
             $('#id_{{ participant_form.prefix }}-email').val('{{ participant.email | escapejs }}');
             $('#id_{{ participant_form.prefix }}-school').val('{% if participant.school_other %}other{% else %}{{ participant.school_id }}{% endif %}').change();
@@ -384,9 +405,26 @@ $(document).ready(function() {
         }{% endfor %}
     });
 
+    /* Set callback on citizenship change */
+    $('#id_{{ participant_form.prefix }}-citizenship').change(function() {
+        if (this.value) {
+            toggle_section(citizenship_requires_birth_num[this.value], '{{ participant_form.prefix }}-birth_num', true);
+            toggle_section(!citizenship_requires_birth_num[this.value], '{{ participant_form.prefix }}-birth_date', true);
+        }
+    });
+    $('#id_{{ participant_form.prefix }}-citizenship').trigger('change');
+
     /* Set callback on birth number change */
     $('#id_{{ participant_form.prefix }}-birth_num').change(function() {
-        age = getAge(this.value);
+        birthDate = getBirthDate(this.value);
+        $('#id_{{ participant_form.prefix }}-birth_date').data('DateTimePicker').date(birthDate);
+    });
+
+    /* Set callback on birth number change */
+    $('#id_{{ participant_form.prefix }}-birth_date').on('dp.change', function(event) {
+        age = getAge(event.date._d);
+        console.log('age');
+        console.dir(age);
         child = !isNaN(age) && age < 18;
         adult = isNaN(age) || age >= 18;
         toggle_section(adult, '{{ participant_form.prefix }}-contact', true);
@@ -458,4 +496,5 @@ $(document).ready(function() {
 </script>
 {% endaddtoblock %}
 
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
 {% endblock %}

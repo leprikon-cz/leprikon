@@ -1499,12 +1499,12 @@ msgstr ""
 msgid "gender"
 msgstr ""
 
-#: models/roles.py:174 models/subjects.py:840
-msgid "male"
+#: models/roles.py:165 models/subjects.py:1189
+msgid "male / boy"
 msgstr ""
 
-#: models/roles.py:174 models/subjects.py:840
-msgid "female"
+#: models/roles.py:165 models/subjects.py:1189
+msgid "female / girl"
 msgstr ""
 
 #: models/roles.py:178 models/subjects.py:882 models/subjects.py:905

@@ -12,6 +12,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.agegroup import AgeGroup
+from ..models.citizenship import Citizenship
 from ..models.courses import Course, CourseRegistration
 from ..models.department import Department
 from ..models.events import Event, EventRegistration
@@ -25,7 +26,7 @@ from ..models.subjects import (
     SubjectRegistrationGroup, SubjectRegistrationGroupMember,
     SubjectRegistrationParticipant, SubjectType,
 )
-from ..utils import get_age, get_birth_date
+from ..utils import get_age, get_birth_date, get_gender
 from .fields import AgreementBooleanField
 from .form import FormMixin
 from .widgets import RadioSelectBootstrap
@@ -186,7 +187,7 @@ class SubjectAdminForm(FormMixin, forms.ModelForm):
 
 class SchoolMixin:
     def _add_error_required(self, field_name):
-        self.add_error(field_name, forms.ValidationError(
+        self.add_error(field_name, ValidationError(
             self.fields[field_name].error_messages['required'],
             code='required',
         ))
@@ -220,21 +221,103 @@ class SchoolMixin:
         return self.cleaned_data
 
 
-class BirthNumberMixin:
+class RegistrationParticipantFormMixin:
     def clean_birth_num(self):
-        qs = SubjectRegistrationParticipant.objects.filter(
-            registration__subject_id=self.subject.id,
-            registration__canceled=None,
-            birth_num=self.cleaned_data['birth_num'],
-        )
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise ValidationError(_('Participant with this birth number has already been registered.'))
+        if self.cleaned_data['birth_num']:
+            qs = SubjectRegistrationParticipant.objects.filter(
+                registration__subject_id=self.subject.id,
+                registration__canceled=None,
+                birth_num=self.cleaned_data['birth_num'],
+            )
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise ValidationError(_('Participant with this birth number has already been registered.'))
         return self.cleaned_data['birth_num']
 
+    def _setup_required_fields(self):
+        self.all_citizenships = list(Citizenship.objects.all())
 
-class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, forms.ModelForm):
+        # set default values
+        created_date = date.today()
+        age = None
+        citizenship = self.all_citizenships[0]
+
+        # try to use values from existing object (update)
+        try:
+            created_date = self.obj.created.date()
+            age = get_age(self.instance.birth_date, created_date)
+            citizenship = self.instance.citizenship
+        except AttributeError:
+            pass
+
+        prefix = self.prefix + '-'
+        data = {
+            key[len(prefix):]: value
+            for key, value in self.data.items()
+            if key.startswith(prefix)
+        }
+
+        if data:
+            # try to use citizenship from request data (post)
+            try:
+                citizenship = self.fields['citizenship'].clean(data.get('citizenship'))
+            except ValidationError:
+                pass
+
+        # set required field based on citizenship
+        if citizenship.require_birth_num:
+            self.hide_birth_num = False
+            self.fields['birth_num'].required = True
+            self.fields['birth_date'].required = False
+            self.fields['gender'].required = False
+        else:
+            self.hide_birth_num = True
+            self.fields['birth_num'].required = False
+            self.fields['birth_date'].required = True
+            self.fields['gender'].required = True
+
+        if data:
+            # try to use age from request data (post)
+            try:
+                if citizenship.require_birth_num:
+                    age = get_age(
+                        get_birth_date(self.fields['birth_num'].clean(data.get('birth_num'))),
+                        created_date,
+                    )
+                else:
+                    age = get_age(self.fields['birth_date'].clean(data.get('birth_date')), created_date)
+            except ValidationError:
+                pass
+
+        # set required field based on age
+        if age is not None and age < 18:
+            self.hide_parents = False
+            self.fields['has_parent1'].required = True
+        else:
+            self.hide_parents = True
+            self.fields['phone'].required = True
+            self.fields['email'].required = True
+
+        # set required field based on has_parentX
+        if data:
+            has_parent = ['has_parent1' in data, 'has_parent2' in data]
+        else:
+            has_parent = [self.instance.has_parent1, self.instance.has_parent2] if self.instance else [False, False]
+        for n in range(2):
+            if has_parent[n]:
+                for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
+                    self.fields['parent{}_{}'.format(n + 1, field)].required = True
+
+    def _set_birth_date_gender(self):
+        if self.instance.citizenship.require_birth_num:
+            self.instance.birth_date = get_birth_date(self.instance.birth_num)
+            self.instance.gender = get_gender(self.instance.birth_num)
+        else:
+            self.instance.birth_num = None
+
+
+class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, SchoolMixin, forms.ModelForm):
     x_group = 'age_group'
 
     school = forms.ChoiceField(
@@ -259,33 +342,7 @@ class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, form
         if School.objects.count() == 0:
             self.fields['school'].initial = 'other'
 
-        # prepare data
-        prefix = self.prefix + '-'
-        data = {
-            key[len(prefix):]: value
-            for key, value in kwargs.get('data', {}).items()
-            if key.startswith(prefix)
-        }
-
-        # dynamically required fields
-        try:
-            age = get_age(get_birth_date(data['birth_num']))
-        except Exception:
-            age = None
-
-        if age is not None and age < 18:
-            self.hide_parents = False
-            self.fields['has_parent1'].required = True
-        else:
-            self.hide_parents = True
-            self.fields['phone'].required = True
-            self.fields['email'].required = True
-
-        has_parent = ['has_parent1' in data, 'has_parent2' in data]
-        for n in range(2):
-            if has_parent[n]:
-                for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                    self.fields['parent{}_{}'.format(n + 1, field)].required = True
+        self._setup_required_fields()
 
         class ParticipantSelectForm(FormMixin, forms.Form):
             participant = forms.ChoiceField(
@@ -347,23 +404,22 @@ class RegistrationParticipantForm(FormMixin, BirthNumberMixin, SchoolMixin, form
         # set answers
         self.instance.answers = dumps(self.questions_form.cleaned_data)
 
+        # set birth date and gender
+        self._set_birth_date_gender()
+
         # create
         super().save(commit)
 
         # save / update participant
         if self.participant_select_form.cleaned_data['participant'] == 'new':
-            try:
-                participant = Participant.objects.get(
-                    user=self.instance.registration.user,
-                    birth_num=self.instance.birth_num,
-                )
-            except Participant.DoesNotExist:
-                participant = Participant()
-                participant.user = self.instance.registration.user
+            participant = Participant()
+            participant.user = self.instance.registration.user
         else:
             participant = Participant.objects.get(id=self.participant_select_form.cleaned_data['participant'])
-        for attr in ['first_name', 'last_name', 'birth_num', 'age_group', 'street', 'city', 'postal_code',
-                     'citizenship', 'phone', 'email', 'school', 'school_other', 'school_class', 'health']:
+        for attr in [
+            'first_name', 'last_name', 'birth_num', 'birth_date', 'gender', 'age_group', 'street', 'city',
+            'postal_code', 'citizenship', 'phone', 'email', 'school', 'school_other', 'school_class', 'health',
+        ]:
             setattr(participant, attr, getattr(self.instance, attr))
         participant.save()
 
@@ -720,7 +776,7 @@ class RegistrationAdminForm(forms.ModelForm):
 
 class SchoolAdminMixin:
     def _add_error_required(self, field_name):
-        self.add_error(field_name, forms.ValidationError(
+        self.add_error(field_name, ValidationError(
             self.fields[field_name].error_messages['required'],
             code='required',
         ))
@@ -745,7 +801,7 @@ class SchoolAdminMixin:
         return self.cleaned_data
 
 
-class RegistrationParticipantAdminForm(BirthNumberMixin, SchoolAdminMixin, forms.ModelForm):
+class RegistrationParticipantAdminForm(RegistrationParticipantFormMixin, SchoolAdminMixin, forms.ModelForm):
     x_group = 'age_group'
 
     def __init__(self, data=None, *args, **kwargs):
@@ -761,32 +817,14 @@ class RegistrationParticipantAdminForm(BirthNumberMixin, SchoolAdminMixin, forms
         for q in questions:
             self.fields['q_' + q.name].initial = answers.get(q.name)
 
-        created_date = self.obj.created.date() if self.obj else date.today()
-        try:
-            age = get_age(get_birth_date(data['birth_num']), created_date)
-        except Exception:
-            age = get_age(get_birth_date(instance.birth_num), created_date) if instance else None
-        if age is not None:
-            if age < 18:
-                self.fields['has_parent1'].required = True
-            else:
-                self.fields['phone'].required = True
-                self.fields['email'].required = True
-
-        try:
-            has_parent = ['has_parent1' in data, 'has_parent2' in data]
-        except TypeError:
-            has_parent = [instance.has_parent1, instance.has_parent2] if instance else [False, False]
-        for n in range(2):
-            if has_parent[n]:
-                for field in ['first_name', 'last_name', 'street', 'city', 'postal_code', 'phone', 'email']:
-                    self.fields['parent{}_{}'.format(n + 1, field)].required = True
+        self._setup_required_fields()
 
     def save(self, commit=True):
         self.instance.answers = dumps({
             q.name: self.cleaned_data['q_' + q.name]
             for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
         })
+        self._set_birth_date_gender()
         return super().save(commit)
 
 

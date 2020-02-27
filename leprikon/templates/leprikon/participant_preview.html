@@ -2,7 +2,7 @@
 <div class="box box-participant">
     <div class="box-header">
         <strong>{{ object.full_name }}</strong>
-        <small>({{ object.birth_num }})</small>
+        <small>({{ object.birth_date }})</small>
         <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:participant_update' object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}

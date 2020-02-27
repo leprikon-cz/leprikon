@@ -140,57 +140,42 @@ class Parent(models.Model):
 
 
 class Participant(models.Model):
+    MALE = 'm'
+    FEMALE = 'f'
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                              related_name='leprikon_participants', verbose_name=_('user'))
     age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT,
                                   related_name='+', verbose_name=_('age group'))
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
-    birth_num = BirthNumberField(_('birth number'))
+    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('citizenship'))
+    birth_num = BirthNumberField(_('birth number'), blank=True, null=True)
+    birth_date = models.DateField(_('birth date'))
+    gender = models.CharField(_('gender'), max_length=1,
+                              choices=((MALE, _('male / boy')), (FEMALE, _('female / girl'))))
     street = models.CharField(_('street'), max_length=150)
     city = models.CharField(_('city'), max_length=150)
     postal_code = PostalCodeField(_('postal code'))
     email = EmailField(_('email address'), blank=True, default='')
     phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('citizenship'))
     school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
                                related_name='participants', verbose_name=_('school'))
     school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
     school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
     health = models.TextField(_('health'), blank=True, default='')
-    MALE = 'm'
-    FEMALE = 'f'
-    gender = models.CharField(_('gender'), max_length=1, editable=False,
-                              choices=((MALE, _('male')), (FEMALE, _('female'))))
 
     class Meta:
         app_label = 'leprikon'
         verbose_name = _('participant')
         verbose_name_plural = _('participants')
-        unique_together = (('user', 'birth_num'),)
 
     def __str__(self):
-        return _('{first_name} {last_name} ({birth_num})').format(
+        return _('{first_name} {last_name} ({birth_date})').format(
             first_name=self.first_name,
             last_name=self.last_name,
-            birth_num=self.birth_num,
+            birth_date=self.birth_date,
         )
-
-    def validate_unique(self, exclude=None):
-        try:
-            # perform the all unique checks, do not exclude anything
-            super(Participant, self).validate_unique(None)
-        except ValidationError:
-            # The only unique constraint is on birth_num and user.
-            # Let's use nice birth_num related message instead of the default one.
-            raise ValidationError(
-                message={'birth_num': _('You have already entered participant with this birth number')},
-            )
-
-    def save(self, *args, **kwargs):
-        self.gender = self.birth_num[2:4] > '50' and self.FEMALE or self.MALE
-        super(Participant, self).save(*args, **kwargs)
 
     @cached_property
     def full_name(self):

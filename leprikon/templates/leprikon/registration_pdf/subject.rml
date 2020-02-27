@@ -104,10 +104,17 @@
                     <td>{% trans 'Age group' %}</td>
                     <td><para style="para">{{ p.age_group }}</para></td>
                 </tr>
+                {% if p.birth_num %}
                 <tr>
                     <td>{% trans 'Birth number' %}</td>
                     <td><para style="para">{{ p.birth_num }}</para></td>
                 </tr>
+                {% else %}
+                <tr>
+                    <td>{% trans 'Birth date' %}</td>
+                    <td><para style="para">{{ p.birth_date }}</para></td>
+                </tr>
+                {% endif %}
                 <tr>
                     <td>{% trans 'Address' %}</td>
                     <td><para style="para">{{ p.address }}</para></td>

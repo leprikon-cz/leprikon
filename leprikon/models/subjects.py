@@ -35,7 +35,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
 from ..utils import (
-    comma_separated, currency, get_birth_date, lazy_paragraph as paragraph,
+    FEMALE, MALE, comma_separated, currency, lazy_paragraph as paragraph,
     localeconv, spayd,
 )
 from .agegroup import AgeGroup
@@ -1183,20 +1183,19 @@ class SchoolMixin:
 class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
     registration = models.ForeignKey(SubjectRegistration, on_delete=models.CASCADE,
                                      related_name='participants', verbose_name=_('registration'))
-    MALE = 'm'
-    FEMALE = 'f'
-    gender = models.CharField(_('gender'), max_length=1, editable=False,
-                              choices=((MALE, _('male')), (FEMALE, _('female'))))
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
-    birth_num = BirthNumberField(_('birth number'))
+    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('citizenship'))
+    birth_num = BirthNumberField(_('birth number'), blank=True, null=True)
+    birth_date = models.DateField(_('birth date'))
+    gender = models.CharField(_('gender'), max_length=1,
+                              choices=((MALE, _('male / boy')), (FEMALE, _('female / girl'))))
     age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT,
                                   related_name='+', verbose_name=_('age group'))
     street = models.CharField(_('street'), max_length=150)
     city = models.CharField(_('city'), max_length=150)
     postal_code = PostalCodeField(_('postal code'))
-    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('citizenship'))
     phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
     email = EmailField(_('email address'), blank=True, default='')
 
@@ -1233,6 +1232,7 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         verbose_name_plural = _('participants')
 
     def __str__(self):
+        return self.full_name
         return '{full_name} ({birth_year})'.format(
             full_name=self.full_name,
             birth_year=self.birth_date.year,
@@ -1266,7 +1266,6 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         return recipients
 
     def save(self, *args, **kwargs):
-        self.gender = self.birth_num[2:4] > '50' and self.FEMALE or self.MALE
         if not self.has_parent1:
             if self.has_parent2:
                 self.parent1_first_name = self.parent2_first_name
@@ -1294,11 +1293,7 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
             self.parent2_postal_code = None
             self.parent2_phone = None
             self.parent2_email = None
-        super(SubjectRegistrationParticipant, self).save(*args, **kwargs)
-
-    @cached_property
-    def birth_date(self):
-        return get_birth_date(self.birth_num)
+        super().save(*args, **kwargs)
 
     class Parent(PersonMixin):
         def __init__(self, registration, role):

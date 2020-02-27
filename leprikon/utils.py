@@ -16,6 +16,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from .conf import settings
 
+MALE = 'm'
+FEMALE = 'f'
+
 
 def _get_localeconv():
     """
@@ -133,6 +136,10 @@ def url_with_back(url, url_back):
 
 def reverse_with_back(request, *args, **kwargs):
     return url_with_back(reverse(*args, **kwargs), current_url(request))
+
+
+def get_gender(birth_num):
+    return FEMALE if birth_num[2:4] > '50' else MALE
 
 
 def get_birth_date(birth_num):
