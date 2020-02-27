@@ -5,6 +5,7 @@ from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import smart_text
+from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
@@ -174,7 +175,7 @@ class Participant(models.Model):
         return _('{first_name} {last_name} ({birth_date})').format(
             first_name=self.first_name,
             last_name=self.last_name,
-            birth_date=self.birth_date,
+            birth_date=date_format(self.birth_date, 'SHORT_DATE_FORMAT'),
         )
 
     @cached_property
