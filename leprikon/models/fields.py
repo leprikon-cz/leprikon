@@ -81,6 +81,10 @@ def validate_birth_num(value):
         )
 
 
+class BirthNumberFormField(forms.CharField):
+    default_validators = [validate_birth_num]
+
+
 class BirthNumberField(models.CharField):
     default_validators = [validate_birth_num]
 
@@ -96,6 +100,10 @@ class BirthNumberField(models.CharField):
     def clean(self, value, model_instance):
         value = super(BirthNumberField, self).clean(value, model_instance)
         return value if value[6] == '/' else '{}/{}'.format(value[:6], value[6:])
+
+    def formfield(self, **kwargs):
+        kwargs.setdefault('form_class', BirthNumberFormField)
+        return super().formfield(**kwargs)
 
 
 class _PostalCodeField(CZPostalCodeField, forms.CharField):
