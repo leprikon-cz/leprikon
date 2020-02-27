@@ -1232,7 +1232,6 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         verbose_name_plural = _('participants')
 
     def __str__(self):
-        return self.full_name
         return '{full_name} ({birth_year})'.format(
             full_name=self.full_name,
             birth_year=self.birth_date.year,
