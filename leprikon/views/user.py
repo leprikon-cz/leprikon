@@ -98,7 +98,7 @@ class UserEmailView(UserUpdateView):
 class UserPasswordView(auth_views.PasswordChangeView):
     template_name = 'leprikon/password.html'
     form_class = UserPasswordForm
-    post_change_redirect = reverse_lazy('leprikon:summary')
+    success_url = reverse_lazy('leprikon:summary')
 
     def get_context_data(self, **kwargs):
         kwargs.update({
