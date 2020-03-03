@@ -336,7 +336,7 @@ $(document).ready(function() {
             $('#id_{{ participant_form.prefix }}-last_name').val('{{ participant.last_name | escapejs }}');
             $('#id_{{ participant_form.prefix }}-citizenship').val('{{ participant.citizenship_id }}').change();
             $('#id_{{ participant_form.prefix }}-birth_num').val('{{ participant.birth_num | escapejs }}').change();
-            $('#id_{{ participant_form.prefix }}-birth_date').val('{{ participant.birth_date | escapejs }}').change();
+            $('#id_{{ participant_form.prefix }}-birth_date').data('DateTimePicker').date({{ participant.birth_date|jsdate }})
             $('#id_{{ participant_form.prefix }}-gender').val('{{ participant.gender | escapejs }}');
             $('#id_{{ participant_form.prefix }}-age_group').val('{{ participant.age_group_id }}').change();
             $('#id_{{ participant_form.prefix }}-street').val('{{ participant.street | escapejs }}');
@@ -423,8 +423,6 @@ $(document).ready(function() {
     /* Set callback on birth number change */
     $('#id_{{ participant_form.prefix }}-birth_date').on('dp.change', function(event) {
         age = getAge(event.date._d);
-        console.log('age');
-        console.dir(age);
         child = !isNaN(age) && age < 18;
         adult = isNaN(age) || age >= 18;
         toggle_section(adult, '{{ participant_form.prefix }}-contact', true);

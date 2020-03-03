@@ -57,6 +57,14 @@ def lines(value):
         return []
 
 
+@register.filter
+def jsdate(d):
+    try:
+        return f'new Date({d.year},{d.month-1},{d.day})'
+    except AttributeError:
+        return 'undefined'
+
+
 @register.simple_tag
 def param_back():
     return settings.LEPRIKON_PARAM_BACK
