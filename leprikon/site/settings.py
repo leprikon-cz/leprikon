@@ -207,7 +207,8 @@ if DATABASES['default']['ENGINE'].endswith('mysql'):
     }
 
 # Leprikon URL
-LEPRIKON_URL = os.environ.get('LEPRIKON_URL')
+LEPRIKON_DOMAIN = os.environ.get('LEPRIKON_DOMAIN')
+LEPRIKON_URL = os.environ.get('LEPRIKON_URL', LEPRIKON_DOMAIN and f'https://{LEPRIKON_DOMAIN}')
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

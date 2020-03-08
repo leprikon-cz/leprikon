@@ -19,11 +19,13 @@ services:
       EMAIL_HOST_USER: leprikon
       EMAIL_HOST_PASSWORD: EMAIL_HOST_PASSWORD
       EMAIL_SUBJECT_PREFIX: '[Leprikón]'
+      LEPRIKON_DOMAIN: example.leprikon.cz
       MEMCACHED_LOCATION: memcached:11211
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
       SUPERVISORD_RUN: 'nginx uwsgi'
     ports:
-      - 127.0.0.1:80:80
+      - 80:80
+      - 443:443
     volumes:
       - ./data:/app/data
       - ./media:/app/htdocs/media

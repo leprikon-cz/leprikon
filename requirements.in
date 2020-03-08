@@ -1,6 +1,8 @@
 # Requirements of leprikon
 Django<2
 PyPDF2
+certbot
+certbot-nginx
 cmsplugin-filer
 django-bankreader
 django-cms<3.7
