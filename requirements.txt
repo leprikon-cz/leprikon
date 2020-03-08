@@ -9,13 +9,13 @@ backcall==0.1.0           # via ipython
 certifi==2019.11.28       # via requests, sentry-sdk
 chardet==3.0.4            # via requests
 cmsplugin-filer==1.1.3
-decorator==4.4.1          # via ipython, traitlets
+decorator==4.4.2          # via ipython, traitlets
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 django-appconf==1.0.3     # via cmsplugin-filer
 django-bankreader==0.6.1
 django-classy-tags==1.0.0  # via django-cms, django-sekizai
 django-cms==3.6.0
-django-countries==5.5
+django-countries==6.0
 django-excel==0.0.10
 django-filer==1.5.0
 django-formtools==2.2     # via django-cms
@@ -25,7 +25,7 @@ django-js-asset==1.2.2    # via django-mptt
 django-localflavor==1.6.2
 django-mathfilters==1.0.0
 django-mptt==0.11.0       # via django-filer
-django-multiselectfield==0.1.11
+django-multiselectfield==0.1.12
 django-pays==0.1.0
 django-polymorphic==2.0.3  # via django-filer
 django-qr-code==1.1.0
@@ -34,38 +34,38 @@ django-staticfiles-downloader==0.1.5
 django-template-admin==1.1.1
 django-treebeard==4.3.1   # via django-cms
 django-verified-email-field==1.6.1
-django==1.11.27
+django==1.11.29
 djangocms-admin-style==1.5.0  # via django-cms
 djangocms-attributes-field==1.2.0  # via cmsplugin-filer, djangocms-link, djangocms-style, djangocms-video
-djangocms-googlemap==1.3.0
+djangocms-googlemap==1.4.0
 djangocms-link==2.5.0
-djangocms-snippet==2.2.0
-djangocms-style==2.2.0
-djangocms-text-ckeditor==3.8.0
-djangocms-video==2.2.0
+djangocms-snippet==2.3.0
+djangocms-style==2.3.0
+djangocms-text-ckeditor==3.9.0
+djangocms-video==2.3.0
 easy-thumbnails==2.7      # via cmsplugin-filer, django-filer
 html2rml==0.3.0
 html5lib==1.0.1           # via djangocms-text-ckeditor
-idna==2.8                 # via requests
+idna==2.9                 # via requests
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.11.1
+ipython==7.13.0
 jedi==0.16.0              # via ipython
 lml==0.0.9                # via pyexcel, pyexcel-io
-lxml==4.4.2
+lxml==4.5.0
 mysqlclient==1.4.6
 oauthlib==3.1.0           # via requests-oauthlib, social-auth-core
-parso==0.6.0              # via jedi
+parso==0.6.2              # via jedi
 pexpect==4.8.0            # via ipython
 pickleshare==0.7.5        # via ipython
 pillow==7.0.0             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
-prompt-toolkit==3.0.3     # via ipython
+prompt-toolkit==3.0.4     # via ipython
 psycopg2-binary==2.8.4
 ptyprocess==0.6.0         # via pexpect
 pyexcel-io==0.5.20        # via pyexcel, pyexcel-xlsxw
 pyexcel-webio==0.1.4      # via django-excel
 pyexcel-xlsxw==0.4.2
 pyexcel==0.5.15           # via django-excel, pyexcel-webio
-pygments==2.5.2           # via ipython
+pygments==2.6.1           # via ipython
 pyicu==2.4.2
 pyjwt==1.7.1              # via social-auth-core
 pypdf2==1.26.0
@@ -75,9 +75,9 @@ pytz==2019.3              # via django, django-staticfiles-downloader
 qrcode==6.1               # via django-qr-code
 reportlab==3.5.34
 requests-oauthlib==1.3.0  # via social-auth-core
-requests==2.22.0
-sentry-sdk==0.14.1
-six==1.14.0               # via django-appconf, django-classy-tags, django-countries, django-sekizai, html5lib, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
+requests==2.23.0
+sentry-sdk==0.14.2
+six==1.14.0               # via django-appconf, django-classy-tags, django-sekizai, html5lib, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0
 social-auth-core==3.2.0   # via social-auth-app-django
 texttable==1.6.2          # via pyexcel
