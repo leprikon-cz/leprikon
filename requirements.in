@@ -7,6 +7,7 @@ cmsplugin-filer
 django-bankreader
 django-cms<3.7
 django-countries
+django-cron
 django-excel
 django-filer<1.6
 django-ganalytics

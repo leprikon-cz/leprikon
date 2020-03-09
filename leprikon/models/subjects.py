@@ -1,7 +1,7 @@
 import colorsys
 import logging
 from collections import OrderedDict, namedtuple
-from datetime import datetime, time
+from datetime import date, datetime, time
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
@@ -1044,8 +1044,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 self.canceled = None
                 self.approved = timezone.now()
                 self.save()
+                due_from = self.get_due_from()
                 self.send_mail('approved')
-                if self.payment_requested is None:
+                if due_from <= date.today() and (
+                    self.payment_requested is None or self.payment_requested.date() < due_from
+                ):
                     self.request_payment()
         else:
             raise ValidationError((
@@ -1056,9 +1059,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     def request_payment(self):
         with transaction.atomic():
-            if self.payment_requested is None:
-                self.payment_requested = timezone.now()
-                self.save()
+            self.payment_requested = timezone.now()
+            self.save()
             if self.payment_status_sum.amount_due:
                 self.send_mail('payment_request')
 

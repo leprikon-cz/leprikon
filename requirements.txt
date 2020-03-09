@@ -23,7 +23,9 @@ django-appconf==1.0.3     # via cmsplugin-filer
 django-bankreader==0.6.1
 django-classy-tags==1.0.0  # via django-cms, django-sekizai
 django-cms==3.6.0
+django-common-helpers==0.9.2  # via django-cron
 django-countries==6.0
+django-cron==0.5.1
 django-excel==0.0.10
 django-filer==1.5.0
 django-formtools==2.2     # via django-cms

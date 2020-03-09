@@ -96,6 +96,9 @@ class EventRegistration(SubjectRegistration):
         verbose_name = _('event registration')
         verbose_name_plural = _('event registrations')
 
+    def get_due_from(self):
+        return self.subject.event.due_from
+
     def get_payment_status(self, d=None):
         if d is None:
             d = date.today()

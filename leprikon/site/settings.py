@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'django_cron',
     'django_pays',
     'cms',
     'haystack',
@@ -99,6 +100,12 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'leprikon.middleware.LeprikonMiddleware',
 ]
+
+CRON_CLASSES = [
+    'leprikon.cronjobs.SendPaymentRequest',
+]
+
+CRON_SEND_PAYMENT_REQUEST_TIME = os.environ.get('CRON_SEND_PAYMENT_REQUEST_TIME', '8:00')
 
 ROOT_URLCONF = os.environ.get('ROOT_URLCONF', 'leprikon.site.urls')
 

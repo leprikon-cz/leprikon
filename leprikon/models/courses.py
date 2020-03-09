@@ -175,6 +175,16 @@ class CourseRegistration(SubjectRegistration):
 
     PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
 
+    def get_due_from(self):
+        today = date.today()
+        past_due_froms = [
+            period.due_from for period in self.all_periods
+            if period.due_from < today
+        ]
+        return max(past_due_froms) if past_due_froms else min(
+            period.due_from for period in self.all_periods
+        )
+
     def get_period_payment_statuses(self, d=None):
         if d is None:
             d = date.today()
