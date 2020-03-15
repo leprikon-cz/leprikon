@@ -27,7 +27,6 @@ RUN apt-get update \
     libmysqlclient20 \
     libpython3.6 \
     mariadb-client \
-    memcached \
     nginx \
     postgresql-client \
     python3-pip \
