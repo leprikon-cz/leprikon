@@ -8,7 +8,8 @@
 })(window, document, 'script', '{{ rocketchat_url }}/livechat');
 {% if user.is_authenticated %}
 RocketChat(function() {
-    if (!JSON.parse(localStorage.getItem('store')).user) {
+    var store = localStorage.getItem('store')
+    if (!store || !JSON.parse(store).user) {
         this.registerGuest({
             name: '{{ user.get_full_name }}',
             email: '{{ user.email }}',
