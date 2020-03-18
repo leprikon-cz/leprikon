@@ -98,9 +98,11 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
     def get_urls(self):
         urls = super(UserAdmin, self).get_urls()
         login_as_view = self.admin_site.admin_view(permission_required('auth.change_user')(self.login_as))
-        return [
-            urls_url(r'(?P<user_id>\d+)/login-as/$', login_as_view, name='auth_user_login_as'),
-        ] + urls
+        return [urls_url(
+            r'(?P<user_id>\d+)/login-as/$',
+            login_as_view,
+            name=f'{User._meta.app_label}_{User._meta.model_name}_login_as',
+        )] + urls
 
     def login_as(self, request, user_id):
         if request.user.is_superuser:
@@ -113,7 +115,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def login_as_link(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url=reverse('admin:auth_user_login_as', args=[obj.id]),
+            url=reverse(f'admin:{User._meta.app_label}_{User._meta.model_name}_login_as', args=[obj.id]),
             text=_('login')
         ) if not obj.is_staff and not obj.is_superuser else ''
     login_as_link.allow_tags = True
@@ -121,7 +123,7 @@ class UserAdmin(SendMessageAdminMixin, _UserAdmin):
 
     def login_as_link_superuser(self, obj):
         return '<a href="{url}">{text}</a>'.format(
-            url=reverse('admin:auth_user_login_as', args=[obj.id]),
+            url=reverse(f'admin:{User._meta.app_label}_{User._meta.model_name}_login_as', args=[obj.id]),
             text=_('login')
         )
     login_as_link_superuser.allow_tags = True

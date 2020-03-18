@@ -79,7 +79,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
 
     def user_link(self, obj):
         return '<a href="{url}">{user}</a>'.format(
-            url=reverse('admin:auth_user_change', args=(obj.user.id,)),
+            url=reverse(f'admin:{obj.user._meta.app_label}_{obj.user._meta.model_name}_change', args=(obj.user.id,)),
             user=obj.user,
         )
     user_link.allow_tags = True
