@@ -4,7 +4,7 @@ import string
 import unicodedata
 import zlib
 from datetime import date
-from urllib.parse import urlencode
+from urllib.parse import parse_qs, urlencode
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, transaction
@@ -131,6 +131,16 @@ def url_back(request):
 
 
 def url_with_back(url, url_back):
+    try:
+        query = url_back.split('?')[1]
+    except IndexError:
+        pass
+    else:
+        try:
+            # try to reuse original back url
+            url_back = parse_qs(query)[settings.LEPRIKON_PARAM_BACK][0]
+        except KeyError:
+            pass
     return '{}?{}'.format(url, urlencode({settings.LEPRIKON_PARAM_BACK: iri_to_uri(url_back)}))
 
 
