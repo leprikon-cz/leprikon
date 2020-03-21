@@ -26,6 +26,7 @@ from ..models.subjects import (
     SubjectRegistrationGroup, SubjectRegistrationGroupMember,
     SubjectRegistrationParticipant, SubjectType,
 )
+from ..models.targetgroup import TargetGroup
 from ..utils import get_age, get_birth_date, get_gender
 from .fields import AgreementBooleanField
 from .form import FormMixin
@@ -43,6 +44,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     leaders = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
     places = forms.ModelMultipleChoiceField(queryset=None, label=_('Place'), required=False)
     age_groups = forms.ModelMultipleChoiceField(queryset=None, label=_('Age group'), required=False)
+    target_groups = forms.ModelMultipleChoiceField(queryset=None, label=_('Target group'), required=False)
     days_of_week = forms.MultipleChoiceField(label=_('Day of week'),
                                              choices=tuple(sorted(DAY_OF_WEEK.items())), required=False)
     past = forms.BooleanField(label=_('Include past subjects'), required=False)
@@ -101,6 +103,10 @@ class SubjectFilterForm(FormMixin, forms.Form):
         if self.fields['age_groups'].queryset.count() <= 1:
             del self.fields['age_groups']
 
+        self.fields['target_groups'].queryset = TargetGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        if self.fields['target_groups'].queryset.count() <= 1:
+            del self.fields['target_groups']
+
         if subject_type_type != SubjectType.COURSE:
             del self.fields['days_of_week']
         if subject_type_type != SubjectType.EVENT:
@@ -134,6 +140,8 @@ class SubjectFilterForm(FormMixin, forms.Form):
             qs = qs.filter(leaders__in=self.cleaned_data['leaders'])
         if self.cleaned_data.get('age_groups'):
             qs = qs.filter(age_groups__in=self.cleaned_data['age_groups'])
+        if self.cleaned_data.get('target_groups'):
+            qs = qs.filter(target_groups__in=self.cleaned_data['target_groups'])
         if self.cleaned_data.get('days_of_week'):
             qs = qs.filter(times__day_of_week__in=self.cleaned_data['days_of_week'])
         if self.subject_type_type == SubjectType.EVENT and not self.cleaned_data['past']:
@@ -463,7 +471,7 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # choices for age group
+        # choices for target group
         self.fields['target_group'].widget.choices.queryset = self.subject.target_groups
         if self.subject.target_groups.count() == 1:
             self.fields['target_group'].initial = self.subject.target_groups.first()

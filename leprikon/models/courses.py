@@ -21,6 +21,7 @@ from .startend import StartEndMixin
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
 )
+from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year
 
 
@@ -87,6 +88,7 @@ class Course(Subject):
         new.times.set(old.times.all())
         new.groups.set(old.groups.all())
         new.age_groups.set(old.age_groups.all())
+        new.target_groups.set(old.target_groups.all())
         new.leaders.set(old.leaders.all())
         new.questions.set(old.questions.all())
         new.attachments.set(old.attachments.all())
@@ -325,6 +327,8 @@ class CourseListPlugin(CMSPlugin):
                                           help_text=_('Keep empty to skip searching by course types.'))
     age_groups = models.ManyToManyField(AgeGroup, blank=True, related_name='+', verbose_name=_('age groups'),
                                         help_text=_('Keep empty to skip searching by age groups.'))
+    target_groups = models.ManyToManyField(TargetGroup, blank=True, related_name='+', verbose_name=_('target groups'),
+                                           help_text=_('Keep empty to skip searching by target groups.'))
     groups = models.ManyToManyField(SubjectGroup, blank=True, related_name='+', verbose_name=_('course groups'),
                                     help_text=_('Keep empty to skip searching by groups.'))
     leaders = models.ManyToManyField(Leader, blank=True, related_name='+', verbose_name=_('leaders'),
@@ -342,6 +346,7 @@ class CourseListPlugin(CMSPlugin):
         self.course_types.set(oldinstance.course_types.all())
         self.groups.set(oldinstance.groups.all())
         self.age_groups.set(oldinstance.age_groups.all())
+        self.target_groups.set(oldinstance.target_groups.all())
         self.leaders.set(oldinstance.leaders.all())
 
     @cached_property
@@ -353,12 +358,16 @@ class CourseListPlugin(CMSPlugin):
         return list(self.course_types.all())
 
     @cached_property
+    def all_groups(self):
+        return list(self.groups.all())
+
+    @cached_property
     def all_age_groups(self):
         return list(self.age_groups.all())
 
     @cached_property
-    def all_groups(self):
-        return list(self.groups.all())
+    def all_target_groups(self):
+        return list(self.target_groups.all())
 
     @cached_property
     def all_leaders(self):
@@ -377,6 +386,8 @@ class CourseListPlugin(CMSPlugin):
             courses = courses.filter(subject_type__in=self.all_course_types)
         if self.all_age_groups:
             courses = courses.filter(age_groups__in=self.all_age_groups)
+        if self.all_target_groups:
+            courses = courses.filter(target_groups__in=self.all_target_groups)
         if self.all_leaders:
             courses = courses.filter(leaders__in=self.all_leaders)
         if self.all_groups:

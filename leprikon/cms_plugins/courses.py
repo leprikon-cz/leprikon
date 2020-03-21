@@ -21,7 +21,7 @@ class LeprikonCoursePlugin(LeprikonPluginBase):
 class LeprikonCourseListPlugin(LeprikonPluginBase):
     name = _('Course list')
     model = CourseListPlugin
-    filter_horizontal = ('age_groups', 'groups', 'leaders')
+    filter_horizontal = ('age_groups', 'target_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
         return 'leprikon/cms/course_list/%s.html' % instance.template

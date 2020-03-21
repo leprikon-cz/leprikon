@@ -21,7 +21,6 @@ class LeprikonLeaderPlugin(LeprikonPluginBase):
 class LeprikonLeaderListPlugin(LeprikonPluginBase):
     name = _('Leader list')
     model = LeaderListPlugin
-    filter_horizontal = ('age_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
         return 'leprikon/cms/leader_list/%s.html' % instance.template

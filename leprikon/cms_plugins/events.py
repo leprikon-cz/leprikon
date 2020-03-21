@@ -21,7 +21,7 @@ class LeprikonEventPlugin(LeprikonPluginBase):
 class LeprikonEventListPlugin(LeprikonPluginBase):
     name = _('Event list')
     model = EventListPlugin
-    filter_horizontal = ('age_groups', 'groups', 'leaders')
+    filter_horizontal = ('age_groups', 'target_groups', 'groups', 'leaders')
 
     def get_render_template(self, context, instance, placeholder):
         return 'leprikon/cms/event_list/%s.html' % instance.template
