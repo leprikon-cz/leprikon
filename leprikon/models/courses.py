@@ -338,11 +338,11 @@ class CourseListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.departments = oldinstance.departments.all()
-        self.course_types = oldinstance.course_types.all()
-        self.groups = oldinstance.groups.all()
-        self.age_groups = oldinstance.age_groups.all()
-        self.leaders = oldinstance.leaders.all()
+        self.departments.set(oldinstance.departments.all())
+        self.course_types.set(oldinstance.course_types.all())
+        self.groups.set(oldinstance.groups.all())
+        self.age_groups.set(oldinstance.age_groups.all())
+        self.leaders.set(oldinstance.leaders.all())
 
     @cached_property
     def all_departments(self):
@@ -408,7 +408,7 @@ class FilteredCourseListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.course_types = oldinstance.course_types.all()
+        self.course_types.set(oldinstance.course_types.all())
 
     @cached_property
     def all_course_types(self):

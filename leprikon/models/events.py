@@ -172,11 +172,11 @@ class EventListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.departments = oldinstance.departments.all()
-        self.event_types = oldinstance.event_types.all()
-        self.groups = oldinstance.groups.all()
-        self.age_groups = oldinstance.age_groups.all()
-        self.leaders = oldinstance.leaders.all()
+        self.departments.set(oldinstance.departments.all())
+        self.event_types.set(oldinstance.event_types.all())
+        self.groups.set(oldinstance.groups.all())
+        self.age_groups.set(oldinstance.age_groups.all())
+        self.leaders.set(oldinstance.leaders.all())
 
     @cached_property
     def all_departments(self):
@@ -242,7 +242,7 @@ class FilteredEventListPlugin(CMSPlugin):
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.event_types = oldinstance.event_types.all()
+        self.event_types.set(oldinstance.event_types.all())
 
     @cached_property
     def all_event_types(self):
