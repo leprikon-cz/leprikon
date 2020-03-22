@@ -1,0 +1,7 @@
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
+
+{% for orderable in orderables %}
+
+{% include 'leprikon/orderable_preview.html' %}
+
+{% endfor %}

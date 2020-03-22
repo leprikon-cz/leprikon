@@ -3,14 +3,14 @@
 
 {% block content %}
 
-<h1>{% block title %}{% blocktrans with name=course.name %}Registrations for {{ course.subject_type.name_akuzativ }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
+<h1>{% block title %}{% blocktrans with subject_type=course.subject_type.name_akuzativ name=course.name %}Registrations for {{ subject_type }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
 
 <h2>{% trans 'Active Registrations' %}</h2>
 
 {% for reg in course.all_approved_registrations %}
 {% include 'leprikon/registration_details.html' with reg=reg.courseregistration %}
 {% empty %}
-<p>{% trans 'There are no active registrations for this course.' %}</p>
+<p>{% blocktrans with subject_type=course.subject_type.name_akuzativ %}There are no active registrations for this {{ subject_type }}.{% endblocktrans %}</p>
 {% endfor %}
 
 {% if course.all_unapproved_registrations %}

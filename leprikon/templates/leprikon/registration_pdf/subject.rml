@@ -66,8 +66,13 @@
             </tr>
             {% if object.subject.event.start_date %}
             <tr>
-                <td>{% trans 'Dates of event' %}</td>
-                <td><para style="para">{{ object.subject.event.get_times_list }}</para></td>
+                <td>{% trans 'Event date' %}</td>
+                <td><para style="para">{{ object.subject.event.event_date }}</para></td>
+            </tr>
+            {% elif object.start_date %}
+            <tr>
+                <td>{% trans 'Event date' %}</td>
+                <td><para style="para">{{ object.event_date }}</para></td>
             </tr>
             {% else %}
             <tr>

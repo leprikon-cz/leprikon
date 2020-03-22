@@ -10,6 +10,9 @@ from ...forms.reports.debtors import DebtorsForm
 from ...forms.reports.events import (
     EventPaymentsForm, EventPaymentsStatusForm, EventStatsForm,
 )
+from ...forms.reports.orderables import (
+    OrderablePaymentsForm, OrderablePaymentsStatusForm, OrderableStatsForm,
+)
 from ..generic import GetFormView, TemplateView
 
 
@@ -36,6 +39,12 @@ class ReportsListView(TemplateView):
                 url=reverse('leprikon:report_event_payments'),
             ),
             self.Report(
+                title=_('Orderable event payments'),
+                instructions='',
+                form=self.get_form(OrderablePaymentsForm),
+                url=reverse('leprikon:report_orderable_payments'),
+            ),
+            self.Report(
                 title=_('Course payments status'),
                 instructions='',
                 form=self.get_form(CoursePaymentsStatusForm),
@@ -48,6 +57,12 @@ class ReportsListView(TemplateView):
                 url=reverse('leprikon:report_event_payments_status'),
             ),
             self.Report(
+                title=_('Orderable event payments status'),
+                instructions='',
+                form=self.get_form(OrderablePaymentsStatusForm),
+                url=reverse('leprikon:report_orderable_payments_status'),
+            ),
+            self.Report(
                 title=_('Course statistics'),
                 instructions='',
                 form=self.get_form(CourseStatsForm),
@@ -58,6 +73,12 @@ class ReportsListView(TemplateView):
                 instructions='',
                 form=self.get_form(EventStatsForm),
                 url=reverse('leprikon:report_event_stats'),
+            ),
+            self.Report(
+                title=_('Orderable event statistics'),
+                instructions='',
+                form=self.get_form(OrderableStatsForm),
+                url=reverse('leprikon:report_orderable_stats'),
             ),
             self.Report(
                 title=_('Debtors list'),

@@ -1,0 +1,36 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if payments %}
+<h1>{% blocktrans with date=date %}Orderable event payments from {{ date_start }} to {{ date_end }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Registration' %}</th>
+        <th>{% trans 'Amount' %}</th>
+    </tr>
+    {% for payment in payments %}
+    <tr id="report-{{ payment.id }}">
+        <th>{{ payment.accounted }}</th>
+        <th>{{ payment.registration }}</th>
+        <th class="right">{{ payment.amount | currency }}</th>
+    </tr>
+    {% endfor %}
+    <tr id="report-sum">
+        <th></th>
+        <th></th>
+        <th class="right">{{ sum | currency }}</th>
+    </tr>
+</table>
+{% endif %}
+
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+
+{% endblock %}

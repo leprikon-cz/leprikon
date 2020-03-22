@@ -9,9 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import (  # NOQA
     account, agegroup, agreements, citizenship, courses, department, events,
-    journals, leprikonsite, messages, organizations, place, printsetup,
-    question, registrationlink, roles, school, schoolyear, subjects,
-    targetgroup, timesheets, user,
+    journals, leprikonsite, messages, orderables, organizations, place,
+    printsetup, question, registrationlink, roles, school, schoolyear,
+    subjects, targetgroup, timesheets, user,
 )
 
 User = get_user_model()

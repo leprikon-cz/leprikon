@@ -7,9 +7,10 @@
 
 {% static_placeholder "registrations" %}
 
-{% if courseregistrations.count or eventregistrations.count %}
+{% if courseregistrations.count or eventregistrations.count or orderableregistrations.count %}
 {% for reg in courseregistrations %}{% include 'leprikon/registration_preview.html' %}{% endfor %}
 {% for reg in eventregistrations %}{% include 'leprikon/registration_preview.html' %}{% endfor %}
+{% for reg in orderableregistrations %}{% include 'leprikon/registration_preview.html' %}{% endfor %}
 {% else %}
 <p>{% blocktrans with school_year=request.school_year %}You have no registrations in school year {{ school_year }}.{% endblocktrans %}</p>
 {% endif %}

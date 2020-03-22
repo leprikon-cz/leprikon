@@ -88,13 +88,6 @@ class SubjectVariantInlineAdmin(admin.TabularInline):
 
 class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     registration_model = None
-    list_display = (
-        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
-        'get_times_list',
-        'place', 'public', 'registration_allowed_icon',
-        'get_registrations_link',
-        'get_journal_link', 'icon', 'note',
-    )
     list_editable = ('public', 'note')
     list_filter = (
         ('school_year', SchoolYearListFilter),

@@ -1,0 +1,111 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n leprikon_tags sekizai_tags staticfiles %}
+
+{% block content %}
+<div class="hidden-print">
+{{ block.super }}
+</div>
+
+{% if reports %}
+<h1>{% blocktrans with date=date %}Orderable event payments status by date {{ date }}{% endblocktrans %}</h1>
+
+<table class="table table-hover">
+    <tr>
+        <th>{% trans 'Orderable event' %}</th>
+        <th>{% trans 'Price' %}</th>
+        <th>{% trans 'Number of registrations' %}</th>
+        <th>{% trans 'Discounts' %}</th>
+        <th>{% trans 'Receivables' %}</th>
+        <th>{% trans 'Received payments' %}</th>
+        <th>{% trans 'Amount due' %}</th>
+        <th>{% trans 'Overpayments' %}</th>
+    </tr>
+    {% for report in reports %}
+    {% if report.registration_statuses %}
+    <tr id="report-{{ report.orderable.id }}" class="clickable" data-toggle="collapse" data-target=".{{ report.orderable.id }}-collapsed">
+    {% else %}
+    <tr id="report-{{ report.orderable.id }}">
+    {% endif %}
+        <th>{{ report.orderable.name }}</th>
+        <td class="right">{{ report.orderable.price | currency }}</td>
+        <td class="right">{{ report.registration_statuses | length }}</td>
+        <td class="right">{{ report.status.discount | currency }}</td>
+        <td class="right">{{ report.status.receivable | currency }}</td>
+        <td class="right">{{ report.status.paid | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ report.status.amount_due_color }}" title="{{ report.status.title }}">
+                {{ report.status.amount_due | currency }}
+            </strong>
+        </td>
+        <td class="right">
+            <strong style="color: {{ report.status.overpaid_color }}" title="{{ report.status.title }}">
+                {{ report.status.overpaid | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% for rs in report.registration_statuses %}
+    <tr class="collapse out {{ report.orderable.id }}-collapsed">
+        <th class="right" colspan="3">
+            <a href="{% url 'admin:leprikon_orderableregistration_changelist' %}?id={{ rs.registration.id }}">
+                {{ rs.registration }}
+            </a>
+        </th>
+        <td class="right">
+            <a href="{% url 'admin:leprikon_orderablediscount_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.discount | currency }}
+            </a>
+        </td>
+        <td class="right">{{ rs.status.receivable | currency }}</td>
+        <td class="right">
+            <a href="{% url 'admin:leprikon_subjectpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.paid | currency }}
+            </a>
+        </td>
+        <td class="right">
+            <strong style="color: {{ rs.status.amount_due_color }}" title="{{ rs.status.title }}">
+                {{ rs.status.amount_due | currency }}
+            </strong>
+        </td>
+        <td class="right">
+            <strong style="color: {{ rs.status.overpaid_color }}" title="{{ rs.status.title }}">
+                {{ rs.status.overpaid | currency }}
+            </strong>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    <tr>
+        <th>{% trans 'All orderable events' %}</th>
+        <td></td>
+        <td class="right">{{ sum.registrations }}</td>
+        <td class="right">{{ sum.status.discount | currency }}</td>
+        <td class="right">{{ sum.status.receivable | currency }}</td>
+        <td class="right">{{ sum.status.paid | currency }}</td>
+        <td class="right">
+            <strong style="color: {{ sum.status.amount_due_color }}" title="{{ sum.status.title }}">
+                {{ sum.status.amount_due | currency }}
+            </strong>
+        </td>
+        <td class="right">
+            <strong style="color: {{ sum.status.overpaid_color }}" title="{{ sum.status.title }}">
+                {{ sum.status.overpaid | currency }}
+            </strong>
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

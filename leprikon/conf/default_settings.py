@@ -21,6 +21,10 @@ LEPRIKON_EVENT_TEMPLATES = (
     ('default', _('Default')),
 )
 
+LEPRIKON_ORDERABLE_TEMPLATES = (
+    ('default', _('Default')),
+)
+
 LEPRIKON_LEADER_TEMPLATES = (
     ('default', _('Default')),
 )
@@ -31,6 +35,11 @@ LEPRIKON_COURSELIST_TEMPLATES = (
 )
 
 LEPRIKON_EVENTLIST_TEMPLATES = (
+    ('default', _('Default')),
+    ('grouped', _('Grouped by event groups')),
+)
+
+LEPRIKON_ORDERABLELIST_TEMPLATES = (
     ('default', _('Default')),
     ('grouped', _('Grouped by event groups')),
 )
@@ -76,6 +85,7 @@ LEPRIKON_URL_LEADER = 'pro-vedouci'
 LEPRIKON_URL_CREATE_ACCOUNT = 'novy-uzivatel'
 LEPRIKON_URL_COURSES = 'kurzy'
 LEPRIKON_URL_EVENTS = 'akce'
+LEPRIKON_URL_ORDERABLES = 'na-objednani'
 LEPRIKON_URL_LEADERS = 'vedouci'
 LEPRIKON_URL_MESSAGES = 'zpravy'
 LEPRIKON_URL_TIMESHEETS = 'vykazy'

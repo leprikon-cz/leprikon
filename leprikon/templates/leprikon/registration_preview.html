@@ -24,6 +24,14 @@
                 <a href="{{ reg.subject.get_absolute_url }}">{{ reg.subject.name }}</a>
             </div>
         </div>
+        {% if reg.start_date %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Event date' %}:</label>
+            <div class="col-sm-8">
+                {{ reg.event_date }}
+            </div>
+        </div>
+        {% endif %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Date and time of registration' %}:</label>
             <div class="col-sm-8">

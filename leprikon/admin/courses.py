@@ -31,6 +31,13 @@ class CourseTimeInlineAdmin(admin.TabularInline):
 class CourseAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.COURSE
     registration_model = CourseRegistration
+    list_display = (
+        'id', 'code', 'name', 'subject_type', 'get_groups_list', 'get_leaders_list',
+        'get_times_list',
+        'place', 'public', 'registration_allowed_icon',
+        'get_registrations_link',
+        'get_journal_link', 'icon', 'note',
+    )
     list_export = (
         'id', 'school_year', 'code', 'name', 'department', 'subject_type', 'registration_type',
         'get_groups_list', 'get_leaders_list', 'get_age_groups_list', 'get_target_groups_list',
@@ -110,7 +117,7 @@ class CourseAdmin(SubjectBaseAdmin):
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(
-            leprikon_registrations__subject__in=queryset
+            leprikon_registrations__subject__in=queryset,
         ).distinct()
 
 
@@ -132,8 +139,8 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     actions = ('add_full_discount_for_period',)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
     list_display = (
-        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html',
-        'price', 'course_discounts', 'course_payments',
+        'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
+        'course_discounts', 'course_payments',
         'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note', 'random_number',
     )
 

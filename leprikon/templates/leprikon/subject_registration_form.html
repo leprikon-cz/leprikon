@@ -20,6 +20,12 @@
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
 
+    {% if form.instance.subject.orderable %}
+        <h3>{% trans 'Event date' %}</h3>
+        {% include 'leprikon/form_item.html' with item=form.start_date %}
+        {% include 'leprikon/form_item.html' with item=form.start_time %}
+    {% endif %}
+
     <h3>{% trans 'Price' %}</h3>
     {% if form.subject_variant %}
     <div class="form-group {{ form.subject_variant.css_classes }}">

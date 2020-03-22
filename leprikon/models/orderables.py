@@ -16,70 +16,41 @@ from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
 )
 from .targetgroup import TargetGroup
-from .utils import PaymentStatus, change_year
+from .utils import PaymentStatus
 
 
-class Event(Subject):
-    start_date = models.DateField(_('start date'))
-    end_date = models.DateField(_('end date'))
-    start_time = models.TimeField(_('start time'), blank=True, null=True)
-    end_time = models.TimeField(_('end time'), blank=True, null=True)
-    due_from = models.DateField(_('due from'))
-    due_date = models.DateField(_('due date'))
+class Orderable(Subject):
+    duration = models.DurationField(_('duration'))
+    due_from_days = models.IntegerField(
+        _('number of days to send the payment request before event date'), blank=True, null=True,
+        help_text=_(
+            'If set, payment request will be sent this number of days before event date. '
+            'If not set, payment request will be sent when registration is approved.'
+        ),
+    )
+    due_date_days = models.IntegerField(_('number of days to due date before event date'), default=0)
 
     class Meta:
         app_label = 'leprikon'
-        ordering = ('start_date', 'start_time')
-        verbose_name = _('event')
-        verbose_name_plural = _('events')
+        ordering = ('code', 'name')
+        verbose_name = _('orderable event')
+        verbose_name_plural = _('orderable events')
 
     @property
     def inactive_registrations(self):
         return self.registrations.filter(canceled__isnull=False)
 
-    def event_date(self):
-        return '{start}{separator}{end}'.format(
-            start=(date_format(datetime.combine(self.start_date, self.start_time), 'SHORT_DATETIME_FORMAT')
-                   if self.start_time else date_format(self.start_date, 'SHORT_DATE_FORMAT')),
-            separator=' - ' if self.start_date != self.end_date or self.end_time is not None else '',
-            end=((time_format(self.end_time, 'TIME_FORMAT') if self.end_time else '')
-                 if self.start_date == self.end_date
-                 else (date_format(datetime.combine(self.end_date, self.end_time), 'SHORT_DATETIME_FORMAT')
-                       if self.end_time else date_format(self.end_date, 'SHORT_DATE_FORMAT'))),
-        )
-    event_date.short_description = _('times')
-
-    Time = namedtuple('Time', ('date', 'start', 'end'))
-
-    def get_next_time(self, now=None):
-        if not now:
-            return self.Time(
-                date=self.start_date,
-                start=self.start_time,
-                end=(self.end_time if self.end_date == self.start_date else None),
-            )
-        else:
-            next_date = (now.date() if isinstance(now, datetime) else now) + timedelta(1)
-            return self.Time(
-                date=next_date,
-                start=None,
-                end=(self.end_time if self.end_date == next_date else None),
-            )
+    def get_times_list(self):
+        return self.duration
+    get_times_list.short_description = _('duration')
 
     def copy_to_school_year(old, school_year):
-        new = Event.objects.get(id=old.id)
+        new = Orderable.objects.get(id=old.id)
         new.id, new.pk = None, None
         new.school_year = school_year
         new.public = False
         new.evaluation = ''
         new.note = ''
-        year_delta = school_year.year - old.school_year.year
-        new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
-        new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
-        new.due_from = change_year(new.due_from, year_delta)
-        new.due_date = change_year(new.due_date, year_delta)
-        new.start_date = change_year(new.start_date, year_delta)
-        new.end_date = change_year(new.end_date, year_delta)
         new.save()
         new.groups.set(old.groups.all())
         new.age_groups.set(old.age_groups.all())
@@ -90,16 +61,23 @@ class Event(Subject):
         return new
 
 
-class EventRegistration(SubjectRegistration):
-    subject_type = SubjectType.EVENT
+class OrderableRegistration(SubjectRegistration):
+    subject_type = SubjectType.ORDERABLE
+    start_date = models.DateField(_('start date'))
+    start_time = models.TimeField(_('start time'), blank=True, null=True)
 
     class Meta:
         app_label = 'leprikon'
-        verbose_name = _('event registration')
-        verbose_name_plural = _('event registrations')
+        verbose_name = _('orderable event registration')
+        verbose_name_plural = _('orderable event registrations')
 
     def get_due_from(self):
-        return self.subject.event.due_from
+        if self.subject.orderable.due_from_days is None:
+            return self.approved and self.approved.date()
+        return self.start_date - timedelta(self.subject.orderable.due_from_days)
+
+    def get_due_date(self):
+        return self.start_date - timedelta(self.subject.orderable.due_date_days)
 
     def get_payment_status(self, d=None):
         if d is None:
@@ -115,8 +93,8 @@ class EventRegistration(SubjectRegistration):
             explanation=explanation,
             paid=self.get_paid(d),
             current_date=d,
-            due_from=self.subject.event.due_from,
-            due_date=self.subject.event.due_date,
+            due_from=self.get_due_from(),
+            due_date=self.get_due_date(),
         )
 
     @cached_property
@@ -127,36 +105,61 @@ class EventRegistration(SubjectRegistration):
     def payment_statuses(self):
         return [self.payment_status]
 
+    @cached_property
+    def end_date(self):
+        if self.start_time:
+            return (datetime.combine(self.start_date, self.start_time) + self.subject.orderable.duration).date()
+        else:
+            return self.start_date + self.subject.orderable.duration
 
-class EventDiscount(SubjectDiscount):
-    registration = models.ForeignKey(EventRegistration, on_delete=models.CASCADE,
+    @cached_property
+    def end_time(self):
+        if self.start_time:
+            return (datetime.combine(self.start_date, self.start_time) + self.subject.orderable.duration).time()
+
+    def event_date(self):
+        return '{start}{separator}{end}'.format(
+            start=(date_format(datetime.combine(self.start_date, self.start_time), 'SHORT_DATETIME_FORMAT')
+                   if self.start_time else date_format(self.start_date, 'SHORT_DATE_FORMAT')),
+            separator=' - ' if self.start_date != self.end_date or self.end_time is not None else '',
+            end=((time_format(self.end_time, 'TIME_FORMAT') if self.end_time else '')
+                 if self.start_date == self.end_date
+                 else (date_format(datetime.combine(self.end_date, self.end_time), 'SHORT_DATETIME_FORMAT')
+                       if self.end_time else date_format(self.end_date, 'SHORT_DATE_FORMAT'))),
+        )
+    event_date.admin_order_field = 'start_date'
+    event_date.short_description = _('event date')
+
+
+class OrderableDiscount(SubjectDiscount):
+    registration = models.ForeignKey(OrderableRegistration, on_delete=models.CASCADE,
                                      related_name='discounts', verbose_name=_('registration'))
 
     class Meta:
         app_label = 'leprikon'
-        verbose_name = _('event discount')
-        verbose_name_plural = _('event discounts')
+        verbose_name = _('orderable event discount')
+        verbose_name_plural = _('orderable event discounts')
         ordering = ('accounted',)
 
 
-class EventPlugin(CMSPlugin):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='+', verbose_name=_('event'))
+class OrderablePlugin(CMSPlugin):
+    event = models.ForeignKey(Orderable, on_delete=models.CASCADE, related_name='+', verbose_name=_('event'))
     template = models.CharField(_('template'), max_length=100,
-                                choices=settings.LEPRIKON_EVENT_TEMPLATES,
-                                default=settings.LEPRIKON_EVENT_TEMPLATES[0][0],
+                                choices=settings.LEPRIKON_ORDERABLE_TEMPLATES,
+                                default=settings.LEPRIKON_ORDERABLE_TEMPLATES[0][0],
                                 help_text=_('The template used to render plugin.'))
 
     class Meta:
         app_label = 'leprikon'
 
 
-class EventListPlugin(CMSPlugin):
+class OrderableListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
                                     related_name='+', verbose_name=_('school year'))
     departments = models.ManyToManyField(Department, blank=True, related_name='+', verbose_name=_('departments'),
                                          help_text=_('Keep empty to skip searching by departments.'))
     event_types = models.ManyToManyField(SubjectType, blank=True,
-                                         limit_choices_to={'subject_type': SubjectType.EVENT},
+                                         limit_choices_to={'subject_type': SubjectType.ORDERABLE},
                                          related_name='+', verbose_name=_('event types'),
                                          help_text=_('Keep empty to skip searching by event types.'))
     age_groups = models.ManyToManyField(AgeGroup, blank=True, related_name='+', verbose_name=_('age groups'),
@@ -168,8 +171,8 @@ class EventListPlugin(CMSPlugin):
     leaders = models.ManyToManyField(Leader, verbose_name=_('leaders'), blank=True, related_name='+',
                                      help_text=_('Keep empty to skip searching by leaders.'))
     template = models.CharField(_('template'), max_length=100,
-                                choices=settings.LEPRIKON_EVENTLIST_TEMPLATES,
-                                default=settings.LEPRIKON_EVENTLIST_TEMPLATES[0][0],
+                                choices=settings.LEPRIKON_ORDERABLELIST_TEMPLATES,
+                                default=settings.LEPRIKON_ORDERABLELIST_TEMPLATES[0][0],
                                 help_text=_('The template used to render plugin.'))
 
     class Meta:
@@ -180,7 +183,7 @@ class EventListPlugin(CMSPlugin):
         self.event_types.set(oldinstance.event_types.all())
         self.groups.set(oldinstance.groups.all())
         self.age_groups.set(oldinstance.age_groups.all())
-        self.target_groups.set(oldinstance.target_groups.all())
+        self.target_groups.set(oldinstance.age_groups.all())
         self.leaders.set(oldinstance.leaders.all())
 
     @cached_property
@@ -212,7 +215,7 @@ class EventListPlugin(CMSPlugin):
     def render(self, context):
         school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
                        SchoolYear.objects.get_current())
-        events = Event.objects.filter(school_year=school_year, public=True).distinct()
+        events = Orderable.objects.filter(school_year=school_year, public=True).distinct()
 
         if self.all_departments:
             events = events.filter(department__in=self.all_departments)
@@ -243,17 +246,17 @@ class EventListPlugin(CMSPlugin):
         return context
 
 
-class FilteredEventListPlugin(CMSPlugin):
+class FilteredOrderableListPlugin(CMSPlugin):
     school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
                                     related_name='+', verbose_name=_('school year'))
-    event_types = models.ManyToManyField(SubjectType, limit_choices_to={'subject_type': SubjectType.EVENT},
+    event_types = models.ManyToManyField(SubjectType, limit_choices_to={'subject_type': SubjectType.ORDERABLE},
                                          related_name='+', verbose_name=_('event types'))
 
     class Meta:
         app_label = 'leprikon'
 
     def copy_relations(self, oldinstance):
-        self.event_types.set(oldinstance.event_types.all())
+        self.event_types = oldinstance.event_types.all()
 
     @cached_property
     def all_event_types(self):
@@ -265,7 +268,7 @@ class FilteredEventListPlugin(CMSPlugin):
 
         from ..forms.subjects import SubjectFilterForm
         form = SubjectFilterForm(
-            subject_type_type=SubjectType.EVENT,
+            subject_type_type=SubjectType.ORDERABLE,
             subject_types=self.all_event_types,
             school_year=school_year,
             is_staff=context['request'].user.is_staff,

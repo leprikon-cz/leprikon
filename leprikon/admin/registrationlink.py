@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.registrationlink import RegistrationLinkAdminForm
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
+from ..models.orderables import OrderableRegistration
 from ..models.registrationlink import RegistrationLink
 from ..models.subjects import SubjectType
 from .export import AdminExportMixin
@@ -24,6 +25,7 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
     _registration_models = {
         SubjectType.COURSE: CourseRegistration,
         SubjectType.EVENT: EventRegistration,
+        SubjectType.ORDERABLE: OrderableRegistration,
     }
     list_display = (
         'id', 'name', 'get_link', 'subject_type', 'reg_from', 'reg_to', 'get_registrations_link',

@@ -5,12 +5,13 @@ from django.urls import reverse_lazy as reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
-    CourseRegistrationForm, EventRegistrationForm, SubjectFilterForm,
-    SubjectForm,
+    CourseRegistrationForm, EventRegistrationForm, OrderableRegistrationForm,
+    SubjectFilterForm, SubjectForm,
 )
 from ..models.courses import Course
 from ..models.events import Event
 from ..models.leprikonsite import LeprikonSite
+from ..models.orderables import Orderable
 from ..models.subjects import (
     Subject, SubjectPayment, SubjectRegistration, SubjectType,
 )
@@ -24,6 +25,7 @@ class SubjectTypeMixin:
     _models = {
         SubjectType.COURSE: Course,
         SubjectType.EVENT: Event,
+        SubjectType.ORDERABLE: Orderable,
     }
 
     def dispatch(self, request, subject_type, *args, **kwargs):
@@ -176,6 +178,7 @@ class SubjectRegistrationFormBaseView(CreateView):
     _form_classes = {
         SubjectType.COURSE: CourseRegistrationForm,
         SubjectType.EVENT: EventRegistrationForm,
+        SubjectType.ORDERABLE: OrderableRegistrationForm,
     }
 
     def get_title(self):

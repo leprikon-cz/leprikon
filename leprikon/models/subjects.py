@@ -115,13 +115,16 @@ CHAT_GROUP_TYPE_HELP_TEXT = _(
 class SubjectType(models.Model):
     COURSE = 'course'
     EVENT = 'event'
+    ORDERABLE = 'orderable'
     subject_type_labels = OrderedDict([
         (COURSE, _('course')),
         (EVENT, _('event')),
+        (ORDERABLE, _('orderable event')),
     ])
     subject_type_type_labels = OrderedDict([
         (COURSE, _('course type')),
         (EVENT, _('event type')),
+        (ORDERABLE, _('orderable event type')),
     ])
     subject_type = models.CharField(_('subjects'), max_length=10, choices=subject_type_labels.items())
     name = models.CharField(_('name (singular)'), max_length=150)
@@ -455,7 +458,7 @@ class Subject(models.Model):
                     models.Q(registration__courseregistration__course_history__end__gte=d)
                 )
             )
-        else:  # self.subject_type.subject_type == SubjectType.EVENT:
+        else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
             qs = qs.filter(
                 registration__subject_id=self.id,
                 registration__approved__isnull=False,
@@ -472,7 +475,7 @@ class Subject(models.Model):
                 approved=models.F('registration__approved'),
                 canceled=models.F('registration__canceled'),
             )
-        else:  # self.subject_type.subject_type == SubjectType.EVENT:
+        else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
             qs = qs.filter(
                 registration__subject_id=self.id,
                 registration__approved__isnull=False,
@@ -825,8 +828,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def subjectregistration(self):
         if self.subject.subject_type.subject_type == self.subject.subject_type.COURSE:
             return self.courseregistration
-        else:
+        elif self.subject.subject_type.subject_type == self.subject.subject_type.EVENT:
             return self.eventregistration
+        elif self.subject.subject_type.subject_type == self.subject.subject_type.ORDERABLE:
+            return self.orderableregistration
+        raise NotImplementedError()
 
     @cached_property
     def all_participants(self):

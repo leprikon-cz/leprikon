@@ -18,6 +18,7 @@ from ..models.department import Department
 from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
 from ..models.leprikonsite import LeprikonSite
+from ..models.orderables import Orderable, OrderableRegistration
 from ..models.place import Place
 from ..models.roles import BillingInfo, Leader, Parent, Participant
 from ..models.school import School
@@ -39,6 +40,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_('Search term'), required=False)
     course_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Course type'), required=False)
     event_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Event type'), required=False)
+    orderable_types = forms.ModelMultipleChoiceField(queryset=None, label=_('Orderable event type'), required=False)
     departments = forms.ModelMultipleChoiceField(queryset=None, label=_('Department'), required=False)
     groups = forms.ModelMultipleChoiceField(queryset=None, label=_('Group'), required=False)
     leaders = forms.ModelMultipleChoiceField(queryset=None, label=_('Leader'), required=False)
@@ -54,6 +56,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     _models = {
         SubjectType.COURSE: Course,
         SubjectType.EVENT: Event,
+        SubjectType.ORDERABLE: Orderable,
     }
 
     def __init__(self, subject_type_type, subject_types, school_year, is_staff, data, **kwargs):
@@ -74,12 +77,19 @@ class SubjectFilterForm(FormMixin, forms.Form):
         if len(subject_types) == 1:
             del self.fields['course_types']
             del self.fields['event_types']
+            del self.fields['orderable_types']
         elif subject_type_type == SubjectType.COURSE:
             del self.fields['event_types']
+            del self.fields['orderable_types']
             self.fields['course_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
         elif subject_type_type == SubjectType.EVENT:
             del self.fields['course_types']
+            del self.fields['orderable_types']
             self.fields['event_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
+        elif subject_type_type == SubjectType.ORDERABLE:
+            del self.fields['course_types']
+            del self.fields['event_types']
+            self.fields['orderable_types'].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
 
         self.fields['departments'].queryset = Department.objects.filter(subjects__id__in=subject_ids).distinct()
         if self.fields['departments'].queryset.count() == 0:
@@ -130,6 +140,8 @@ class SubjectFilterForm(FormMixin, forms.Form):
             qs = qs.filter(subject_type__in=self.cleaned_data['course_types'])
         elif self.cleaned_data.get('event_types'):
             qs = qs.filter(subject_type__in=self.cleaned_data['event_types'])
+        elif self.cleaned_data.get('orderable_types'):
+            qs = qs.filter(subject_type__in=self.cleaned_data['orderable_types'])
         if self.cleaned_data.get('departments'):
             qs = qs.filter(department__in=self.cleaned_data['departments'])
         if self.cleaned_data.get('groups'):
@@ -763,6 +775,13 @@ class EventRegistrationForm(RegistrationForm):
 
     class Meta:
         model = EventRegistration
+        exclude = ('subject', 'user', 'cancel_request', 'canceled')
+
+
+class OrderableRegistrationForm(RegistrationForm):
+
+    class Meta:
+        model = OrderableRegistration
         exclude = ('subject', 'user', 'cancel_request', 'canceled')
 
 

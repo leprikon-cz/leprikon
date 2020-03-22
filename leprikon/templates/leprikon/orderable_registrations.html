@@ -1,0 +1,32 @@
+{% extends 'leprikon/default.html' %}
+{% load i18n leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{% blocktrans with subject_type=orderable.subject_type.name_akuzativ name=orderable.name %}Registrations for {{ subject_type }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
+
+<h2>{% trans 'Active Registrations' %}</h2>
+
+{% for reg in orderable.all_approved_registrations %}
+{% include 'leprikon/registration_details.html' with reg=reg.orderableregistration %}
+{% empty %}
+<p>{% blocktrans with subject_type=orderable.subject_type.name_akuzativ %}There are no active registrations for this {{ subject_type }}.{% endblocktrans %}</p>
+{% endfor %}
+
+{% if orderable.all_unapproved_registrations %}
+    <h2>{% trans 'Unapproved Registrations' %}</h2>
+
+    {% for reg in orderable.all_unapproved_registrations %}
+    {% include 'leprikon/registration_details.html' with reg=reg.orderableregistration %}
+    {% endfor %}
+{% endif %}
+
+{% if orderable.all_inactive_registrations %}
+    <h2>{% trans 'Inactive Registrations' %}</h2>
+
+    {% for reg in orderable.all_inactive_registrations %}
+    {% include 'leprikon/registration_details.html' with reg=reg.orderableregistration %}
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

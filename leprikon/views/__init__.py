@@ -10,7 +10,7 @@ from . import (
 )
 from .reports import (
     courses as reports_courses, debtors as reports_debtors,
-    events as reports_events,
+    events as reports_events, orderables as reports_orderables,
 )
 
 login_url = reverse('leprikon:user_login')
@@ -125,6 +125,9 @@ report_course_stats = staff_required(reports_courses.ReportCourseStatsView.as_vi
 report_event_payments = staff_required(reports_events.ReportEventPaymentsView.as_view())
 report_event_payments_status = staff_required(reports_events.ReportEventPaymentsStatusView.as_view())
 report_event_stats = staff_required(reports_events.ReportEventStatsView.as_view())
+report_orderable_payments = staff_required(reports_orderables.ReportOrderablePaymentsView.as_view())
+report_orderable_payments_status = staff_required(reports_orderables.ReportOrderablePaymentsStatusView.as_view())
+report_orderable_stats = staff_required(reports_orderables.ReportOrderableStatsView.as_view())
 report_debtors = staff_required(reports_debtors.ReportDebtorsView.as_view())
 
 terms_conditions = terms_conditions.TermsConditionsView.as_view()

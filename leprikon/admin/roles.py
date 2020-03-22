@@ -24,7 +24,7 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     inlines = (ContactInlineAdmin,)
     search_fields = ('user__first_name', 'user__last_name', 'contacts__contact')
     list_display = ('id', 'first_name', 'last_name', 'email', 'courses_link',
-                    'events_link', 'contacts', 'user_link', 'icon')
+                    'events_link', 'orderables_link', 'contacts', 'user_link', 'icon')
     ordering = ('user__first_name', 'user__last_name')
     actions = ('add_school_year',)
     list_filter = (('school_years', SchoolYearListFilter),)
@@ -93,6 +93,10 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
     def events_url(self):
         return reverse('admin:leprikon_event_changelist')
 
+    @cached_property
+    def orderables_url(self):
+        return reverse('admin:leprikon_orderable_changelist')
+
     def courses_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url=self.courses_url,
@@ -110,6 +114,15 @@ class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
         )
     events_link.allow_tags = True
     events_link.short_description = _('events')
+
+    def orderables_link(self, obj):
+        return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
+            url=self.orderables_url,
+            leader=obj.id,
+            count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+        )
+    orderables_link.allow_tags = True
+    orderables_link.short_description = _('orderable events')
 
     def icon(self, obj):
         try:
