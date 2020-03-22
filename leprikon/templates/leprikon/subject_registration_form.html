@@ -169,14 +169,14 @@
             {% include 'leprikon/form_item.html' with item=group_form.school_class %}
         </div>
         {% include 'leprikon/form_item.html' with item=group_form.name %}
+        {% include 'leprikon/form_item.html' with item=group_form.street %}
+        {% include 'leprikon/form_item.html' with item=group_form.city %}
+        {% include 'leprikon/form_item.html' with item=group_form.postal_code %}
         <h3>{% trans 'Contact person' %}</h3>
         {% include 'leprikon/form_item.html' with item=group_form.first_name %}
         {% include 'leprikon/form_item.html' with item=group_form.last_name %}
         {% include 'leprikon/form_item.html' with item=group_form.phone %}
         {% include 'leprikon/form_item.html' with item=group_form.email %}
-        {% include 'leprikon/form_item.html' with item=group_form.street %}
-        {% include 'leprikon/form_item.html' with item=group_form.city %}
-        {% include 'leprikon/form_item.html' with item=group_form.postal_code %}
 
         {% for item in group_form.questions_form %}
             {% include 'leprikon/form_item.html' %}
