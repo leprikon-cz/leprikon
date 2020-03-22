@@ -1,5 +1,5 @@
 #!/bin/bash
 
-while sleep ${LEPRIKON_CRON_INTERVAL:-600}; do
+while sleep ${LEPRIKON_CRON_INTERVAL:-3600}; do
     leprikon runcrons
 done
