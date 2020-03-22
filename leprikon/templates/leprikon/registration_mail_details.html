@@ -6,7 +6,7 @@
         {% if object.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}:
         {{ object.all_participants|comma_separated }}<br/>
     {% elif object.subject.registration_type_groups %}
-        {% trans 'Contact person' %}: {{ object.group.first_name }}
+        {% trans 'Contact person' %}: {{ object.group.first_name }} {{ object.group.last_name }}
         {% if object.group.name %}<br/>{% trans 'Group name' %}: {{ object.group.name }}{% endif %}
     {% endif %}
 </p>
