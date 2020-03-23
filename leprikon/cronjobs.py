@@ -14,7 +14,7 @@ class SendPaymentRequest(CronJobBase):
     code = 'leprikon.cronjobs.SendPaymentRequest'
 
     def do(self):
-        today = date.today
+        today = date.today()
         for registration in chain(
             CourseRegistration.objects.filter(
                 subject__course__school_year_division__periods__due_from=today,
