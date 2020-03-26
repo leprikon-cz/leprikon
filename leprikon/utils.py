@@ -1,5 +1,6 @@
 import locale
 import os
+import re
 import string
 import unicodedata
 import zlib
@@ -130,6 +131,9 @@ def url_back(request):
     )
 
 
+recursive_back_splitter = re.compile(f'[?&]{settings.LEPRIKON_PARAM_BACK}=')
+
+
 def url_with_back(url, url_back):
     try:
         query = url_back.split('?')[1]
@@ -141,6 +145,8 @@ def url_with_back(url, url_back):
             url_back = parse_qs(query)[settings.LEPRIKON_PARAM_BACK][0]
         except KeyError:
             pass
+    # remove recursive back url
+    url_back = recursive_back_splitter.split(url_back)[0]
     return '{}?{}'.format(url, urlencode({settings.LEPRIKON_PARAM_BACK: iri_to_uri(url_back)}))
 
 
