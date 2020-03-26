@@ -170,7 +170,7 @@ class SubjectForm(FormMixin, forms.ModelForm):
         fields = ['description', 'risks', 'plan', 'evaluation']
 
 
-class SubjectAdminForm(FormMixin, forms.ModelForm):
+class SubjectAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
