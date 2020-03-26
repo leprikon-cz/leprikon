@@ -1134,10 +1134,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def get_attachments(self, event):
         attachments = []
 
-        if event == 'payment_request' and self.organization.iban:
-            qr_code = MIMEImage(self.get_qr_code())
-            qr_code.add_header('Content-ID', '<qr_code>')
-            attachments.append(qr_code)
+        if event == 'payment_request':
+            if self.organization.iban:
+                qr_code = MIMEImage(self.get_qr_code())
+                qr_code.add_header('Content-ID', '<qr_code>')
+                attachments.append(qr_code)
             attachments.append(self.get_pdf_attachment(event))
 
         attachments += [

@@ -43,10 +43,11 @@
                 {% trans 'Place' %}: {{ object.place }}
             {% endif %}
         </p>
-        {% elif object.all_times or object.place %}{# course #}
+        {% elif object.all_times or object.place or object.duration %}{# course or orderable #}
         <p>
             {% if object.all_times %}{% trans 'Time' %}: {{ object.all_times | comma_separated }}{% endif %}
-            {% if object.all_times and object.place %}<br/>{% endif %}
+            {% if object.duration %}{% trans 'Duration' %}: {{ object.duration }}{% endif %}
+            {% if object.all_times or object.duration %}{% if object.place %}<br/>{% endif %}{% endif %}
             {% if object.place %}{% trans 'Place' %}: {{ object.place }}{% endif %}
         </p>
         {% endif %}

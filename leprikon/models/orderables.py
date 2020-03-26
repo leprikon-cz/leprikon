@@ -20,7 +20,7 @@ from .utils import PaymentStatus
 
 
 class Orderable(Subject):
-    duration = models.DurationField(_('duration'))
+    duration = models.DurationField(_('duration'), help_text=_('Format: HH:MM:SS'))
     due_from_days = models.IntegerField(
         _('number of days to send the payment request before event date'), blank=True, null=True,
         help_text=_(

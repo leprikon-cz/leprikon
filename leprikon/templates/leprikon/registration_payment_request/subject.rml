@@ -112,6 +112,7 @@
                     <para style="small-right">{% trans 'amount due' %}</para>
                 </td>
             </tr>
+            {% if object.courseregistration %}
             {% for pps in object.courseregistration.period_payment_statuses %}{% if pps.status.amount_due %}
             <tr>
                 <td>
@@ -131,7 +132,8 @@
                 </td>
             </tr>
             {% endif %}{% endfor %}
-            {% for ps in object.eventregistration.payment_statuses %}{% if ps.amount_due %}
+            {% else %}
+            {% for ps in object.subjectregistration.payment_statuses %}{% if ps.amount_due %}
             <tr>
                 <td>
                     <para style="left">
@@ -150,6 +152,7 @@
                 </td>
             </tr>
             {% endif %}{% endfor %}
+            {% endif %}
         </blockTable>
 
         <spacer length="2mm"/>
@@ -157,11 +160,13 @@
         <blockTable style="without-borders">
             <tr>
                 <td>
+                    {% if object.organization.iban %}
                     <spacer length="2mm"/>
                     <para style="small">{% trans 'You may use following QR code to scan the payment details to your mobile banking application' %}:</para>
                     <illustration width="130" height="130">
                         <image file="{{ object.qr_code_filename }}" x="15" y="15" width="100" height="100"/>
                     </illustration>
+                    {% endif %}
                 </td>
                 <td>
                     <blockTable style="with-borders">

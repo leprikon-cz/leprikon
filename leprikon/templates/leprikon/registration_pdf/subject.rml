@@ -69,10 +69,10 @@
                 <td>{% trans 'Event date' %}</td>
                 <td><para style="para">{{ object.subject.event.event_date }}</para></td>
             </tr>
-            {% elif object.start_date %}
+            {% elif object.orderableregistration.start_date %}
             <tr>
                 <td>{% trans 'Event date' %}</td>
-                <td><para style="para">{{ object.event_date }}</para></td>
+                <td><para style="para">{{ object.orderableregistration.event_date }}</para></td>
             </tr>
             {% else %}
             <tr>

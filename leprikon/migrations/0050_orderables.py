@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             name='Orderable',
             fields=[
                 ('subject_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='leprikon.Subject')),
-                ('duration', models.DurationField(verbose_name='duration')),
+                ('duration', models.DurationField(help_text='Format: HH:MM:SS', verbose_name='duration')),
                 ('due_from_days', models.IntegerField(blank=True, help_text='If set, payment request will be sent this number of days before event date. If not set, payment request will be sent when registration is approved.', null=True, verbose_name='number of days to send the payment request before event date')),
                 ('due_date_days', models.IntegerField(default=0, verbose_name='number of days to due date before event date')),
             ],
