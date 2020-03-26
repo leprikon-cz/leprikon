@@ -1,4 +1,3 @@
-from .courses import CourseIndex
-from .events import EventIndex
-
-(CourseIndex, EventIndex)
+from .courses import CourseIndex  # noqa
+from .events import EventIndex  # noqa
+from .orderables import OrderableIndex  # noqa
