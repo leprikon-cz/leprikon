@@ -1319,7 +1319,7 @@ class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.
                                         related_name='group', verbose_name=_('registration'))
     target_group = models.ForeignKey(TargetGroup, on_delete=models.PROTECT,
                                      related_name='+', verbose_name=_('target group'))
-    name = models.CharField(_('group name'), blank=True, null=True, max_length=150)
+    name = models.CharField(_('group name'), blank=True, default='', max_length=150)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     street = models.CharField(_('street'), max_length=150)
