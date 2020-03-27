@@ -39,6 +39,14 @@ def comma_separated(value):
     return _comma_separated(value)
 
 
+@register.inclusion_tag('leprikon/admin/dashboard.html', takes_context=True)
+def dashboard(context):
+    from ..models.subjects import SubjectType
+    context = context.__copy__()
+    context['subject_types'] = SubjectType.objects.all()
+    return context
+
+
 @register.filter
 def first_upper(value):
     return _first_upper(value)

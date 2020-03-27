@@ -209,6 +209,22 @@ class SubjectType(models.Model):
     def get_absolute_url(self):
         return reverse(self.slug + ':subject_list')
 
+    def get_subjects_url(self):
+        change_list = reverse(f'admin:leprikon_{self.subject_type}_changelist')
+        return f'{change_list}?subject_type__id__exact={self.id}'
+
+    def get_registrations_url(self):
+        change_list = reverse(f'admin:leprikon_{self.subject_type}registration_changelist')
+        return f'{change_list}?subject__subject_type__id__exact={self.id}'
+
+    def get_discounts_url(self):
+        change_list = reverse(f'admin:leprikon_{self.subject_type}discount_changelist')
+        return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
+
+    def get_payments_url(self):
+        change_list = reverse(f'admin:leprikon_subjectpayment_changelist')
+        return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
+
 
 class BaseAttachment(models.Model):
     file = FilerFileField(on_delete=models.CASCADE, related_name='+')

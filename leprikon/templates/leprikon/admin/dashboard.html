@@ -1,0 +1,50 @@
+{% load i18n leprikon_tags %}
+
+<table style="width: 700px !important; margin-bottom: 30px !important;">
+    <tr>
+        <td width="25%" align="center">
+            <a style="display: block;" href="{% url 'admin:user_unique_email_user_changelist' %}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{% trans 'Users' %}</span>
+            </a>
+        </td>
+        <td width="25%" align="center">
+            <a style="display: block;" href="{% url 'admin:leprikon_leader_changelist' %}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{% trans 'Leaders' %}</span>
+            </a>
+        </td>
+        <td width="25%" align="center">
+            <a style="display: block;" href="{% url 'admin:leprikon_timesheet_changelist' %}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{% trans 'Timesheets' %}</span>
+            </a>
+        </td>
+        <td width="25%" align="center">
+            <a style="display: block;" href="{% url 'admin:leprikon_accountclosure_changelist' %}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{% trans 'Account closures' %}</span>
+            </a>
+        </td>
+    </tr>
+    {% for subject_type in subject_types %}
+    <tr>
+        <td width="25%" align="center">
+            <a style="display: block;" href="{{ subject_type.get_subjects_url }}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{{ subject_type.plural|first_upper }}</span>
+            </a>
+        </td>
+        <td width="25%">
+            <a style="display: block;" href="{{ subject_type.get_registrations_url }}">
+                <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'Registrations' %}</span>
+            </a>
+        </td>
+        <td width="25%">
+            <a style="display: block;" href="{{ subject_type.get_payments_url }}">
+                <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'Payments' %}</span>
+            </a>
+        </td>
+        <td width="25%">
+            <a style="display: block;" href="{{ subject_type.get_discounts_url }}">
+                <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'Discounts' %}</span>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
