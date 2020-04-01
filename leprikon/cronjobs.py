@@ -3,6 +3,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.db.models import Q
+from django.utils.translation import override
 from django_cron import CronJobBase, Schedule
 from sentry_sdk import capture_exception
 
@@ -16,7 +17,8 @@ class SentryCronJobBase(CronJobBase):
 
     def do(self):
         try:
-            return self.dojob()
+            with override(settings.LANGUAGE_CODE):
+                return self.dojob()
         except Exception:
             capture_exception()
             raise
