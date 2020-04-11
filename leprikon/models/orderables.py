@@ -93,7 +93,7 @@ class OrderableRegistration(SubjectRegistration):
             explanation=explanation,
             paid=self.get_paid(d),
             current_date=d,
-            due_from=self.get_due_from(),
+            due_from=self.payment_requested and max(self.get_due_from(), self.payment_requested.date()),
             due_date=self.get_due_date(),
         )
 

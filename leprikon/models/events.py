@@ -115,7 +115,7 @@ class EventRegistration(SubjectRegistration):
             explanation=explanation,
             paid=self.get_paid(d),
             current_date=d,
-            due_from=self.subject.event.due_from,
+            due_from=self.payment_requested and max(self.subject.event.due_from, self.payment_requested.date()),
             due_date=self.subject.event.due_date,
         )
 

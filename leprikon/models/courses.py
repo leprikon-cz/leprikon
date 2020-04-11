@@ -210,7 +210,7 @@ class CourseRegistration(SubjectRegistration):
                     explanation=explanation,
                     paid=min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
                     current_date=d,
-                    due_from=period.due_from,
+                    due_from=self.payment_requested and max(period.due_from, self.payment_requested.date()),
                     due_date=period.due_date,
                 ),
             )
