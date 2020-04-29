@@ -178,10 +178,7 @@ class SubjectAdminForm(forms.ModelForm):
         leprikon_site = LeprikonSite.objects.get_current()
 
         # limit choices of groups
-        groups_choices = self.fields['groups'].widget.choices
-        groups_choices.queryset = groups_choices.queryset.filter(
-            subject_types__subject_type=self.subject_type
-        ).distinct()
+        self.fields['groups'].widget.choices.queryset = self.subject_type.groups.all()
 
         # limit choices of leaders
         leaders_choices = self.fields['leaders'].widget.choices
