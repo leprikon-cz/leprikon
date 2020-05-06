@@ -1473,6 +1473,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     registration = models.ForeignKey(SubjectRegistration, on_delete=models.PROTECT,
                                      related_name='payments', verbose_name=_('registration'))
     accounted = models.DateTimeField(_('accounted time'), default=timezone.now)
+    mail_sent = models.DateTimeField(_('mail sent'), editable=False, null=True)
     payment_type = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
     amount = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
     note = models.CharField(_('note'), max_length=300, blank=True, default='')
@@ -1593,13 +1594,11 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        if self.id:
-            super(SubjectPayment, self).save(*args, **kwargs)
-        else:
-            with transaction.atomic():
-                super(SubjectPayment, self).save(*args, **kwargs)
-                self.send_mail()
+    def send_mail(self, event='received'):
+        with transaction.atomic():
+            self.mail_sent = timezone.now()
+            self.save()
+            super().send_mail(event)
 
 
 @receiver(models.signals.post_save, sender=PaysPayment)

@@ -745,8 +745,9 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
 
 @admin.register(SubjectPayment)
 class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+    actions = ('send_mail',)
     list_display = ('accounted', 'download_tag', 'registration', 'payment_type_label', 'amount_html',
-                    'received_by', 'note')
+                    'received_by', 'mail_sent', 'note')
     list_editable = ('note',)
     list_export = ('accounted', 'registration', 'subject', 'payment_type_label', 'amount')
     raw_id_fields = ('registration', 'related_payment', 'bankreader_transaction', 'pays_payment')
@@ -800,3 +801,9 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
         if not change:
             obj.received_by = request.user
         super(SubjectPaymentAdmin, self).save_model(request, obj, form, change)
+
+    def send_mail(self, request, queryset):
+        for payment in queryset.all():
+            payment.send_mail()
+        self.message_user(request, _('Selected items were sent by e-mail.'))
+    send_mail.short_description = _('Send selected items by e-mail')
