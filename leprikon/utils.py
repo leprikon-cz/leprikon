@@ -244,6 +244,15 @@ def merge_users(source, target):
             sp.user = target
             sp.save()
 
+    for sbi in source.leprikon_billing_info.all():
+        tbi = target.leprikon_billing_info.filter(name=sbi.name).first()
+        if tbi:
+            tbi = merge_objects(sbi, tbi, exclude=('id', 'user'))
+            tbi.save()
+        else:
+            sbi.user = target
+            sbi.save()
+
     for mr in source.leprikon_messages.all():
         if not target.leprikon_messages.filter(message=mr.message).exists():
             mr.recipient = target
@@ -255,7 +264,7 @@ def merge_users(source, target):
     except AttributeError:
         pass
 
-    from rocketchat import RocketChat
+    from .rocketchat import RocketChat
     RocketChat().merge_users(source, target)
 
     source.delete()
