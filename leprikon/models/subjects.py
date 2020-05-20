@@ -222,7 +222,7 @@ class SubjectType(models.Model):
         return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
 
     def get_payments_url(self):
-        change_list = reverse(f'admin:leprikon_subjectpayment_changelist')
+        change_list = reverse('admin:leprikon_subjectpayment_changelist')
         return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
 
 

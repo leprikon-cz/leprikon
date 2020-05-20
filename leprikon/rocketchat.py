@@ -265,8 +265,8 @@ def get_rc_subscription_data(room_data, user, alert, groupMentions, owner_ids=No
 
 def get_rc_subject_subscriptions_data(room_data, subject):
     leader_users = {
-        l.user.id: l.user
-        for l in subject.leaders.select_related('user')
+        lu.user.id: lu.user
+        for lu in subject.leaders.select_related('user')
     }
     return chain(
         get_rc_subscription_data(room_data, user, False, 0, leader_users)

@@ -195,18 +195,18 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
 
         # only allow to select leaders or alterates with not submitted timesheets
         leaders = self.instance.subject.all_leaders
-        alternates = [l for l in Leader.objects.all() if l not in leaders]
+        alternates = [leader for leader in Leader.objects.all() if leader not in leaders]
 
-        self.fields['leaders'].widget.choices = tuple((l.id, l) for l in leaders)
+        self.fields['leaders'].widget.choices = tuple((leader.id, leader) for leader in leaders)
         self.fields['leaders'].help_text = None
-        self.fields['alternates'].widget.choices = tuple((l.id, l) for l in alternates)
+        self.fields['alternates'].widget.choices = tuple((leader.id, leader) for leader in alternates)
         self.fields['alternates'].help_text = None
 
         if self.instance.id:
-            self.initial['leaders'] = [l.id for l in self.instance.all_leaders]
-            self.initial['alternates'] = [l.id for l in self.instance.all_alternates]
+            self.initial['leaders'] = [leader.id for leader in self.instance.all_leaders]
+            self.initial['alternates'] = [leader.id for leader in self.instance.all_alternates]
         else:
-            self.initial['leaders'] = [l.id for l in leaders]
+            self.initial['leaders'] = [leader.id for leader in leaders]
 
     def clean(self):
         self.cleaned_data = super(JournalEntryForm, self).clean()

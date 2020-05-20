@@ -377,7 +377,7 @@ EMAIL_BACKEND = (
 SITE_ID = 1
 
 CMS_LANGUAGES = {
-    SITE_ID: [{'code': l[0], 'name': l[1]} for l in LANGUAGES],
+    SITE_ID: [{'code': lang[0], 'name': lang[1]} for lang in LANGUAGES],
     'default': {
         'public': True,
         'fallbacks': [LANGUAGE_CODE],
