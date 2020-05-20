@@ -29,5 +29,6 @@ exec uwsgi --chdir=/app \
     --enable-threads \
     --socket=${UWSGI_SOCKET:-/app/run/socket} \
     --chmod-socket=${UWSGI_CHMOD_SOCKET:-600} \
+    --max-worker-lifetime=${UWSGI_MAX_WORKER_LIFETIME:-300} \
     --processes=${UWSGI_PROCESSES:-3} \
     ${UWSGI_OPTIONS}
