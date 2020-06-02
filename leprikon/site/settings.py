@@ -339,15 +339,24 @@ if not DEBUG and os.environ.get('SENTRY_DSN'):
 
 
 # Caching and session configuration
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': os.environ.get('MEMCACHED_LOCATION', '127.0.0.1:11211'),
-        'KEY_PREFIX': os.environ.get('MEMCACHED_KEY_PREFIX', 'leprikon'),
+# Only configure remote cache if explicitly specified in the environment.
+# Otherwise it would be enabled during `leprikon collectstatic` during build.
+if 'CACHE_LOCATION' in os.environ:
+    CACHES = {
+        'default': {
+            'BACKEND': os.environ.get('CACHE_BACKEND', 'django_redis.cache.RedisCache'),
+            'LOCATION': os.environ.get('CACHE_LOCATION'),
+        }
     }
-}
+    if CACHES['default']['BACKEND'] == 'django_redis.cache.RedisCache':
+        CACHES['default']['OPTIONS'] = {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    if 'CACHE_KEY_PREFIX' in os.environ:
+        CACHES['default']['KEY_PREFIX'] = os.environ['CACHE_KEY_PREFIX']
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
 if 'SESSION_COOKIE_AGE' in os.environ:
     SESSION_COOKIE_AGE = int(os.environ['SESSION_COOKIE_AGE'])
 if 'SESSION_STAFF_COOKIE_AGE' in os.environ:

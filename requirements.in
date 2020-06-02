@@ -17,6 +17,7 @@ django-mathfilters
 django-multiselectfield
 django-pays
 django-qr-code
+django-redis==4.11.0
 django-staticfiles-downloader
 django-template-admin
 django-user-unique-email
