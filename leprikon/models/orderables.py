@@ -55,7 +55,9 @@ class Orderable(Subject):
         new.groups.set(old.groups.all())
         new.age_groups.set(old.age_groups.all())
         new.target_groups.set(old.target_groups.all())
-        new.leaders.set(old.leaders.all())
+        for leader in old.all_leaders:
+            school_year.leaders.add(leader)
+        new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
         new.attachments.set(old.attachments.all())
         return new
