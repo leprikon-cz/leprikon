@@ -218,7 +218,10 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
             # no other validation makes sense without date
             return self.cleaned_data
 
-        if 'start' in self.cleaned_data and 'end' in self.cleaned_data:
+        if (
+            'start' in self.cleaned_data and 'end' in self.cleaned_data and
+            self.cleaned_data['start'] and self.cleaned_data['end']
+        ):
             errors = {}
             entries_by_leader = {
                 'leaders': dict(
@@ -245,7 +248,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                             continue
                         entry = JournalLeaderEntry()
                         entry.journal_entry = self.instance
-                        entry.timesheet = Timesheet.objects.for_leader_and_date(leader=leader, date=d)
+                        entry.timesheet = timesheet
                         entry.start = self.cleaned_data['start']
                         entry.end = self.cleaned_data['end']
                     else:
