@@ -17,14 +17,8 @@ from .leprikonsite import LeprikonSite
 
 class Message(models.Model):
     created = models.DateTimeField(_('created'), editable=False, auto_now_add=True)
-    sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        limit_choices_to={'is_staff': True, 'email__endswith': settings.EMAIL_DOMAIN},
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        verbose_name=_('sender'),
-    )
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True}, null=True,
+                               on_delete=models.SET_NULL, related_name='+', verbose_name=_('sender'))
     subject = models.CharField(_('subject'), max_length=150)
     text = HTMLField(_('text'), default='')
 
