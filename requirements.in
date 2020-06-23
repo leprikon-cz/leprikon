@@ -41,6 +41,6 @@ requests
 rocketchat-api
 sentry-sdk
 social-auth-app-django
+trml2pdf
 uwsgi
 whoosh
--e git+https://github.com/misli/trml2pdf.git@registerFontFamily#egg=trml2pdf
