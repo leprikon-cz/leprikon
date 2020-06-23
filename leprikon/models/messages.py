@@ -17,8 +17,14 @@ from .leprikonsite import LeprikonSite
 
 class Message(models.Model):
     created = models.DateTimeField(_('created'), editable=False, auto_now_add=True)
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, limit_choices_to={'is_staff': True}, null=True,
-                               on_delete=models.SET_NULL, related_name='+', verbose_name=_('sender'))
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        limit_choices_to={'is_staff': True, 'email__endswith': settings.EMAIL_DOMAIN},
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_('sender'),
+    )
     subject = models.CharField(_('subject'), max_length=150)
     text = HTMLField(_('text'), default='')
 
@@ -71,28 +77,30 @@ class MessageRecipient(models.Model):
         return reverse('leprikon:message_detail', args=(self.slug,))
 
     def send_mail(self):
-        if self.recipient.email:
-            context = {
-                'message_recipient': self,
-                'site': LeprikonSite.objects.get_current(),
-            }
-            if self.message.sender_id and self.message.sender.email:
-                from_email = f'"{self.message.sender.get_full_name()}" <{self.message.sender.email}>'
-            else:
-                from_email = settings.SERVER_EMAIL
-            msg = EmailMultiAlternatives(
-                subject=self.message.subject,
-                body=get_template('leprikon/message_mail.txt').render(context),
-                from_email=from_email,
-                to=[self.recipient.email],
-                headers={'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
-            )
-            msg.attach_alternative(get_template('leprikon/message_mail.html').render(context), 'text/html')
-            for attachment in self.message.attachments.all():
-                msg.attach_file(attachment.file.file.path)
-            msg.send()
-            self.sent_mail = now()
-            self.save()
+        context = {
+            'message_recipient': self,
+            'site': LeprikonSite.objects.get_current(),
+        }
+        if self.message.sender_id:
+            from_email = f'"{self.message.sender.get_full_name()}" <{settings.SERVER_EMAIL_PLAIN}>'
+            reply_to = f'"{self.message.sender.get_full_name()}" <{self.message.sender.email}>'
+        else:
+            from_email = settings.SERVER_EMAIL
+            reply_to = None
+        msg = EmailMultiAlternatives(
+            subject=self.message.subject,
+            body=get_template('leprikon/message_mail.txt').render(context),
+            from_email=from_email,
+            to=[self.recipient.email],
+            headers={'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+            reply_to=[reply_to],
+        )
+        msg.attach_alternative(get_template('leprikon/message_mail.html').render(context), 'text/html')
+        for attachment in self.message.attachments.all():
+            msg.attach_file(attachment.file.file.path)
+        msg.send()
+        self.sent_mail = now()
+        self.save()
 
 
 class MessageAttachment(models.Model):

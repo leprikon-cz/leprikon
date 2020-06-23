@@ -24,11 +24,7 @@ from .models.subjects import CHAT_GROUP_BROADCAST, Subject, SubjectRegistration
 
 User = get_user_model()
 
-SERVER_EMAIL = re.search('[^<]+@[^>]+', settings.SERVER_EMAIL).group()
-
-
 http_re = re.compile('^http')
-
 
 Leprikon = {'_id': 'leprikon', 'username': settings.LEPRIKON_CHAT_USERNAME}
 
@@ -97,9 +93,9 @@ def get_rc_config():
         ('Accounts_iframe_url', reverse('leprikon:user_login')),
         ('Accounts_Iframe_api_method', 'GET'),
         ('Accounts_Iframe_api_url', reverse('leprikon:api:rocketchat')),
-        ('From_Email', SERVER_EMAIL),
+        ('From_Email', settings.SERVER_EMAIL_PLAIN),
         ('Organization_Name', ls.name),
-        ('Organization_Email', SERVER_EMAIL),
+        ('Organization_Email', settings.SERVER_EMAIL_PLAIN),
         ('Organization_Type', 'nonprofit'),
         ('Country', 'czechRepublic'),
         ('Industry', 'education'),
@@ -177,7 +173,7 @@ def get_rc_leprikon_data():
         'name': settings.LEPRIKON_CHAT_NAME,
         'username': settings.LEPRIKON_CHAT_USERNAME,
         'emails': [{
-            'address': SERVER_EMAIL,
+            'address': settings.SERVER_EMAIL_PLAIN,
             'verified': True,
         }],
         'active': True,

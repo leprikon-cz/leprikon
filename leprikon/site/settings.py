@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import re
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -370,6 +371,7 @@ LOGIN_ERROR_URL = LOGIN_URL
 
 # Email configuration
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'leprikon@localhost')
+SERVER_EMAIL_PLAIN = re.search('[^<]+@[^>]+', SERVER_EMAIL).group()
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
