@@ -20,12 +20,16 @@ from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
+    register_subject_discount_model, register_subject_model,
+    register_subject_registration_model,
 )
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year
 
 
+@register_subject_model
 class Course(Subject):
+    subject_type_type = SubjectType.COURSE
     school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.PROTECT,
                                              related_name='courses', verbose_name=_('school year division'))
 
@@ -147,8 +151,9 @@ class CourseTime(StartEndMixin, models.Model):
         )
 
 
+@register_subject_registration_model
 class CourseRegistration(SubjectRegistration):
-    subject_type = SubjectType.COURSE
+    subject_type_type = SubjectType.COURSE
 
     class Meta:
         app_label = 'leprikon'
@@ -233,7 +238,9 @@ class CourseRegistration(SubjectRegistration):
         return [pps.status for pps in self.period_payment_statuses]
 
 
+@register_subject_discount_model
 class CourseDiscount(SubjectDiscount):
+    subject_type_type = SubjectType.COURSE
     registration = models.ForeignKey(CourseRegistration, on_delete=models.CASCADE,
                                      related_name='discounts', verbose_name=_('registration'))
     period = models.ForeignKey(SchoolYearPeriod, on_delete=models.PROTECT,

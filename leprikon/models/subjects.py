@@ -112,6 +112,71 @@ CHAT_GROUP_TYPE_HELP_TEXT = _(
 )
 
 
+_subject_models = {}
+_subject_registration_models = {}
+_subject_discount_models = {}
+_subject_admins = {}
+_subject_registration_admins = {}
+_subject_discount_admins = {}
+
+
+def register_subject_model(model_class):
+    _subject_models[model_class.subject_type_type] = model_class
+    return model_class
+
+
+def register_subject_registration_model(model_class):
+    _subject_registration_models[model_class.subject_type_type] = model_class
+    return model_class
+
+
+def register_subject_discount_model(model_class):
+    _subject_discount_models[model_class.subject_type_type] = model_class
+    return model_class
+
+
+def register_subject_admin(admin_class):
+    _subject_admins[admin_class.subject_type_type] = admin_class
+    return admin_class
+
+
+def register_subject_registration_admin(admin_class):
+    _subject_registration_admins[admin_class.subject_type_type] = admin_class
+    return admin_class
+
+
+def register_subject_discount_admin(admin_class):
+    _subject_discount_admins[admin_class.subject_type_type] = admin_class
+    return admin_class
+
+
+class SubjectManager(models.Manager):
+    def __init__(self, subject_type):
+        self.subject_type = subject_type
+        super().__init__()
+
+    def get_queryset(self):
+        return super().get_queryset().filter(subject_type=self.subject_type)
+
+
+class SubjectRegistrationManager(models.Manager):
+    def __init__(self, subject_type):
+        self.subject_type = subject_type
+        super().__init__()
+
+    def get_queryset(self):
+        return super().get_queryset().filter(subject__subject_type=self.subject_type)
+
+
+class SubjectDiscountManager(models.Manager):
+    def __init__(self, subject_type):
+        self.subject_type = subject_type
+        super().__init__()
+
+    def get_queryset(self):
+        return super().get_queryset().filter(registration__subject__subject_type=self.subject_type)
+
+
 class SubjectType(models.Model):
     COURSE = 'course'
     EVENT = 'event'
@@ -131,6 +196,7 @@ class SubjectType(models.Model):
     name_genitiv = models.CharField(_('name (genitiv)'), max_length=150, blank=True)
     name_akuzativ = models.CharField(_('name (akuzativ)'), max_length=150, blank=True)
     plural = models.CharField(_('name (plural)'), max_length=150)
+    plural_akuzativ = models.CharField(_('name (plural, akuzativ)'), max_length=150, blank=True)
     slug = models.SlugField()
     order = models.IntegerField(_('order'), blank=True, default=0)
     questions = models.ManyToManyField(
@@ -192,10 +258,12 @@ class SubjectType(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.name_genitiv is None:
+        if not self.name_genitiv:
             self.name_genitiv = self.name
-        if self.name_akuzativ is None:
+        if not self.name_akuzativ:
             self.name_akuzativ = self.name
+        if not self.plural_akuzativ:
+            self.plural_akuzativ = self.plural
         super(SubjectType, self).save(*args, **kwargs)
 
     @cached_property
@@ -224,6 +292,75 @@ class SubjectType(models.Model):
     def get_payments_url(self):
         change_list = reverse('admin:leprikon_subjectpayment_changelist')
         return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
+    
+    @cached_property
+    def class_base_name(self):
+        return self.subject_type.capitalize() + ''.join(
+            part.capitalize()
+            for part in self.slug.split('-')
+        )
+
+    def get_subject_model(self):
+        return type(
+            self.class_base_name,
+            (_subject_models[self.subject_type],),
+            {
+                '__module__': 'leprikon.models',
+                'objects': SubjectManager(self),
+                'Meta': type('Meta', (), {
+                    'proxy': True,
+                    'verbose_name': self.name,
+                    'verbose_name_plural': self.plural,
+                }),
+            }
+        )
+
+    def get_subject_registration_model(self):
+        return type(
+            f'{self.class_base_name}Registraion',
+            (_subject_registration_models[self.subject_type],),
+            {
+                '__module__': 'leprikon.models',
+                'objects': SubjectRegistrationManager(self),
+                'Meta': type('Meta', (), {
+                    'proxy': True,
+                    'verbose_name': _('registration for {}').format(self.name_akuzativ),
+                    'verbose_name_plural': _('registrations for {}').format(self.plural_akuzativ),
+                }),
+            }
+        )
+
+
+    def get_subject_discount_model(self):
+        return type(
+            f'{self.class_base_name}Discount',
+            (_subject_discount_models[self.subject_type],),
+            {
+                '__module__': 'leprikon.models',
+                'objects': SubjectRegistrationManager(self),
+                'Meta': type('Meta', (), {
+                    'proxy': True,
+                    'verbose_name': _('discount for {}').format(self.name_akuzativ),
+                    'verbose_name_plural': _('discount for {}').format(self.plural_akuzativ),
+                }),
+            }
+        )
+
+    def get_subject_admin(self):
+        SubjectAdmin = _subject_admins[self.subject_type]
+        return type(
+            f'{self.class_base_name}Admin',
+            (SubjectAdmin,),
+            {
+                'registration_model': self.get_subject_registration_model(),
+            }
+        )
+
+    def get_subject_registration_admin(self):
+        return _subject_registration_admins[self.subject_type]
+
+    def get_subject_discount_admin(self):
+        return _subject_discount_admins[self.subject_type]
 
 
 class BaseAttachment(models.Model):

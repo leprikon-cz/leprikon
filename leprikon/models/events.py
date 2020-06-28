@@ -14,12 +14,16 @@ from .roles import Leader
 from .schoolyear import SchoolYear
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
+    register_subject_discount_model, register_subject_model,
+    register_subject_registration_model,
 )
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year
 
 
+@register_subject_model
 class Event(Subject):
+    subject_type_type = SubjectType.EVENT
     start_date = models.DateField(_('start date'))
     end_date = models.DateField(_('end date'))
     start_time = models.TimeField(_('start time'), blank=True, null=True)
@@ -92,8 +96,9 @@ class Event(Subject):
         return new
 
 
+@register_subject_registration_model
 class EventRegistration(SubjectRegistration):
-    subject_type = SubjectType.EVENT
+    subject_type_type = SubjectType.EVENT
 
     class Meta:
         app_label = 'leprikon'
@@ -130,7 +135,9 @@ class EventRegistration(SubjectRegistration):
         return [self.payment_status]
 
 
+@register_subject_discount_model
 class EventDiscount(SubjectDiscount):
+    subject_type_type = SubjectType.EVENT
     registration = models.ForeignKey(EventRegistration, on_delete=models.CASCADE,
                                      related_name='discounts', verbose_name=_('registration'))
 

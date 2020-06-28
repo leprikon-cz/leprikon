@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.db.utils import DatabaseError
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import format_html
@@ -11,7 +12,11 @@ from ..models.orderables import (
     Orderable, OrderableDiscount, OrderableRegistration,
 )
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
+from ..models.subjects import (
+    SubjectType,
+    register_subject_discount_admin, register_subject_admin,
+    register_subject_registration_admin,
+)
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
 from .subjects import (
@@ -19,7 +24,7 @@ from .subjects import (
 )
 
 
-@admin.register(Orderable)
+@register_subject_admin
 class OrderableAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.ORDERABLE
     registration_model = OrderableRegistration
@@ -93,7 +98,7 @@ class OrderableAdmin(SubjectBaseAdmin):
         ).distinct()
 
 
-@admin.register(OrderableRegistration)
+@register_subject_registration_admin
 class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.ORDERABLE
     actions = ('add_full_discount',)
@@ -150,7 +155,8 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
     orderable_payments.short_description = _('orderable event payments')
 
 
-@admin.register(OrderableDiscount)
+@register_subject_discount_admin
 class OrderableDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+    subject_type_type = SubjectType.ORDERABLE
     list_display = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
     list_export = ('accounted', 'registration', 'subject', 'amount', 'explanation')

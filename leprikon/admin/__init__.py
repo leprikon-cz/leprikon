@@ -3,10 +3,12 @@ import locale
 import icu
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.db.utils import DatabaseError
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 
+from ..models.subjects import SubjectType
 from . import (  # NOQA
     account, agegroup, agreements, citizenship, courses, department, events,
     journals, leprikonsite, messages, orderables, organizations, place,
@@ -65,3 +67,21 @@ def get_app_list(self, request):
 # override default Admin site's app_index and get_app_list
 admin.sites.AdminSite.app_index = app_index
 admin.sites.AdminSite.get_app_list = get_app_list
+
+
+try:
+    for subject_type in SubjectType.objects.all():
+        admin.site.register(
+            subject_type.get_subject_model(),
+            subject_type.get_subject_admin(),
+        )
+        admin.site.register(
+            subject_type.get_subject_registration_model(),
+            subject_type.get_subject_registration_admin(),
+        )
+        admin.site.register(
+            subject_type.get_subject_discount_model(),
+            subject_type.get_subject_discount_admin(),
+        )
+except DatabaseError:
+    pass

@@ -14,7 +14,11 @@ from ..models.courses import (
     CourseTime,
 )
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
+from ..models.subjects import (
+    SubjectType,
+    register_subject_discount_admin, register_subject_admin,
+    register_subject_registration_admin,
+)
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
 from .subjects import (
@@ -27,7 +31,7 @@ class CourseTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-@admin.register(Course)
+@register_subject_admin
 class CourseAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.COURSE
     registration_model = CourseRegistration
@@ -133,7 +137,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
         return False
 
 
-@admin.register(CourseRegistration)
+@register_subject_registration_admin
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.COURSE
     actions = ('add_full_discount_for_period',)
@@ -212,8 +216,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     course_payments.short_description = _('course payments')
 
 
-@admin.register(CourseDiscount)
+@register_subject_discount_admin
 class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+    subject_type_type = SubjectType.COURSE
     form = CourseDiscountAdminForm
     list_display = ('accounted', 'registration', 'subject', 'period', 'amount_html', 'explanation')
     list_export = ('accounted', 'registration', 'subject', 'period', 'amount', 'explanation')

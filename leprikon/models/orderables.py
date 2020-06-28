@@ -14,12 +14,16 @@ from .roles import Leader
 from .schoolyear import SchoolYear
 from .subjects import (
     Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
+    register_subject_discount_model, register_subject_model,
+    register_subject_registration_model,
 )
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus
 
 
+@register_subject_model
 class Orderable(Subject):
+    subject_type_type = SubjectType.ORDERABLE
     duration = models.DurationField(_('duration'), help_text=_('Format: HH:MM:SS'))
     due_from_days = models.IntegerField(
         _('number of days to send the payment request before event date'), blank=True, null=True,
@@ -63,8 +67,9 @@ class Orderable(Subject):
         return new
 
 
+@register_subject_registration_model
 class OrderableRegistration(SubjectRegistration):
-    subject_type = SubjectType.ORDERABLE
+    subject_type_type = SubjectType.ORDERABLE
     start_date = models.DateField(_('start date'))
     start_time = models.TimeField(_('start time'), blank=True, null=True)
 
@@ -133,7 +138,9 @@ class OrderableRegistration(SubjectRegistration):
     event_date.short_description = _('event date')
 
 
+@register_subject_discount_model
 class OrderableDiscount(SubjectDiscount):
+    subject_type_type = SubjectType.ORDERABLE
     registration = models.ForeignKey(OrderableRegistration, on_delete=models.CASCADE,
                                      related_name='discounts', verbose_name=_('registration'))
 

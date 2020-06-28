@@ -9,7 +9,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
+from ..models.subjects import (
+    SubjectType, SubjectManager, SubjectRegistrationManager,
+    register_subject_discount_admin, register_subject_admin,
+    register_subject_registration_admin,
+)
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
 from .subjects import (
@@ -17,7 +21,7 @@ from .subjects import (
 )
 
 
-@admin.register(Event)
+@register_subject_admin
 class EventAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.EVENT
     registration_model = EventRegistration
@@ -90,7 +94,7 @@ class EventAdmin(SubjectBaseAdmin):
         ).distinct()
 
 
-@admin.register(EventRegistration)
+@register_subject_registration_admin
 class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.EVENT
     actions = ('add_full_discount',)
@@ -147,7 +151,8 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     event_payments.short_description = _('event payments')
 
 
-@admin.register(EventDiscount)
+@register_subject_discount_admin
 class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+    subject_type_type = SubjectType.EVENT
     list_display = ('accounted', 'registration', 'subject', 'amount_html', 'explanation')
     list_export = ('accounted', 'registration', 'subject', 'amount', 'explanation')
