@@ -208,11 +208,11 @@ DATABASES = {
 if DATABASES['default']['ENGINE'].endswith('mysql'):
     DATABASES['default']['OPTIONS'] = {
         'init_command': (
-            'ALTER DATABASE `{name}` DEFAULT CHARACTER SET utf8 COLLATE {collate}; '
+            'ALTER DATABASE `{name}` CHARACTER SET utf8mb4 COLLATE {collate}; '
             'SET default_storage_engine=INNODB; SET sql_mode=STRICT_TRANS_TABLES; '
             .format(
                 name=DATABASES['default']['NAME'],
-                collate=os.environ.get('DATABASE_COLLATE', 'utf8_czech_ci'),
+                collate=os.environ.get('DATABASE_COLLATE', 'utf8mb4_czech_ci'),
             )
         )
     }
