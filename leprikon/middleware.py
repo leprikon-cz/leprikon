@@ -109,9 +109,11 @@ class LeprikonMiddleware(object):
             not request.user.is_authenticated or
             request.COOKIES['rc_uid'] != get_rc_id(request.user)
         ):
-            rc_logout(
-                auth_token=request.COOKIES['rc_token'],
-                user_id=request.COOKIES['rc_uid'],
-            )
-
+            try:
+                rc_logout(
+                    auth_token=request.COOKIES['rc_token'],
+                    user_id=request.COOKIES['rc_uid'],
+                )
+            except:
+                pass
         return response
