@@ -472,15 +472,11 @@ class RocketChat:
             for subscription in self._mongo.rocketchat_subscription.find({
                 'u._id': source_id
             }, session=self._mongo_session):
-                self._mongo.rocketchat_subscription.count_documents({
-                    'u._id': target_id,
-                    'rid': subscription['rid'],
-                }) or self._sync_one(
+                subscription['_id'] = f'''{subscription['rid']}-{target_u['_id']}'''
+                subscription['u'] = target_u
+                self._sync_one(
                     'rocketchat_subscription',
-                    {
-                        '_id': subscription['_id'],
-                        'u': target_u,
-                    },
+                    subscription,
                 )
             # merge transfer messages and rooms
             for collection in (

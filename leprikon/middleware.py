@@ -114,6 +114,6 @@ class LeprikonMiddleware(object):
                     auth_token=request.COOKIES['rc_token'],
                     user_id=request.COOKIES['rc_uid'],
                 )
-            except:
+            except Exception:
                 pass
         return response
