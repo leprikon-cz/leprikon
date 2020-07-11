@@ -100,7 +100,9 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'event_date', 'participants_list_html', 'price',
         'orderable_discounts', 'orderable_payments',
-        'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note', 'random_number',
+        'created_with_by', 'approved_with_by', 'payment_requested_with_by',
+        'cancelation_requested_with_by', 'canceled_with_by',
+        'note', 'random_number',
     )
 
     def add_full_discount(self, request, queryset):

@@ -141,7 +141,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
         'course_discounts', 'course_payments',
-        'created', 'approved', 'payment_requested', 'cancel_request', 'canceled', 'note', 'random_number',
+        'created_with_by', 'approved_with_by', 'payment_requested_with_by',
+        'cancelation_requested_with_by', 'canceled_with_by',
+        'note', 'random_number',
     )
 
     def add_full_discount_for_period(self, request, queryset):

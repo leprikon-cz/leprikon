@@ -7,7 +7,7 @@
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             {% trans 'download' %}
         </a>
-        {% if not reg.canceled and not reg.cancel_request %}
+        {% if not reg.canceled and not reg.cancelation_requested %}
         <a class="btn btn-primary btn-xs"
             href="{% url_with_back 'leprikon:registration_cancel' reg.id %}"
             title="{% trans 'cancel registration' %}">
@@ -47,8 +47,8 @@
                     {% else %}
                         {% blocktrans with d=reg.canceled %}registration refused on {{ d }}{% endblocktrans %}
                     {% endif %}
-                {% elif reg.cancel_request %}
-                    {% trans 'cancellation requested' %}
+                {% elif reg.cancelation_requested %}
+                    {% blocktrans with d=reg.cancellation_requested %}cancellation requested on {{ d }}{% endblocktrans %}
                 {% elif reg.approved %}
                     {% blocktrans with d=reg.approved %}registration approved on {{ d }}{% endblocktrans %}
                 {% else %}

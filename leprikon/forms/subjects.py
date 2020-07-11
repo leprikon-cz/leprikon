@@ -700,6 +700,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
     def _save(self, commit):
         # set user
+        self.instance.created_by = self.user
         self.instance.user = self.user
 
         # set price
@@ -765,21 +766,21 @@ class CourseRegistrationForm(RegistrationForm):
 
     class Meta:
         model = CourseRegistration
-        exclude = ('subject', 'user', 'cancel_request', 'canceled')
+        exclude = ('subject', 'user', 'cancelation_requested', 'cancelation_requested_by', 'canceled', 'canceled_by')
 
 
 class EventRegistrationForm(RegistrationForm):
 
     class Meta:
         model = EventRegistration
-        exclude = ('subject', 'user', 'cancel_request', 'canceled')
+        exclude = ('subject', 'user', 'cancelation_requested', 'cancelation_requested_by', 'canceled', 'canceled_by')
 
 
 class OrderableRegistrationForm(RegistrationForm):
 
     class Meta:
         model = OrderableRegistration
-        exclude = ('subject', 'user', 'cancel_request', 'canceled')
+        exclude = ('subject', 'user', 'cancelation_requested', 'cancelation_requested_by', 'canceled', 'canceled_by')
 
 
 class RegistrationAdminForm(forms.ModelForm):

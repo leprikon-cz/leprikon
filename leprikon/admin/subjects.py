@@ -8,13 +8,16 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
+from django.db.models import BooleanField, Func
 from django.db.models.expressions import Random
 from django.http import (
     HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
 )
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.formats import date_format
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
@@ -40,6 +43,12 @@ from .filters import (
 )
 from .messages import SendMessageAdminMixin
 from .pdf import PdfExportAdminMixin
+
+
+class IsNull(Func):
+    _output_field = BooleanField()
+    arity = 1
+    template = '%(expressions)s IS NULL'
 
 
 class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
@@ -107,7 +116,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
 
     @property
     def media(self):
-        m = super(SubjectBaseAdmin, self).media
+        m = super().media
         m.add_js(['leprikon/js/Popup.js'])
         return m
 
@@ -214,7 +223,7 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
         return formfield
 
     def save_form(self, request, form, change):
-        obj = super(SubjectBaseAdmin, self).save_form(request, form, change)
+        obj = super().save_form(request, form, change)
         obj.school_year = request.school_year
         return obj
 
@@ -435,7 +444,11 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     list_editable = ('note',)
     list_export = (
         'id', 'variable_symbol', 'slug', 'user', 'subject', 'subject_variant', 'price', 'note',
-        'created', 'payment_requested', 'approved', 'canceled', 'cancel_request',
+        'created', 'created_by',
+        'payment_requested', 'payment_requested_by',
+        'approved', 'approved_by',
+        'cancelation_requested', 'cancelation_requested_by',
+        'canceled', 'canceled_by',
         'agreement_options_list', 'group_members_list',
         'participants__gender', 'participants__first_name', 'participants__last_name',
         'participants__birth_num', 'participants__birth_date', 'participants__gender',
@@ -477,7 +490,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         'participants__parent2_first_name', 'participants__parent2_last_name',
         'group_members__first_name', 'group_members__last_name',
     )
-    ordering = ('-cancel_request', '-created')
+    ordering = ('-created',)
     raw_id_fields = ('subject', 'user',)
 
     @property
@@ -499,13 +512,25 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             del(actions['delete_selected'])
         return actions
 
+    def get_changelist(self, request, **kwargs):
+        class ChangeList(super().get_changelist(request, **kwargs)):
+            def get_ordering(self, request, queryset):
+                # Show registrations with cancelation request on the top
+                # if not showing canceled ones.
+                ordering = super().get_ordering(request, queryset)
+                return ordering if request.GET.get('canceled') == 'yes' else [
+                    IsNull('cancelation_requested'),
+                    *ordering,
+                ]
+        return ChangeList
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(random_number=Random())
 
     def approve(self, request, queryset):
         for registration in queryset.all():
             try:
-                registration.approve()
+                registration.approve(request.user)
             except ValidationError as e:
                 self.message_user(request, e.message, messages.ERROR)
             else:
@@ -517,7 +542,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def refuse(self, request, queryset):
         for registration in queryset.all():
             try:
-                registration.refuse()
+                registration.refuse(request.user)
             except ValidationError as e:
                 self.message_user(request, e.message, messages.ERROR)
             else:
@@ -528,14 +553,14 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     def request_payment(self, request, queryset):
         for registration in queryset.all():
-            registration.request_payment()
+            registration.request_payment(request.user)
         self.message_user(request, _('Payment was requested for selected registrations.'))
     request_payment.short_description = _('Request payment for selected registrations')
 
     def cancel(self, request, queryset):
         for registration in queryset.all():
             try:
-                registration.cancel()
+                registration.cancel(request.user)
             except ValidationError as e:
                 self.message_user(request, e.message, messages.ERROR)
             else:
@@ -607,6 +632,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
                 if obj.subject_variant
                 else obj.subject.price
             )
+            obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
     def save_related(self, request, form, formsets, change):
@@ -619,7 +645,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     def get_css(self, obj):
         classes = []
-        if obj.cancel_request:
+        if obj.cancelation_requested and not obj.canceled:
             classes.append('reg-cancel-request')
         if obj.approved:
             classes.append('reg-approved')
@@ -634,6 +660,39 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def subject_name(self, obj):
         return obj.subject.name
     subject_name.short_description = _('subject')
+
+    def _date_with_by(self, obj, attr):
+        d = getattr(obj, attr)
+        if d:
+            d_formated = date_format(d, 'SHORT_DATETIME_FORMAT')
+            by = getattr(obj, attr + '_by')
+            return mark_safe(f'<span title="{by}">{d_formated}</span>') if by else d_formated
+        return '-'
+
+    def created_with_by(self, obj):
+        return self._date_with_by(obj, 'created')
+    created_with_by.admin_order_field = 'created'
+    created_with_by.short_description = _('time of registration')
+
+    def approved_with_by(self, obj):
+        return self._date_with_by(obj, 'approved')
+    approved_with_by.admin_order_field = 'approved'
+    approved_with_by.short_description = _('time of approval')
+
+    def payment_requested_with_by(self, obj):
+        return self._date_with_by(obj, 'payment_requested')
+    payment_requested_with_by.admin_order_field = 'payment_requested'
+    payment_requested_with_by.short_description = _('payment request time')
+
+    def cancelation_requested_with_by(self, obj):
+        return self._date_with_by(obj, 'cancelation_requested')
+    cancelation_requested_with_by.admin_order_field = 'cancelation_requested'
+    cancelation_requested_with_by.short_description = _('time of cancellation request')
+
+    def canceled_with_by(self, obj):
+        return self._date_with_by(obj, 'canceled')
+    canceled_with_by.admin_order_field = 'canceled'
+    canceled_with_by.short_description = _('time of cancellation')
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_registrations__in=queryset).distinct()

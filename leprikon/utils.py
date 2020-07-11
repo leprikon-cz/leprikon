@@ -202,6 +202,8 @@ def merge_objects(source, target, attributes=None, exclude=[]):
 
 @transaction.atomic
 def merge_users(source, target):
+    from .models.subjects import SubjectRegistration
+
     target = merge_objects(source, target, ('first_name', 'last_name', 'email'))
     target.date_joined = (
         min(source.date_joined, target.date_joined)
@@ -224,7 +226,11 @@ def merge_users(source, target):
         # both users are leaders
         raise
 
-    source.leprikon_registrations.update(user=target)
+    for attr in (
+        'user', 'created_by', 'approved_by', 'payment_requested_by',
+        'cancelation_requested_by', 'canceled_by',
+    ):
+        SubjectRegistration.objects.filter(**{attr: source}).update(**{attr: target})
 
     for sp in source.leprikon_participants.all():
         tp = target.leprikon_participants.filter(birth_num=sp.birth_num).first()

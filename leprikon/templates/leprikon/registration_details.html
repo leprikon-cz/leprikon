@@ -18,8 +18,8 @@
             <div class="col-sm-8">
                 {% if reg.canceled %}
                     {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
-                {% elif reg.cancel_request %}
-                    {% trans 'cancellation requested' %}
+                {% elif reg.cancelation_requested %}
+                    {% blocktrans with d=reg.canceled %}cancellation requested on {{ d }}{% endblocktrans %}
                 {% elif reg.approved %}
                     {% blocktrans with d=reg.approved %}registration approved on {{ d }}{% endblocktrans %}
                 {% else %}

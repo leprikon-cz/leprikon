@@ -795,7 +795,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     object_name = 'registration'
 
     slug = models.SlugField(editable=False, max_length=250, null=True)
-    created = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                              related_name='leprikon_registrations', verbose_name=_('user'))
     subject = models.ForeignKey(Subject, on_delete=models.PROTECT,
@@ -804,10 +803,25 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                                         related_name='registrations', verbose_name=_('variant'))
     price = PriceField(_('price'), editable=False)
 
+    created = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
+                                   related_name='+', verbose_name=_('created by'))
     approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
+    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('approved by'))
     payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
+    payment_requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT, related_name='+',
+        verbose_name=_('payment requested by'),
+    )
+    cancelation_requested = models.DateTimeField(_('time of cancellation request'), editable=False, null=True)
+    cancelation_requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT, related_name='+',
+        verbose_name=_('cancelation requested by'),
+    )
     canceled = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
-    cancel_request = models.BooleanField(_('cancel request'), default=False)
+    canceled_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
+                                    related_name='+', verbose_name=_('canceled by'))
     note = models.CharField(_('note'), max_length=300, blank=True, default='')
 
     questions = models.ManyToManyField(Question, editable=False, related_name='registrations')
@@ -1060,11 +1074,13 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         'canceled': _('Registration for {subject_type} {subject} was canceled'),
     }
 
-    def approve(self):
+    def approve(self, approved_by):
         if self.approved is None:
             with transaction.atomic():
                 self.canceled = None
+                self.canceled_by = None
                 self.approved = timezone.now()
+                self.approved_by = approved_by
                 self.save()
                 due_from = self.get_due_from()
                 self.send_mail('approved')
@@ -1079,18 +1095,20 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 _('The registration {r} has already been approved.')
             ).format(r=self))
 
-    def request_payment(self):
+    def request_payment(self, payment_requested_by):
         with transaction.atomic():
             self.payment_requested = timezone.now()
+            self.payment_requested_by = payment_requested_by
             self.save()
             if self.payment_status_sum.amount_due:
                 self.send_mail('payment_request')
 
-    def refuse(self):
+    def refuse(self, refused_by):
         if self.approved is None:
             if self.canceled is None:
                 with transaction.atomic():
                     self.canceled = timezone.now()
+                    self.canceled_by = refused_by
                     self.save()
                     self.send_mail('refused')
             else:
@@ -1100,11 +1118,12 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 'Unfortunately, it is not possible to refuse the registration {r}. However, You may cancel it.'
             ).format(r=self))
 
-    def cancel(self):
+    def cancel(self, canceled_by):
         if self.approved:
             if self.canceled is None:
                 with transaction.atomic():
                     self.canceled = timezone.now()
+                    self.canceled_by = canceled_by
                     self.save()
                     self.send_mail('canceled')
             else:
@@ -1113,11 +1132,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             raise ValidationError(_(
                 'Unfortunately, it is not possible to cancel the registration {r}. However, You may refuse it.'
             ).format(r=self))
-
-    def save(self, *args, **kwargs):
-        if self.canceled:
-            self.cancel_request = False
-        super().save(*args, **kwargs)
 
     def generate_variable_symbol_and_slug(self):
         self.variable_symbol = generate_variable_symbol(self)
