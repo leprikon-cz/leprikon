@@ -40,4 +40,4 @@ class SendPaymentRequest(SentryCronJobBase):
                 approved__isnull=False,
             ).filter(Q(payment_requested=None) | Q(payment_requested__date__lt=today)),
         ):
-            registration.request_payment()
+            registration.request_payment(None)

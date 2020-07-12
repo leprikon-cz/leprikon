@@ -1087,7 +1087,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 if due_from <= date.today() and (
                     self.payment_requested is None or self.payment_requested.date() < due_from
                 ):
-                    self.request_payment()
+                    self.request_payment(approved_by)
         else:
             raise ValidationError((
                 _('Unfortunately, it is not possible to restore canceled registration {r}. Please create new one.')
