@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-11 14:24+0200\n"
+"POT-Creation-Date: 2020-07-12 10:41+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -732,16 +732,16 @@ msgstr "Výpis kurzů"
 msgid "Course list with search form"
 msgstr "Výpis kurzů s vyhledávacím formulářem"
 
-#: cms_plugins/events.py:12 cms_plugins/orderables.py:12
+#: cms_plugins/events.py:12
 #: templates/leprikon/reports/event_payments_status.html:14
 msgid "Event"
 msgstr "Akce"
 
-#: cms_plugins/events.py:22 cms_plugins/orderables.py:22
+#: cms_plugins/events.py:22
 msgid "Event list"
 msgstr "Výpis akcí"
 
-#: cms_plugins/events.py:32 cms_plugins/orderables.py:32
+#: cms_plugins/events.py:32
 msgid "Event list with search form"
 msgstr "Výpis akcí s vyhledávacím formulářem"
 
@@ -752,6 +752,19 @@ msgstr "Výpis vedoucích"
 #: cms_plugins/leaders.py:31
 msgid "Leader list with search form"
 msgstr "Výpis vedoucích s vyhledávacím formulářem"
+
+#: cms_plugins/orderables.py:12
+#: templates/leprikon/reports/orderable_payments_status.html:14
+msgid "Orderable event"
+msgstr "Akce na objednání"
+
+#: cms_plugins/orderables.py:22
+msgid "Orderable list"
+msgstr "Výpis akcí na objednání"
+
+#: cms_plugins/orderables.py:32
+msgid "Orderable list with search form"
+msgstr "Výpis akcí na objednání s vyhledávacím formulářem"
 
 #: conf/default_settings.py:12 models/organizations.py:16 models/roles.py:117
 #: models/roles.py:162 models/roles.py:218 models/subjects.py:1238
@@ -3500,10 +3513,6 @@ msgstr "Platby za akce na objednání od %(date_start)s do %(date_end)s"
 msgid "Orderable event payments status by date %(date)s"
 msgstr "Stav plateb za akce na objednání ke dni %(date)s"
 
-#: templates/leprikon/reports/orderable_payments_status.html:14
-msgid "Orderable event"
-msgstr "Akce na objednání"
-
 #: templates/leprikon/reports/orderable_payments_status.html:78
 msgid "All orderable events"
 msgstr "Všechny akce na objednání"
@@ -4044,31 +4053,3 @@ msgstr "Prosím vložte své nové heslo pro kontrolu dvakrát."
 #: views/user.py:156
 msgid "Set my password"
 msgstr "Nastavit heslo"
-
-#~ msgid ""
-#~ "Only users with admin access and email within domain {domain} may be set "
-#~ "as a message sender."
-#~ msgstr ""
-#~ "Pouze uživatelé s administračním přístupem a e-mailovou adresou v doméně "
-#~ "{domain} mohou být nastaveni jako odesilatelé zprávy."
-
-#~ msgid "cancel request"
-#~ msgstr "požadavek na odhlášení"
-
-#~ msgid "Registrations for %(course.subject_type.name_akuzativ)s %(name)s"
-#~ msgstr "Přihlášky na %(course.subject_type.name_akuzativ)s %(name)s"
-
-#~ msgid "There are no active registrations for this course."
-#~ msgstr "Na tento kurz nejsou žádné aktivní přihášky."
-
-#~ msgid "Registrations for %(event.subject_type.name_akuzativ)s %(name)s"
-#~ msgstr "Přihláška na %(event.subject_type.name_akuzativ)s %(name)s"
-
-#~ msgid "Registrations for %(orderable.subject_type.name_akuzativ)s %(name)s"
-#~ msgstr "Přihlášky na %(orderable.subject_type.name_akuzativ)s %(name)s"
-
-#~ msgid "There are no active registrations for this orderable."
-#~ msgstr "Na tuto akci na objednání nejsou žádné aktivní přihášky."
-
-#~ msgid "Dates of event"
-#~ msgstr "Termín konání"
