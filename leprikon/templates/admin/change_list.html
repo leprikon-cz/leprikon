@@ -1,9 +1,28 @@
 {% extends "admin/change_list.html" %}
-{% load static leprikon_tags admin_list %}
+{% load static i18n leprikon_tags admin_list %}
 
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/scrollbars.css" %}" />
+{% endblock %}
+
+{% block filters %}
+    {% if cl.has_filters or cl.model_admin.legend %}
+    <div id="changelist-filter">
+        {% if cl.model_admin.legend %}
+            <h2>{% trans 'Legend' %}</h2>
+            <div id="changelist-legend">
+            {% for class, label in cl.model_admin.legend %}
+                <div class="{{ class }}">{{ label }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% if cl.has_filters or cl.model_admin.legend %}
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block result_list %}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-12 11:41+0200\n"
+"POT-Creation-Date: 2020-07-12 15:28+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -211,7 +211,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:662 admin/subjects.py:792
+#: admin/journals.py:100 admin/subjects.py:671 admin/subjects.py:801
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:254 models/subjects.py:390 models/subjects.py:684
 #: models/subjects.py:702 models/subjects.py:801
@@ -506,40 +506,56 @@ msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:675 models/subjects.py:806
+#: admin/subjects.py:663
+msgid "cancelation requested"
+msgstr "požádáno o odhlášení"
+
+#: admin/subjects.py:664
+msgid "new registration"
+msgstr "nová přihláška"
+
+#: admin/subjects.py:665
+msgid "new registration, capacity full"
+msgstr "nová přihláška, naplěná kapacita"
+
+#: admin/subjects.py:666
+msgid "approved registration"
+msgstr "schválená přihláška"
+
+#: admin/subjects.py:684 models/subjects.py:806
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: admin/subjects.py:680 models/subjects.py:809
+#: admin/subjects.py:689 models/subjects.py:809
 msgid "time of approval"
 msgstr "čas schválení"
 
-#: admin/subjects.py:685 models/subjects.py:812
+#: admin/subjects.py:694 models/subjects.py:812
 msgid "payment request time"
 msgstr "odeslání výzvy k platbě"
 
-#: admin/subjects.py:690 models/subjects.py:817
+#: admin/subjects.py:699 models/subjects.py:817
 msgid "time of cancellation request"
 msgstr "čas žádosti o odhlášení"
 
-#: admin/subjects.py:695 models/subjects.py:822
+#: admin/subjects.py:704 models/subjects.py:822
 msgid "time of cancellation"
 msgstr "čas odhlášení"
 
-#: admin/subjects.py:703
+#: admin/subjects.py:712
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:800 models/subjects.py:1492
+#: admin/subjects.py:809 models/subjects.py:1492
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
 
-#: admin/subjects.py:867
+#: admin/subjects.py:876
 msgid "Selected items were sent by e-mail."
 msgstr "Vybrané položky byly odeslány e-mailem."
 
-#: admin/subjects.py:868
+#: admin/subjects.py:877
 msgid "Send selected items by e-mail"
 msgstr "Odeslat vybrané položky e-mailem"
 
@@ -2597,6 +2613,14 @@ msgstr "Zobrazení webu"
 #: templates/admin/base.html:10 templates/admin/inc/branding.html:16
 msgid "Documentation"
 msgstr "Dokumentace"
+
+#: templates/admin/change_list.html:13
+msgid "Legend"
+msgstr "Legenda"
+
+#: templates/admin/change_list.html:21
+msgid "Filter"
+msgstr ""
 
 #: templates/admin/change_list_results.html:17
 msgid "Remove from sorting"

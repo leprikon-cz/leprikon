@@ -1,3 +1,13 @@
+#changelist-legend {
+    margin-bottom: 15px;
+}
+
+#changelist-legend div {
+    padding: 10px;
+    margin: 5px;
+}
+
+#changelist-legend .reg-new,
 .change-list table .row1.reg-new,
 .change-list table .row2.reg-new
 {
@@ -8,6 +18,19 @@
 {
     background: #eef;
 }
+#changelist-legend .reg-new.reg-full,
+.change-list table .row1.reg-new.reg-full,
+.change-list table .row2.reg-new.reg-full
+{
+    background: repeating-linear-gradient(
+        45deg,
+        #ddf,
+        #ddf 10px,
+        #eef 10px,
+        #eef 20px
+      );
+}
+#changelist-legend .reg-approved,
 .change-list table .row1.reg-approved,
 .change-list table .row2.reg-approved
 {
@@ -18,6 +41,7 @@
 {
     background: #efe;
 }
+#changelist-legend .reg-cancel-request,
 .change-list table .row1.reg-cancel-request,
 .change-list table .row2.reg-cancel-request
 {

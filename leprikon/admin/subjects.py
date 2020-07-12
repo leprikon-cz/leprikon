@@ -651,11 +651,20 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             classes.append('reg-approved')
         else:
             classes.append('reg-new')
+            if obj.subject.full:
+                classes.append('reg-full')
         if obj.canceled:
             classes.append('reg-canceled')
         else:
             classes.append('reg-active')
         return ' '.join(classes)
+
+    legend = (
+        ('reg-cancel-request', _('cancelation requested')),
+        ('reg-new', _('new registration')),
+        ('reg-new reg-full', _('new registration, capacity full')),
+        ('reg-approved', _('approved registration')),
+    )
 
     def subject_name(self, obj):
         return obj.subject.name
