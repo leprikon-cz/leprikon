@@ -1,0 +1,6 @@
+{% load cms_tags %}
+{% if request.school_year in instance.all_school_years %}
+    {% for sub_plugin in instance.child_plugin_instances %}
+        {% render_plugin sub_plugin %}
+    {% endfor %}
+{% endif %}

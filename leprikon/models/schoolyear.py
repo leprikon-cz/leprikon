@@ -1,9 +1,11 @@
 from datetime import date
 
+from cms.models import CMSPlugin
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
+from ..utils import comma_separated
 from .startend import StartEndMixin
 from .utils import change_year
 
@@ -116,3 +118,25 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
             start=self.start,
             end=self.end,
         )
+
+
+class SchoolYearBlockPlugin(CMSPlugin):
+    school_years = models.ManyToManyField(
+        SchoolYear,
+        related_name='+',
+        verbose_name=_('school years'),
+        help_text=_('Which school years should the block be visible for?'),
+    )
+
+    class Meta:
+        app_label = 'leprikon'
+
+    def __str__(self):
+        return comma_separated(self.all_school_years)
+
+    @cached_property
+    def all_school_years(self):
+        return list(self.school_years.all())
+
+    def copy_relations(self, oldinstance):
+        self.school_years.set(oldinstance.school_years.all())

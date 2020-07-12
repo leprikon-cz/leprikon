@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-12 10:41+0200\n"
+"POT-Creation-Date: 2020-07-12 11:41+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -149,7 +149,7 @@ msgid "status"
 msgstr "stav"
 
 #: admin/filters.py:41 admin/filters.py:57 admin/filters.py:106
-#: models/agreements.py:12 models/question.py:23 models/schoolyear.py:29
+#: models/agreements.py:12 models/question.py:23 models/schoolyear.py:31
 msgid "active"
 msgstr "aktivní"
 
@@ -766,6 +766,10 @@ msgstr "Výpis akcí na objednání"
 msgid "Orderable list with search form"
 msgstr "Výpis akcí na objednání s vyhledávacím formulářem"
 
+#: cms_plugins/schoolyears.py:10
+msgid "School year block"
+msgstr "Blok školního roku"
+
 #: conf/default_settings.py:12 models/organizations.py:16 models/roles.py:117
 #: models/roles.py:162 models/roles.py:218 models/subjects.py:1238
 #: models/subjects.py:1253 models/subjects.py:1262 models/subjects.py:1359
@@ -1117,7 +1121,7 @@ msgstr "uzavření účtu"
 #: models/agegroup.py:8 models/agreements.py:8 models/agreements.py:31
 #: models/citizenship.py:6 models/department.py:6 models/place.py:6
 #: models/printsetup.py:11 models/question.py:14 models/registrationlink.py:18
-#: models/roles.py:211 models/school.py:7 models/schoolyear.py:101
+#: models/roles.py:211 models/school.py:7 models/schoolyear.py:103
 #: models/subjects.py:261 models/subjects.py:314 models/subjects.py:1403
 #: models/targetgroup.py:8 models/timesheets.py:122
 msgid "name"
@@ -1187,7 +1191,7 @@ msgstr "státní občanství"
 msgid "citizenships"
 msgstr "státní občanství"
 
-#: models/courses.py:30 models/schoolyear.py:62 models/schoolyear.py:100
+#: models/courses.py:30 models/schoolyear.py:64 models/schoolyear.py:102
 msgid "school year division"
 msgstr "členění školního roku"
 
@@ -1272,7 +1276,7 @@ msgstr "Šablona, která bude použita k zobrazení."
 #: models/courses.py:323 models/courses.py:416 models/events.py:157
 #: models/events.py:250 models/orderables.py:160 models/orderables.py:253
 #: models/registrationlink.py:14 models/roles.py:252 models/roles.py:287
-#: models/schoolyear.py:36 models/schoolyear.py:54 models/subjects.py:309
+#: models/schoolyear.py:38 models/schoolyear.py:56 models/subjects.py:309
 msgid "school year"
 msgstr "školní rok"
 
@@ -1331,20 +1335,20 @@ msgstr "kód oddělení"
 msgid "department"
 msgstr "oddělení"
 
-#: models/events.py:23 models/orderables.py:68 models/schoolyear.py:102
+#: models/events.py:23 models/orderables.py:68 models/schoolyear.py:104
 #: models/timesheets.py:31
 msgid "start date"
 msgstr "datum začátku"
 
-#: models/events.py:24 models/schoolyear.py:103 models/timesheets.py:32
+#: models/events.py:24 models/schoolyear.py:105 models/timesheets.py:32
 msgid "end date"
 msgstr "datum konce"
 
-#: models/events.py:27 models/schoolyear.py:104
+#: models/events.py:27 models/schoolyear.py:106
 msgid "due from"
 msgstr "splatnost od"
 
-#: models/events.py:28 models/schoolyear.py:105
+#: models/events.py:28 models/schoolyear.py:107
 msgid "due date"
 msgstr "datum splatnosti"
 
@@ -1765,7 +1769,7 @@ msgstr "přihlašovací odkazy"
 msgid "page"
 msgstr "stránka"
 
-#: models/roles.py:29 models/schoolyear.py:37
+#: models/roles.py:29 models/schoolyear.py:39 models/schoolyear.py:127
 msgid "school years"
 msgstr "školní roky"
 
@@ -1864,41 +1868,45 @@ msgstr "Vybraná aktivita není ve vybraném školním roce."
 msgid "schools"
 msgstr "školy"
 
-#: models/schoolyear.py:28
+#: models/schoolyear.py:30
 msgid "year"
 msgstr "rok"
 
-#: models/schoolyear.py:28
+#: models/schoolyear.py:30
 msgid "Only the first of the two years."
 msgstr "Pouze první ze dvou roků."
 
-#: models/schoolyear.py:44
+#: models/schoolyear.py:46
 msgid "Can not delete sclool year with courses or events."
 msgstr "Nemůžete smazat školní rok, pokud má nějaké kurzy nebo akce."
 
-#: models/schoolyear.py:55
+#: models/schoolyear.py:57
 msgid "division name"
 msgstr "název členění"
 
-#: models/schoolyear.py:56
+#: models/schoolyear.py:58
 msgid "period name"
 msgstr "název období"
 
-#: models/schoolyear.py:63
+#: models/schoolyear.py:65
 msgid "school year divisions"
 msgstr "členění školního roku"
 
-#: models/schoolyear.py:110
+#: models/schoolyear.py:112
 msgid "school year period"
 msgstr "období školního roku"
 
-#: models/schoolyear.py:111
+#: models/schoolyear.py:113
 msgid "school year periods"
 msgstr "období školních roků"
 
-#: models/schoolyear.py:114
+#: models/schoolyear.py:116
 msgid "{name}, {start:%m/%d %y} - {end:%m/%d %y}"
 msgstr "{name}, {start:%d. %m. %y} až {end:%d. %m. %y}"
+
+#: models/schoolyear.py:128
+msgid "Which school years should the block be visible for?"
+msgstr "Pro které školní roky se má tento blok zobrazit?"
 
 #: models/startend.py:9
 msgid "Start must be before end"
