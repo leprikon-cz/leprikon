@@ -255,7 +255,7 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
             self.object.cancelation_requested_by = self.request.user
             self.object.save()
         else:
-            self.object.refuse()
+            self.object.refuse(self.request.user)
 
 
 class UserPaymentMixin:
