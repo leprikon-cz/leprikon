@@ -372,16 +372,18 @@ LOGIN_ERROR_URL = LOGIN_URL
 # Email configuration
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'leprikon@localhost')
 SERVER_EMAIL_PLAIN = re.search('[^<]+@[^>]+', SERVER_EMAIL).group()
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Leprikón] ').strip() + ' '
+
 EMAIL_BACKEND = (
     'django.core.mail.backends.console.EmailBackend'
     if 'EMAIL' in os.environ.get('DEBUG', '').split(',')
     else 'django.core.mail.backends.smtp.EmailBackend'
 )
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Leprikón] ').strip() + ' '
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', '').lower() in ('y', 'yes', 't', 'true', '1', 'on')
 
 # CMS configuration
 # http://djangocms.readthedocs.io/en/latest/reference/configuration/
