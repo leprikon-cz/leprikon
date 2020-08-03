@@ -4,24 +4,24 @@
 #
 #    pip-compile --no-index --output-file=requirements.txt requirements.in
 #
-acme==1.5.0               # via certbot, certbot-nginx
+acme==1.6.0               # via certbot, certbot-nginx
 backcall==0.2.0           # via ipython
-certbot-nginx==1.5.0      # via -r requirements.in
-certbot==1.5.0            # via -r requirements.in, certbot-nginx
+certbot-nginx==1.6.0      # via -r requirements.in
+certbot==1.6.0            # via -r requirements.in, certbot-nginx
 certifi==2020.6.20        # via requests, sentry-sdk
-cffi==1.14.0              # via cryptography
+cffi==1.14.1              # via cryptography
 chardet==3.0.4            # via requests
 cmsplugin-filer==1.1.3    # via -r requirements.in
 configargparse==1.2.3     # via certbot
 configobj==5.0.6          # via certbot
-cryptography==2.9.2       # via acme, certbot, josepy, pyopenssl, requests, social-auth-core
+cryptography==3.0         # via acme, certbot, josepy, pyopenssl, requests, social-auth-core
 decorator==4.4.2          # via ipython, traitlets
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 distro==1.5.0             # via certbot
 django-appconf==1.0.4     # via cmsplugin-filer
 django-bankreader==0.6.1  # via -r requirements.in
 django-classy-tags==1.0.0  # via django-cms, django-sekizai
-django-cms==3.6.0         # via -r requirements.in, cmsplugin-filer, djangocms-attributes-field, djangocms-googlemap, djangocms-link, djangocms-snippet, djangocms-style, djangocms-text-ckeditor, djangocms-video
+django-cms==3.6.1         # via -r requirements.in, cmsplugin-filer, djangocms-attributes-field, djangocms-googlemap, djangocms-link, djangocms-snippet, djangocms-style, djangocms-text-ckeditor, djangocms-video
 django-common-helpers==0.9.2  # via django-cron
 django-countries==6.1.2   # via -r requirements.in
 django-cron==0.5.1        # via -r requirements.in
@@ -56,21 +56,21 @@ djangocms-text-ckeditor==3.9.1  # via -r requirements.in
 djangocms-video==2.3.0    # via -r requirements.in
 easy-thumbnails==2.7      # via cmsplugin-filer, django-filer
 html2rml==0.3.0           # via -r requirements.in
-html5lib==1.0.1           # via djangocms-text-ckeditor
-idna==2.9                 # via requests
+html5lib==1.1             # via djangocms-text-ckeditor
+idna==2.10                # via requests
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.15.0           # via -r requirements.in
-jedi==0.17.1              # via ipython
+ipython==7.16.1           # via -r requirements.in
+jedi==0.17.2              # via ipython
 josepy==1.3.0             # via acme, certbot
 lml==0.0.9                # via pyexcel, pyexcel-io
-lxml==4.5.1               # via -r requirements.in
-mysqlclient==1.4.6        # via -r requirements.in
+lxml==4.5.2               # via -r requirements.in
+mysqlclient==2.0.1        # via -r requirements.in
 oauthlib==3.1.0           # via requests-oauthlib, social-auth-core
 parsedatetime==2.6        # via certbot
-parso==0.7.0              # via jedi
+parso==0.7.1              # via jedi
 pexpect==4.8.0            # via ipython
 pickleshare==0.7.5        # via ipython
-pillow==7.1.2             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
+pillow==7.2.0             # via djangocms-text-ckeditor, easy-thumbnails, reportlab
 prompt-toolkit==3.0.5     # via ipython
 psycopg2-binary==2.8.5    # via -r requirements.in
 ptyprocess==0.6.0         # via pexpect
@@ -78,40 +78,40 @@ pycparser==2.20           # via cffi
 pyexcel-io==0.5.20        # via pyexcel, pyexcel-xlsxw
 pyexcel-webio==0.1.4      # via django-excel
 pyexcel-xlsxw==0.4.2      # via -r requirements.in
-pyexcel==0.6.2            # via django-excel, pyexcel-webio
+pyexcel==0.6.3            # via django-excel, pyexcel-webio
 pygments==2.6.1           # via ipython
 pyicu==2.5                # via -r requirements.in
 pyjwt==1.7.1              # via social-auth-core
-pymongo==3.10.1           # via -r requirements.in
+pymongo==3.11.0           # via -r requirements.in
 pyopenssl==19.1.0         # via acme, certbot-nginx, josepy, requests
 pyparsing==2.4.7          # via certbot-nginx
 pypdf2==1.26.0            # via -r requirements.in
 pyrfc3339==1.1            # via acme, certbot
 python-memcached==1.59    # via -r requirements.in
-python3-openid==3.1.0     # via social-auth-core
+python3-openid==3.2.0     # via social-auth-core
 pytz==2020.1              # via acme, certbot, django, django-staticfiles-downloader, pyrfc3339
 qrcode==6.1               # via django-qr-code
 redis==3.5.3              # via django-redis
-reportlab==3.5.42         # via trml2pdf
+reportlab==3.5.46         # via trml2pdf
 requests-oauthlib==1.3.0  # via social-auth-core
 requests-toolbelt==0.9.1  # via acme
 requests[security]==2.24.0  # via -r requirements.in, acme, requests-oauthlib, requests-toolbelt, rocketchat-api, social-auth-core
-rocketchat-api==1.5       # via -r requirements.in
-sentry-sdk==0.15.1        # via -r requirements.in
+rocketchat-api==1.7.0     # via -r requirements.in
+sentry-sdk==0.16.2        # via -r requirements.in
 six==1.15.0               # via acme, configobj, cryptography, django-classy-tags, django-sekizai, html5lib, josepy, pyopenssl, python-memcached, qrcode, social-auth-app-django, social-auth-core, traitlets, trml2pdf
-social-auth-app-django==3.4.0  # via -r requirements.in
+social-auth-app-django==4.0.0  # via -r requirements.in
 social-auth-core==3.3.3   # via social-auth-app-django
 texttable==1.6.2          # via pyexcel
 traitlets==4.3.3          # via ipython
 trml2pdf==0.5.0           # via -r requirements.in
 unidecode==1.0.23         # via django-filer
-urllib3==1.25.9           # via requests, sentry-sdk
+urllib3==1.25.10          # via requests, sentry-sdk
 uwsgi==2.0.19.1           # via -r requirements.in
-wcwidth==0.2.4            # via prompt-toolkit
+wcwidth==0.2.5            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
 whoosh==2.7.4             # via -r requirements.in
 xlsxwriter==0.9.3         # via pyexcel-xlsxw
-zope.component==4.6.1     # via certbot
+zope.component==4.6.2     # via certbot
 zope.deferredimport==4.3.1  # via zope.component
 zope.deprecation==4.4.0   # via zope.component
 zope.event==4.4           # via zope.component
