@@ -96,6 +96,11 @@ class ReportOrderableStatsView(ReportBaseView):
 
     ReportItem = namedtuple('ReportItem', ('age_group', 'all', 'boys', 'girls', 'citizenships'))
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['school_year'] = self.request.school_year
+        return kwargs
+
     def form_valid(self, form):
         d = form.cleaned_data['date']
         paid_only = form.cleaned_data['paid_only']
@@ -103,8 +108,7 @@ class ReportOrderableStatsView(ReportBaseView):
         context['form'] = form
 
         participants = SubjectRegistrationParticipant.objects.filter(
-            registration__subject__school_year=self.request.school_year,
-            registration__subject__subject_type__subject_type=SubjectType.ORDERABLE,
+            registration__subject__in=form.cleaned_data['orderables'],
             registration__approved__date__lte=d,
         ).exclude(registration__canceled__date__lte=d).select_related('registration', 'age_group')
         if paid_only:

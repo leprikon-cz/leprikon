@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-12 15:28+0200\n"
+"POT-Creation-Date: 2020-08-09 22:46+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -947,30 +947,42 @@ msgstr "Hledaný výraz"
 msgid "Recipients"
 msgstr "Příjemci"
 
-#: forms/reports/courses.py:8 forms/reports/events.py:8
-#: forms/reports/orderables.py:8
+#: forms/reports/courses.py:9 forms/reports/events.py:9
+#: forms/reports/orderables.py:9
 msgid "Start date"
 msgstr "Datum začátku"
 
-#: forms/reports/courses.py:9 forms/reports/events.py:9
-#: forms/reports/orderables.py:9
+#: forms/reports/courses.py:10 forms/reports/events.py:10
+#: forms/reports/orderables.py:10
 msgid "End date"
 msgstr "Datum konce"
 
-#: forms/reports/courses.py:13 forms/reports/debtors.py:8
-#: forms/reports/events.py:13 forms/reports/orderables.py:13
+#: forms/reports/courses.py:14 forms/reports/debtors.py:8
+#: forms/reports/events.py:14 forms/reports/orderables.py:14
 msgid "Status for date"
 msgstr "Stav k datu"
 
-#: forms/reports/courses.py:17 forms/reports/events.py:17
-#: forms/reports/orderables.py:17
+#: forms/reports/courses.py:18 forms/reports/events.py:18
+#: forms/reports/orderables.py:18
 msgid "Statistics for date"
 msgstr "Statistiky k datu"
 
-#: forms/reports/courses.py:18 forms/reports/events.py:18
-#: forms/reports/orderables.py:18
+#: forms/reports/courses.py:21
+msgid "Courses"
+msgstr "Kurzy"
+
+#: forms/reports/courses.py:23 forms/reports/events.py:23
+#: forms/reports/orderables.py:23
 msgid "Count only paid registrations"
 msgstr "Započítat pouze zaplacené přihlášky"
+
+#: forms/reports/events.py:21
+msgid "Events"
+msgstr "Akce"
+
+#: forms/reports/orderables.py:21
+msgid "Orderables"
+msgstr "Akce na objednání"
 
 #: forms/schoolyear.py:10
 msgid "School year"
@@ -2782,6 +2794,10 @@ msgstr "IČ"
 #: templates/leprikon/journalentry_form.html:44
 #: templates/leprikon/journalentry_form.html:56
 #: templates/leprikon/leader_list.html:18
+#: templates/leprikon/reports/course_stats.html:63
+#: templates/leprikon/reports/event_stats.html:63
+#: templates/leprikon/reports/index.html:57
+#: templates/leprikon/reports/orderable_stats.html:63
 #: templates/leprikon/subject_list.html:18
 #: templates/leprikon/subject_list.html:28
 msgid "selected"
@@ -2863,6 +2879,10 @@ msgstr "Opravte prosím níže uvedené chyby."
 #: templates/leprikon/journalentry_form.html:28
 #: templates/leprikon/journalentry_form.html:40
 #: templates/leprikon/journalentry_form.html:52
+#: templates/leprikon/reports/course_stats.html:59
+#: templates/leprikon/reports/event_stats.html:59
+#: templates/leprikon/reports/index.html:53
+#: templates/leprikon/reports/orderable_stats.html:59
 msgid "select all"
 msgstr "vybrat všechny"
 
@@ -2870,6 +2890,10 @@ msgstr "vybrat všechny"
 #: templates/leprikon/journalentry_form.html:30
 #: templates/leprikon/journalentry_form.html:42
 #: templates/leprikon/journalentry_form.html:54
+#: templates/leprikon/reports/course_stats.html:61
+#: templates/leprikon/reports/event_stats.html:61
+#: templates/leprikon/reports/index.html:55
+#: templates/leprikon/reports/orderable_stats.html:61
 msgid "all"
 msgstr "všichni"
 

@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from ...models.orderables import Orderable
 from ..form import GetFormMixin
 
 
@@ -15,4 +16,13 @@ class OrderablePaymentsStatusForm(GetFormMixin, forms.Form):
 
 class OrderableStatsForm(GetFormMixin, forms.Form):
     date = forms.DateField(label=_('Statistics for date'))
+    orderables = forms.ModelMultipleChoiceField(
+        queryset=Orderable.objects.all(),
+        label=_('Orderables'),
+    )
     paid_only = forms.BooleanField(label=_('Count only paid registrations'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        school_year = kwargs.pop('school_year')
+        super().__init__(*args, **kwargs)
+        self.fields['orderables'].queryset = Orderable.objects.filter(school_year=school_year)

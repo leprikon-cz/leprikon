@@ -21,8 +21,8 @@ class ReportsListView(TemplateView):
 
     Report = namedtuple('Report', ('title', 'instructions', 'form', 'url'))
 
-    def get_form(self, form_class):
-        return form_class(prefix=form_class.__name__)
+    def get_form(self, form_class, **kwargs):
+        return form_class(prefix=form_class.__name__, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         return super(ReportsListView, self).get_context_data(reports=[
@@ -65,19 +65,19 @@ class ReportsListView(TemplateView):
             self.Report(
                 title=_('Course statistics'),
                 instructions='',
-                form=self.get_form(CourseStatsForm),
+                form=self.get_form(CourseStatsForm, school_year=self.request.school_year),
                 url=reverse('leprikon:report_course_stats'),
             ),
             self.Report(
                 title=_('Event statistics'),
                 instructions='',
-                form=self.get_form(EventStatsForm),
+                form=self.get_form(EventStatsForm, school_year=self.request.school_year),
                 url=reverse('leprikon:report_event_stats'),
             ),
             self.Report(
                 title=_('Orderable event statistics'),
                 instructions='',
-                form=self.get_form(OrderableStatsForm),
+                form=self.get_form(OrderableStatsForm, school_year=self.request.school_year),
                 url=reverse('leprikon:report_orderable_stats'),
             ),
             self.Report(

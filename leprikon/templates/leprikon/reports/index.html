@@ -42,5 +42,23 @@
 {% endfor %}
 
 {% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('select[data-type=ModelMultipleChoiceField]').multiselect({
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 3,
+        selectAllText: '{% trans 'select all' %}',
+        nonSelectedText: '',
+        allSelectedText: '{% trans 'all' %}',
+        numberDisplayed: 2,
+        nSelectedText: '{% trans 'selected' %}',
+        disableIfEmpty: true,
+    });
+});
+</script>
+{% endaddtoblock %}
 
 {% endblock %}
