@@ -40,7 +40,7 @@ django-polymorphic==2.0.3  # via django-filer
 django-qr-code==1.2.0     # via -r requirements.in
 django-redis==4.11.0      # via -r requirements.in
 django-sekizai==1.1.0     # via cmsplugin-filer, django-cms
-django-staticfiles-downloader==0.1.5  # via -r requirements.in
+django-staticfiles-downloader==0.2.0  # via -r requirements.in
 django-template-admin==1.1.1  # via -r requirements.in
 django-treebeard==4.3.1   # via django-cms
 django-user-unique-email==0.1.1  # via -r requirements.in
