@@ -26,6 +26,7 @@ DATA_DIR = os.environ.get('DATA_DIR', os.path.join(BASE_DIR, 'data'))
 SECRET_KEY = os.environ.get('SECRET_KEY', os.environ.get('DEBUG'))
 if not SECRET_KEY:
     from string import ascii_letters, digits, punctuation
+
     from django.utils.crypto import get_random_string
     SECRET_KEY = get_random_string(
         64,
@@ -329,6 +330,7 @@ if not DEBUG_LML:
 if not DEBUG and os.environ.get('SENTRY_DSN'):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+
     from leprikon import __version__
 
     sentry_sdk.init(

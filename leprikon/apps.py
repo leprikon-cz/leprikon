@@ -21,6 +21,7 @@ class LeprikonConfig(AppConfig):
         from cms.api import create_page
         from cms.constants import TEMPLATE_INHERITANCE_MAGIC
         from menus.menu_pool import menu_pool
+
         from .conf import settings
         try:
             create_page(

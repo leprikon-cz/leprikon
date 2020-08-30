@@ -1,5 +1,4 @@
 from bankreader.models import Transaction as BankreaderTransaction
-from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
@@ -35,6 +34,7 @@ from ..models.utils import (
     lazy_help_text_with_default, lazy_help_text_with_html_default,
 )
 from ..utils import amount_color, currency
+from .bulkupdate import BulkUpdateMixin
 from .export import AdminExportMixin
 from .filters import (
     ApprovedListFilter, CanceledListFilter, IsNullFieldListFilter,
@@ -57,7 +57,11 @@ class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
 
 
 @admin.register(SubjectType)
-class SubjectTypeAdmin(admin.ModelAdmin):
+class SubjectTypeAdmin(BulkUpdateMixin, admin.ModelAdmin):
+    bulk_update_exclude = (
+        'subject_type', 'slug', 'order', 'name',
+        'plural', 'name_genitiv', 'name_akuzativ',
+    )
     list_display = ('plural', 'order')
     list_editable = ('order',)
     exclude = ('order',)
@@ -95,7 +99,7 @@ class SubjectVariantInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
     registration_model = None
     list_editable = ('public', 'note')
     list_filter = (
@@ -299,32 +303,6 @@ class SubjectBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin
             return ''
     icon.allow_tags = True
     icon.short_description = _('photo')
-
-    def set_registration_dates(self, request, queryset):
-        class RegistrationDatesForm(forms.Form):
-            reg_from = self.formfield_for_dbfield(Subject._meta.get_field('reg_from'), request=request)
-            reg_to = self.formfield_for_dbfield(Subject._meta.get_field('reg_to'), request=request)
-        if request.POST.get('post', 'no') == 'yes':
-            form = RegistrationDatesForm(request.POST)
-            if form.is_valid():
-                Subject.objects.filter(id__in=[s['id'] for s in queryset.values('id')]).update(
-                    reg_from=form.cleaned_data['reg_from'],
-                    reg_to=form.cleaned_data['reg_to'],
-                )
-                self.message_user(request, _('Registration dates were updated.'))
-                return
-        else:
-            form = RegistrationDatesForm()
-        return render(request, 'leprikon/admin/change_form.html', {
-            'title': _('Select registration dates'),
-            'queryset': queryset,
-            'opts': self.model._meta,
-            'form': form,
-            'media': self.media + form.media,
-            'action': 'set_registration_dates',
-            'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-        })
-    set_registration_dates.short_description = _('Set registration dates')
 
 
 class ChangeformRedirectMixin:
