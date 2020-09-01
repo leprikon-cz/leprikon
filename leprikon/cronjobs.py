@@ -33,11 +33,13 @@ class SendPaymentRequest(SentryCronJobBase):
         for registration in chain(
             CourseRegistration.objects.filter(
                 subject__course__school_year_division__periods__due_from=today,
-                approved__isnull=False
+                approved__isnull=False,
+                canceled__isnull=True,
             ).filter(Q(payment_requested=None) | Q(payment_requested__date__lt=today)),
             EventRegistration.objects.filter(
                 subject__event__due_from=today,
                 approved__isnull=False,
+                canceled__isnull=True,
             ).filter(Q(payment_requested=None) | Q(payment_requested__date__lt=today)),
         ):
             registration.request_payment(None)
