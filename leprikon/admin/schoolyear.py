@@ -32,6 +32,7 @@ class SchoolYearAdmin(admin.ModelAdmin):
 class SchoolYearPeriodInlineAdmin(admin.TabularInline):
     model = SchoolYearPeriod
     extra = 0
+    min_num = 1
 
 
 @admin.register(SchoolYearDivision)
@@ -78,3 +79,6 @@ class SchoolYearDivisionAdmin(admin.ModelAdmin):
             },
         )
     copy_to_school_year.short_description = _('Copy selected school year divisions to another school year')
+
+    def get_readonly_fields(self, request, obj=None):
+        return ('school_year',) if obj else ()
