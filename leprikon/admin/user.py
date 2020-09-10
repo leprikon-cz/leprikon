@@ -12,6 +12,7 @@ from user_unique_email.admin import UserAdmin as _UserAdmin
 
 from ..forms.user import UserAdminChangeForm, UserAdminCreateForm
 from ..utils import merge_users
+from .export import AdminExportMixin
 from .messages import SendMessageAdminMixin
 
 User = get_user_model()
@@ -19,7 +20,7 @@ admin.site.unregister(User)
 
 
 @admin.register(User)
-class UserAdmin(SendMessageAdminMixin, _UserAdmin):
+class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
     actions = ('merge',)
     add_form = UserAdminCreateForm
     add_fieldsets = (

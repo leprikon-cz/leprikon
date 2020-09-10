@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..models.roles import Contact, Leader
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
+from .export import AdminExportMixin
 from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
 
@@ -19,12 +20,14 @@ class ContactInlineAdmin(admin.TabularInline):
 
 
 @admin.register(Leader)
-class LeaderAdmin(SendMessageAdminMixin, admin.ModelAdmin):
+class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     filter_horizontal = ('school_years',)
     inlines = (ContactInlineAdmin,)
     search_fields = ('user__first_name', 'user__last_name', 'contacts__contact')
     list_display = ('id', 'first_name', 'last_name', 'email', 'courses_link',
                     'events_link', 'orderables_link', 'contacts', 'user_link', 'icon')
+    list_export = ('id', 'user__first_name', 'user__last_name', 'user__email',
+                   'contacts__contact_type', 'contacts__contact', 'contacts__public')
     ordering = ('user__first_name', 'user__last_name')
     actions = ('add_school_year',)
     list_filter = (('school_years', SchoolYearListFilter),)
