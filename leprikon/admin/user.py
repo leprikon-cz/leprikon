@@ -8,9 +8,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from sentry_sdk import capture_exception
 from user_unique_email.admin import UserAdmin as _UserAdmin
 
-from ..forms.user import UserAdminChangeForm, UserAdminCreateForm
+from ..forms.user import (
+    PasswordResetForm, UserAdminChangeForm, UserAdminCreateForm,
+)
 from ..utils import merge_users
 from .export import AdminExportMixin
 from .messages import SendMessageAdminMixin
@@ -19,9 +22,30 @@ User = get_user_model()
 admin.site.unregister(User)
 
 
+class IsLeaderListFilter(admin.SimpleListFilter):
+    parameter_name = 'leprikon_leader__school_years'
+    title = _('leader')
+
+    def __init__(self, request, params, model, model_admin):
+        self.school_year = request.school_year
+        super().__init__(request, params, model, model_admin)
+
+    def expected_parameters(self):
+        return [self.parameter_name]
+
+    def lookups(self, request, model_admin):
+        return ((self.school_year.id, _('Yes')),)
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        return queryset.filter(leprikon_leader__school_years__id__exact=value)
+
+
 @admin.register(User)
 class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
-    actions = ('merge',)
+    actions = ('merge', 'reset_password')
     add_form = UserAdminCreateForm
     add_fieldsets = (
         (None, {
@@ -30,6 +54,9 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         }),
     )
     form = UserAdminChangeForm
+    list_filter = _UserAdmin.list_filter + (
+        IsLeaderListFilter,
+    )
 
     def merge(self, request, queryset):
         class MergeForm(forms.Form):
@@ -69,6 +96,23 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         })
     merge.short_description = _('Merge selected user accounts')
 
+    def reset_password(self, request, queryset):
+        form = PasswordResetForm()
+        for user in queryset.all():
+            try:
+                form.cleaned_data = {'email': user.email}
+                form.save(
+                    email_template_name='leprikon/password_reset_email.html'
+                )
+                self.message_user(request, _('Instructions were send to user {}.').format(user))
+            except Exception:
+                capture_exception()
+                self.message_user(
+                    request, _('Can not send instructions to user {}.').format(user),
+                    level=ERROR
+                )
+    reset_password.short_description = _('Send instructions to reset password to selected users')
+
     def get_list_display(self, request):
         list_display = ['id'] + list(super(UserAdmin, self).get_list_display(request))
         if request.user.is_superuser:
@@ -76,6 +120,15 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         elif request.user.has_perm('auth.change_user'):
             list_display += ['login_as_link']
         return list_display
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super(UserAdmin, self).get_readonly_fields(request, obj)) + [
+            'last_login',
+            'date_joined',
+        ]
+        if not request.user.is_superuser:
+            readonly_fields += ['is_staff', 'is_superuser', 'groups', 'user_permissions']
+        return readonly_fields
 
     def get_search_fields(self, request):
         return list(super(UserAdmin, self).get_search_fields(request)) + [
@@ -86,15 +139,6 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             'leprikon_participants__last_name',
             'leprikon_participants__email',
         ]
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(UserAdmin, self).get_readonly_fields(request, obj)) + [
-            'last_login',
-            'date_joined',
-        ]
-        if not request.user.is_superuser:
-            readonly_fields += ['is_staff', 'is_superuser', 'groups', 'user_permissions']
-        return readonly_fields
 
     def get_urls(self):
         urls = super(UserAdmin, self).get_urls()

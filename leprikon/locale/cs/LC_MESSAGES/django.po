@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-30 14:55+0200\n"
+"POT-Creation-Date: 2020-09-13 22:55+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -58,7 +58,7 @@ msgid "Unpublish selected courses"
 msgstr "Skrýt vybrané kurzy"
 
 #: admin/courses.py:90 admin/events.py:59 admin/orderables.py:59
-#: admin/roles.py:37 admin/schoolyear.py:47
+#: admin/roles.py:40 admin/schoolyear.py:48
 msgid "Target school year"
 msgstr "Cílový školní rok"
 
@@ -71,7 +71,7 @@ msgid "Selected courses were copied to school year {}."
 msgstr "Vybrané kurzy byly zkopírovány do školního roku {}."
 
 #: admin/courses.py:108 admin/events.py:77 admin/orderables.py:80
-#: admin/roles.py:52 admin/schoolyear.py:72
+#: admin/roles.py:55 admin/schoolyear.py:73
 msgid "Select target school year"
 msgstr "Vyberte cílový školní rok"
 
@@ -233,7 +233,7 @@ msgstr "upravit záznam"
 msgid "edit"
 msgstr "upravit"
 
-#: admin/journals.py:100 admin/subjects.py:650 admin/subjects.py:780
+#: admin/journals.py:100 admin/subjects.py:649 admin/subjects.py:779
 #: models/journals.py:15 models/journals.py:142 models/messages.py:22
 #: models/roles.py:254 models/subjects.py:390 models/subjects.py:684
 #: models/subjects.py:702 models/subjects.py:801
@@ -368,204 +368,204 @@ msgstr "stažení"
 msgid "registration link"
 msgstr "přihlášovací odkaz"
 
-#: admin/registrationlink.py:128 admin/subjects.py:283 models/subjects.py:841
+#: admin/registrationlink.py:128 admin/subjects.py:282 models/subjects.py:841
 #: templates/leprikon/subject_preview.html:101
 msgid "registrations"
 msgstr "přihlášky"
 
-#: admin/roles.py:38
+#: admin/roles.py:41
 msgid "All selected leaders will be added to selected school year."
 msgstr "Vybraní vedoucí budou přidáni do vybraného školního roku."
 
-#: admin/roles.py:47
+#: admin/roles.py:50
 msgid "Selected leaders were added to school year {}."
 msgstr "Vybraní vedoucí byli přidáni do školního roku {}."
 
-#: admin/roles.py:59
+#: admin/roles.py:62
 msgid "Add selected leaders to another school year"
 msgstr "Přidat vybrané vedoucí do jiného školního roku"
 
-#: admin/roles.py:63 models/roles.py:111 models/roles.py:150
+#: admin/roles.py:66 models/roles.py:111 models/roles.py:150
 #: models/subjects.py:1225 models/subjects.py:1248 models/subjects.py:1257
 #: models/subjects.py:1354 models/subjects.py:1380
 msgid "first name"
 msgstr "jméno"
 
-#: admin/roles.py:68 models/roles.py:112 models/roles.py:151
+#: admin/roles.py:71 models/roles.py:112 models/roles.py:151
 #: models/subjects.py:1226 models/subjects.py:1249 models/subjects.py:1258
 #: models/subjects.py:1355 models/subjects.py:1381
 msgid "last name"
 msgstr "příjmení"
 
-#: admin/roles.py:73 conf/default_settings.py:11
+#: admin/roles.py:76 conf/default_settings.py:11
 #: templates/leprikon/payment_pdf/recipe.rml:19
 #: templates/leprikon/registration_payment_request/subject.rml:60
 #: templates/leprikon/registration_payment_request/subject.rml:84
 msgid "email"
 msgstr "e-mail"
 
-#: admin/roles.py:78 models/roles.py:98
+#: admin/roles.py:81 models/roles.py:98
 msgid "contacts"
 msgstr "kontakty"
 
-#: admin/roles.py:86 models/roles.py:25 models/roles.py:110 models/roles.py:147
+#: admin/roles.py:89 models/roles.py:25 models/roles.py:110 models/roles.py:147
 #: models/roles.py:210 models/subjects.py:799 models/useragreement.py:8
 msgid "user"
 msgstr "uživatel"
 
-#: admin/roles.py:107 models/courses.py:36
+#: admin/roles.py:110 models/courses.py:36
 msgid "courses"
 msgstr "kurzy"
 
-#: admin/roles.py:116 models/events.py:34
+#: admin/roles.py:119 models/events.py:34
 msgid "events"
 msgstr "akce"
 
-#: admin/roles.py:125 models/orderables.py:37
+#: admin/roles.py:128 models/orderables.py:37
 msgid "orderable events"
 msgstr "akce na objednání"
 
-#: admin/roles.py:133 admin/subjects.py:306 admin/subjects.py:347
+#: admin/roles.py:136 admin/subjects.py:305 admin/subjects.py:346
 #: models/roles.py:27 models/subjects.py:328
 msgid "photo"
 msgstr "fotka"
 
-#: admin/schoolyear.py:48
+#: admin/schoolyear.py:49
 msgid ""
 "All selected school year divisions will be copied to selected school year."
 msgstr ""
 "Vybraná členění školního roku budou zkopírována do vybraného školního roku."
 
-#: admin/schoolyear.py:63
+#: admin/schoolyear.py:64
 msgid "Selected school year divisions were copied to school year {}."
 msgstr "Vybraná členění školního roku byla zkopírována do školního roku {}."
 
-#: admin/schoolyear.py:80
+#: admin/schoolyear.py:81
 msgid "Copy selected school year divisions to another school year"
 msgstr "Kopírovat vybraná členění školního roku do jiného školního roku"
 
-#: admin/subjects.py:238
+#: admin/subjects.py:237
 msgid "printable journal"
 msgstr "tisknutelný deník"
 
-#: admin/subjects.py:239 admin/subjects.py:241
+#: admin/subjects.py:238 admin/subjects.py:240
 #: templates/leprikon/subject_preview.html:105
 msgid "journal"
 msgstr "deník"
 
-#: admin/subjects.py:255
+#: admin/subjects.py:254
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:257
+#: admin/subjects.py:256
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:259
+#: admin/subjects.py:258
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:280
+#: admin/subjects.py:279
 msgid "add registration"
 msgstr "vytvořit přihlášku"
 
-#: admin/subjects.py:288
+#: admin/subjects.py:287
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:292
+#: admin/subjects.py:291
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:297
+#: admin/subjects.py:296
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:517
+#: admin/subjects.py:516
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:519
+#: admin/subjects.py:518
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:529
+#: admin/subjects.py:528
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:531
+#: admin/subjects.py:530
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:536
+#: admin/subjects.py:535
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky"
 
-#: admin/subjects.py:537
+#: admin/subjects.py:536
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:547
+#: admin/subjects.py:546
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:549
+#: admin/subjects.py:548
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:642
+#: admin/subjects.py:641
 msgid "cancelation requested"
 msgstr "požádáno o odhlášení"
 
-#: admin/subjects.py:643
+#: admin/subjects.py:642
 msgid "new registration"
 msgstr "nová přihláška"
 
-#: admin/subjects.py:644
+#: admin/subjects.py:643
 msgid "new registration, capacity full"
 msgstr "nová přihláška, naplěná kapacita"
 
-#: admin/subjects.py:645
+#: admin/subjects.py:644
 msgid "approved registration"
 msgstr "schválená přihláška"
 
-#: admin/subjects.py:663 models/subjects.py:806
+#: admin/subjects.py:662 models/subjects.py:806
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: admin/subjects.py:668 models/subjects.py:809
+#: admin/subjects.py:667 models/subjects.py:809
 msgid "time of approval"
 msgstr "čas schválení"
 
-#: admin/subjects.py:673 models/subjects.py:812
+#: admin/subjects.py:672 models/subjects.py:812
 msgid "payment request time"
 msgstr "odeslání výzvy k platbě"
 
-#: admin/subjects.py:678 models/subjects.py:817
+#: admin/subjects.py:677 models/subjects.py:817
 msgid "time of cancellation request"
 msgstr "čas žádosti o odhlášení"
 
-#: admin/subjects.py:683 models/subjects.py:822
+#: admin/subjects.py:682 models/subjects.py:822
 msgid "time of cancellation"
 msgstr "čas odhlášení"
 
-#: admin/subjects.py:691
+#: admin/subjects.py:690
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:788 models/subjects.py:1492
+#: admin/subjects.py:787 models/subjects.py:1492
 #: templates/leprikon/payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr "částka"
 
-#: admin/subjects.py:855
+#: admin/subjects.py:854
 msgid "Selected items were sent by e-mail."
 msgstr "Vybrané položky byly odeslány e-mailem."
 
-#: admin/subjects.py:856
+#: admin/subjects.py:855
 msgid "Send selected items by e-mail"
 msgstr "Odeslat vybrané položky e-mailem"
 
@@ -595,27 +595,36 @@ msgstr "Vybrané výkazy byly odevzdány."
 msgid "Submit selected timesheets"
 msgstr "Odevzdat vybrané výkazy práce"
 
-#: admin/user.py:36
+#: admin/user.py:27 models/roles.py:34 models/roles.py:85 models/roles.py:238
+#: models/timesheets.py:68
+msgid "leader"
+msgstr "vedoucí"
+
+#: admin/user.py:37 views/generic.py:159
+msgid "Yes"
+msgstr "Ano"
+
+#: admin/user.py:64
 msgid "Target user"
 msgstr "Cílový uživatel"
 
-#: admin/user.py:37
+#: admin/user.py:65
 msgid "All information will be merged into selected account."
 msgstr "Všechny informace budou sloučeny do vybraného uživatelského účtu."
 
-#: admin/user.py:48
+#: admin/user.py:76
 msgid "User {} was merged into user {}."
 msgstr "Uživatel {} byl sloučen do uživatele {}."
 
-#: admin/user.py:51
+#: admin/user.py:79
 msgid "Can not merge user {} into user {}."
 msgstr "Není možné sloučit uživatele {} do uživatele {}."
 
-#: admin/user.py:58
+#: admin/user.py:86
 msgid "Select target user for merge"
 msgstr "Vyberte cílového uživatele pro sloučení"
 
-#: admin/user.py:59
+#: admin/user.py:87
 msgid ""
 "Are you sure you want to merge selected users into one? All participants, "
 "parents, registrations and other related information will be added to the "
@@ -625,19 +634,31 @@ msgstr ""
 "zástupci, přihlášky, a další informace spojené s těmito uživateli budou "
 "přidány k cílovému uživatelskému účtu a zbývající účty budou smazány."
 
-#: admin/user.py:63 templates/leprikon/admin/dashboard.html:7
+#: admin/user.py:91 templates/leprikon/admin/dashboard.html:7
 msgid "Users"
 msgstr "Uživatelé"
 
-#: admin/user.py:64
+#: admin/user.py:92
 msgid "Select target account for merge"
 msgstr "Vyberte cílový uživatelský účet pro sloučení"
 
-#: admin/user.py:69
+#: admin/user.py:97
 msgid "Merge selected user accounts"
 msgstr "Sloučit vybrané uživatele"
 
-#: admin/user.py:119 admin/user.py:122 admin/user.py:127 admin/user.py:130
+#: admin/user.py:107
+msgid "Instructions were send to user {}."
+msgstr "Instrukce byly odeslány uživateli {}."
+
+#: admin/user.py:111
+msgid "Can not send instructions to user {}."
+msgstr "Nepodařilo se odeslat instrukce uživateli {}."
+
+#: admin/user.py:114
+msgid "Send instructions to reset password to selected users"
+msgstr "Odeslat vybraným uživatelům instrukce pro reset hesla"
+
+#: admin/user.py:164 admin/user.py:167 admin/user.py:172 admin/user.py:175
 msgid "login"
 msgstr "přihlásit"
 
@@ -1811,11 +1832,6 @@ msgstr "stránka"
 msgid "school years"
 msgstr "školní roky"
 
-#: models/roles.py:34 models/roles.py:85 models/roles.py:238
-#: models/timesheets.py:68
-msgid "leader"
-msgstr "vedoucí"
-
 #: models/roles.py:86
 msgid "contact type"
 msgstr "druh kontaktu"
@@ -2624,7 +2640,7 @@ msgstr "Pokud není vyplněno, použije se výchozí hodnota:"
 msgid "Keep empty to use default value: {}"
 msgstr "Pokud není vyplněno, použije se výchozí hodnota: {}"
 
-#: site/settings.py:255
+#: site/settings.py:256
 msgid "Czech"
 msgstr "Čeština"
 
@@ -3030,18 +3046,18 @@ msgstr ""
 "uživatelskému účtu na webu %(site_name)s."
 
 #: templates/leprikon/password_reset_email.html:4
-msgid "Please go to the following page and choose a new password:"
-msgstr "Přejděte prosím na následující stránku a zvolte si nové heslo:"
-
-#: templates/leprikon/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
 msgstr "Vaše uživatelské jméno:"
 
-#: templates/leprikon/password_reset_email.html:10
+#: templates/leprikon/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Přejděte prosím na následující stránku a zvolte si nové heslo:"
+
+#: templates/leprikon/password_reset_email.html:11
 msgid "Thanks for using our site!"
 msgstr "Děkujeme, že používáte naše stránky!"
 
-#: templates/leprikon/password_reset_email.html:12
+#: templates/leprikon/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "Tým %(site_name)s"
@@ -3807,10 +3823,6 @@ msgstr "Žádné položky neodpovídají zadaným parametrům hledání."
 #: views/generic.py:105
 msgid "Save"
 msgstr "Uložit"
-
-#: views/generic.py:159
-msgid "Yes"
-msgstr "Ano"
 
 #: views/generic.py:196
 msgid "Delete"
