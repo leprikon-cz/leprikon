@@ -341,7 +341,7 @@ $(document).ready(function() {
             $('#id_{{ participant_form.prefix }}-first_name').val('{{ participant.first_name | escapejs }}');
             $('#id_{{ participant_form.prefix }}-last_name').val('{{ participant.last_name | escapejs }}');
             $('#id_{{ participant_form.prefix }}-citizenship').val('{{ participant.citizenship_id }}').change();
-            $('#id_{{ participant_form.prefix }}-birth_num').val('{{ participant.birth_num | escapejs }}').change();
+            $('#id_{{ participant_form.prefix }}-birth_num').val('{% if participant.birth_num %}{{ participant.birth_num | escapejs }}{% endif %}').change();
             $('#id_{{ participant_form.prefix }}-birth_date').data('DateTimePicker').date({{ participant.birth_date|jsdate }})
             $('#id_{{ participant_form.prefix }}-gender').val('{{ participant.gender | escapejs }}');
             $('#id_{{ participant_form.prefix }}-age_group').val('{{ participant.age_group_id }}').change();
