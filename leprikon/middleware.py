@@ -1,4 +1,5 @@
 from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 
 from . import __version__
@@ -10,7 +11,7 @@ from .models.useragreement import UserAgreement
 from .rocketchat import get_rc_id, rc_logout
 
 
-class school_year(object):
+class school_year:
     def __get__(self, request, type=None):
         if request is None:
             return self
@@ -37,7 +38,7 @@ class school_year(object):
             del(request._leprikon_school_year)
 
 
-class LeprikonMiddleware(object):
+class LeprikonMiddleware:
     user_agreement_url = reverse_lazy('leprikon:user_agreement')
     user_email_url = reverse_lazy('leprikon:user_email')
     user_login_url = reverse_lazy('leprikon:user_login')
@@ -117,3 +118,11 @@ class LeprikonMiddleware(object):
             except Exception:
                 pass
         return response
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, PermissionDenied):
+            return redirect_to_login(
+                request.path,
+                login_url=self.user_login_url,
+                redirect_field_name=settings.LEPRIKON_PARAM_BACK,
+            )
