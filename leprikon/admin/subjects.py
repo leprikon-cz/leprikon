@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.timezone import localtime
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
@@ -648,36 +649,36 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return obj.subject.name
     subject_name.short_description = _('subject')
 
-    def _date_with_by(self, obj, attr):
+    def _datetime_with_by(self, obj, attr):
         d = getattr(obj, attr)
         if d:
-            d_formated = date_format(d, 'SHORT_DATETIME_FORMAT')
+            d_formated = date_format(localtime(d), 'SHORT_DATETIME_FORMAT')
             by = getattr(obj, attr + '_by')
             return mark_safe(f'<span title="{by}">{d_formated}</span>') if by else d_formated
         return '-'
 
     def created_with_by(self, obj):
-        return self._date_with_by(obj, 'created')
+        return self._datetime_with_by(obj, 'created')
     created_with_by.admin_order_field = 'created'
     created_with_by.short_description = _('time of registration')
 
     def approved_with_by(self, obj):
-        return self._date_with_by(obj, 'approved')
+        return self._datetime_with_by(obj, 'approved')
     approved_with_by.admin_order_field = 'approved'
     approved_with_by.short_description = _('time of approval')
 
     def payment_requested_with_by(self, obj):
-        return self._date_with_by(obj, 'payment_requested')
+        return self._datetime_with_by(obj, 'payment_requested')
     payment_requested_with_by.admin_order_field = 'payment_requested'
     payment_requested_with_by.short_description = _('payment request time')
 
     def cancelation_requested_with_by(self, obj):
-        return self._date_with_by(obj, 'cancelation_requested')
+        return self._datetime_with_by(obj, 'cancelation_requested')
     cancelation_requested_with_by.admin_order_field = 'cancelation_requested'
     cancelation_requested_with_by.short_description = _('time of cancellation request')
 
     def canceled_with_by(self, obj):
-        return self._date_with_by(obj, 'canceled')
+        return self._datetime_with_by(obj, 'canceled')
     canceled_with_by.admin_order_field = 'canceled'
     canceled_with_by.short_description = _('time of cancellation')
 
