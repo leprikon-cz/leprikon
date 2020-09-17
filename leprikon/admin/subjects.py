@@ -109,6 +109,7 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         ('subject_type', SubjectTypeListFilter),
         ('groups', SubjectGroupListFilter),
         ('leaders', LeaderListFilter),
+        'place',
     )
     inlines = (
         SubjectVariantInlineAdmin,
@@ -458,8 +459,10 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         CanceledListFilter,
         'registration_link',
         ('billing_info', IsNullFieldListFilter),
+        'subject__groups',
         ('subject', SubjectListFilter),
         ('subject__leaders', LeaderListFilter),
+        'subject__place',
     )
     actions = ('approve', 'refuse', 'request_payment', 'cancel')
     search_fields = (
