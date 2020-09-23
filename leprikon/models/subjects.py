@@ -1298,10 +1298,13 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
 
     @cached_property
     def all_recipients(self):
-        recipients = set(parent.email for parent in self.parents if parent.email)
-        if self.email:
-            recipients.add(self.email)
-        return recipients
+        # don't use unverified emails
+        # TODO: implement verification process
+        return set()
+        # recipients = set(parent.email for parent in self.parents if parent.email)
+        # if self.email:
+        #     recipients.add(self.email)
+        # return recipients
 
     def save(self, *args, **kwargs):
         if not self.has_parent1:
