@@ -1,5 +1,6 @@
 from datetime import date
 from json import dumps
+from sentry_sdk import capture_message
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -428,6 +429,17 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         super().save(commit)
 
         # save / update participant
+        if 'participant' not in self.participant_select_form.cleaned_data:
+            capture_message(
+                'Invalid participant_select_form',
+                'warning',
+                extras={
+                    'participant_select_form_data': self.participant_select_form.data,
+                    'participant_select_form_is_valid': self.participant_select_form.is_valid(),
+                    'participant_select_form_cleaned_data': self.participant_select_form.cleaned_data,
+                },
+            )
+            self.participant_select_form.cleaned_data['participant'] = 'new'
         if self.participant_select_form.cleaned_data['participant'] == 'new':
             participant = Participant()
             participant.user = self.instance.registration.user
