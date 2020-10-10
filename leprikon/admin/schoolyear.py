@@ -66,18 +66,25 @@ class SchoolYearDivisionAdmin(admin.ModelAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render(
-            request,
-            'leprikon/admin/action_form.html',
-            {
-                'title': _('Select target school year'),
-                'queryset': queryset,
-                'opts': self.model._meta,
-                'form': form,
-                'action': 'copy_to_school_year',
-                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            },
+
+        adminform = admin.helpers.AdminForm(
+            form,
+            [(None, {'fields': list(form.base_fields)})],
+            {},
+            None,
+            model_admin=self,
         )
+
+        return render(request, 'leprikon/admin/action_form.html', dict(
+            title=_('Select target school year'),
+            opts=self.model._meta,
+            adminform=adminform,
+            media=self.media + adminform.media,
+            action='copy_to_school_year',
+            action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
+            select_across=request.POST['select_across'],
+            selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
+        ))
     copy_to_school_year.short_description = _('Copy selected school year divisions to another school year')
 
     def get_readonly_fields(self, request, obj=None):

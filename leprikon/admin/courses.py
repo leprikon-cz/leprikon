@@ -1,5 +1,8 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import (
+    AdminRadioSelect, FilteredSelectMultiple,
+)
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import F
@@ -13,7 +16,7 @@ from ..models.courses import (
     Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory,
     CourseTime,
 )
-from ..models.schoolyear import SchoolYear
+from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
@@ -101,18 +104,25 @@ class CourseAdmin(SubjectBaseAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render(
-            request,
-            'leprikon/admin/action_form.html',
-            {
-                'title': _('Select target school year'),
-                'queryset': queryset,
-                'opts': self.model._meta,
-                'form': form,
-                'action': 'copy_to_school_year',
-                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            },
+
+        adminform = admin.helpers.AdminForm(
+            form,
+            [(None, {'fields': list(form.base_fields)})],
+            {},
+            None,
+            model_admin=self,
         )
+
+        return render(request, 'leprikon/admin/action_form.html', dict(
+            title=_('Select target school year'),
+            opts=self.model._meta,
+            adminform=adminform,
+            media=self.media + adminform.media,
+            action='copy_to_school_year',
+            action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
+            select_across=request.POST['select_across'],
+            selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
+        ))
     copy_to_school_year.short_description = _('Copy selected courses to another school year')
 
     def get_message_recipients(self, request, queryset):
@@ -136,7 +146,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.COURSE
-    actions = ('add_full_discount_for_period',)
+    actions = ('add_discounts',)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'participants_list_html', 'price',
@@ -146,26 +156,102 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         'note', 'random_number',
     )
 
-    def add_full_discount_for_period(self, request, queryset):
-        current_period = {
-            school_year_division.id: school_year_division.get_current_period()
-            for school_year_division in request.school_year.divisions.all()
+    def add_discounts(self, request, queryset):
+        ABSOLUTE = 'A'
+        RELATIVE = 'R'
+
+        class DiscountBaseForm(forms.Form):
+            discount_type = forms.ChoiceField(
+                label=_('Discount type'),
+                choices=(
+                    (ABSOLUTE, _('absolute amount')),
+                    (RELATIVE, _('relative amount in percents'))
+                ),
+                widget=AdminRadioSelect(),
+            )
+            amount = forms.DecimalField(label=_('Amount or number of percents'))
+            explanation = CourseDiscount._meta.get_field('explanation').formfield()
+
+        school_year_divisions = {
+            school_year_division.id: school_year_division
+            for school_year_division in SchoolYearDivision.objects.filter(
+                courses__registrations__in=queryset,
+            ).distinct()
         }
-        CourseDiscount.objects.bulk_create(
-            CourseDiscount(
-                registration_id=registration.id,
-                period=current_period[registration.subject.course.school_year_division_id],
-                amount=registration.price,
-                explanation=_('full discount for current period'),
+
+        DiscountForm = type('DiscountForm', (DiscountBaseForm,), {
+            f'periods_{school_year_division.id}': forms.ModelMultipleChoiceField(
+                label=_('Periods of school year division {school_year_division}').format(
+                    school_year_division=school_year_division.name,
+                ),
+                queryset=school_year_division.periods.all(),
+                widget=FilteredSelectMultiple(
+                    verbose_name=_('Periods of school year division: {school_year_division}').format(
+                        school_year_division=school_year_division.name,
+                    ),
+                    is_stacked=False,
+                ),
             )
-            for registration in queryset.annotate(
-                school_year_division_id=F('subject__course__school_year_division_id'),
-            )
+            for school_year_division in school_year_divisions.values()
+        })
+        if request.POST.get('post', 'no') == 'yes':
+            form = DiscountForm(request.POST)
+            if form.is_valid():
+                CourseDiscount.objects.bulk_create(
+                    CourseDiscount(
+                        registration=registration,
+                        period=period,
+                        amount=(
+                            form.cleaned_data['amount']
+                            if form.cleaned_data['discount_type'] == ABSOLUTE
+                            else (
+                                registration.price - sum(
+                                    discount.amount
+                                    for discount in registration.all_discounts
+                                    if discount.period_id == period.id
+                                )
+                            ) * form.cleaned_data['amount'] / 100
+                        ),
+                        explanation=form.cleaned_data['explanation'],
+                    )
+                    for registration in queryset.annotate(
+                        school_year_division_id=F('subject__course__school_year_division_id')
+                    )
+                    for period in form.cleaned_data[f'periods_{registration.school_year_division_id}']
+                    # (if period in registration.periods)
+                    if period.end > registration.created.date() and (
+                        registration.canceled is None or period.start <= max(
+                            registration.canceled.date(),
+                            school_year_divisions[registration.school_year_division_id].all_periods[0].start
+                        )
+                    )
+                )
+                self.message_user(request, _(
+                    'The discounts have been created for selected registrations.'
+                ))
+                return
+        else:
+            form = DiscountForm()
+
+        adminform = admin.helpers.AdminForm(
+            form,
+            [(None, {'fields': list(form.base_fields)})],
+            {},
+            None,
+            model_admin=self,
         )
-        self.message_user(request, _(
-            'The discounts have been created for each selected registration and current period.'
+
+        return render(request, 'leprikon/admin/action_form.html', dict(
+            title=_('Add discounts'),
+            opts=self.model._meta,
+            adminform=adminform,
+            media=self.media + adminform.media,
+            action='add_discounts',
+            action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
+            select_across=request.POST['select_across'],
+            selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
         ))
-    add_full_discount_for_period.short_description = _('Add full discount for current period')
+    add_discounts.short_description = _('Add discounts to selected registrations')
 
     def course_discounts(self, obj):
         html = []

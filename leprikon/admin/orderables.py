@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminRadioSelect
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.shortcuts import render
@@ -73,18 +74,25 @@ class OrderableAdmin(SubjectBaseAdmin):
                 return
         else:
             form = SchoolYearForm()
-        return render(
-            request,
-            'leprikon/admin/action_form.html',
-            {
-                'title': _('Select target school year'),
-                'queryset': queryset,
-                'opts': self.model._meta,
-                'form': form,
-                'action': 'copy_to_school_year',
-                'action_checkbox_name': admin.helpers.ACTION_CHECKBOX_NAME,
-            },
+
+        adminform = admin.helpers.AdminForm(
+            form,
+            [(None, {'fields': list(form.base_fields)})],
+            {},
+            None,
+            model_admin=self,
         )
+
+        return render(request, 'leprikon/admin/action_form.html', dict(
+            title=_('Select target school year'),
+            opts=self.model._meta,
+            adminform=adminform,
+            media=self.media + adminform.media,
+            action='copy_to_school_year',
+            action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
+            select_across=request.POST['select_across'],
+            selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
+        ))
     copy_to_school_year.short_description = _('Copy selected orderable events to another school year')
 
     def get_message_recipients(self, request, queryset):
@@ -96,7 +104,7 @@ class OrderableAdmin(SubjectBaseAdmin):
 @admin.register(OrderableRegistration)
 class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.ORDERABLE
-    actions = ('add_full_discount',)
+    actions = ('add_discounts',)
     list_display = (
         'variable_symbol', 'download_tag', 'subject_name', 'event_date', 'participants_list_html', 'price',
         'orderable_discounts', 'orderable_payments',
@@ -105,17 +113,68 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
         'note', 'random_number',
     )
 
-    def add_full_discount(self, request, queryset):
-        OrderableDiscount.objects.bulk_create(
-            OrderableDiscount(
-                registration_id=registration.id,
-                amount=registration.price,
-                explanation=_('full discount'),
+    def add_discounts(self, request, queryset):
+        ABSOLUTE = 'A'
+        RELATIVE = 'R'
+
+        class DiscountForm(forms.Form):
+            discount_type = forms.ChoiceField(
+                label=_('Discount type'),
+                choices=(
+                    (ABSOLUTE, _('absolute amount')),
+                    (RELATIVE, _('relative amount in percents'))
+                ),
+                widget=AdminRadioSelect(),
             )
-            for registration in queryset.all()
+            amount = forms.DecimalField(label=_('Amount or number of percents'))
+            explanation = OrderableDiscount._meta.get_field('explanation').formfield()
+
+        if request.POST.get('post', 'no') == 'yes':
+            form = DiscountForm(request.POST)
+            if form.is_valid():
+                OrderableDiscount.objects.bulk_create(
+                    OrderableDiscount(
+                        registration=registration,
+                        amount=(
+                            form.cleaned_data['amount']
+                            if form.cleaned_data['discount_type'] == ABSOLUTE
+                            else (
+                                registration.price - sum(
+                                    discount.amount
+                                    for discount in registration.all_discounts
+                                )
+                            ) * form.cleaned_data['amount'] / 100
+                        ),
+                        explanation=form.cleaned_data['explanation'],
+                    )
+                    for registration in queryset.all()
+                )
+                self.message_user(request, _(
+                    'The discounts have been created for selected registrations.'
+                ))
+                return
+        else:
+            form = DiscountForm()
+
+        adminform = admin.helpers.AdminForm(
+            form,
+            [(None, {'fields': list(form.base_fields)})],
+            {},
+            None,
+            model_admin=self,
         )
-        self.message_user(request, _('The discounts have been created for each selected registration.'))
-    add_full_discount.short_description = _('Add full discount')
+
+        return render(request, 'leprikon/admin/action_form.html', dict(
+            title=_('Add discounts'),
+            opts=self.model._meta,
+            adminform=adminform,
+            media=self.media + adminform.media,
+            action='add_discounts',
+            action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
+            select_across=request.POST['select_across'],
+            selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
+        ))
+    add_discounts.short_description = _('Add discounts to selected registrations')
 
     def orderable_discounts(self, obj):
         status = obj.get_payment_status()
