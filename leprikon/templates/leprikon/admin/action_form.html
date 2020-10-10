@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/change_form.html" %}
 {% load i18n l10n admin_urls %}
 
 {% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} merge-selected-confirmation{% endblock %}
@@ -12,15 +12,17 @@
 </div>
 {% endblock %}
 
-{% block content %}
-<form method="post">{% csrf_token %}
-{% for obj in queryset %}
-<input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
-{% endfor %}
+{% block after_field_sets %}
 <input type="hidden" name="action" value="{{ action }}" />
+{% for id in selected %}
+<input type="hidden" name="{{ action_checkbox_name }}" value="{{ id }}" />
+{% endfor %}
+<input type="hidden" name="select_across" value="{{ select_across }}" />
+<input type="hidden" name="index" value="0" />
 <input type="hidden" name="post" value="yes" />
-{{ form.as_p }}
+{% endblock %}
+
+{% block submit_buttons_bottom %}
 <input type="submit" value="{% trans "Continue" %}" />
 <a href="#" onclick="window.history.back(); return false;" class="button cancel-link">{% trans "Cancel" %}</a>
-</form>
 {% endblock %}
