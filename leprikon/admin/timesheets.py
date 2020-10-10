@@ -77,16 +77,22 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    # do not allow to add entries in admin (keep it simple)
+    # do not allow to delete submitted timesheets
     def has_delete_permission(self, request, obj=None):
-        if obj:
-            return not obj.submitted
-        return False
+        return super().has_delete_permission(request, obj) and (
+            obj is None or not obj.submitted
+        )
 
     def get_actions(self, request):
         actions = super(TimesheetAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
-            del(actions['delete_selected'])
+            def delete_selected(model_admin, request, queryset):
+                queryset = queryset.filter(submitted=False)
+                return admin.actions.delete_selected(model_admin, request, queryset)
+            actions['delete_selected'] = (
+                delete_selected,
+                *actions['delete_selected'][1:]
+            )
         return actions
 
     def group_durations(self, obj):

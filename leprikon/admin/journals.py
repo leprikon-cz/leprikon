@@ -86,13 +86,23 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
             if obj.affects_submitted_timesheets:
                 return False
             else:
-                return super(JournalEntryAdmin, self).has_delete_permission(request, obj)
+                return super().has_delete_permission(request, obj)
         return False
 
     def get_actions(self, request):
-        actions = super(JournalEntryAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if 'delete_selected' in actions:
-            del(actions['delete_selected'])
+            def delete_selected(model_admin, request, queryset):
+                objs = [
+                    journal_entry
+                    for journal_entry in queryset.all()
+                    if not journal_entry.affects_submitted_timesheets
+                ]
+                return admin.actions.delete_selected(model_admin, request, objs)
+            actions['delete_selected'] = (
+                delete_selected,
+                *actions['delete_selected'][1:]
+            )
         return actions
 
     def subject_name(self, obj):
