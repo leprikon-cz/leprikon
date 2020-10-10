@@ -1,6 +1,5 @@
 from datetime import date
 from json import dumps
-from sentry_sdk import capture_message
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -11,6 +10,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from sentry_sdk import capture_message
 
 from ..models.agegroup import AgeGroup
 from ..models.citizenship import Citizenship
