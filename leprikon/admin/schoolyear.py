@@ -23,7 +23,7 @@ class SchoolYearAdmin(admin.ModelAdmin):
         return obj and ('year',) or ()
 
     def get_actions(self, request):
-        actions = super(SchoolYearAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if 'delete_selected' in actions:
             del(actions['delete_selected'])
         return actions

@@ -26,5 +26,11 @@ class AgreementAdmin(admin.ModelAdmin):
     def get_actions(self, request):
         actions = super().get_actions(request)
         if 'delete_selected' in actions:
-            del(actions['delete_selected'])
+            def delete_selected(model_admin, request, queryset):
+                queryset = queryset.filter(registrations__id=None)
+                return admin.actions.delete_selected(model_admin, request, queryset)
+            actions['delete_selected'] = (
+                delete_selected,
+                *actions['delete_selected'][1:]
+            )
         return actions
