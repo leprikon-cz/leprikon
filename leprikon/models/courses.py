@@ -204,13 +204,12 @@ class CourseRegistration(SubjectRegistration):
     def period_payment_statuses(self):
         return list(self.get_period_payment_statuses())
 
-    def save(self, update_fields=None, **kwargs):
-        '''Update registration_periods on request_payment.'''
-        if update_fields and 'payment_requested' in update_fields:
-            self.course_registration_periods.filter(
-                period__due_from__lte=self.payment_requested.date(),
-            ).update(payment_requested=True)
-        return super().save(update_fields=update_fields, **kwargs)
+    @transaction.atomic
+    def request_payment(self, payment_requested_by):
+        self.course_registration_periods.filter(
+            period__due_from__lte=date.today(),
+        ).update(payment_requested=True)
+        super().request_payment(payment_requested_by)
 
 
 class CourseRegistrationPeriod(models.Model):
