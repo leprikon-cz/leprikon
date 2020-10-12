@@ -13,6 +13,7 @@
 
 {% if form.errors %}
     <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
+    <!-- {{ form.errors }} -->
 {% endif %}
 {% for error in form.non_field_errors %}
     <div class="alert alert-danger" role="alert">{{ error }}</div>
@@ -80,6 +81,10 @@
             </label>
         </div>
     </div>
+
+    {% if form.instance.subject.course.allow_period_selection %}
+    {% include 'leprikon/form_item.html' with item=form.periods %}
+    {% endif %}
 
     {{ form.participants_formset.management_form }}
 

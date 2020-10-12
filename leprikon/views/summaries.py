@@ -2,6 +2,7 @@ from datetime import date
 
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
+from ..models.orderables import OrderableRegistration
 from ..models.utils import PaymentStatusSum
 from .generic import TemplateView
 
@@ -13,17 +14,14 @@ class SummaryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SummaryView, self).get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['payment_status_sum'] = sum(
-            sum(reg.payment_statuses)
-            for reg in CourseRegistration.objects.filter(
-                user=self.request.user,
-                approved__isnull=False,
-            )
-        ) + sum(
-            reg.payment_status
-            for reg in EventRegistration.objects.filter(
-                user=self.request.user,
-                approved__isnull=False,
+        context['payment_status'] = sum(
+            sum(
+                reg.payment_status
+                for reg in Model.objects.filter(user=self.request.user, approved__isnull=False)
+            ) for Model in (
+                CourseRegistration,
+                EventRegistration,
+                OrderableRegistration,
             )
         ) + PaymentStatusSum(0, 0, 0, 0, 0, 0)
         context['new_messages'] = self.request.user.leprikon_messages.filter(viewed=None)

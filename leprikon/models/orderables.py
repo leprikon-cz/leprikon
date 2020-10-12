@@ -73,39 +73,32 @@ class OrderableRegistration(SubjectRegistration):
         verbose_name = _('orderable event registration')
         verbose_name_plural = _('orderable event registrations')
 
-    def get_due_from(self):
-        if self.subject.orderable.due_from_days is None:
-            return self.approved and self.approved.date()
-        return self.start_date - timedelta(self.subject.orderable.due_from_days)
-
-    def get_due_date(self):
-        return self.start_date - timedelta(self.subject.orderable.due_date_days)
-
     def get_payment_status(self, d=None):
-        if d is None:
-            d = date.today()
-        explanation = ',\n'.join(
-            discount.explanation.strip()
-            for discount in self.all_discounts
-            if discount.accounted.date() <= d and discount.explanation.strip()
-        )
         return PaymentStatus(
             price=self.price,
             discount=self.get_discounted(d),
-            explanation=explanation,
+            explanation=',\n'.join(
+                discount.explanation.strip()
+                for discount in self.all_discounts
+                if (d is None or discount.accounted.date() <= d) and discount.explanation.strip()
+            ),
             paid=self.get_paid(d),
-            current_date=d,
-            due_from=self.payment_requested and max(self.get_due_from(), self.payment_requested.date()),
-            due_date=self.get_due_date(),
+            current_date=d or date.today(),
+            due_from=self.approved and (
+                self.approved.date()
+                if self.subject.orderable.due_from_days is None
+                else max(
+                    self.start_date - timedelta(days=self.subject.orderable.due_from_days),
+                    self.approved.date(),
+                )
+            ),
+            due_date=self.approved and max(
+                self.start_date - timedelta(days=self.subject.orderable.due_date_days),
+                self.approved.date() + timedelta(
+                    days=self.subject.min_due_date_days
+                )
+            ),
         )
-
-    @cached_property
-    def payment_status(self):
-        return self.get_payment_status()
-
-    @cached_property
-    def payment_statuses(self):
-        return [self.payment_status]
 
     @cached_property
     def end_date(self):

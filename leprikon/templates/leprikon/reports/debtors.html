@@ -12,12 +12,14 @@
 <table class="table table-hover">
     <tr>
         <th>{% trans 'Debtor' %}</th>
-        <th>{% trans 'Debt' %}</th>
+        <th class="right">{% trans 'Amount due' %}</th>
+        <th class="right">{% trans 'Overdue' %}</th>
     </tr>
     {% for user, items in reports.items %}
     <tr id="report-{{ user.id }}" class="clickable" data-toggle="collapse" data-target=".{{ user.id }}-collapsed">
         <th>{{ user.get_full_name | default:user.get_username }}</th>
-        <td class="right">{{ items.amount_due | currency }}</td>
+        <td class="right">{{ items.sum.amount_due | currency }}</td>
+        <td class="right">{{ items.sum.overdue | currency }}</td>
     </tr>
     {% for item in items %}
     <tr class="collapse out {{ user.id }}-collapsed">
@@ -25,14 +27,18 @@
             {{ item.registration }}
         </th>
         <td class="right">
-            {{ item.amount_due | currency }}
+            {{ item.status.amount_due | currency }}
+        </td>
+        <td class="right">
+            {{ item.status.overdue | currency }}
         </td>
     </tr>
     {% endfor %}
     {% endfor %}
     <tr>
-        <th>{% trans 'Total debt' %}</th>
-        <td class="right">{{ sum | currency }}</td>
+        <th>{% trans 'Total' %}</th>
+        <td class="right">{{ sum.amount_due | currency }}</td>
+        <td class="right">{{ sum.overdue | currency }}</td>
     </tr>
 </table>
 {% endif %}

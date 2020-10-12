@@ -14,7 +14,9 @@ from sentry_sdk import capture_message
 
 from ..models.agegroup import AgeGroup
 from ..models.citizenship import Citizenship
-from ..models.courses import Course, CourseRegistration
+from ..models.courses import (
+    Course, CourseRegistration, CourseRegistrationPeriod,
+)
 from ..models.department import Department
 from ..models.events import Event, EventRegistration
 from ..models.fields import DAY_OF_WEEK
@@ -23,6 +25,7 @@ from ..models.orderables import Orderable, OrderableRegistration
 from ..models.place import Place
 from ..models.roles import BillingInfo, Leader, Parent, Participant
 from ..models.school import School
+from ..models.schoolyear import SchoolYearPeriod
 from ..models.subjects import (
     Subject, SubjectGroup, SubjectRegistration, SubjectRegistrationBillingInfo,
     SubjectRegistrationGroup, SubjectRegistrationGroupMember,
@@ -32,7 +35,7 @@ from ..models.targetgroup import TargetGroup
 from ..utils import get_age, get_birth_date, get_gender
 from .fields import AgreementBooleanField
 from .form import FormMixin
-from .widgets import RadioSelectBootstrap
+from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap
 
 User = get_user_model()
 
@@ -706,11 +709,8 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             for field_name, error in form.errors.items()
         }
 
+    @transaction.atomic
     def save(self, commit=True):
-        with transaction.atomic():
-            return self._save(commit)
-
-    def _save(self, commit):
         # set user
         self.instance.created_by = self.user
         self.instance.user = self.user
@@ -775,10 +775,35 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
 
 class CourseRegistrationForm(RegistrationForm):
+    periods = forms.ModelMultipleChoiceField(
+        queryset=SchoolYearPeriod.objects.all(),
+        widget=CheckboxSelectMultipleBootstrap(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.available_periods = self.instance.subject.course.school_year_division.periods.filter(
+            end__gte=date.today(),
+        )
+        if self.instance.subject.course.allow_period_selection:
+            self.fields['periods'].widget.choices.queryset = self.available_periods
+        else:
+            del self.fields['periods']
 
     class Meta:
         model = CourseRegistration
         exclude = ('subject', 'user', 'cancelation_requested', 'cancelation_requested_by', 'canceled', 'canceled_by')
+
+    @transaction.atomic
+    def save(self, commit=True):
+        super().save()
+        CourseRegistrationPeriod.objects.bulk_create(
+            CourseRegistrationPeriod(
+                registration=self.instance,
+                period=period,
+            ) for period in self.cleaned_data.get('periods', self.available_periods)
+        )
+        return self.instance
 
 
 class EventRegistrationForm(RegistrationForm):

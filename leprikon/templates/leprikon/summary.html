@@ -17,20 +17,20 @@
 
 <h2>{% trans 'Payments overview' %}</h2>
 <p>
-    {% if payment_status_sum.overdue %}
-    <strong style="color: {{ payment_status_sum.color }}">
-    {% blocktrans with overdue=payment_status_sum.overdue|currency %}You have overdue of {{ overdue }}.{% endblocktrans %}
+    {% if payment_status.overdue %}
+    <strong style="color: {{ payment_status.color }}">
+    {% blocktrans with overdue=payment_status.overdue|currency %}You have overdue of {{ overdue }}.{% endblocktrans %}
     </strong><br/>
     {% endif %}
-    {% if payment_status_sum.amount_due %}
-    <span style="color: {{ payment_status_sum.color }}">
-    {% blocktrans with amount_due=payment_status_sum.amount_due|currency %}Your current amount due is {{ amount_due }}.{% endblocktrans %}
+    {% if payment_status.amount_due %}
+    <span style="color: {{ payment_status.color }}">
+    {% blocktrans with amount_due=payment_status.amount_due|currency %}Your current amount due is {{ amount_due }}.{% endblocktrans %}
     </span>
     {% else %}
     <i>{% trans 'All Your receivables have been paid.' %}</i>
     {% endif %}
-    {% if payment_status_sum.overpaid %}
-    {% blocktrans with overdue=payment_status_sum.overpaid|currency %}You have overpaid {{ overpaid }}.{% endblocktrans %}
+    {% if payment_status.overpaid %}
+    {% blocktrans with overpaid=payment_status.overpaid|currency %}You have overpaid {{ overpaid }}.{% endblocktrans %}
     {% endif %}
 </p>
 

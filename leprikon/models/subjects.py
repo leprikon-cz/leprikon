@@ -1,7 +1,7 @@
 import colorsys
 import logging
 from collections import OrderedDict, namedtuple
-from datetime import date, datetime, time
+from datetime import datetime, time
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
@@ -349,6 +349,7 @@ class Subject(models.Model):
     )
     min_registrations_count = models.PositiveIntegerField(_('minimal registrations count'), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_('maximal registrations count'), blank=True, null=True)
+    min_due_date_days = models.PositiveIntegerField(_('minimal number of days to due date'), default=3)
     risks = HTMLField(_('risks'), blank=True)
     plan = HTMLField(_('plan'), blank=True)
     evaluation = HTMLField(_('evaluation'), blank=True)
@@ -934,8 +935,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.payments.all())
 
     @cached_property
-    def payment_status_sum(self):
-        return sum(self.subjectregistration.payment_statuses)
+    def payment_status(self):
+        return self.get_payment_status()
 
     @cached_property
     def organization(self):
@@ -951,7 +952,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         org = self.organization
         return spayd(
             ('ACC', ('%s+%s' % (org.iban, org.bic)) if org.bic else org.iban),
-            ('AM', self.payment_status_sum.amount_due),
+            ('AM', self.payment_status.amount_due),
             ('CC', localeconv['int_curr_symbol'].strip()),
             ('MSG', '%s, %s' % (self.subject.name[:29], str(self)[:29])),
             ('RN', slugify(self.organization.name).replace('*', '')[:35]),
@@ -964,7 +965,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return pays_payment_url(
             gateway=leprikon_site.payment_gateway,
             order_id=self.variable_symbol,
-            amount=self.payment_status_sum.amount_due,
+            amount=self.payment_status.amount_due,
             email=self.user.email,
         )
 
@@ -1082,12 +1083,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 self.approved = timezone.now()
                 self.approved_by = approved_by
                 self.save()
-                due_from = self.get_due_from()
                 self.send_mail('approved')
-                if due_from <= date.today() and (
-                    self.payment_requested is None or self.payment_requested.date() < due_from
-                ):
-                    self.request_payment(approved_by)
+            if not self.payment_requested:
+                self.request_payment(approved_by)
         else:
             raise ValidationError((
                 _('Unfortunately, it is not possible to restore canceled registration {r}. Please create new one.')
@@ -1096,12 +1094,22 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             ).format(r=self))
 
     def request_payment(self, payment_requested_by):
-        with transaction.atomic():
-            self.payment_requested = timezone.now()
-            self.payment_requested_by = payment_requested_by
-            self.save()
-            if self.payment_status_sum.amount_due:
-                self.send_mail('payment_request')
+        not_approved = not self.approved
+        if not_approved:
+            # pretend being approved
+            self.approved = timezone.now()
+        try:
+            if self.payment_status.amount_due:
+                with transaction.atomic():
+                    self.payment_requested = timezone.now()
+                    self.payment_requested_by = payment_requested_by
+                    # do not save possibly pretended approval
+                    self.save(update_fields=('payment_requested', 'payment_requested_by'))
+                    self.send_mail('payment_request')
+        finally:
+            if not_approved:
+                # stop pretending
+                self.approved = None
 
     def refuse(self, refused_by):
         if self.approved is None:

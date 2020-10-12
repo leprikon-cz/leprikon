@@ -77,7 +77,7 @@
             {% else %}
             <tr>
                 <td>{% trans 'Periods' %}</td>
-                <td><para style="para">{% for period in object.subjectregistration.all_periods %}{{ period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
+                <td><para style="para">{% for registration_period in object.courseregistration.all_registration_periods %}{{ registration_period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
             </tr>
             {% if object.subject.course.all_times %}
             <tr>
@@ -211,7 +211,7 @@
         <para style="title">{% trans 'Group' %}</para>
 
         <spacer length="2mm"/>
-        
+
         <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'Target group' %}</td>

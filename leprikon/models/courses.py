@@ -28,6 +28,11 @@ from .utils import PaymentStatus, change_year
 class Course(Subject):
     school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.PROTECT,
                                              related_name='courses', verbose_name=_('school year division'))
+    allow_period_selection = models.BooleanField(
+        _('allow period selection'),
+        default=False,
+        help_text=_('allow user to choose school year periods on registration form'),
+    )
 
     class Meta:
         app_label = 'leprikon'
@@ -46,10 +51,6 @@ class Course(Subject):
     @cached_property
     def all_journal_entries(self):
         return list(self.journal_entries.all())
-
-    @cached_property
-    def has_discounts(self):
-        return CourseDiscount.objects.filter(registration__subject_id=self.id).exists()
 
     def get_times_list(self):
         return comma_separated(self.all_times)
@@ -155,68 +156,43 @@ class CourseRegistration(SubjectRegistration):
         verbose_name = _('course registration')
         verbose_name_plural = _('course registrations')
 
-    @property
-    def periods(self):
-        periods = self.subject.course.school_year_division.periods.filter(
-            end__gte=self.created.date(),
-        )
-        if self.canceled:
-            # include at least the first one (if any)
-            first_period_start = periods.values_list('start', flat=True).first()
-            return periods.filter(
-                start__lte=max(self.canceled.date(), first_period_start or self.canceled.date())
-            )
-        else:
-            return periods
-
     @cached_property
-    def all_periods(self):
-        return list(self.periods.all())
-
-    @cached_property
-    def all_discounts(self):
-        return list(self.discounts.all())
-
-    PeriodPaymentStatus = namedtuple('PeriodPaymentStatus', ('period', 'status'))
-
-    def get_due_from(self):
-        today = date.today()
-        past_due_froms = [
-            period.due_from for period in self.all_periods
-            if period.due_from < today
-        ]
-        return max(past_due_froms) if past_due_froms else min(
-            period.due_from for period in self.all_periods
+    def all_registration_periods(self):
+        return list(
+            self.course_registration_periods.select_related('period')
         )
 
     def get_period_payment_statuses(self, d=None):
-        if d is None:
-            d = date.today()
         paid = self.get_paid(d)
-        for counter, period in enumerate(self.all_periods, start=1):
-            discount = sum(
-                discount.amount
-                for discount in self.all_discounts
-                if discount.period == period and discount.accounted.date() <= d
+        for counter, registration_period in enumerate(self.all_registration_periods, start=1):
+            period_payment_status = registration_period.get_payment_status(
+                paid=paid,
+                last_period=counter == len(self.all_registration_periods),
+                d=d,
             )
-            explanation = ',\n'.join(
-                discount.explanation.strip()
-                for discount in self.all_discounts
-                if discount.period == period and discount.accounted.date() <= d and discount.explanation.strip()
+            yield period_payment_status
+            paid -= period_payment_status.status.paid
+        if not self.all_registration_periods:
+            # create fake registration period to ensure some payment status
+            registration_period = CourseRegistrationPeriod(
+                registration=self,
+                period=SchoolYearPeriod(
+                    name=_('no period'),
+                )
             )
-            yield self.PeriodPaymentStatus(
-                period=period,
+            yield CourseRegistrationPeriod.PeriodPaymentStatus(
+                period=registration_period.period,
+                registration_period=registration_period,
                 status=PaymentStatus(
-                    price=self.price,
-                    discount=discount,
-                    explanation=explanation,
-                    paid=min(self.price - discount, paid) if counter < len(self.all_periods) else paid,
+                    price=0,
+                    discount=0,
+                    explanation='',
+                    paid=paid,
                     current_date=d,
-                    due_from=self.payment_requested and max(period.due_from, self.payment_requested.date()),
-                    due_date=period.due_date,
+                    due_from=None,
+                    due_date=None,
                 ),
             )
-            paid = max(paid - (self.price - discount), 0)
 
     def get_payment_status(self, d=None):
         return sum(
@@ -228,16 +204,106 @@ class CourseRegistration(SubjectRegistration):
     def period_payment_statuses(self):
         return list(self.get_period_payment_statuses())
 
+    def save(self, update_fields=None, **kwargs):
+        '''Update registration_periods on request_payment.'''
+        if update_fields and 'payment_requested' in update_fields:
+            self.course_registration_periods.filter(
+                period__due_from__lte=self.payment_requested.date(),
+            ).update(payment_requested=True)
+        return super().save(update_fields=update_fields, **kwargs)
+
+
+class CourseRegistrationPeriod(models.Model):
+    registration = models.ForeignKey(
+        CourseRegistration,
+        on_delete=models.CASCADE,
+        related_name='course_registration_periods',
+        verbose_name=_('registration'),
+    )
+    period = models.ForeignKey(
+        SchoolYearPeriod,
+        on_delete=models.PROTECT,
+        related_name='course_registration_periods',
+        verbose_name=_('period'),
+    )
+    payment_requested = models.BooleanField(_('payment requested'), default=False)
+
+    class Meta:
+        app_label = 'leprikon'
+        verbose_name = _('registered period')
+        verbose_name_plural = _('registered periods')
+        ordering = ('period__start',)
+
+    def __str__(self):
+        return str(self.period)
+
     @cached_property
-    def payment_statuses(self):
-        return [pps.status for pps in self.period_payment_statuses]
+    def all_discounts(self):
+        # use cached self.registration.all_discounts instead of
+        # return list(self.discounts.all())
+        return [
+            discount for discount in self.registration.all_discounts
+            if discount.registration_period_id == self.id
+        ]
+
+    PeriodPaymentStatus = namedtuple(
+        'PeriodPaymentStatus',
+        ('period', 'registration_period', 'status'),
+    )
+
+    def get_payment_status(self, paid, last_period, d=None):
+        if d is None:
+            d = date.today()
+        discount = sum(
+            discount.amount
+            for discount in self.all_discounts
+            if discount.accounted.date() <= d
+        )
+        explanation = ',\n'.join(
+            discount.explanation.strip()
+            for discount in self.all_discounts
+            if discount.accounted.date() <= d and discount.explanation.strip()
+        )
+        return self.PeriodPaymentStatus(
+            period=self.period,
+            registration_period=self,
+            status=PaymentStatus(
+                price=self.registration.price,
+                discount=discount,
+                explanation=explanation,
+                paid=min(self.registration.price - discount, paid) if not last_period else paid,
+                current_date=d,
+                due_from=self.registration.approved and max(
+                    self.period.due_from,
+                    self.registration.approved.date(),
+                ),
+                due_date=self.registration.approved and max(
+                    self.period.due_date,
+                    self.registration.approved.date() + timedelta(
+                        days=self.registration.subject.min_due_date_days
+                    )
+                ),
+            ),
+        )
 
 
 class CourseDiscount(SubjectDiscount):
-    registration = models.ForeignKey(CourseRegistration, on_delete=models.CASCADE,
-                                     related_name='discounts', verbose_name=_('registration'))
-    period = models.ForeignKey(SchoolYearPeriod, on_delete=models.PROTECT,
-                               related_name='discounts', verbose_name=_('period'))
+    registration = models.ForeignKey(
+        CourseRegistration,
+        on_delete=models.CASCADE,
+        related_name='discounts',
+        verbose_name=_('registration'),
+    )
+    registration_period = models.ForeignKey(
+        CourseRegistrationPeriod,
+        on_delete=models.CASCADE,
+        related_name='discounts',
+        verbose_name=_('period'),
+    )
+
+    @cached_property
+    def period(self):
+        return self.registration_period.period
 
     class Meta:
         app_label = 'leprikon'

@@ -11,7 +11,9 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.courses import CourseDiscountAdminForm
+from ..forms.courses import (
+    CourseDiscountAdminForm, CourseRegistrationAdminForm,
+)
 from ..models.courses import (
     Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory,
     CourseTime,
@@ -57,24 +59,14 @@ class CourseAdmin(SubjectBaseAdmin):
         'copy_to_school_year',
     )
 
-    def get_readonly_fields(self, request, obj=None):
-        return ('school_year_division',) if obj and obj.has_discounts else ()
-
     def get_form(self, request, obj=None, **kwargs):
-        form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         # school year division choices
-        if 'school_year_division' in form.base_fields and (not obj or not obj.has_discounts):
-            # school year division can not be changed if there are discounts
-            # because discounts are related to school year periods
-            if obj:
-                school_year = obj.school_year
-            else:
-                school_year = request.school_year
-            school_year_division_choices = form.base_fields['school_year_division'].widget.widget.choices
-            school_year_division_choices.queryset = school_year_division_choices.queryset.filter(
-                school_year=school_year,
-            )
-            form.base_fields['school_year_division'].choices = school_year_division_choices
+        school_year_division_choices = form.base_fields['school_year_division'].widget.widget.choices
+        school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
+            school_year=obj.school_year if obj else request.school_year,
+        )
+        form.base_fields['school_year_division'].choices = school_year_division_choices
         return form
 
     def publish(self, request, queryset):
@@ -145,6 +137,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
+    form = CourseRegistrationAdminForm
     subject_type_type = SubjectType.COURSE
     actions = ('add_discounts',)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
@@ -155,6 +148,11 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         'cancelation_requested_with_by', 'canceled_with_by',
         'note', 'random_number',
     )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related(
+            'course_registration_periods',
+        )
 
     def add_discounts(self, request, queryset):
         ABSOLUTE = 'A'
@@ -179,14 +177,15 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             ).distinct()
         }
 
+        label = _('Periods of school year division: {school_year_division}')
         DiscountForm = type('DiscountForm', (DiscountBaseForm,), {
             f'periods_{school_year_division.id}': forms.ModelMultipleChoiceField(
-                label=_('Periods of school year division {school_year_division}').format(
+                label=label.format(
                     school_year_division=school_year_division.name,
                 ),
                 queryset=school_year_division.periods.all(),
                 widget=FilteredSelectMultiple(
-                    verbose_name=_('Periods of school year division: {school_year_division}').format(
+                    verbose_name=label.format(
                         school_year_division=school_year_division.name,
                     ),
                     is_stacked=False,
@@ -200,7 +199,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                 CourseDiscount.objects.bulk_create(
                     CourseDiscount(
                         registration=registration,
-                        period=period,
+                        registration_period=registration_period,
                         amount=(
                             form.cleaned_data['amount']
                             if form.cleaned_data['discount_type'] == ABSOLUTE
@@ -208,7 +207,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                                 registration.price - sum(
                                     discount.amount
                                     for discount in registration.all_discounts
-                                    if discount.period_id == period.id
+                                    if discount.registration_period_id == registration_period.id
                                 )
                             ) * form.cleaned_data['amount'] / 100
                         ),
@@ -217,13 +216,8 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     for registration in queryset.annotate(
                         school_year_division_id=F('subject__course__school_year_division_id')
                     )
-                    for period in form.cleaned_data[f'periods_{registration.school_year_division_id}']
-                    # (if period in registration.periods)
-                    if period.end > registration.created.date() and (
-                        registration.canceled is None or period.start <= max(
-                            registration.canceled.date(),
-                            school_year_divisions[registration.school_year_division_id].all_periods[0].start
-                        )
+                    for registration_period in registration.course_registration_periods.filter(
+                        period__in=form.cleaned_data[f'periods_{registration.school_year_division_id}']
                     )
                 )
                 self.message_user(request, _(
@@ -255,21 +249,20 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
     def course_discounts(self, obj):
         html = []
-        for period in obj.period_payment_statuses:
+        for status in obj.period_payment_statuses:
+            query = f'?registration={obj.id}&registration_period={status.registration_period.id}'
             html.append(format_html(
                 '{period}: <a href="{href}"><b>{amount}</b></a>',
-                period=period.period.name,
-                href=(reverse('admin:leprikon_coursediscount_changelist') +
-                      '?registration={}&period={}'.format(obj.id, period.period.id)),
-                amount=currency(period.status.discount),
+                period=status.registration_period.period.name,
+                href=reverse('admin:leprikon_coursediscount_changelist') + query,
+                amount=currency(status.status.discount),
+            ) + format_html(
+                '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
+                '<img src="{icon}" alt="+"/></a>',
+                href=reverse('admin:leprikon_coursediscount_add') + query,
+                title=_('add discount'),
+                icon=static('admin/img/icon-addlink.svg'),
             ))
-        html.append(format_html(
-            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
-            '<img src="{icon}" alt="+"/></a>',
-            href=reverse('admin:leprikon_coursediscount_add') + '?registration={}'.format(obj.id),
-            title=_('add discount'),
-            icon=static('admin/img/icon-addlink.svg'),
-        ))
         return '<br/>'.join(html)
     course_discounts.allow_tags = True
     course_discounts.short_description = _('course discounts')
@@ -280,19 +273,18 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             html.append(format_html(
                 '{period}: <a class="popup-link" style="color: {color}" href="{href}" title="{title}">'
                 '<b>{amount}</b></a>',
-                period=period.period.name,
+                period=period.registration_period.period.name,
                 color=period.status.color,
                 href=reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
                 title=period.status.title,
                 amount=currency(period.status.paid),
+            ) + format_html(
+                '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
+                '<img src="{icon}" alt="+"/></a>',
+                href=reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
+                title=_('add payment'),
+                icon=static('admin/img/icon-addlink.svg'),
             ))
-        html.append(format_html(
-            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
-            '<img src="{icon}" alt="+"/></a>',
-            href=reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
-            title=_('add payment'),
-            icon=static('admin/img/icon-addlink.svg'),
-        ))
         return '<br/>'.join(html)
     course_payments.allow_tags = True
     course_payments.short_description = _('course payments')

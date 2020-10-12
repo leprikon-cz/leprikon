@@ -110,16 +110,17 @@
                 </td>
                 <td>
                     <para style="small-right">{% trans 'amount due' %}</para>
+                    <para style="small-right">{% trans 'due date' %}</para>
                 </td>
             </tr>
             {% if object.courseregistration %}
-            {% for pps in object.courseregistration.period_payment_statuses %}{% if pps.status.amount_due %}
+            {% for pps in object.period_payment_statuses %}{% if pps.status.amount_due %}
             <tr>
                 <td>
                     <para style="left">
                         {{ object.subject.subject_type.name }}: {{ object.subject.name }}, {{ pps.period.name }}<br/>
                         {% if object.subject.registration_type_participants %}
-                            {% if object.registration.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                            {% if object.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
                             {{ object.all_participants|comma_separated }}
                         {% elif object.subject.registration_type_groups %}
                             {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
@@ -129,17 +130,17 @@
                 </td>
                 <td>
                     <para style="right">{{ pps.status.amount_due | currency }}</para>
+                    <para style="left">{{ pps.status.due_date }}</para>
                 </td>
             </tr>
             {% endif %}{% endfor %}
             {% else %}
-            {% for ps in object.subjectregistration.payment_statuses %}{% if ps.amount_due %}
             <tr>
                 <td>
                     <para style="left">
                         {{ object.subject.subject_type.name }}: {{ object.subject.name }}<br/>
                         {% if object.subject.registration_type_participants %}
-                            {% if object.registration.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                            {% if object.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
                             {{ object.all_participants|comma_separated }}
                         {% elif object.subject.registration_type_groups %}
                             {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
@@ -148,10 +149,10 @@
                     </para>
                 </td>
                 <td>
-                    <para style="right">{{ ps.amount_due | currency }}</para>
+                    <para style="right">{{ object.payment_status.amount_due | currency }}</para>
+                    <para style="left">{{ object.payment_status.due_date }}</para>
                 </td>
             </tr>
-            {% endif %}{% endfor %}
             {% endif %}
         </blockTable>
 
@@ -178,7 +179,7 @@
                                             <para style="right">{% trans 'total amount due' %}:</para>
                                         </td>
                                         <td>
-                                            <para style="title">{{ object.payment_status_sum.amount_due|currency }}</para>
+                                            <para style="title">{{ object.payment_status.amount_due|currency }}</para>
                                         </td>
                                     </tr>
                                     <tr>
