@@ -111,13 +111,13 @@ class EventRegistration(SubjectRegistration):
             ),
             paid=self.get_paid(d),
             current_date=d or date.today(),
-            due_from=self.approved and max(
+            due_from=self.payment_requested and max(
                 self.subject.event.due_from,
-                self.approved.date(),
+                self.payment_requested.date(),
             ),
-            due_date=self.approved and max(
+            due_date=self.payment_requested and max(
                 self.subject.event.due_date,
-                self.approved.date() + timedelta(
+                self.payment_requested.date() + timedelta(
                     days=self.subject.min_due_date_days
                 )
             ),

@@ -84,17 +84,17 @@ class OrderableRegistration(SubjectRegistration):
             ),
             paid=self.get_paid(d),
             current_date=d or date.today(),
-            due_from=self.approved and (
-                self.approved.date()
+            due_from=self.payment_requested and (
+                self.payment_requested.date()
                 if self.subject.orderable.due_from_days is None
                 else max(
                     self.start_date - timedelta(days=self.subject.orderable.due_from_days),
-                    self.approved.date(),
+                    self.payment_requested.date(),
                 )
             ),
-            due_date=self.approved and max(
+            due_date=self.payment_requested and max(
                 self.start_date - timedelta(days=self.subject.orderable.due_date_days),
-                self.approved.date() + timedelta(
+                self.payment_requested.date() + timedelta(
                     days=self.subject.min_due_date_days
                 )
             ),

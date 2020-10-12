@@ -1075,15 +1075,15 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         'canceled': _('Registration for {subject_type} {subject} was canceled'),
     }
 
+    @transaction.atomic
     def approve(self, approved_by):
         if self.approved is None:
-            with transaction.atomic():
-                self.canceled = None
-                self.canceled_by = None
-                self.approved = timezone.now()
-                self.approved_by = approved_by
-                self.save()
-                self.send_mail('approved')
+            self.canceled = None
+            self.canceled_by = None
+            self.approved = timezone.now()
+            self.approved_by = approved_by
+            self.save()
+            self.send_mail('approved')
             if not self.payment_requested:
                 self.request_payment(approved_by)
         else:
@@ -1093,23 +1093,16 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 _('The registration {r} has already been approved.')
             ).format(r=self))
 
+    @transaction.atomic
     def request_payment(self, payment_requested_by):
-        not_approved = not self.approved
-        if not_approved:
-            # pretend being approved
-            self.approved = timezone.now()
-        try:
-            if self.payment_status.amount_due:
-                with transaction.atomic():
-                    self.payment_requested = timezone.now()
-                    self.payment_requested_by = payment_requested_by
-                    # do not save possibly pretended approval
-                    self.save(update_fields=('payment_requested', 'payment_requested_by'))
-                    self.send_mail('payment_request')
-        finally:
-            if not_approved:
-                # stop pretending
-                self.approved = None
+        if not self.payment_requested:
+            self.payment_requested = timezone.now()
+            self.payment_requested_by = payment_requested_by
+            self.save()
+            # refresh all cached statuses
+            self = type(self).objects.get(id=self.id)
+        if self.payment_status.amount_due:
+            self.send_mail('payment_request')
 
     def refuse(self, refused_by):
         if self.approved is None:

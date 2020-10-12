@@ -273,13 +273,13 @@ class CourseRegistrationPeriod(models.Model):
                 explanation=explanation,
                 paid=min(self.registration.price - discount, paid) if not last_period else paid,
                 current_date=d,
-                due_from=self.registration.approved and max(
+                due_from=self.registration.payment_requested and max(
                     self.period.due_from,
-                    self.registration.approved.date(),
+                    self.registration.payment_requested.date(),
                 ),
-                due_date=self.registration.approved and max(
+                due_date=self.registration.payment_requested and max(
                     self.period.due_date,
-                    self.registration.approved.date() + timedelta(
+                    self.registration.payment_requested.date() + timedelta(
                         days=self.registration.subject.min_due_date_days
                     )
                 ),
