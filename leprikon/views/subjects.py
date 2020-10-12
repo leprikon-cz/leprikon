@@ -1,5 +1,6 @@
 from cms.views import details as cms_view_details
 from django.core.exceptions import PermissionDenied
+from django.db.models import F
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy as reverse
@@ -204,13 +205,25 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegi
 
 
 class UserRegistrationMixin:
-    model = SubjectRegistration
+    _attrs = {
+        SubjectType.COURSE: 'courseregistration',
+        SubjectType.EVENT: 'eventregistration',
+        SubjectType.ORDERABLE: 'orderableregistration',
+    }
 
     def get_object(self):
-        registration = super().get_object()
-        if registration.user != self.request.user:
+        subject_registration = super().get_object()
+        if subject_registration.user != self.request.user:
             raise PermissionDenied()
-        return registration
+        return getattr(
+            subject_registration,
+            self._attrs[subject_registration.subject_type_type],
+        )
+
+    def get_queryset(self):
+        return SubjectRegistration.objects.annotate(
+            subject_type_type=F('subject__subject_type__subject_type'),
+        )
 
     def get_template_names(self):
         return [self.template_name] if self.template_name else [

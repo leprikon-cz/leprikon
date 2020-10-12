@@ -103,13 +103,15 @@
 
         <spacer length="2mm"/>
 
-        <blockTable colWidths="{{ print_setup.width|sub:94 }},70" style="with-borders">
+        <blockTable colWidths="{{ print_setup.width|sub:194 }},70,100" style="with-borders">
             <tr>
                 <td>
                     <para style="small">{% trans 'description' %}</para>
                 </td>
                 <td>
                     <para style="small-right">{% trans 'amount due' %}</para>
+                </td>
+                <td>
                     <para style="small-right">{% trans 'due date' %}</para>
                 </td>
             </tr>
@@ -130,7 +132,9 @@
                 </td>
                 <td>
                     <para style="right">{{ pps.status.amount_due | currency }}</para>
-                    <para style="left">{{ pps.status.due_date }}</para>
+                </td>
+                <td>
+                    <para style="right">{{ pps.status.due_date }}</para>
                 </td>
             </tr>
             {% endif %}{% endfor %}
@@ -150,7 +154,9 @@
                 </td>
                 <td>
                     <para style="right">{{ object.payment_status.amount_due | currency }}</para>
-                    <para style="left">{{ object.payment_status.due_date }}</para>
+                </td>
+                <td>
+                    <para style="right">{{ object.payment_status.due_date }}</para>
                 </td>
             </tr>
             {% endif %}
