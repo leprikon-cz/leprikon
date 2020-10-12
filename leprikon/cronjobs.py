@@ -1,14 +1,15 @@
 from datetime import date
 from itertools import chain
+from traceback import print_exc
 
 from django.conf import settings
-from django.db.models import Q
 from django.utils.translation import override
 from django_cron import CronJobBase, Schedule
 from sentry_sdk import capture_exception
 
-from .models.courses import CourseRegistration
+from .models.courses import CourseRegistrationPeriod
 from .models.events import EventRegistration
+from .models.orderables import OrderableRegistration
 
 
 class SentryCronJobBase(CronJobBase):
@@ -31,15 +32,33 @@ class SendPaymentRequest(SentryCronJobBase):
     def dojob(self):
         today = date.today()
         for registration in chain(
-            CourseRegistration.objects.filter(
-                subject__course__school_year_division__periods__due_from=today,
-                approved__isnull=False,
-                canceled__isnull=True,
-            ).filter(Q(payment_requested=None) | Q(payment_requested__date__lt=today)),
+            set(
+                registration_period.registration
+                for registration_period in CourseRegistrationPeriod.objects.filter(
+                    registration__approved__isnull=False,
+                    registration__canceled__isnull=True,
+                    payment_requested=False,
+                    period__due_from__lte=today,
+                ).select_related('registration')
+            ),
             EventRegistration.objects.filter(
-                subject__event__due_from=today,
                 approved__isnull=False,
                 canceled__isnull=True,
-            ).filter(Q(payment_requested=None) | Q(payment_requested__date__lt=today)),
+                payment_requested__isnull=True,
+                subject__event__due_from__lte=today,
+            ),
+            (
+                registration
+                for registration in OrderableRegistration.objects.filter(
+                    approved__isnull=False,
+                    canceled__isnull=True,
+                    payment_requested__isnull=True,
+                ).select_related('subject__orderable')
+                if registration.get_due_from() <= today
+            ),
         ):
-            registration.request_payment(None)
+            try:
+                registration.request_payment(None)
+            except Exception:
+                print_exc()
+                capture_exception()

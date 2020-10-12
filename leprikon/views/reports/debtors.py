@@ -3,11 +3,13 @@ from itertools import chain
 
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy as reverse
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ...forms.reports.debtors import DebtorsForm
 from ...models.courses import CourseRegistration
 from ...models.events import EventRegistration
+from ...models.orderables import OrderableRegistration
 from . import ReportBaseView
 
 
@@ -18,12 +20,12 @@ class ReportDebtorsView(ReportBaseView):
     submit_label = _('Show')
     back_url = reverse('leprikon:report_list')
 
-    ReportItem = namedtuple('ReportItem', ('registration', 'amount_due'))
+    ReportItem = namedtuple('ReportItem', ('registration', 'status'))
 
     class Report(list):
-        def append(self, item):
-            super(ReportDebtorsView.Report, self).append(item)
-            self.amount_due = getattr(self, 'amount_due', 0) + item.amount_due
+        @cached_property
+        def sum(self):
+            return sum(item.status for item in self)
 
     def form_valid(self, form):
         context = form.cleaned_data
@@ -31,16 +33,27 @@ class ReportDebtorsView(ReportBaseView):
         context['reports'] = {}
         context['sum'] = 0
 
-        for reg in chain(
-            CourseRegistration.objects.filter(subject__school_year=self.request.school_year,
-                                              created__date__lte=context['date']),
-            EventRegistration.objects.filter(subject__school_year=self.request.school_year,
-                                             created__date__lte=context['date']),
+        for reg in chain.from_iterable(
+            qs.filter(
+                subject__school_year=self.request.school_year,
+                approved__date__lte=context['date'],
+            ).prefetch_related(
+                'discounts',
+                'payments',
+            ).select_related('user')
+            for qs in (
+                CourseRegistration.objects.prefetch_related('course_registration_periods'),
+                EventRegistration.objects,
+                OrderableRegistration.objects,
+            )
         ):
-            amount_due = reg.get_payment_status(context['date']).amount_due
-            if amount_due:
+            status = reg.get_payment_status(context['date'])
+            if status.amount_due:
                 report = context['reports'].setdefault(reg.user, self.Report())
-                report.append(self.ReportItem(registration=reg, amount_due=amount_due))
-                context['sum'] += amount_due
+                report.append(self.ReportItem(registration=reg, status=status))
+        context['sum'] = sum(
+            report.sum
+            for report in context['reports'].values()
+        )
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))

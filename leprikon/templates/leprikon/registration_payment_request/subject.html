@@ -3,12 +3,23 @@
 {{ object.text_registration_payment_request }}
 
 {% include 'leprikon/registration_mail_details.html' %}
-{% for ps in object.payment_statuses %}{% if ps.amount_due %}
-<p>
-    {% trans 'Amount due' %}: {{ ps.amount_due | currency }}, 
-    {% trans 'Due date' %}: {{ ps.due_date }}
-</p>
-{% endif %}{% endfor %}
+
+{% if object.courseregistration %}
+    {% for pps in object.period_payment_statuses %}
+        {% if pps.status.amount_due %}
+        <p>
+            {% trans 'Period' %}: {{ pps.period.name }},
+            {% trans 'Amount due' %}: {{ pps.status.amount_due | currency }},
+            {% trans 'Due date' %}: {{ pps.status.due_date }}
+        </p>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>
+        {% trans 'Amount due' %}: {{ object.payment_status.amount_due | currency }},
+        {% trans 'Due date' %}: {{ object.payment_status.due_date }}
+    </p>
+{% endif %}
 
 {% if site.payment_gateway %}
 <p>

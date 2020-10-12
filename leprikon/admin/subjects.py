@@ -1,4 +1,5 @@
 from bankreader.models import Transaction as BankreaderTransaction
+from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
@@ -420,6 +421,7 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)
     list_editable = ('note',)
     list_export = (
@@ -507,7 +509,13 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return ChangeList
 
     def get_queryset(self, request):
-        return super().get_queryset(request).annotate(random_number=Random())
+        return super().get_queryset(request).prefetch_related(
+            'discounts',
+            'payments',
+        ).select_related(
+            'subject',
+            'user',
+        ).annotate(random_number=Random())
 
     def approve(self, request, queryset):
         for registration in queryset.all():
@@ -585,11 +593,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
         if request.subject:
             kwargs['form'] = type(
-                RegistrationAdminForm.__name__,
-                (RegistrationAdminForm,),
+                self.form.__name__,
+                (self.form,),
                 {'subject': request.subject},
             )
         else:
+            kwargs['form'] = forms.ModelForm
             kwargs['fields'] = ['subject']
         return super(SubjectRegistrationBaseAdmin, self).get_form(request, obj, **kwargs)
 

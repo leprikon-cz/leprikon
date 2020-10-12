@@ -177,13 +177,12 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
     add_discounts.short_description = _('Add discounts to selected registrations')
 
     def orderable_discounts(self, obj):
-        status = obj.get_payment_status()
         return format_html(
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
             href_list=reverse('admin:leprikon_orderablediscount_changelist') + '?registration={}'.format(obj.id),
-            amount=currency(status.discount),
+            amount=currency(obj.payment_status.discount),
             href_add=reverse('admin:leprikon_orderablediscount_add') + '?registration={}'.format(obj.id),
             icon_add=static('admin/img/icon-addlink.svg'),
             title_add=_('add discount'),
@@ -192,15 +191,14 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
     orderable_discounts.short_description = _('orderable event discounts')
 
     def orderable_payments(self, obj):
-        status = obj.get_payment_status()
         return format_html(
             '<a class="popup-link" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            color=status.color,
+            color=obj.payment_status.color,
             href_list=reverse('admin:leprikon_subjectpayment_changelist') + '?registration={}'.format(obj.id),
-            title=status.title,
-            amount=currency(status.paid),
+            title=obj.payment_status.title,
+            amount=currency(obj.payment_status.paid),
             href_add=reverse('admin:leprikon_subjectpayment_add') + '?registration={}'.format(obj.id),
             icon_add=static('admin/img/icon-addlink.svg'),
             title_add=_('add payment'),

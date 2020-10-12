@@ -8,28 +8,27 @@
         {% if reg.subject_variant %}({{ reg.subject_variant.name }}){% endif %}
     </div>
 </div>
-{% if reg.payment_requested %}
 <div class="row">
     <label class="col-sm-4">{% trans 'Payments status' %}:</label>
     <div class="col-sm-8">
-        {% if reg.payment_status_sum.amount_due %}
+        {% if reg.payment_status.amount_due %}
         <a class="btn btn-primary btn-xs right" href="{{ reg.get_payment_request_url }}">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             {% trans 'payment request' %}
         </a>
         {% endif %}
         <div class="clickable" data-toggle="collapse" id="payments-{{ reg.id }}" data-target="#payments-{{ reg.id }}-details">
-            <strong style="color: {{ reg.payment_status_sum.color }}">{{ reg.payment_status_sum.title }}</strong>
+            <strong style="color: {{ reg.payment_status.color }}">{{ reg.payment_status.title }}</strong>
         </div>
         <div class="collapse out" id="payments-{{ reg.id }}-details">
-            {% if reg.subject.subject_type.subject_type == 'course' %}
+            {% if reg.period_payment_statuses %}
                 {% for pps in reg.period_payment_statuses %}
                 {{ pps.period.name }}:
                 <strong style="color: {{ pps.status.color }}" title="{{ pps.status.title }}">
                     {% blocktrans with paid=pps.status.paid|currency %}paid {{ paid }}{% endblocktrans %}
                 </strong>
                 {% if pps.status.discount %}({% trans 'discount' %}: {{ pps.status.discount | currency }}{% if pps.status.explanation %} - {{ pps.status.explanation }}{% endif %}){% endif %}
-                <br />
+                {% if not forloop.last %}<br />{% endif %}
                 {% endfor %}
             {% else %}
                 <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
@@ -37,7 +36,7 @@
                 </strong>
                 {% if reg.payment_status.discount %}({% trans 'discount' %}: {{ reg.payment_status.discount | currency }}{% if reg.payment_status.explanation %} - {{ reg.payment_status.explanation }}{% endif %}){% endif %}
             {% endif %}
-            {% if reg.payment_requested and reg.payment_status_sum.amount_due %}
+            {% if reg.payment_status.amount_due %}
                 {% if site.payment_gateway %}
                     <h4>{% trans 'Online payment' %}</h4>
                     <p><a class="btn btn-primary" href="{{ reg.payment_url }}">{% trans 'pay online' %}</a></p>
@@ -61,4 +60,3 @@
         </div>
     </div>
 </div>
-{% endif %}
