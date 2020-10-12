@@ -2,7 +2,7 @@ from collections import namedtuple
 from datetime import date, datetime, timedelta
 
 from cms.models import CMSPlugin
-from django.db import models
+from django.db import models, transaction
 from django.dispatch import receiver
 from django.utils.encoding import force_text
 from django.utils.formats import date_format
