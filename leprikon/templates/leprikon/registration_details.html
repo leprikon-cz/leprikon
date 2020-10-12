@@ -19,7 +19,7 @@
                 {% if reg.canceled %}
                     {% blocktrans with d=reg.canceled %}registration canceled on {{ d }}{% endblocktrans %}
                 {% elif reg.cancelation_requested %}
-                    {% blocktrans with d=reg.canceled %}cancellation requested on {{ d }}{% endblocktrans %}
+                    {% blocktrans with d=reg.cancelation_requested %}cancellation requested on {{ d }}{% endblocktrans %}
                 {% elif reg.approved %}
                     {% blocktrans with d=reg.approved %}registration approved on {{ d }}{% endblocktrans %}
                 {% else %}
