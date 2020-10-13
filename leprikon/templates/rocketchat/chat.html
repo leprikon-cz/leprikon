@@ -1,19 +1,26 @@
 {% load i18n %}
 <!-- Rocket.Chat -->
 {% if user.is_authenticated %}
-<button id="chat-button" type="button" class="btn btn-default" data-toggle="modal" data-target="#chat-modal" aria-label="{% trans 'Open chat' %}">
+<a id="chat-button" href="{{ rocketchat_url }}" target="_blank" class="btn btn-default"
+        data-toggle="modal" data-target="#chat-modal" aria-label="{% trans 'Open chat' %}">
     <b id="chat-unread"></b>
     <i class="glyphicon glyphicon-comment" aria-hidden="true"></i>
-</button>
-<div class="modal fade in" id="chat-modal" tabindex="-1" role="dialog" aria-labelledby="chat-modal-label" aria-hidden="true" style="">
+</a>
+<div class="modal fade in" id="chat-modal" tabindex="-1" role="dialog"
+        aria-labelledby="chat-modal-label" aria-hidden="true" style="">
   <div class="modal-dialog" role="document">
     <div class="container">
       <div class="box">
         <div class="box-header">
           <strong id="chat-modal-label">{% trans 'Messages' %}</strong>
-          <button type="button" class="btn btn-primary btn-xs" data-dismiss="modal" aria-label="{% trans 'Close chat' %}">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <a type="button" class="btn btn-primary btn-xs" data-dismiss="modal" aria-label="{% trans 'Close chat' %}">
+            <i class="glyphicon glyphicon glyphicon glyphicon-remove" aria-hidden="true"></i>
+          </a>
+          <a type="button" href="{{ rocketchat_url }}" target="_blank" class="btn btn-primary btn-xs"
+                aria-label="{% trans 'Open in new window' %}"
+                onclick="$('#chat-modal').modal('hide')">
+            <i class="glyphicon glyphicon glyphicon-new-window" aria-hidden="true"></i>
+          </a>
         </div>
         <iframe id="chat-iframe" class="box-content"></iframe>
       </div>
