@@ -283,18 +283,61 @@ function getAge(birthDate) {
     return today.getFullYear() - birthDate.getFullYear() - (birthDay > today ? 1 : 0)
 }
 
+function addError(objId, errorMessage) {
+    $(objId).parent().addClass('alert-danger');
+    $(objId).parent().find('div').remove()
+    $(`<div>${errorMessage}</div>`).insertAfter(objId);
+}
+
+function removeError(objId) {
+    $(objId).parent().removeClass('alert-danger');
+    $(objId).parent().find('div').remove()
+}
+
+function checkBirthDateAgeGroup(birthDateId, ageGroupId) {
+    ok = true;
+    dp = $(birthDateId).data('DateTimePicker');
+    if (dp && dp.date()) {
+        age = getAge(dp.date()._d);
+        ageGroup = age_groups[$('#id_participants-0-age_group').val()];
+        if (age && ageGroup) {
+            if (ageGroup.min_age && age < ageGroup.min_age) {
+                addError(
+                    ageGroupId,
+                    `{% trans "Minimal age for this age group is ${ageGroup.min_age}." %}`,
+                );
+                ok = false;
+            }
+            if (ageGroup.max_age && age > ageGroup.max_age) {
+                addError(
+                    ageGroupId,
+                    `{% trans "Maximal age for this age group is ${ageGroup.max_age}." %}`,
+                );
+                ok = false;
+            }
+        }
+    }
+    if (ok) removeError(ageGroupId);
+}
+
 {% for participant_form in form.participants_formset %}{% if forloop.first %}
 var citizenship_requires_birth_num = {{% for citizenship in participant_form.all_citizenships %}
     {{ citizenship.id }}: {% if citizenship.require_birth_num %}true{% else %}false{% endif %},{% endfor %}
 };
 {% endif %}{% endfor %}
 
-var age_group_requires_school = {{% for age_group in form.instance.subject.all_age_groups %}
-    {{ age_group.id }}: {% if age_group.require_school %}true{% else %}false{% endif %},{% endfor %}
+var age_groups = {{% for age_group in form.instance.subject.all_age_groups %}
+    {{ age_group.id }}: {
+        'require_school': {% if age_group.require_school %}true{% else %}false{% endif %},
+        'min_age': {% if age_group.min_age is None %}null{% else %}{{ age_group.min_age }}{% endif %},
+        'max_age': {% if age_group.max_age is None %}null{% else %}{{ age_group.max_age }}{% endif %},
+    },{% endfor %}
 };
 
-var target_group_requires_school = {{% for target_group in form.instance.subject.all_target_groups %}
-    {{ target_group.id }}: {% if target_group.require_school %}true{% else %}false{% endif %},{% endfor %}
+var target_groups = {{% for target_group in form.instance.subject.all_target_groups %}
+    {{ target_group.id }}: {
+        'require_school': {% if target_group.require_school %}true{% else %}false{% endif %},
+    },{% endfor %}
 };
 
 function toggle_section(show, section_name, update_required) {
@@ -442,6 +485,10 @@ $(document).ready(function() {
         $('#id_{{ participant_form.prefix }}-has_parent1').prop('checked', child).change();
         $('#id_{{ participant_form.prefix }}-has_parent2').prop('checked', child).change();
         if (adult) $('#id_{{ participant_form.prefix }}-has_parent2').prop('checked', false).change();
+        checkBirthDateAgeGroup(
+            '#id_{{ participant_form.prefix }}-birth_date',
+            '#id_{{ participant_form.prefix }}-age_group',
+        );
     });
 
     /* Set callback on school change */
@@ -452,8 +499,12 @@ $(document).ready(function() {
 
     /* Set callback on age group change */
     $('#id_{{ participant_form.prefix }}-age_group').change(function() {
-        toggle_section(age_group_requires_school[this.value], '{{ participant_form.prefix }}-school_details', true);
+        toggle_section(age_groups[this.value] && age_groups[this.value].require_school, '{{ participant_form.prefix }}-school_details', true);
         $('#id_{{ participant_form.prefix }}-school').trigger('change');
+        checkBirthDateAgeGroup(
+            '#id_{{ participant_form.prefix }}-birth_date',
+            '#id_{{ participant_form.prefix }}-age_group',
+        );
     });
     $('#id_{{ participant_form.prefix }}-age_group').trigger('change');
     {% endfor %}
@@ -467,7 +518,7 @@ $(document).ready(function() {
 
     /* Set callback on target group change */
     $('#id_{{ group_form.prefix }}-target_group').change(function() {
-        toggle_section(target_group_requires_school[this.value], '{{ group_form.prefix }}-school_details', true);
+        toggle_section(target_groups[this.value] && target_groups[this.value].require_school, '{{ group_form.prefix }}-school_details', true);
         $('#id_{{ group_form.prefix }}-school').trigger('change');
     });
     $('#id_{{ group_form.prefix }}-target_group').trigger('change');

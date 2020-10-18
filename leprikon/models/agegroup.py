@@ -6,6 +6,8 @@ from ..utils import first_upper
 
 class AgeGroup(models.Model):
     name = models.CharField(_('name'), max_length=50)
+    min_age = models.PositiveSmallIntegerField(_('minimal age'), blank=True, null=True)
+    max_age = models.PositiveSmallIntegerField(_('maximal age'), blank=True, null=True)
     order = models.IntegerField(_('order'), blank=True, default=0)
     require_school = models.BooleanField(_('require school'), default=True)
 
