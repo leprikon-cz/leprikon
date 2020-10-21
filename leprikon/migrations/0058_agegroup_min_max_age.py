@@ -10,7 +10,7 @@ import django.db.models.deletion
 def set_agegroup_age_limits(apps, schema_editor):
     AgeGroup = apps.get_model('leprikon', 'AgeGroup')
     for age_group in AgeGroup.objects.all():
-        match = re.match('([0-9]+)[^0-9]+([0-9]+)', age_group.name)
+        match = re.match('^[^0-9]*([0-9]+)[^0-9]+([0-9]+)[^0-9]*$', age_group.name)
         if match:
             min_age, max_age = match.groups()
             age_group.min_age = int(min_age)
