@@ -61,12 +61,13 @@ class CourseAdmin(SubjectBaseAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        # school year division choices
-        school_year_division_choices = form.base_fields['school_year_division'].widget.widget.choices
-        school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
-            school_year=obj.school_year if obj else request.school_year,
-        )
-        form.base_fields['school_year_division'].choices = school_year_division_choices
+        if 'school_year_division' in form.base_fields:
+            # school year division choices
+            school_year_division_choices = form.base_fields['school_year_division'].widget.widget.choices
+            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
+                school_year=obj.school_year if obj else request.school_year,
+            )
+            form.base_fields['school_year_division'].choices = school_year_division_choices
         return form
 
     def publish(self, request, queryset):
