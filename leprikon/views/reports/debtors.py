@@ -10,10 +10,10 @@ from ...forms.reports.debtors import DebtorsForm
 from ...models.courses import CourseRegistration
 from ...models.events import EventRegistration
 from ...models.orderables import OrderableRegistration
-from . import ReportBaseView
+from ...views.generic import FormView
 
 
-class ReportDebtorsView(ReportBaseView):
+class ReportDebtorsView(FormView):
     form_class = DebtorsForm
     template_name = 'leprikon/reports/debtors.html'
     title = _('Debtors list')

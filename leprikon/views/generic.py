@@ -141,17 +141,6 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
         return response
 
 
-class GetFormViewMixin(FormViewMixin):
-    def get_form_kwargs(self):
-        return {
-            'data': self.request.GET,
-            'prefix': self.get_prefix(),
-        }
-
-    def get(self, reqest, *args, **kwargs):
-        return self.post(self, reqest, *args, **kwargs)
-
-
 class ConfirmFormViewMixin(FormViewMixin):
     form_class = ConfirmForm
     template_name = 'leprikon/confirm_form.html'
@@ -207,10 +196,6 @@ class DeleteView(ConfirmFormViewMixin, _DeleteView):
 
 
 class FormView(FormViewMixin, _FormView):
-    pass
-
-
-class GetFormView(GetFormViewMixin, _FormView):
     pass
 
 

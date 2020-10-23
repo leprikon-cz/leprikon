@@ -16,7 +16,8 @@
 <div class="collapse out" id="report-form-{{ forloop.counter }}">
     {{ report.instructions | safe }}
 
-    <form action="{{ report.url }}" method="get" class="form-horizontal">
+    <form action="{{ report.url }}" method="post" class="form-horizontal">
+        {% csrf_token %}
         {% for ro in report.form.readonly_fields %}
         <div class="form-group">
             <label class="control-label col-md-3">{{ ro.label }}:</label>

@@ -2,19 +2,19 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from ...models.events import Event
-from ..form import GetFormMixin
+from ..form import FormMixin
 
 
-class EventPaymentsForm(GetFormMixin, forms.Form):
+class EventPaymentsForm(FormMixin, forms.Form):
     date_start = forms.DateField(label=_('Start date'))
     date_end = forms.DateField(label=_('End date'))
 
 
-class EventPaymentsStatusForm(GetFormMixin, forms.Form):
+class EventPaymentsStatusForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Status for date'))
 
 
-class EventStatsForm(GetFormMixin, forms.Form):
+class EventStatsForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Statistics for date'))
     events = forms.ModelMultipleChoiceField(
         queryset=Event.objects.all(),

@@ -16,10 +16,10 @@ from ...models.roles import Participant
 from ...models.subjects import (
     SubjectPayment, SubjectRegistrationParticipant, SubjectType,
 )
-from . import ReportBaseView
+from ...views.generic import FormView
 
 
-class ReportCoursePaymentsView(ReportBaseView):
+class ReportCoursePaymentsView(FormView):
     form_class = CoursePaymentsForm
     template_name = 'leprikon/reports/course_payments.html'
     title = _('Course payments')
@@ -38,7 +38,7 @@ class ReportCoursePaymentsView(ReportBaseView):
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
 
-class ReportCoursePaymentsStatusView(ReportBaseView):
+class ReportCoursePaymentsStatusView(FormView):
     form_class = CoursePaymentsStatusForm
     template_name = 'leprikon/reports/course_payments_status.html'
     title = _('Course payments status')
@@ -87,7 +87,7 @@ class ReportCoursePaymentsStatusView(ReportBaseView):
             return sum(rs.status for rs in self.registration_statuses)
 
 
-class ReportCourseStatsView(ReportBaseView):
+class ReportCourseStatsView(FormView):
     form_class = CourseStatsForm
     template_name = 'leprikon/reports/course_stats.html'
     title = _('Course statistics')

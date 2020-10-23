@@ -2,19 +2,19 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from ...models.orderables import Orderable
-from ..form import GetFormMixin
+from ..form import FormMixin
 
 
-class OrderablePaymentsForm(GetFormMixin, forms.Form):
+class OrderablePaymentsForm(FormMixin, forms.Form):
     date_start = forms.DateField(label=_('Start date'))
     date_end = forms.DateField(label=_('End date'))
 
 
-class OrderablePaymentsStatusForm(GetFormMixin, forms.Form):
+class OrderablePaymentsStatusForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Status for date'))
 
 
-class OrderableStatsForm(GetFormMixin, forms.Form):
+class OrderableStatsForm(FormMixin, forms.Form):
     date = forms.DateField(label=_('Statistics for date'))
     orderables = forms.ModelMultipleChoiceField(
         queryset=Orderable.objects.all(),
