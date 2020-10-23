@@ -401,6 +401,9 @@ class Subject(models.Model):
         elif self.registration_type_groups:
             self.min_participants_count = 0
             self.max_participants_count = 0
+        # For some reason django doesn't set the default value for code,
+        # which leads to database error.
+        self.code = self.code or 0
         super().save(*args, **kwargs)
 
     @cached_property
