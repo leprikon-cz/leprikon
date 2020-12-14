@@ -210,3 +210,10 @@ def change_year(d, year_delta):
         except ValueError:
             # handle leap-year
             return datetime(d.year + year_delta, d.month, d.day - 1, d.hour, d.minute, d.second)
+
+
+def shorten(string, length):
+    if len(string) <= length:
+        return string
+    half = length // 2 - 1
+    return f'{string[:half]}...{string[half + 3 - length:]}'

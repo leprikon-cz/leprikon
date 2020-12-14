@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, Func
 from django.db.models.expressions import Random
 from django.http import (
-    HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
+    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
 )
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -235,11 +235,20 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         return obj
 
     def get_journal_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{journal}</a>'.format(
-            url=reverse('admin:leprikon_subject_journal', args=[obj.id]),
-            title=_('printable journal'),
-            journal=_('journal'),
-        )
+        return '<br/>'.join((
+            format_html(
+                '<a href="{url}" title="{title}" target="_blank">{journal}</a>',
+                url=reverse('admin:leprikon_subject_journal', args=[obj.id]),
+                title=_('printable journal'),
+                journal=_('journal'),
+            ),
+            format_html(
+                '<a href="{url}" title="{title}" target="_blank">{participants}</a>',
+                url=reverse('admin:leprikon_subject_journal_pdf', args=[obj.id]),
+                title=_('printable list of participants'),
+                participants=_('participants'),
+            ),
+        ))
     get_journal_link.short_description = _('journal')
     get_journal_link.allow_tags = True
 
@@ -349,18 +358,34 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
     icon.short_description = _('photo')
 
     def get_urls(self):
-        urls = super(SubjectAdmin, self).get_urls()
-        return [urls_url(
-            r'(?P<subject_id>\d+)/journal/$',
-            self.admin_site.admin_view(self.journal),
-            name='leprikon_subject_journal',
-        )] + urls
+        return [
+            urls_url(
+                r'(?P<subject_id>\d+)/journal/$',
+                self.admin_site.admin_view(self.journal),
+                name='leprikon_subject_journal',
+            ),
+            urls_url(
+                r'(?P<subject_id>\d+)/journal-pdf/$',
+                self.admin_site.admin_view(self.journal_pdf),
+                name='leprikon_subject_journal_pdf',
+            ),
+        ] + super().get_urls()
 
     def journal(self, request, subject_id):
         return render(request, 'leprikon/subject_journal.html', {
             'subject': get_object_or_404(Subject, id=subject_id),
             'admin': True,
         })
+
+    def journal_pdf(self, request, subject_id):
+        obj = self.get_object(request, subject_id)
+
+        # create PDF response object
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.get_pdf_filename('journal_pdf'))
+
+        # write PDF to response
+        return obj.write_pdf('journal_pdf', response)
 
 
 class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):

@@ -8,6 +8,7 @@ from django.contrib.admin.templatetags.admin_list import (
 )
 from django.contrib.staticfiles import finders
 from django.core.cache import InvalidCacheBackendError, caches
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -71,6 +72,15 @@ def jsdate(d):
         return f'new Date({d.year},{d.month-1},{d.day})'
     except AttributeError:
         return 'undefined'
+
+
+@register.filter
+def paginator(items, per_page=1):
+    paginator = Paginator(items, per_page)
+    return [
+        paginator.page(page)
+        for page in paginator.page_range
+    ]
 
 
 @register.simple_tag

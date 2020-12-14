@@ -54,7 +54,9 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
-from .utils import generate_variable_symbol, lazy_help_text_with_html_default
+from .utils import (
+    generate_variable_symbol, lazy_help_text_with_html_default, shorten,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -296,7 +298,98 @@ class SubjectGroup(models.Model):
         )
 
 
-class Subject(models.Model):
+class PdfExportAndMailMixin(object):
+    all_attachments = []
+
+    def get_absolute_url(self):
+        return reverse('leprikon:{}_pdf'.format(self.object_name), kwargs={'pk': self.pk, 'slug': self.slug})
+
+    def select_template(self, event, suffix):
+        return select_template([
+            'leprikon/{}_{}/{}.{}'.format(self.object_name, event, param, suffix) for param in (
+                self.subject.subject_type.slug,
+                self.subject.subject_type.subject_type,
+                'subject',
+            )
+        ])
+
+    def get_context(self, event):
+        return {
+            'event': event,
+            'pdf_filename': self.get_pdf_filename(event),
+            'print_setup': self.get_print_setup(event),
+            'object': self,
+            'site': LeprikonSite.objects.get_current(),
+        }
+
+    def get_mail_subject(self, event):
+        return self.mail_subject_patterns[event].format(
+            subject_type=self.subject.subject_type.name_akuzativ,
+            subject=self.subject.name,
+        )
+
+    def get_attachments(self, event):
+        return None
+
+    def send_mail(self, event='received'):
+        template_txt = self.select_template(event, 'txt')
+        template_html = self.select_template(event, 'html')
+        context = self.get_context(event)
+        content_txt = template_txt.render(context)
+        content_html = template_html.render(context)
+        EmailMultiAlternatives(
+            subject=self.get_mail_subject(event),
+            body=content_txt,
+            from_email=settings.SERVER_EMAIL,
+            to=self.all_recipients,
+            headers={'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
+            alternatives=[(content_html, 'text/html')],
+            attachments=self.get_attachments(event),
+        ).send()
+
+    def get_pdf_filename(self, event):
+        return self.slug + '.pdf'
+
+    def get_pdf_attachment(self, event):
+        return (self.get_pdf_filename(event), self.get_pdf(event), 'application/pdf')
+
+    def get_pdf(self, event):
+        output = BytesIO()
+        self.write_pdf(event, output)
+        output.seek(0)
+        return output.read()
+
+    def write_pdf(self, event, output):
+        # get plain pdf from rml
+        template = self.select_template(event, 'rml')
+        rml_content = template.render(self.get_context(event))
+        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
+        print_setup = self.get_print_setup(event)
+
+        # merge with background
+        if print_setup.background:
+            template_pdf = PdfFileReader(print_setup.background.file)
+            registration_pdf = PdfFileReader(BytesIO(pdf_content))
+            writer = PdfFileWriter()
+            # merge pages from both template and registration
+            for i in range(registration_pdf.getNumPages()):
+                if i < template_pdf.getNumPages():
+                    page = template_pdf.getPage(i)
+                    page.mergePage(registration_pdf.getPage(i))
+                else:
+                    page = registration_pdf.getPage(i)
+                writer.addPage(page)
+            # write result to output
+            writer.write(output)
+        else:
+            # write basic pdf registration to response
+            output.write(pdf_content)
+        return output
+
+
+class Subject(PdfExportAndMailMixin, models.Model):
+    object_name = 'subject'
+
     PARTICIPANTS = 'P'
     GROUPS = 'G'
     REGISTRATION_TYPE_CHOICES = [
@@ -413,6 +506,10 @@ class Subject(models.Model):
     @cached_property
     def registration_type_groups(self):
         return self.registration_type == self.GROUPS
+
+    @cached_property
+    def slug(self):
+        return shorten(slugify(self), 100)
 
     @cached_property
     def subject(self):
@@ -550,6 +647,9 @@ class Subject(models.Model):
     def get_target_groups_list(self):
         return comma_separated(self.all_target_groups)
     get_target_groups_list.short_description = _('target groups list')
+
+    def get_print_setup(self, event):
+        return PrintSetup()
 
     @property
     def active_registrations(self):
@@ -704,95 +804,6 @@ class SubjectVariant(models.Model):
 class SubjectAttachment(BaseAttachment):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE,
                                 related_name='attachments', verbose_name=_('subject'))
-
-
-class PdfExportAndMailMixin(object):
-    all_attachments = []
-
-    def get_absolute_url(self):
-        return reverse('leprikon:{}_pdf'.format(self.object_name), kwargs={'pk': self.pk, 'slug': self.slug})
-
-    def select_template(self, event, suffix):
-        return select_template([
-            'leprikon/{}_{}/{}.{}'.format(self.object_name, event, param, suffix) for param in (
-                self.subject.subject_type.slug,
-                self.subject.subject_type.subject_type,
-                'subject',
-            )
-        ])
-
-    def get_context(self, event):
-        return {
-            'event': event,
-            'pdf_filename': self.get_pdf_filename(event),
-            'print_setup': self.get_print_setup(event),
-            'object': self,
-            'site': LeprikonSite.objects.get_current(),
-        }
-
-    def get_mail_subject(self, event):
-        return self.mail_subject_patterns[event].format(
-            subject_type=self.subject.subject_type.name_akuzativ,
-            subject=self.subject.name,
-        )
-
-    def get_attachments(self, event):
-        return None
-
-    def send_mail(self, event='received'):
-        template_txt = self.select_template(event, 'txt')
-        template_html = self.select_template(event, 'html')
-        context = self.get_context(event)
-        content_txt = template_txt.render(context)
-        content_html = template_html.render(context)
-        EmailMultiAlternatives(
-            subject=self.get_mail_subject(event),
-            body=content_txt,
-            from_email=settings.SERVER_EMAIL,
-            to=self.all_recipients,
-            headers={'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
-            alternatives=[(content_html, 'text/html')],
-            attachments=self.get_attachments(event),
-        ).send()
-
-    def get_pdf_filename(self, event):
-        return self.slug + '.pdf'
-
-    def get_pdf_attachment(self, event):
-        return (self.get_pdf_filename(event), self.get_pdf(event), 'application/pdf')
-
-    def get_pdf(self, event):
-        output = BytesIO()
-        self.write_pdf(event, output)
-        output.seek(0)
-        return output.read()
-
-    def write_pdf(self, event, output):
-        # get plain pdf from rml
-        template = self.select_template(event, 'rml')
-        rml_content = template.render(self.get_context(event))
-        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
-        print_setup = self.get_print_setup(event)
-
-        # merge with background
-        if print_setup.background:
-            template_pdf = PdfFileReader(print_setup.background.file)
-            registration_pdf = PdfFileReader(BytesIO(pdf_content))
-            writer = PdfFileWriter()
-            # merge pages from both template and registration
-            for i in range(registration_pdf.getNumPages()):
-                if i < template_pdf.getNumPages():
-                    page = template_pdf.getPage(i)
-                    page.mergePage(registration_pdf.getPage(i))
-                else:
-                    page = registration_pdf.getPage(i)
-                writer.addPage(page)
-            # write result to output
-            writer.write(output)
-        else:
-            # write basic pdf registration to response
-            output.write(pdf_content)
-        return output
 
 
 class SubjectRegistration(PdfExportAndMailMixin, models.Model):

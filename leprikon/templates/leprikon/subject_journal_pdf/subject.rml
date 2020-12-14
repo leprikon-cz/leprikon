@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+{% load i18n html2rml leprikon_tags %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{ pdf_filename }}">
+
+    <docinit>
+        <registerFont fontName="DejaVuSans" fontFile="{% font 'leprikon/fonts/DejaVuSans.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Bold" fontFile="{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-Oblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}"/>
+        <registerFont fontName="DejaVuSans-BoldOblique" fontFile="{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}"/>
+        <registerFontFamily normal="DejaVuSans" bold="DejaVuSans-Bold" italic="DejaVuSans-Oblique" boldItalic="DejaVuSans-BoldOblique"/>
+    </docinit>
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <pageTemplate id="main">
+             <frame x1="{{ print_setup.x1 }}" y1="{{ print_setup.y1 }}" width="{{ print_setup.width }}" height="{{ print_setup.height }}"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <blockTableStyle id="blocktable">
+            <!-- Set fonts -->
+            <blockFont name="DejaVuSans" size="14"/>
+            <blockTextColor colorName="black"/>
+            <blockAlignment value="LEFT"/>
+            <blockValign value="MIDDLE"/>
+            <lineStyle kind="GRID" colorName="black"/>
+        </blockTableStyle>
+    </stylesheet>
+    <story>
+        {% for page in object.all_approved_participants|paginator:28 %}
+        <blockTable style="blocktable" colWidths="80,200,80" rowHeights="40{% for participant in page %},23.36{% endfor %}" alignment="LEFT">
+            <tr height="40">
+                <td></td>
+                <td>{% trans 'full name' %}</td>
+                <td>{% trans 'birh year' %}</td>
+            </tr>
+            {% for participant in page %}
+            <tr height="20">
+                <td>{{ participant.registration.variable_symbol }}</td>
+                <td>{{ participant.full_name }}</td>
+                <td>{{ participant.birth_date.year }}</td>
+            </tr>
+            {% endfor %}
+        </blockTable>
+        <condPageBreak height="999"/>
+        {% endfor %}
+    </story>
+</document>
