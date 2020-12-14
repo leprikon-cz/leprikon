@@ -343,8 +343,8 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             original = self.__class__.objects.get(id=self.id)
-            min_journal_date = original.course_journal_entries.aggregate(models.Min('date'))['date__min']
-            max_journal_date = original.course_journal_entries.aggregate(models.Max('date'))['date__max']
+            min_journal_date = original.journal_entries.aggregate(models.Min('date'))['date__min']
+            max_journal_date = original.journal_entries.aggregate(models.Max('date'))['date__max']
             # if journal entry exists, start must be set and lower or equal to min journal date
             if min_journal_date and self.start > min_journal_date:
                 self.start = min_journal_date
