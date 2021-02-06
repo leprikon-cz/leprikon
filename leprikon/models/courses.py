@@ -18,27 +18,26 @@ from .journals import JournalEntry
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
-from .subjects import (
-    Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType,
-)
+from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year
 
 
 class Course(Subject):
-    school_year_division = models.ForeignKey(SchoolYearDivision, on_delete=models.PROTECT,
-                                             related_name='courses', verbose_name=_('school year division'))
+    school_year_division = models.ForeignKey(
+        SchoolYearDivision, on_delete=models.PROTECT, related_name="courses", verbose_name=_("school year division")
+    )
     allow_period_selection = models.BooleanField(
-        _('allow period selection'),
+        _("allow period selection"),
         default=False,
-        help_text=_('allow user to choose school year periods on registration form'),
+        help_text=_("allow user to choose school year periods on registration form"),
     )
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('code', 'name')
-        verbose_name = _('course')
-        verbose_name_plural = _('courses')
+        app_label = "leprikon"
+        ordering = ("code", "name")
+        verbose_name = _("course")
+        verbose_name_plural = _("courses")
 
     @cached_property
     def all_times(self):
@@ -54,7 +53,8 @@ class Course(Subject):
 
     def get_times_list(self):
         return comma_separated(self.all_times)
-    get_times_list.short_description = _('times')
+
+    get_times_list.short_description = _("times")
 
     def get_next_time(self, now=None):
         try:
@@ -68,21 +68,27 @@ class Course(Subject):
 
     @property
     def inactive_registrations(self):
-        return (CourseRegistration.objects.filter(course_history__course=self)
-                .exclude(id__in=self.active_registrations.all()).distinct())
+        return (
+            CourseRegistration.objects.filter(course_history__course=self)
+            .exclude(id__in=self.active_registrations.all())
+            .distinct()
+        )
 
     def copy_to_school_year(old, school_year):
         new = Course.objects.get(id=old.id)
         new.id, new.pk = None, None
         new.school_year = school_year
         new.public = False
-        new.evaluation = ''
-        new.note = ''
+        new.evaluation = ""
+        new.note = ""
         year_delta = school_year.year - old.school_year.year
-        new.school_year_division = SchoolYearDivision.objects.filter(
-            school_year=school_year,
-            name=old.school_year_division.name,
-        ).first() or old.school_year_division.copy_to_school_year(school_year)
+        new.school_year_division = (
+            SchoolYearDivision.objects.filter(
+                school_year=school_year,
+                name=old.school_year_division.name,
+            ).first()
+            or old.school_year_division.copy_to_school_year(school_year)
+        )
         new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
         new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
         new.save()
@@ -99,27 +105,26 @@ class Course(Subject):
 
 
 class CourseTime(StartEndMixin, models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE,
-                               related_name='times', verbose_name=_('course'))
-    day_of_week = DayOfWeekField(_('day of week'))
-    start = models.TimeField(_('start time'), blank=True, null=True)
-    end = models.TimeField(_('end time'), blank=True, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="times", verbose_name=_("course"))
+    day_of_week = DayOfWeekField(_("day of week"))
+    start = models.TimeField(_("start time"), blank=True, null=True)
+    end = models.TimeField(_("end time"), blank=True, null=True)
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('day_of_week', 'start')
-        verbose_name = _('time')
-        verbose_name_plural = _('times')
+        app_label = "leprikon"
+        ordering = ("day_of_week", "start")
+        verbose_name = _("time")
+        verbose_name_plural = _("times")
 
     def __str__(self):
         if self.start is not None and self.end is not None:
-            return _('{day}, {start:%H:%M} - {end:%H:%M}').format(
+            return _("{day}, {start:%H:%M} - {end:%H:%M}").format(
                 day=self.day,
                 start=self.start,
                 end=self.end,
             )
         elif self.start is not None:
-            return _('{day}, {start:%H:%M}').format(
+            return _("{day}, {start:%H:%M}").format(
                 day=self.day,
                 start=self.start,
             )
@@ -130,7 +135,7 @@ class CourseTime(StartEndMixin, models.Model):
     def day(self):
         return DAY_OF_WEEK[self.day_of_week]
 
-    Time = namedtuple('Time', ('date', 'start', 'end'))
+    Time = namedtuple("Time", ("date", "start", "end"))
 
     def get_next_time(self, now=None):
         now = now or datetime.now()
@@ -152,15 +157,13 @@ class CourseRegistration(SubjectRegistration):
     subject_type = SubjectType.COURSE
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('course registration')
-        verbose_name_plural = _('course registrations')
+        app_label = "leprikon"
+        verbose_name = _("course registration")
+        verbose_name_plural = _("course registrations")
 
     @cached_property
     def all_registration_periods(self):
-        return list(
-            self.course_registration_periods.select_related('period')
-        )
+        return list(self.course_registration_periods.select_related("period"))
 
     def get_period_payment_statuses(self, d=None):
         paid = self.get_paid(d)
@@ -177,8 +180,8 @@ class CourseRegistration(SubjectRegistration):
             registration_period = CourseRegistrationPeriod(
                 registration=self,
                 period=SchoolYearPeriod(
-                    name=_('no period'),
-                )
+                    name=_("no period"),
+                ),
             )
             yield CourseRegistrationPeriod.PeriodPaymentStatus(
                 period=registration_period.period,
@@ -186,7 +189,7 @@ class CourseRegistration(SubjectRegistration):
                 status=PaymentStatus(
                     price=0,
                     discount=0,
-                    explanation='',
+                    explanation="",
                     paid=paid,
                     current_date=d,
                     due_from=None,
@@ -195,10 +198,7 @@ class CourseRegistration(SubjectRegistration):
             )
 
     def get_payment_status(self, d=None):
-        return sum(
-            pps.status
-            for pps in self.get_period_payment_statuses(d)
-        )
+        return sum(pps.status for pps in self.get_period_payment_statuses(d))
 
     @cached_property
     def period_payment_statuses(self):
@@ -216,22 +216,22 @@ class CourseRegistrationPeriod(models.Model):
     registration = models.ForeignKey(
         CourseRegistration,
         on_delete=models.CASCADE,
-        related_name='course_registration_periods',
-        verbose_name=_('registration'),
+        related_name="course_registration_periods",
+        verbose_name=_("registration"),
     )
     period = models.ForeignKey(
         SchoolYearPeriod,
         on_delete=models.PROTECT,
-        related_name='course_registration_periods',
-        verbose_name=_('period'),
+        related_name="course_registration_periods",
+        verbose_name=_("period"),
     )
-    payment_requested = models.BooleanField(_('payment requested'), default=False)
+    payment_requested = models.BooleanField(_("payment requested"), default=False)
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('registered period')
-        verbose_name_plural = _('registered periods')
-        ordering = ('period__start',)
+        app_label = "leprikon"
+        verbose_name = _("registered period")
+        verbose_name_plural = _("registered periods")
+        ordering = ("period__start",)
 
     def __str__(self):
         return str(self.period)
@@ -240,25 +240,18 @@ class CourseRegistrationPeriod(models.Model):
     def all_discounts(self):
         # use cached self.registration.all_discounts instead of
         # return list(self.discounts.all())
-        return [
-            discount for discount in self.registration.all_discounts
-            if discount.registration_period_id == self.id
-        ]
+        return [discount for discount in self.registration.all_discounts if discount.registration_period_id == self.id]
 
     PeriodPaymentStatus = namedtuple(
-        'PeriodPaymentStatus',
-        ('period', 'registration_period', 'status'),
+        "PeriodPaymentStatus",
+        ("period", "registration_period", "status"),
     )
 
     def get_payment_status(self, paid, last_period, d=None):
         if d is None:
             d = date.today()
-        discount = sum(
-            discount.amount
-            for discount in self.all_discounts
-            if discount.accounted.date() <= d
-        )
-        explanation = ',\n'.join(
+        discount = sum(discount.amount for discount in self.all_discounts if discount.accounted.date() <= d)
+        explanation = ",\n".join(
             discount.explanation.strip()
             for discount in self.all_discounts
             if discount.accounted.date() <= d and discount.explanation.strip()
@@ -272,15 +265,16 @@ class CourseRegistrationPeriod(models.Model):
                 explanation=explanation,
                 paid=min(self.registration.price - discount, paid) if not last_period else paid,
                 current_date=d,
-                due_from=self.registration.payment_requested and max(
+                due_from=self.registration.payment_requested
+                and max(
                     self.period.due_from,
                     self.registration.payment_requested.date(),
                 ),
-                due_date=self.registration.payment_requested and max(
+                due_date=self.registration.payment_requested
+                and max(
                     self.period.due_date,
-                    self.registration.payment_requested.date() + timedelta(
-                        days=self.registration.subject.min_due_date_days
-                    )
+                    self.registration.payment_requested.date()
+                    + timedelta(days=self.registration.subject.min_due_date_days),
                 ),
             ),
         )
@@ -290,14 +284,14 @@ class CourseDiscount(SubjectDiscount):
     registration = models.ForeignKey(
         CourseRegistration,
         on_delete=models.CASCADE,
-        related_name='discounts',
-        verbose_name=_('registration'),
+        related_name="discounts",
+        verbose_name=_("registration"),
     )
     registration_period = models.ForeignKey(
         CourseRegistrationPeriod,
         on_delete=models.CASCADE,
-        related_name='discounts',
-        verbose_name=_('period'),
+        related_name="discounts",
+        verbose_name=_("period"),
     )
 
     @cached_property
@@ -305,31 +299,37 @@ class CourseDiscount(SubjectDiscount):
         return self.registration_period.period
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('course discount')
-        verbose_name_plural = _('course discounts')
-        ordering = ('accounted',)
+        app_label = "leprikon"
+        verbose_name = _("course discount")
+        verbose_name_plural = _("course discounts")
+        ordering = ("accounted",)
 
 
 class CourseRegistrationHistory(StartEndMixin, models.Model):
-    registration = models.ForeignKey(CourseRegistration, editable=False, on_delete=models.PROTECT,
-                                     related_name='course_history', verbose_name=_('course'))
-    course = models.ForeignKey(Course, editable=False, on_delete=models.PROTECT,
-                               related_name='registrations_history', verbose_name=_('course'))
+    registration = models.ForeignKey(
+        CourseRegistration,
+        editable=False,
+        on_delete=models.PROTECT,
+        related_name="course_history",
+        verbose_name=_("course"),
+    )
+    course = models.ForeignKey(
+        Course, editable=False, on_delete=models.PROTECT, related_name="registrations_history", verbose_name=_("course")
+    )
     start = models.DateField()
     end = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('start',)
-        verbose_name = _('course registration history')
-        verbose_name_plural = _('course registration history')
+        app_label = "leprikon"
+        ordering = ("start",)
+        verbose_name = _("course registration history")
+        verbose_name_plural = _("course registration history")
 
     def __str__(self):
-        return '{course}, {start} - {end}'.format(
+        return "{course}, {start} - {end}".format(
             course=self.course.name,
-            start=date_format(self.start, 'SHORT_DATE_FORMAT'),
-            end=date_format(self.end, 'SHORT_DATE_FORMAT') if self.end else _('now'),
+            start=date_format(self.start, "SHORT_DATE_FORMAT"),
+            end=date_format(self.end, "SHORT_DATE_FORMAT") if self.end else _("now"),
         )
 
     @property
@@ -343,8 +343,8 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             original = self.__class__.objects.get(id=self.id)
-            min_journal_date = original.journal_entries.aggregate(models.Min('date'))['date__min']
-            max_journal_date = original.journal_entries.aggregate(models.Max('date'))['date__max']
+            min_journal_date = original.journal_entries.aggregate(models.Min("date"))["date__min"]
+            max_journal_date = original.journal_entries.aggregate(models.Max("date"))["date__max"]
             # if journal entry exists, start must be set and lower or equal to min journal date
             if min_journal_date and self.start > min_journal_date:
                 self.start = min_journal_date
@@ -359,54 +359,95 @@ def update_course_registration_history(sender, instance, created, **kwargs):
     if instance.approved:
         d = date.today()
         # if created or changed
-        if (instance.course_history.count() == 0 or
-                instance.course_history.filter(end=None).exclude(course_id=instance.subject_id).update(end=d)):
+        if instance.course_history.count() == 0 or instance.course_history.filter(end=None).exclude(
+            course_id=instance.subject_id
+        ).update(end=d):
             # reopen or create entry starting today
             (
                 CourseRegistrationHistory.objects.filter(
-                    registration_id=instance.id, course_id=instance.subject_id, start=d,
-                ).update(end=None) or
-                CourseRegistrationHistory.objects.create(
-                    registration_id=instance.id, course_id=instance.subject_id, start=d,
+                    registration_id=instance.id,
+                    course_id=instance.subject_id,
+                    start=d,
+                ).update(end=None)
+                or CourseRegistrationHistory.objects.create(
+                    registration_id=instance.id,
+                    course_id=instance.subject_id,
+                    start=d,
                 )
             )
 
 
 class CoursePlugin(CMSPlugin):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='+', verbose_name=_('course'))
-    template = models.CharField(_('template'), max_length=100,
-                                choices=settings.LEPRIKON_COURSE_TEMPLATES,
-                                default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
-                                help_text=_('The template used to render plugin.'))
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="+", verbose_name=_("course"))
+    template = models.CharField(
+        _("template"),
+        max_length=100,
+        choices=settings.LEPRIKON_COURSE_TEMPLATES,
+        default=settings.LEPRIKON_COURSE_TEMPLATES[0][0],
+        help_text=_("The template used to render plugin."),
+    )
 
     class Meta:
-        app_label = 'leprikon'
+        app_label = "leprikon"
 
 
 class CourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
-                                    related_name='+', verbose_name=_('school year'))
-    departments = models.ManyToManyField(Department, blank=True, related_name='+', verbose_name=_('departments'),
-                                         help_text=_('Keep empty to skip searching by departments.'))
-    course_types = models.ManyToManyField(SubjectType, blank=True,
-                                          limit_choices_to={'subject_type': SubjectType.COURSE},
-                                          related_name='+', verbose_name=_('course types'),
-                                          help_text=_('Keep empty to skip searching by course types.'))
-    age_groups = models.ManyToManyField(AgeGroup, blank=True, related_name='+', verbose_name=_('age groups'),
-                                        help_text=_('Keep empty to skip searching by age groups.'))
-    target_groups = models.ManyToManyField(TargetGroup, blank=True, related_name='+', verbose_name=_('target groups'),
-                                           help_text=_('Keep empty to skip searching by target groups.'))
-    groups = models.ManyToManyField(SubjectGroup, blank=True, related_name='+', verbose_name=_('course groups'),
-                                    help_text=_('Keep empty to skip searching by groups.'))
-    leaders = models.ManyToManyField(Leader, blank=True, related_name='+', verbose_name=_('leaders'),
-                                     help_text=_('Keep empty to skip searching by leaders.'))
-    template = models.CharField(_('template'), max_length=100,
-                                choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
-                                default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
-                                help_text=_('The template used to render plugin.'))
+    school_year = models.ForeignKey(
+        SchoolYear, blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("school year")
+    )
+    departments = models.ManyToManyField(
+        Department,
+        blank=True,
+        related_name="+",
+        verbose_name=_("departments"),
+        help_text=_("Keep empty to skip searching by departments."),
+    )
+    course_types = models.ManyToManyField(
+        SubjectType,
+        blank=True,
+        limit_choices_to={"subject_type": SubjectType.COURSE},
+        related_name="+",
+        verbose_name=_("course types"),
+        help_text=_("Keep empty to skip searching by course types."),
+    )
+    age_groups = models.ManyToManyField(
+        AgeGroup,
+        blank=True,
+        related_name="+",
+        verbose_name=_("age groups"),
+        help_text=_("Keep empty to skip searching by age groups."),
+    )
+    target_groups = models.ManyToManyField(
+        TargetGroup,
+        blank=True,
+        related_name="+",
+        verbose_name=_("target groups"),
+        help_text=_("Keep empty to skip searching by target groups."),
+    )
+    groups = models.ManyToManyField(
+        SubjectGroup,
+        blank=True,
+        related_name="+",
+        verbose_name=_("course groups"),
+        help_text=_("Keep empty to skip searching by groups."),
+    )
+    leaders = models.ManyToManyField(
+        Leader,
+        blank=True,
+        related_name="+",
+        verbose_name=_("leaders"),
+        help_text=_("Keep empty to skip searching by leaders."),
+    )
+    template = models.CharField(
+        _("template"),
+        max_length=100,
+        choices=settings.LEPRIKON_COURSELIST_TEMPLATES,
+        default=settings.LEPRIKON_COURSELIST_TEMPLATES[0][0],
+        help_text=_("The template used to render plugin."),
+    )
 
     class Meta:
-        app_label = 'leprikon'
+        app_label = "leprikon"
 
     def copy_relations(self, oldinstance):
         self.departments.set(oldinstance.departments.all())
@@ -440,11 +481,12 @@ class CourseListPlugin(CMSPlugin):
     def all_leaders(self):
         return list(self.leaders.all())
 
-    Group = namedtuple('Group', ('group', 'objects'))
+    Group = namedtuple("Group", ("group", "objects"))
 
     def render(self, context):
-        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
-                       SchoolYear.objects.get_current())
+        school_year = (
+            self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
+        )
         courses = Course.objects.filter(school_year=school_year, public=True).distinct()
 
         if self.all_departments:
@@ -465,25 +507,29 @@ class CourseListPlugin(CMSPlugin):
         else:
             groups = SubjectGroup.objects.all()
 
-        context.update({
-            'school_year': school_year,
-            'courses': courses,
-            'groups': (
-                self.Group(group=group, objects=courses.filter(groups=group))
-                for group in groups
-            ),
-        })
+        context.update(
+            {
+                "school_year": school_year,
+                "courses": courses,
+                "groups": (self.Group(group=group, objects=courses.filter(groups=group)) for group in groups),
+            }
+        )
         return context
 
 
 class FilteredCourseListPlugin(CMSPlugin):
-    school_year = models.ForeignKey(SchoolYear, blank=True, null=True, on_delete=models.CASCADE,
-                                    related_name='+', verbose_name=_('school year'))
-    course_types = models.ManyToManyField(SubjectType, limit_choices_to={'subject_type': SubjectType.COURSE},
-                                          related_name='+', verbose_name=_('course types'))
+    school_year = models.ForeignKey(
+        SchoolYear, blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("school year")
+    )
+    course_types = models.ManyToManyField(
+        SubjectType,
+        limit_choices_to={"subject_type": SubjectType.COURSE},
+        related_name="+",
+        verbose_name=_("course types"),
+    )
 
     class Meta:
-        app_label = 'leprikon'
+        app_label = "leprikon"
 
     def copy_relations(self, oldinstance):
         self.course_types.set(oldinstance.course_types.all())
@@ -493,20 +539,24 @@ class FilteredCourseListPlugin(CMSPlugin):
         return list(self.course_types.all())
 
     def render(self, context):
-        school_year = (self.school_year or getattr(context.get('request'), 'school_year') or
-                       SchoolYear.objects.get_current())
+        school_year = (
+            self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
+        )
 
         from ..forms.subjects import SubjectFilterForm
+
         form = SubjectFilterForm(
             subject_type_type=SubjectType.COURSE,
             subject_types=self.all_course_types,
             school_year=school_year,
-            is_staff=context['request'].user.is_staff,
-            data=context['request'].GET,
+            is_staff=context["request"].user.is_staff,
+            data=context["request"].GET,
         )
-        context.update({
-            'school_year': school_year,
-            'form': form,
-            'courses': form.get_queryset(),
-        })
+        context.update(
+            {
+                "school_year": school_year,
+                "form": form,
+                "courses": form.get_queryset(),
+            }
+        )
         return context

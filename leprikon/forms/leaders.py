@@ -6,7 +6,7 @@ from .form import FormMixin
 
 
 class LeaderFilterForm(FormMixin, forms.Form):
-    q = forms.CharField(label=_('Search term'), required=False)
+    q = forms.CharField(label=_("Search term"), required=False)
 
     def __init__(self, school_year, *args, **kwargs):
         super(LeaderFilterForm, self).__init__(*args, **kwargs)
@@ -16,10 +16,10 @@ class LeaderFilterForm(FormMixin, forms.Form):
         if not self.is_valid():
             return self.qs
         qs = self.qs
-        for word in self.cleaned_data['q'].split():
+        for word in self.cleaned_data["q"].split():
             qs = qs.filter(
-                Q(user__first_name__icontains=word) |
-                Q(user__last_name__icontains=word) |
-                Q(description__icontains=word)
+                Q(user__first_name__icontains=word)
+                | Q(user__last_name__icontains=word)
+                | Q(description__icontains=word)
             )
         return qs.distinct()

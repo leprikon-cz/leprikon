@@ -1,61 +1,80 @@
-FROM ubuntu:bionic
+########
+# base #
+########
 
-LABEL name="Leprikón"
-LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
-
-ENV IPYTHONDIR=/app/data/ipython
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED 1
+FROM ubuntu:focal AS base
 
 WORKDIR /app
 
-COPY requirements.txt /app/
-COPY patch /app/patch
+ENV DEBIAN_FRONTEND=noninteractive
+ENV IPYTHONDIR=/app/data/ipython
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED 1
+ENV TZ=Europe/Prague
 
 # install requirements and generate czech locale
 RUN apt-get update \
  && apt-get -y upgrade \
  && apt-get -y --no-install-recommends install \
-    build-essential \
-    gcc \
-    git \
-    libicu-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    python3-dev \
     locales \
-    libmysqlclient20 \
-    libpython3.6 \
-    mariadb-client \
-    nginx \
-    postgresql-client \
     python3-pip \
-    python3-setuptools \
-    sqlite3 \
-    supervisor \
+    tzdata \
  && pip3 install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir -r requirements.txt \
- && rm requirements.txt \
- && patch /usr/local/lib/python3.6/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
- && rm -r patch \
- && apt-get -y purge \
-    build-essential \
-    gcc \
-    git \
-    libicu-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    python3-dev \
- && apt-get -y autoremove \
- && apt-get -y clean \
  && ln -s /usr/bin/python3 /usr/local/bin/python \
  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 ENV LC_ALL cs_CZ.UTF-8
 
-# install leprikon
+
+#########
+# build #
+#########
+
+FROM base AS build
+
+RUN apt-get -y --no-install-recommends install \
+    build-essential \
+    gcc \
+    git \
+    libicu-dev \
+    libmysqlclient-dev \
+    libssl-dev \
+    pkg-config \
+    python3-dev \
+    libpython3.7
+RUN pip install poetry wheel
+COPY poetry.lock pyproject.toml ./
+RUN poetry export -f requirements.txt --without-hashes \
+  | pip wheel --wheel-dir=/app/dist -r /dev/stdin
+COPY README.rst /app/README.rst
+COPY leprikon /app/leprikon
+RUN poetry build --format wheel
+
+
+#########
+# final #
+#########
+
+FROM base AS final
+
+LABEL name="Leprikón"
+LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
+
+RUN apt-get -y --no-install-recommends install \
+    libmysqlclient21 \
+    libpython3.8 \
+    mariadb-client \
+    nginx \
+    postgresql-client \
+    sqlite3 \
+    supervisor
+
+COPY --from=build /app/dist /app/dist
+
+RUN pip install --no-deps /app/dist/*
+
 COPY . /src
-RUN pip install --no-cache-dir --no-deps /src \
- && cp -a /src/translations/* /usr/local/lib/python3.6/dist-packages/ \
+
+RUN cp -a /src/translations/* /usr/local/lib/python3.8/dist-packages/ \
  && cp -a /src/conf /src/bin /src/startup ./ \
  && rm -r /src \
  && mkdir -p data/ipython htdocs/media htdocs/static run \

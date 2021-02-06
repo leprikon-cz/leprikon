@@ -18,16 +18,15 @@ def participants(request, subject_id):
     subject = get_object_or_404(qs, id=subject_id)
 
     try:
-        d = localdate(datetime.utcfromtimestamp(int(request.GET['date'])).replace(tzinfo=pytz.utc))
+        d = localdate(datetime.utcfromtimestamp(int(request.GET["date"])).replace(tzinfo=pytz.utc))
     except (KeyError, ValueError):
         d = date.today()
 
-    return JsonResponse({
-        'participants': list(
-            {'value': p.id, 'label': str(p)}
-            for p in subject.get_valid_participants(d)
-        ),
-    })
+    return JsonResponse(
+        {
+            "participants": list({"value": p.id, "label": str(p)} for p in subject.get_valid_participants(d)),
+        }
+    )
 
 
 def rocketchat(request):
@@ -40,6 +39,4 @@ def rocketchat(request):
     rc = RocketChat()
     rc.sync_user(request.user)
 
-    return JsonResponse({
-        'loginToken': rc.create_login_token(get_rc_id(request.user))
-    })
+    return JsonResponse({"loginToken": rc.create_login_token(get_rc_id(request.user))})

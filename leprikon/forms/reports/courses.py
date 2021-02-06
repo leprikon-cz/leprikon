@@ -6,23 +6,23 @@ from ..form import FormMixin
 
 
 class CoursePaymentsForm(FormMixin, forms.Form):
-    date_start = forms.DateField(label=_('Start date'))
-    date_end = forms.DateField(label=_('End date'))
+    date_start = forms.DateField(label=_("Start date"))
+    date_end = forms.DateField(label=_("End date"))
 
 
 class CoursePaymentsStatusForm(FormMixin, forms.Form):
-    date = forms.DateField(label=_('Status for date'))
+    date = forms.DateField(label=_("Status for date"))
 
 
 class CourseStatsForm(FormMixin, forms.Form):
-    date = forms.DateField(label=_('Statistics for date'))
+    date = forms.DateField(label=_("Statistics for date"))
     courses = forms.ModelMultipleChoiceField(
         queryset=Course.objects.all(),
-        label=_('Courses'),
+        label=_("Courses"),
     )
-    paid_only = forms.BooleanField(label=_('Count only paid registrations'), required=False)
+    paid_only = forms.BooleanField(label=_("Count only paid registrations"), required=False)
 
     def __init__(self, *args, **kwargs):
-        school_year = kwargs.pop('school_year')
+        school_year = kwargs.pop("school_year")
         super().__init__(*args, **kwargs)
-        self.fields['courses'].queryset = Course.objects.filter(school_year=school_year)
+        self.fields["courses"].queryset = Course.objects.filter(school_year=school_year)

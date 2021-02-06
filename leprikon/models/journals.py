@@ -11,27 +11,31 @@ from .subjects import Subject, SubjectRegistrationParticipant
 
 
 class JournalEntry(StartEndMixin, models.Model):
-    subject = models.ForeignKey(Subject, editable=False, on_delete=models.PROTECT,
-                                related_name='journal_entries', verbose_name=_('subject'))
-    date = models.DateField(_('date'))
-    start = models.TimeField(_('start time'), blank=True, null=True)
-    end = models.TimeField(_('end time'), blank=True, null=True)
-    agenda = HTMLField(_('session agenda'), default='')
-    participants = models.ManyToManyField(SubjectRegistrationParticipant, blank=True,
-                                          related_name='journal_entries', verbose_name=_('participants'))
+    subject = models.ForeignKey(
+        Subject, editable=False, on_delete=models.PROTECT, related_name="journal_entries", verbose_name=_("subject")
+    )
+    date = models.DateField(_("date"))
+    start = models.TimeField(_("start time"), blank=True, null=True)
+    end = models.TimeField(_("end time"), blank=True, null=True)
+    agenda = HTMLField(_("session agenda"), default="")
+    participants = models.ManyToManyField(
+        SubjectRegistrationParticipant, blank=True, related_name="journal_entries", verbose_name=_("participants")
+    )
     participants_instructed = models.ManyToManyField(
-        SubjectRegistrationParticipant, blank=True, related_name='instructed',
-        verbose_name=_('participants instructed about safety and internal rules'),
+        SubjectRegistrationParticipant,
+        blank=True,
+        related_name="instructed",
+        verbose_name=_("participants instructed about safety and internal rules"),
     )
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('date', 'start', 'end')
-        verbose_name = _('journal entry')
-        verbose_name_plural = _('journal entries')
+        app_label = "leprikon"
+        ordering = ("date", "start", "end")
+        verbose_name = _("journal entry")
+        verbose_name_plural = _("journal entries")
 
     def __str__(self):
-        return '{subject_name}, {date}, {duration}'.format(
+        return "{subject_name}, {date}, {duration}".format(
             subject_name=self.subject.name,
             date=self.date,
             duration=self.duration,
@@ -57,7 +61,8 @@ class JournalEntry(StartEndMixin, models.Model):
             return self.datetime_end - self.datetime_start
         except TypeError:
             return timedelta()
-    duration.short_description = _('duration')
+
+    duration.short_description = _("duration")
 
     @cached_property
     def all_participants(self):
@@ -82,15 +87,13 @@ class JournalEntry(StartEndMixin, models.Model):
     @cached_property
     def all_leaders(self):
         return list(
-            le.timesheet.leader for le in self.all_leader_entries
-            if le.timesheet.leader in self.subject.all_leaders
+            le.timesheet.leader for le in self.all_leader_entries if le.timesheet.leader in self.subject.all_leaders
         )
 
     @cached_property
     def all_alternates(self):
         return list(
-            le.timesheet.leader for le in self.all_leader_entries
-            if le.timesheet.leader not in self.subject.all_leaders
+            le.timesheet.leader for le in self.all_leader_entries if le.timesheet.leader not in self.subject.all_leaders
         )
 
     @cached_property
@@ -103,28 +106,38 @@ class JournalEntry(StartEndMixin, models.Model):
         super(JournalEntry, self).save(*args, **kwargs)
 
     def get_edit_url(self):
-        return reverse('leprikon:journalentry_update', args=(self.id,))
+        return reverse("leprikon:journalentry_update", args=(self.id,))
 
     def get_delete_url(self):
-        return reverse('leprikon:journalentry_delete', args=(self.id,))
+        return reverse("leprikon:journalentry_delete", args=(self.id,))
 
 
 class JournalLeaderEntry(StartEndMixin, models.Model):
-    journal_entry = models.ForeignKey(JournalEntry, editable=False, on_delete=models.CASCADE,
-                                      related_name='leader_entries', verbose_name=_('journal entry'))
-    timesheet = models.ForeignKey('leprikon.Timesheet', editable=False, on_delete=models.PROTECT,
-                                  related_name='journal_entries', verbose_name=_('timesheet'))
-    start = models.TimeField(_('start time'))
-    end = models.TimeField(_('end time'))
+    journal_entry = models.ForeignKey(
+        JournalEntry,
+        editable=False,
+        on_delete=models.CASCADE,
+        related_name="leader_entries",
+        verbose_name=_("journal entry"),
+    )
+    timesheet = models.ForeignKey(
+        "leprikon.Timesheet",
+        editable=False,
+        on_delete=models.PROTECT,
+        related_name="journal_entries",
+        verbose_name=_("timesheet"),
+    )
+    start = models.TimeField(_("start time"))
+    end = models.TimeField(_("end time"))
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('journal leader entry')
-        verbose_name_plural = _('journal leader entries')
-        unique_together = (('journal_entry', 'timesheet'),)
+        app_label = "leprikon"
+        verbose_name = _("journal leader entry")
+        verbose_name_plural = _("journal leader entries")
+        unique_together = (("journal_entry", "timesheet"),)
 
     def __str__(self):
-        return '{subject_name}, {date}, {duration}'.format(
+        return "{subject_name}, {date}, {duration}".format(
             subject_name=self.journal_entry.subject.name,
             date=self.journal_entry.date,
             duration=self.duration,
@@ -133,13 +146,15 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
     @cached_property
     def date(self):
         return self.journal_entry.date
-    date.short_description = _('date')
-    date.admin_order_field = 'journal_entry__date'
+
+    date.short_description = _("date")
+    date.admin_order_field = "journal_entry__date"
 
     @cached_property
     def subject(self):
         return self.journal_entry.subject
-    subject.short_description = _('subject')
+
+    subject.short_description = _("subject")
 
     @cached_property
     def datetime_start(self):
@@ -152,14 +167,15 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
     @cached_property
     def duration(self):
         return self.datetime_end - self.datetime_start
-    duration.short_description = _('duration')
+
+    duration.short_description = _("duration")
 
     @property
     def group(self):
         return self.subject
 
     def get_edit_url(self):
-        return reverse('leprikon:journalleaderentry_update', args=(self.id,))
+        return reverse("leprikon:journalleaderentry_update", args=(self.id,))
 
     def get_delete_url(self):
-        return reverse('leprikon:journalleaderentry_delete', args=(self.id,))
+        return reverse("leprikon:journalleaderentry_delete", args=(self.id,))

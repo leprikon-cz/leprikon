@@ -3,9 +3,13 @@ from django.urls import reverse_lazy as reverse
 from django.utils.http import is_safe_url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
-    CreateView as _CreateView, DeleteView as _DeleteView,
-    DetailView as _DetailView, FormView as _FormView, ListView as _ListView,
-    TemplateView as _TemplateView, UpdateView as _UpdateView,
+    CreateView as _CreateView,
+    DeleteView as _DeleteView,
+    DetailView as _DetailView,
+    FormView as _FormView,
+    ListView as _ListView,
+    TemplateView as _TemplateView,
+    UpdateView as _UpdateView,
 )
 
 from ..conf import settings
@@ -13,14 +17,11 @@ from ..forms.confirm import ConfirmForm
 
 
 class GenericViewMixin(object):
-    title = ''
+    title = ""
 
     def get_context_data(self, *args, **kwargs):
         context = super(GenericViewMixin, self).get_context_data(
-            *args,
-            placeholder=self.get_placeholder(),
-            title=self.get_title(),
-            **kwargs
+            *args, placeholder=self.get_placeholder(), title=self.get_title(), **kwargs
         )
         return context
 
@@ -32,12 +33,12 @@ class GenericViewMixin(object):
 
 
 class ListView(GenericViewMixin, _ListView):
-    template_name = 'leprikon/list.html'
+    template_name = "leprikon/list.html"
     add_url = None
-    add_label = _('add')
-    add_title = ''
-    message_empty = _('No items found.')
-    preview_template = ''
+    add_label = _("add")
+    add_title = ""
+    message_empty = _("No items found.")
+    preview_template = ""
 
     def get_add_url(self):
         return self.add_url
@@ -65,7 +66,7 @@ class ListView(GenericViewMixin, _ListView):
 
 class FilteredListView(ListView):
     form_class = None
-    message_empty = _('No items found matching given search parameters.')
+    message_empty = _("No items found matching given search parameters.")
 
     def get_form(self):
         return self.form_class(data=self.request.GET)
@@ -75,23 +76,21 @@ class FilteredListView(ListView):
 
 
 class BackViewMixin(object):
-    back_url = reverse('leprikon:summary')
-    back_label = _('Back')
+    back_url = reverse("leprikon:summary")
+    back_label = _("Back")
 
     def get_context_data(self, *args, **kwargs):
         return super(BackViewMixin, self).get_context_data(
-            *args,
-            back_url=self.get_back_url(),
-            back_label=self.get_back_label(),
-            **kwargs
+            *args, back_url=self.get_back_url(), back_label=self.get_back_label(), **kwargs
         )
 
     def get_back_label(self):
         return self.back_label
 
     def get_back_url(self):
-        url = self.request.POST.get(settings.LEPRIKON_PARAM_BACK,
-                                    self.request.GET.get(settings.LEPRIKON_PARAM_BACK, ''))
+        url = self.request.POST.get(
+            settings.LEPRIKON_PARAM_BACK, self.request.GET.get(settings.LEPRIKON_PARAM_BACK, "")
+        )
         if is_safe_url(url=url, host=self.request.get_host()):
             return url
         else:
@@ -99,11 +98,11 @@ class BackViewMixin(object):
 
 
 class FormViewMixin(BackViewMixin, GenericViewMixin):
-    template_name = 'leprikon/form.html'
-    form_item_template_name = 'leprikon/form_item.html'
-    instructions = ''
-    submit_label = _('Save')
-    success_url = reverse('leprikon:summary')
+    template_name = "leprikon/form.html"
+    form_item_template_name = "leprikon/form_item.html"
+    instructions = ""
+    submit_label = _("Save")
+    success_url = reverse("leprikon:summary")
     message = None
 
     def get_context_data(self, *args, **kwargs):
@@ -143,9 +142,9 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
 
 class ConfirmFormViewMixin(FormViewMixin):
     form_class = ConfirmForm
-    template_name = 'leprikon/confirm_form.html'
-    question = ''
-    submit_label = _('Yes')
+    template_name = "leprikon/confirm_form.html"
+    question = ""
+    submit_label = _("Yes")
 
     def get_question(self):
         return self.question
@@ -182,7 +181,7 @@ class ConfirmUpdateView(ConfirmFormViewMixin, _UpdateView):
 
 
 class DeleteView(ConfirmFormViewMixin, _DeleteView):
-    submit_label = _('Delete')
+    submit_label = _("Delete")
 
     def delete(self, request, *args, **kwargs):
         response = super(DeleteView, self).delete(request, *args, **kwargs)

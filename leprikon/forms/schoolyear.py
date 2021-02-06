@@ -7,7 +7,7 @@ from ..models.schoolyear import SchoolYear
 
 class SchoolYearForm(forms.Form):
     school_year = forms.ModelChoiceField(
-        label=_('School year'),
+        label=_("School year"),
         queryset=SchoolYear.objects.all(),
         empty_label=None,
     )
@@ -15,9 +15,7 @@ class SchoolYearForm(forms.Form):
 
     def __init__(self, request, *args, **kwargs):
         if request:
-            kwargs['initial'] = {'school_year': request.school_year}
+            kwargs["initial"] = {"school_year": request.school_year}
         super().__init__(*args, **kwargs)
         if request and not request.user.is_staff:
-            self.fields['school_year'].queryset = (
-                self.fields['school_year'].queryset.filter(active=True)
-            )
+            self.fields["school_year"].queryset = self.fields["school_year"].queryset.filter(active=True)

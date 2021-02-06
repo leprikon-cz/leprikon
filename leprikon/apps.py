@@ -5,13 +5,14 @@ from . import bankreaders  # noqa
 
 
 class LeprikonConfig(AppConfig):
-    name = 'leprikon'
-    verbose_name = _('Leprikon')
+    name = "leprikon"
+    verbose_name = _("Leprikon")
 
     def ready(self):
 
         # ensure that current LeprikonSite exists
         from .models.leprikonsite import LeprikonSite
+
         try:
             LeprikonSite.objects.get_current()
         except Exception:
@@ -23,17 +24,18 @@ class LeprikonConfig(AppConfig):
         from menus.menu_pool import menu_pool
 
         from .conf import settings
+
         try:
             create_page(
-                title='Leprikón',
+                title="Leprikón",
                 template=TEMPLATE_INHERITANCE_MAGIC,
                 language=settings.LANGUAGE_CODE,
-                slug='leprikon',
-                apphook='LeprikonApp',
-                apphook_namespace='leprikon',
-                reverse_id='leprikon',
+                slug="leprikon",
+                apphook="LeprikonApp",
+                apphook_namespace="leprikon",
+                reverse_id="leprikon",
                 in_navigation=True,
-                navigation_extenders='LeprikonMenu',
+                navigation_extenders="LeprikonMenu",
                 published=True,
             ).set_as_homepage()
             menu_pool.clear()

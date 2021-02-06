@@ -10,13 +10,13 @@ from .generic import BackViewMixin, DetailView, FilteredListView
 class MessageListView(FilteredListView):
     model = MessageRecipient
     form_class = MessageFilterForm
-    preview_template = 'leprikon/message_preview.html'
-    template_name = 'leprikon/message_list.html'
-    message_empty = _('No messages matching given query.')
+    preview_template = "leprikon/message_preview.html"
+    template_name = "leprikon/message_list.html"
+    message_empty = _("No messages matching given query.")
     paginate_by = 10
 
     def get_title(self):
-        return _('Messages')
+        return _("Messages")
 
     def get_form(self):
         return self.form_class(
@@ -29,7 +29,7 @@ class MessageListView(FilteredListView):
 
 
 class MessageDetailView(BackViewMixin, DetailView):
-    back_url = reverse('leprikon:message_list')
+    back_url = reverse("leprikon:message_list")
     model = MessageRecipient
 
     def get_object(self):

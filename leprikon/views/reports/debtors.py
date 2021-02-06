@@ -15,12 +15,12 @@ from ...views.generic import FormView
 
 class ReportDebtorsView(FormView):
     form_class = DebtorsForm
-    template_name = 'leprikon/reports/debtors.html'
-    title = _('Debtors list')
-    submit_label = _('Show')
-    back_url = reverse('leprikon:report_list')
+    template_name = "leprikon/reports/debtors.html"
+    title = _("Debtors list")
+    submit_label = _("Show")
+    back_url = reverse("leprikon:report_list")
 
-    ReportItem = namedtuple('ReportItem', ('registration', 'status'))
+    ReportItem = namedtuple("ReportItem", ("registration", "status"))
 
     class Report(list):
         @cached_property
@@ -29,31 +29,30 @@ class ReportDebtorsView(FormView):
 
     def form_valid(self, form):
         context = form.cleaned_data
-        context['form'] = form
-        context['reports'] = {}
-        context['sum'] = 0
+        context["form"] = form
+        context["reports"] = {}
+        context["sum"] = 0
 
         for reg in chain.from_iterable(
             qs.filter(
                 subject__school_year=self.request.school_year,
-                approved__date__lte=context['date'],
-            ).prefetch_related(
-                'discounts',
-                'payments',
-            ).select_related('user')
+                approved__date__lte=context["date"],
+            )
+            .prefetch_related(
+                "discounts",
+                "payments",
+            )
+            .select_related("user")
             for qs in (
-                CourseRegistration.objects.prefetch_related('course_registration_periods'),
+                CourseRegistration.objects.prefetch_related("course_registration_periods"),
                 EventRegistration.objects,
                 OrderableRegistration.objects,
             )
         ):
-            status = reg.get_payment_status(context['date'])
+            status = reg.get_payment_status(context["date"])
             if status.amount_due:
-                report = context['reports'].setdefault(reg.user, self.Report())
+                report = context["reports"].setdefault(reg.user, self.Report())
                 report.append(self.ReportItem(registration=reg, status=status))
-        context['sum'] = sum(
-            report.sum
-            for report in context['reports'].values()
-        )
+        context["sum"] = sum(report.sum for report in context["reports"].values())
 
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))

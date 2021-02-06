@@ -10,23 +10,25 @@ from .urls import LEPRIKON_URL
 
 @apphook_pool.register
 class LeprikonApp(CMSApp):
-    name = _('Leprikon')
-    app_name = 'leprikon'
+    name = _("Leprikon")
+    app_name = "leprikon"
 
     def get_urls(self, page=None, language=None, **kwargs):
-        return ['leprikon.urls']
+        return ["leprikon.urls"]
 
 
 @apphook_pool.register
 class LeprikonSubjectTypeApp(CMSApp):
-    name = _('Leprikon subject type')
-    app_name = 'leprikon_subject_type'
+    name = _("Leprikon subject type")
+    app_name = "leprikon_subject_type"
 
     def get_urls(self, page=None, language=None, **kwargs):
         return [
-            url(r'^$', views.subject_list, name='subject_list'),
-            url(r'^(?P<pk>[0-9]+)/$', views.subject_detail, name='subject_detail'),
-            url(r'^(?P<pk>[0-9]+)/{registration}/$'.format(**LEPRIKON_URL),
+            url(r"^$", views.subject_list, name="subject_list"),
+            url(r"^(?P<pk>[0-9]+)/$", views.subject_detail, name="subject_detail"),
+            url(
+                r"^(?P<pk>[0-9]+)/{registration}/$".format(**LEPRIKON_URL),
                 transaction.atomic(views.subject_registration_form),
-                name='subject_registration_form'),
+                name="subject_registration_form",
+            ),
         ]

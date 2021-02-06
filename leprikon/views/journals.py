@@ -4,26 +4,24 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.journals import JournalEntryForm, JournalLeaderEntryForm
 from ..models.journals import JournalEntry, JournalLeaderEntry, Subject
-from .generic import (
-    CreateView, DeleteView, DetailView, TemplateView, UpdateView,
-)
+from .generic import CreateView, DeleteView, DetailView, TemplateView, UpdateView
 
 
 class AlternatingView(TemplateView):
-    template_name = 'leprikon/alternating.html'
+    template_name = "leprikon/alternating.html"
 
     def get_title(self):
-        return _('Alternating in school year {}').format(self.request.school_year)
+        return _("Alternating in school year {}").format(self.request.school_year)
 
     def get_context_data(self, **kwargs):
         context = super(AlternatingView, self).get_context_data(**kwargs)
-        context['alternate_leader_entries'] = self.request.leader.get_alternate_leader_entries(self.request.school_year)
+        context["alternate_leader_entries"] = self.request.leader.get_alternate_leader_entries(self.request.school_year)
         return context
 
 
 class JournalView(DetailView):
     model = Subject
-    template_name_suffix = '_journal'
+    template_name_suffix = "_journal"
 
     def get_queryset(self):
         qs = super(JournalView, self).get_queryset()
@@ -35,33 +33,33 @@ class JournalView(DetailView):
 class JournalEntryCreateView(CreateView):
     model = JournalEntry
     form_class = JournalEntryForm
-    template_name = 'leprikon/journalentry_form.html'
-    title = _('New journal entry')
-    message = _('The journal entry has been created.')
+    template_name = "leprikon/journalentry_form.html"
+    title = _("New journal entry")
+    message = _("The journal entry has been created.")
 
     def dispatch(self, request, *args, **kwargs):
         if self.request.user.is_staff:
-            self.subject = get_object_or_404(Subject, id=int(kwargs.pop('subject')))
+            self.subject = get_object_or_404(Subject, id=int(kwargs.pop("subject")))
         else:
-            self.subject = get_object_or_404(Subject, id=int(kwargs.pop('subject')), leaders=self.request.leader)
+            self.subject = get_object_or_404(Subject, id=int(kwargs.pop("subject")), leaders=self.request.leader)
         return super(JournalEntryCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super(JournalEntryCreateView, self).get_form_kwargs()
-        kwargs['subject'] = self.subject
+        kwargs["subject"] = self.subject
         return kwargs
 
 
 class JournalEntryUpdateView(UpdateView):
     model = JournalEntry
     form_class = JournalEntryForm
-    template_name = 'leprikon/journalentry_form.html'
-    title = _('Change journal entry')
-    message = _('The journal entry has been updated.')
+    template_name = "leprikon/journalentry_form.html"
+    title = _("Change journal entry")
+    message = _("The journal entry has been updated.")
 
     def get_object(self):
         obj = super(JournalEntryUpdateView, self).get_object()
-        if (self.request.user.is_staff or self.request.leader in obj.subject.all_leaders + obj.all_alternates):
+        if self.request.user.is_staff or self.request.leader in obj.subject.all_leaders + obj.all_alternates:
             return obj
         else:
             raise Http404()
@@ -69,8 +67,8 @@ class JournalEntryUpdateView(UpdateView):
 
 class JournalEntryDeleteView(DeleteView):
     model = JournalEntry
-    title = _('Delete journal entry')
-    message = _('The journal entry has been deleted.')
+    title = _("Delete journal entry")
+    message = _("The journal entry has been deleted.")
 
     def get_queryset(self):
         qs = super(JournalEntryDeleteView, self).get_queryset()
@@ -85,21 +83,22 @@ class JournalEntryDeleteView(DeleteView):
         return obj
 
     def get_question(self):
-        return _('Do You really want to delete journal entry?')
+        return _("Do You really want to delete journal entry?")
 
 
 class JournalLeaderEntryUpdateView(UpdateView):
     model = JournalLeaderEntry
     form_class = JournalLeaderEntryForm
-    template_name = 'leprikon/journalleaderentry_form.html'
-    title = _('Change timesheet entry')
-    message = _('The timesheet entry has been updated.')
+    template_name = "leprikon/journalleaderentry_form.html"
+    title = _("Change timesheet entry")
+    message = _("The timesheet entry has been updated.")
 
     def get_object(self):
         obj = super(JournalLeaderEntryUpdateView, self).get_object()
         if (
-            self.request.user.is_staff or obj.timesheet.leader == self.request.leader or
-            self.request.leader in obj.journal_entry.subject.all_leaders
+            self.request.user.is_staff
+            or obj.timesheet.leader == self.request.leader
+            or self.request.leader in obj.journal_entry.subject.all_leaders
         ):
             return obj
         else:
@@ -108,14 +107,18 @@ class JournalLeaderEntryUpdateView(UpdateView):
 
 class JournalLeaderEntryDeleteView(DeleteView):
     model = JournalLeaderEntry
-    title = _('Delete timesheet entry')
-    message = _('The timesheet entry has been deleted.')
+    title = _("Delete timesheet entry")
+    message = _("The timesheet entry has been deleted.")
 
     def get_queryset(self):
-        return super(JournalLeaderEntryDeleteView, self).get_queryset().filter(
-            timesheet__leader=self.request.leader,
-            timesheet__submitted=False,
+        return (
+            super(JournalLeaderEntryDeleteView, self)
+            .get_queryset()
+            .filter(
+                timesheet__leader=self.request.leader,
+                timesheet__submitted=False,
+            )
         )
 
     def get_question(self):
-        return _('Do You really want to delete timesheet entry?')
+        return _("Do You really want to delete timesheet entry?")

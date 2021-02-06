@@ -28,21 +28,29 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
         SubjectType.ORDERABLE: OrderableRegistration,
     }
     list_display = (
-        'id', 'name', 'get_link', 'subject_type', 'reg_from', 'reg_to', 'get_registrations_link',
+        "id",
+        "name",
+        "get_link",
+        "subject_type",
+        "reg_from",
+        "reg_to",
+        "get_registrations_link",
     )
     list_filter = (
-        ('school_year', SchoolYearListFilter),
-        'subject_type__subject_type',
-        ('subject_type', SubjectTypeListFilter),
+        ("school_year", SchoolYearListFilter),
+        "subject_type__subject_type",
+        ("subject_type", SubjectTypeListFilter),
     )
-    filter_horizontal = ('subjects',)
+    filter_horizontal = ("subjects",)
 
-    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        if not object_id and request.method == 'POST' and len(request.POST) == 3:
-            return HttpResponseRedirect('{}?subject_type={}'.format(
-                request.path,
-                request.POST.get('subject_type', ''),
-            ))
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if not object_id and request.method == "POST" and len(request.POST) == 3:
+            return HttpResponseRedirect(
+                "{}?subject_type={}".format(
+                    request.path,
+                    request.POST.get("subject_type", ""),
+                )
+            )
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
@@ -54,7 +62,7 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
         # get subject type
         try:
             # first try request.POST (user may want to change subject type)
-            request.subject_type = SubjectType.objects.get(id=int(request.POST.get('subject_type')))
+            request.subject_type = SubjectType.objects.get(id=int(request.POST.get("subject_type")))
         except (SubjectType.DoesNotExist, TypeError, ValueError):
             if obj:
                 # use subject type from object
@@ -63,22 +71,22 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
                 # try to get subject type from request.GET
                 try:
                     request.subject_type = SubjectType.objects.get(
-                        id=int(request.GET.get('subject_type')),
+                        id=int(request.GET.get("subject_type")),
                     )
                 except (SubjectType.DoesNotExist, TypeError, ValueError):
                     request.subject_type = None
 
         if request.subject_type:
-            kwargs['form'] = type(
+            kwargs["form"] = type(
                 RegistrationLinkAdminForm.__name__,
-                (RegistrationLinkAdminForm, ),
+                (RegistrationLinkAdminForm,),
                 {
-                    'school_year': request.school_year,
-                    'subject_type': request.subject_type,
+                    "school_year": request.school_year,
+                    "subject_type": request.subject_type,
                 },
             )
         else:
-            kwargs['fields'] = ['subject_type']
+            kwargs["fields"] = ["subject_type"]
 
         return super().get_form(request, obj, **kwargs)
 
@@ -103,27 +111,33 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
     def get_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{url}</a>'.format(
             url=obj.link,
-            title=_('registration link'),
+            title=_("registration link"),
         )
-    get_link.short_description = _('registration link')
+
+    get_link.short_description = _("registration link")
     get_link.allow_tags = True
 
     def get_queryset(self, request):
         return (
             super()
-            .get_queryset(request).select_related('subject_type')
-            .annotate(registrations_count=Count('registrations'))
+            .get_queryset(request)
+            .select_related("subject_type")
+            .annotate(registrations_count=Count("registrations"))
         )
 
     def get_registrations_link(self, obj):
         registration_model = self._registration_models[obj.subject_type.subject_type]
         return format_html(
             '<a href="{url}">{count}</a>',
-            url=reverse('admin:{}_{}_changelist'.format(
-                registration_model._meta.app_label,
-                registration_model._meta.model_name,
-            )) + '?registration_link__id__exact={}'.format(obj.id),
+            url=reverse(
+                "admin:{}_{}_changelist".format(
+                    registration_model._meta.app_label,
+                    registration_model._meta.model_name,
+                )
+            )
+            + "?registration_link__id__exact={}".format(obj.id),
             count=obj.registrations_count,
         )
-    get_registrations_link.short_description = _('registrations')
+
+    get_registrations_link.short_description = _("registrations")
     get_registrations_link.allow_tags = True

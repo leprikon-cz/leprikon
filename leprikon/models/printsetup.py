@@ -8,23 +8,20 @@ from reportlab.lib.units import mm
 
 
 class PrintSetup(models.Model):
-    name = models.CharField(_('name'), max_length=150)
-    background = FilerFileField(verbose_name=_('pdf background'), blank=True, null=True,
-                                on_delete=models.SET_NULL, related_name='+')
-    top = models.IntegerField(_('margin top'), blank=True, default=20,
-                              help_text=_('distance in milimetres'))
-    left = models.IntegerField(_('margin left'), blank=True, default=20,
-                               help_text=_('distance in milimetres'))
-    right = models.IntegerField(_('margin right'), blank=True, default=20,
-                                help_text=_('distance in milimetres'))
-    bottom = models.IntegerField(_('margin bottom'), blank=True, default=20,
-                                 help_text=_('distance in milimetres'))
+    name = models.CharField(_("name"), max_length=150)
+    background = FilerFileField(
+        verbose_name=_("pdf background"), blank=True, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    top = models.IntegerField(_("margin top"), blank=True, default=20, help_text=_("distance in milimetres"))
+    left = models.IntegerField(_("margin left"), blank=True, default=20, help_text=_("distance in milimetres"))
+    right = models.IntegerField(_("margin right"), blank=True, default=20, help_text=_("distance in milimetres"))
+    bottom = models.IntegerField(_("margin bottom"), blank=True, default=20, help_text=_("distance in milimetres"))
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('name',)
-        verbose_name = _('print setup')
-        verbose_name_plural = _('print setups')
+        app_label = "leprikon"
+        ordering = ("name",)
+        verbose_name = _("print setup")
+        verbose_name_plural = _("print setups")
 
     def __str__(self):
         return self.name

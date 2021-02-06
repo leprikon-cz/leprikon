@@ -4,10 +4,12 @@
 *.swp
 *~
 /.coverage
+/.env
 /.git
 /.idea
 /.ipython
 /.tox
+/.vscode
 /build
 /data
 /dist

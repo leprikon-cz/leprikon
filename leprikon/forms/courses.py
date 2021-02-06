@@ -11,7 +11,7 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
     periods = forms.ModelMultipleChoiceField(
         queryset=SchoolYearPeriod.objects.all(),
         widget=FilteredSelectMultiple(
-            verbose_name=_('Periods'),
+            verbose_name=_("Periods"),
             is_stacked=False,
         ),
     )
@@ -19,47 +19,42 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.available_periods = self.subject.course.school_year_division.periods.all()
-        self.fields['periods'].widget.choices.queryset = self.available_periods
+        self.fields["periods"].widget.choices.queryset = self.available_periods
         if self.instance:
-            self.fields['periods'].initial = self.available_periods.filter(
+            self.fields["periods"].initial = self.available_periods.filter(
                 course_registration_periods__registration=self.instance,
             )
 
     def _save_m2m(self):
         super()._save_m2m()
-        for period in self.cleaned_data['periods']:
+        for period in self.cleaned_data["periods"]:
             CourseRegistrationPeriod.objects.get_or_create(
                 registration=self.instance,
                 period=period,
             )
-        self.instance.course_registration_periods.exclude(
-            period__in=self.cleaned_data['periods']
-        ).delete()
+        self.instance.course_registration_periods.exclude(period__in=self.cleaned_data["periods"]).delete()
         return self.instance
 
 
 class CourseDiscountAdminForm(forms.ModelForm):
-
     class Meta:
         model = CourseDiscount
-        fields = ['registration', 'registration_period', 'accounted', 'amount', 'explanation']
+        fields = ["registration", "registration_period", "accounted", "amount", "explanation"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'registration_period' in self.fields:
+        if "registration_period" in self.fields:
             try:
                 if self.data:
-                    registration_id = int(self.data['registration'])
+                    registration_id = int(self.data["registration"])
                 elif self.initial:
-                    registration_id = int(self.initial['registration'])
+                    registration_id = int(self.initial["registration"])
                 else:
                     registration_id = self.instance.registration_id
             except Exception:
                 registration_id = None
-            self.fields[
-                'registration_period'
-            ].widget.choices.queryset = self.fields[
-                'registration_period'
+            self.fields["registration_period"].widget.choices.queryset = self.fields[
+                "registration_period"
             ].widget.choices.queryset.filter(
                 registration_id=registration_id,
             )

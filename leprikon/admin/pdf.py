@@ -9,8 +9,8 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
 class PdfExportAdminMixin:
-    actions = ('export_pdf',)
-    pdf_event = 'pdf'
+    actions = ("export_pdf",)
+    pdf_event = "pdf"
 
     def export_pdf(self, request, queryset):
         # create PDF
@@ -24,8 +24,8 @@ class PdfExportAdminMixin:
                 writer.addPage(pdf.getPage(i))
 
         # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="{}.pdf"'.format(
             slugify(self.model._meta.verbose_name_plural),
         )
 
@@ -33,30 +33,36 @@ class PdfExportAdminMixin:
         writer.write(response)
 
         return response
-    export_pdf.short_description = _('Export selected items in single PDF.')
+
+    export_pdf.short_description = _("Export selected items in single PDF.")
 
     def get_urls(self):
         urls = super(PdfExportAdminMixin, self).get_urls()
-        return [urls_url(
-            r'(?P<obj_id>\d+).pdf$',
-            self.admin_site.admin_view(self.pdf),
-            name='{}_{}_pdf'.format(self.model._meta.app_label, self.model._meta.model_name),
-        )] + urls
+        return [
+            urls_url(
+                r"(?P<obj_id>\d+).pdf$",
+                self.admin_site.admin_view(self.pdf),
+                name="{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+            )
+        ] + urls
 
     def pdf(self, request, obj_id):
         obj = self.get_object(request, obj_id)
 
         # create PDF response object
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.pdf_event))
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.pdf_event))
 
         # write PDF to response
         return obj.write_pdf(self.pdf_event, response)
 
     def download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(reverse(
-            'admin:{}_{}_pdf'.format(self.model._meta.app_label, self.model._meta.model_name),
-            args=(obj.id,),
-        ))
-    download_tag.short_description = _('download')
+        return '<a href="{}">PDF</a>'.format(
+            reverse(
+                "admin:{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+                args=(obj.id,),
+            )
+        )
+
+    download_tag.short_description = _("download")
     download_tag.allow_tags = True

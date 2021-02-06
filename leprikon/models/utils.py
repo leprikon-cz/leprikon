@@ -47,24 +47,24 @@ class PaymentStatusMixin:
     def title(self):
         titles = []
         if self.amount_due and (self.amount_due != self.overdue):
-            titles.append(_('amount due {}').format(currency(self.amount_due)))
+            titles.append(_("amount due {}").format(currency(self.amount_due)))
         if self.overdue:
-            titles.append(_('overdue {}').format(currency(self.overdue)))
+            titles.append(_("overdue {}").format(currency(self.overdue)))
         if self.overpaid:
-            titles.append(_('{} overpaid').format(currency(self.overpaid)))
+            titles.append(_("{} overpaid").format(currency(self.overpaid)))
         if self.balance == 0:
             if self.receivable:
-                titles.append(_('paid'))
+                titles.append(_("paid"))
             else:
-                titles.append(_('payment not requested'))
+                titles.append(_("payment not requested"))
         elif self.balance < 0 and not self.amount_due:  # self.due_from > self.current_date:
-            titles.append(_('payment not requested yet'))
-        return ', '.join(map(str, titles))
+            titles.append(_("payment not requested yet"))
+        return ", ".join(map(str, titles))
 
     def __xrepr__(self):
         return (
-            '{type_name}(price={price}, discount={discount}, paid={paid}, balance={balance}, '
-            'amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})'.format(
+            "{type_name}(price={price}, discount={discount}, paid={paid}, balance={balance}, "
+            "amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})".format(
                 type_name=type(self).__name__,
                 price=self.price,
                 discount=self.discount,
@@ -92,8 +92,8 @@ class PaymentStatusMixin:
 class PaymentStatus(
     PaymentStatusMixin,
     namedtuple(
-        '_PaymentsStatus',
-        ('price', 'discount', 'explanation', 'paid', 'current_date', 'due_from', 'due_date'),
+        "_PaymentsStatus",
+        ("price", "discount", "explanation", "paid", "current_date", "due_from", "due_date"),
     ),
 ):
     @property
@@ -120,8 +120,8 @@ class PaymentStatus(
 class PaymentStatusSum(
     PaymentStatusMixin,
     namedtuple(
-        '_PaymentsStatusSum',
-        ('price', 'discount', 'paid', 'amount_due', 'overdue', 'overpaid'),
+        "_PaymentsStatusSum",
+        ("price", "discount", "paid", "amount_due", "overdue", "overpaid"),
     ),
 ):
     pass
@@ -141,16 +141,16 @@ class BankAccount:
 
     @cached_property
     def account_prefix(self):
-        return self.iban[8:14].lstrip('0')
+        return self.iban[8:14].lstrip("0")
 
     @cached_property
     def account_number(self):
-        return self.iban[14:].lstrip('0')
+        return self.iban[14:].lstrip("0")
 
     def __str__(self):
-        return '%s%s%s/%s' % (
+        return "%s%s%s/%s" % (
             self.account_prefix,
-            self.account_prefix and '-',
+            self.account_prefix and "-",
             self.account_number,
             self.bank_code,
         )
@@ -158,7 +158,7 @@ class BankAccount:
 
 def generate_variable_symbol(registration):
     # get base variable symol from the configured expression
-    variable_symbol = eval(settings.LEPRIKON_VARIABLE_SYMBOL_EXPRESSION, {'reg': registration})
+    variable_symbol = eval(settings.LEPRIKON_VARIABLE_SYMBOL_EXPRESSION, {"reg": registration})
 
     # add check digit
     odd_sum = 0
@@ -173,25 +173,27 @@ def generate_variable_symbol(registration):
 
 
 def help_text_with_html_default(help_text, html_default):
-    keep_empty = paragraph(_('Keep empty to use default value:'))
-    return mark_safe('{}{}{}'.format(
-        paragraph(help_text),
-        keep_empty,
-        html_default,
-    ) if help_text else '{}{}'.format(
-        keep_empty,
-        html_default,
-    ))
+    keep_empty = paragraph(_("Keep empty to use default value:"))
+    return mark_safe(
+        "{}{}{}".format(
+            paragraph(help_text),
+            keep_empty,
+            html_default,
+        )
+        if help_text
+        else "{}{}".format(
+            keep_empty,
+            html_default,
+        )
+    )
 
 
 lazy_help_text_with_html_default = lazy(help_text_with_html_default, str)
 
 
 def help_text_with_default(help_text, default):
-    keep_empty_default = _('Keep empty to use default value: {}').format(default)
-    return paragraph(
-        '{}\n\n{}'.format(help_text, keep_empty_default) if help_text else keep_empty_default
-    )
+    keep_empty_default = _("Keep empty to use default value: {}").format(default)
+    return paragraph("{}\n\n{}".format(help_text, keep_empty_default) if help_text else keep_empty_default)
 
 
 lazy_help_text_with_default = lazy(help_text_with_default, str)
@@ -216,4 +218,4 @@ def shorten(string, length):
     if len(string) <= length:
         return string
     half = length // 2 - 1
-    return f'{string[:half]}...{string[half + 3 - length:]}'
+    return f"{string[:half]}...{string[half + 3 - length:]}"

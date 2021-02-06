@@ -5,4 +5,4 @@ from ..models.printsetup import PrintSetup
 
 @admin.register(PrintSetup)
 class PrintSetupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'background')
+    list_display = ("name", "background")

@@ -8,20 +8,18 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
-    CourseRegistrationForm, EventRegistrationForm, OrderableRegistrationForm,
-    SubjectFilterForm, SubjectForm,
+    CourseRegistrationForm,
+    EventRegistrationForm,
+    OrderableRegistrationForm,
+    SubjectFilterForm,
+    SubjectForm,
 )
 from ..models.courses import Course
 from ..models.events import Event
 from ..models.leprikonsite import LeprikonSite
 from ..models.orderables import Orderable
-from ..models.subjects import (
-    Subject, SubjectPayment, SubjectRegistration, SubjectType,
-)
-from .generic import (
-    ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView,
-    UpdateView,
-)
+from ..models.subjects import Subject, SubjectPayment, SubjectRegistration, SubjectType
+from .generic import ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView
 
 
 class SubjectTypeMixin:
@@ -37,16 +35,16 @@ class SubjectTypeMixin:
         return super().dispatch(request, *args, **kwargs)
 
     def get_placeholder(self):
-        return super().get_placeholder() + ':' + self.subject_type.slug
+        return super().get_placeholder() + ":" + self.subject_type.slug
 
     def get_queryset(self):
         return super().get_queryset().filter(subject_type=self.subject_type)
 
     def get_template_names(self):
         return [
-            'leprikon/{}{}.html'.format(self.subject_type.slug, self.template_name_suffix),
-            'leprikon/{}{}.html'.format(self.subject_type.subject_type, self.template_name_suffix),
-            'leprikon/subject{}.html'.format(self.template_name_suffix),
+            "leprikon/{}{}.html".format(self.subject_type.slug, self.template_name_suffix),
+            "leprikon/{}{}.html".format(self.subject_type.subject_type, self.template_name_suffix),
+            "leprikon/subject{}.html".format(self.template_name_suffix),
         ]
 
 
@@ -57,7 +55,7 @@ class CMSSubjectTypeMixin(SubjectTypeMixin):
 
         # Check whether it really is a Leprikon subject type application.
         # It might also be one of its sub-pages.
-        if cms_page.application_urls != 'LeprikonSubjectTypeApp':
+        if cms_page.application_urls != "LeprikonSubjectTypeApp":
             # In such case show regular CMS Page
             return cms_view_details(request, *args, **kwargs)
         return super(CMSSubjectTypeMixin, self).dispatch(request, cms_page.application_namespace, **kwargs)
@@ -65,17 +63,17 @@ class CMSSubjectTypeMixin(SubjectTypeMixin):
 
 class SubjectListBaseView(FilteredListView):
     form_class = SubjectFilterForm
-    preview_template = 'leprikon/subject_preview.html'
+    preview_template = "leprikon/subject_preview.html"
     paginate_by = 10
 
     def get_title(self):
-        return _('{subject_type} in school year {school_year}').format(
+        return _("{subject_type} in school year {school_year}").format(
             subject_type=self.subject_type.plural,
             school_year=self.request.school_year,
         )
 
     def get_message_empty(self):
-        return _('No {subject_type} matching given search parameters found.').format(
+        return _("No {subject_type} matching given search parameters found.").format(
             subject_type=self.subject_type.plural,
         )
 
@@ -97,16 +95,15 @@ class SubjectListView(CMSSubjectTypeMixin, SubjectListBaseView):
 
 
 class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
-
     def get_template_names(self):
         return [
-            'leprikon/{}_list_mine.html'.format(self.subject_type.slug),
-            'leprikon/{}_list_mine.html'.format(self.subject_type.subject_type),
-            'leprikon/subject_list_mine.html',
+            "leprikon/{}_list_mine.html".format(self.subject_type.slug),
+            "leprikon/{}_list_mine.html".format(self.subject_type.subject_type),
+            "leprikon/subject_list_mine.html",
         ] + super(SubjectListMineView, self).get_template_names()
 
     def get_title(self):
-        return _('My {subject_type} in school year {school_year}').format(
+        return _("My {subject_type} in school year {school_year}").format(
             subject_type=self.subject_type.plural,
             school_year=self.request.school_year,
         )
@@ -116,7 +113,6 @@ class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
 
 
 class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
-
     def get_queryset(self):
         qs = super(SubjectDetailView, self).get_queryset()
         if not self.request.user.is_staff:
@@ -125,7 +121,7 @@ class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
 
 
 class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
-    template_name_suffix = '_registrations'
+    template_name_suffix = "_registrations"
 
     def get_queryset(self):
         qs = super(SubjectRegistrationsView, self).get_queryset()
@@ -135,7 +131,7 @@ class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectRegistrationsView, self).get_context_data(**kwargs)
-        context['site'] = LeprikonSite.objects.get_current()
+        context["site"] = LeprikonSite.objects.get_current()
         return context
 
 
@@ -143,13 +139,13 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
     form_class = SubjectForm
 
     def get_title(self):
-        return _('Change {subject_type} {subject}').format(
+        return _("Change {subject_type} {subject}").format(
             subject_type=self.subject_type.name_akuzativ,
             subject=self.object.name,
         )
 
     def get_message(self):
-        return _('The changes in {subject_type} {subject} have been saved.').format(
+        return _("The changes in {subject_type} {subject} have been saved.").format(
             subject_type=self.subject_type.name_genitiv,
             subject=self.object.name,
         )
@@ -163,9 +159,9 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
 
 class SubjectMixin:
     def dispatch(self, request, pk, **kwargs):
-        lookup_kwargs = {'subject_type': self.subject_type, 'id': int(pk)}
+        lookup_kwargs = {"subject_type": self.subject_type, "id": int(pk)}
         if not self.request.user.is_staff:
-            lookup_kwargs['public'] = True
+            lookup_kwargs["public"] = True
         self.subject = get_object_or_404(Subject, **lookup_kwargs)
         if not self.subject.registration_allowed:
             return redirect(self.subject)
@@ -174,10 +170,10 @@ class SubjectMixin:
 
 
 class SubjectRegistrationFormBaseView(CreateView):
-    back_url = reverse('leprikon:registration_list')
-    submit_label = _('Submit registration')
-    message = _('The registration has been saved. We will inform you about its further processing.')
-    template_name_suffix = '_registration_form'
+    back_url = reverse("leprikon:registration_list")
+    submit_label = _("Submit registration")
+    message = _("The registration has been saved. We will inform you about its further processing.")
+    template_name_suffix = "_registration_form"
     _form_classes = {
         SubjectType.COURSE: CourseRegistrationForm,
         SubjectType.EVENT: EventRegistrationForm,
@@ -185,7 +181,7 @@ class SubjectRegistrationFormBaseView(CreateView):
     }
 
     def get_title(self):
-        return _('Registration for {subject_type} {subject}').format(
+        return _("Registration for {subject_type} {subject}").format(
             subject_type=self.subject_type.name_akuzativ,
             subject=self.subject.name,
         )
@@ -195,8 +191,8 @@ class SubjectRegistrationFormBaseView(CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['subject'] = self.subject
-        kwargs['user'] = self.request.user
+        kwargs["subject"] = self.subject
+        kwargs["user"] = self.request.user
         return kwargs
 
 
@@ -206,9 +202,9 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegi
 
 class UserRegistrationMixin:
     _attrs = {
-        SubjectType.COURSE: 'courseregistration',
-        SubjectType.EVENT: 'eventregistration',
-        SubjectType.ORDERABLE: 'orderableregistration',
+        SubjectType.COURSE: "courseregistration",
+        SubjectType.EVENT: "eventregistration",
+        SubjectType.ORDERABLE: "orderableregistration",
     }
 
     def get_object(self):
@@ -222,26 +218,32 @@ class UserRegistrationMixin:
 
     def get_queryset(self):
         return SubjectRegistration.objects.annotate(
-            subject_type_type=F('subject__subject_type__subject_type'),
+            subject_type_type=F("subject__subject_type__subject_type"),
         )
 
     def get_template_names(self):
-        return [self.template_name] if self.template_name else [
-            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.slug,
-                                                     self.template_name_suffix),
-            'leprikon/{}_registration{}.html'.format(self.object.subject.subject_type.subject_type,
-                                                     self.template_name_suffix),
-            'leprikon/subject_registration{}.html'.format(self.template_name_suffix),
-        ]
+        return (
+            [self.template_name]
+            if self.template_name
+            else [
+                "leprikon/{}_registration{}.html".format(
+                    self.object.subject.subject_type.slug, self.template_name_suffix
+                ),
+                "leprikon/{}_registration{}.html".format(
+                    self.object.subject.subject_type.subject_type, self.template_name_suffix
+                ),
+                "leprikon/subject_registration{}.html".format(self.template_name_suffix),
+            ]
+        )
 
 
 class PDFMixin:
-    event = 'pdf'
+    event = "pdf"
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.event))
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.event))
         return obj.write_pdf(self.event, response)
 
 
@@ -250,12 +252,12 @@ class SubjectRegistrationPdfView(PDFMixin, UserRegistrationMixin, DetailView):
 
 
 class SubjectRegistrationPaymentRequestView(PDFMixin, UserRegistrationMixin, DetailView):
-    event = 'payment_request'
+    event = "payment_request"
 
 
 class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
-    template_name_suffix = '_cancel'
-    title = _('Registration cancellation request')
+    template_name_suffix = "_cancel"
+    title = _("Registration cancellation request")
 
     def get_queryset(self):
         return super().get_queryset().filter(canceled=None)
@@ -264,7 +266,7 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
         return _('Are you sure You want to cancel the registration "{}"?').format(self.object)
 
     def get_message(self):
-        return _('The cancellation request for {} has been saved.').format(self.object)
+        return _("The cancellation request for {} has been saved.").format(self.object)
 
     def confirmed(self):
         if self.object.approved:
@@ -279,17 +281,20 @@ class UserPaymentMixin:
     model = SubjectPayment
 
     def get_queryset(self):
-        return super(UserPaymentMixin, self).get_queryset().filter(
-            registration__user=self.request.user
-        ).order_by('-accounted')
+        return (
+            super(UserPaymentMixin, self)
+            .get_queryset()
+            .filter(registration__user=self.request.user)
+            .order_by("-accounted")
+        )
 
 
 class SubjectPaymentsListView(UserPaymentMixin, ListView):
-    template_name = 'leprikon/payments.html'
+    template_name = "leprikon/payments.html"
     paginate_by = 20
 
     def get_title(self):
-        return _('Payments')
+        return _("Payments")
 
 
 class SubjectPaymentPdfView(PDFMixin, UserPaymentMixin, DetailView):

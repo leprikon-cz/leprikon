@@ -5,10 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 class StartEndMixin(object):
     def validate(self):
         if self.start and self.end and self.start > self.end:
-            raise ValidationError({
-                'start': [_('Start must be before end')],
-                'end': [_('End must be later than start')],
-            })
+            raise ValidationError(
+                {
+                    "start": [_("Start must be before end")],
+                    "end": [_("End must be later than start")],
+                }
+            )
 
     def clean_fields(self, exclude=None):
         super(StartEndMixin, self).clean_fields(exclude)

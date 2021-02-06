@@ -9,7 +9,7 @@ from .form import FormMixin
 
 
 class MessageFilterForm(FormMixin, forms.Form):
-    q = forms.CharField(label=_('Search term'), required=False)
+    q = forms.CharField(label=_("Search term"), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(MessageFilterForm, self).__init__(*args, **kwargs)
@@ -19,45 +19,43 @@ class MessageFilterForm(FormMixin, forms.Form):
         if not self.is_valid():
             return self.qs
         qs = self.qs
-        for word in self.cleaned_data['q'].split():
-            qs = qs.filter(
-                Q(message__subject__icontains=word) |
-                Q(message__text__icontains=word)
-            )
+        for word in self.cleaned_data["q"].split():
+            qs = qs.filter(Q(message__subject__icontains=word) | Q(message__text__icontains=word))
         return qs.distinct()
 
 
 class MessageAdminForm(forms.ModelForm):
     recipients = forms.MultipleChoiceField(
         choices=lambda: [
-            (u.id, '{} ({})'.format(u.get_username(), u.get_full_name()))
-            for u in get_user_model().objects.all()
+            (u.id, "{} ({})".format(u.get_username(), u.get_full_name())) for u in get_user_model().objects.all()
         ],
         widget=widgets.FilteredSelectMultiple(
-            verbose_name=_('Recipients'),
+            verbose_name=_("Recipients"),
             is_stacked=False,
         ),
-        label=_('Recipients'),
+        label=_("Recipients"),
         required=False,
     )
 
     class Meta:
         model = Message
-        fields = ['sender', 'subject', 'text']
+        fields = ["sender", "subject", "text"]
 
     def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance', None)
+        instance = kwargs.get("instance", None)
         if instance:
-            kwargs['initial'] = kwargs.get('initial', {})
-            kwargs['initial']['recipients'] = list(set(
-                kwargs['initial'].get('recipients', []) +
-                [r[0] for r in instance.recipients.values_list('recipient_id')]
-            ))
+            kwargs["initial"] = kwargs.get("initial", {})
+            kwargs["initial"]["recipients"] = list(
+                set(
+                    kwargs["initial"].get("recipients", [])
+                    + [r[0] for r in instance.recipients.values_list("recipient_id")]
+                )
+            )
         super().__init__(*args, **kwargs)
 
     def _save_m2m(self):
         super(MessageAdminForm, self)._save_m2m()
-        recipients = set(map(int, self.cleaned_data['recipients']))
+        recipients = set(map(int, self.cleaned_data["recipients"]))
         for recipient in self.instance.all_recipients:
             if recipient.recipient_id not in recipients:
                 recipient.delete()

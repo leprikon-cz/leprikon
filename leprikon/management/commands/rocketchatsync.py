@@ -11,7 +11,7 @@ from leprikon.rocketchat import RocketChat
 
 
 class Command(BaseCommand):
-    help = 'Sync all users, groups and settings with RocketChat'
+    help = "Sync all users, groups and settings with RocketChat"
 
     def handle(self, *args, **options):
         rocket_chat_ready = False
@@ -20,9 +20,7 @@ class Command(BaseCommand):
                 rocket_chat_ready = get(settings.ROCKETCHAT_API_URL).ok
             except ConnectionError as e:
                 self.stdout.write(self.style.ERROR(repr(e)))
-                self.stdout.write(
-                    f'Waiting for RocketChat at {settings.ROCKETCHAT_API_URL}'
-                )
+                self.stdout.write(f"Waiting for RocketChat at {settings.ROCKETCHAT_API_URL}")
                 time.sleep(5)
         activate(settings.LANGUAGE_CODE)
         rc = RocketChat()
@@ -32,11 +30,11 @@ class Command(BaseCommand):
         self.call(rc.sync_subjects)
 
     def call(self, func):
-        self.stdout.write(f'calling RocketChat.{func.__name__}')
+        self.stdout.write(f"calling RocketChat.{func.__name__}")
         try:
             result = func()
         except Exception:
-            self.stdout.write(self.style.ERROR('failed'))
+            self.stdout.write(self.style.ERROR("failed"))
             traceback.print_exc()
         else:
-            self.stdout.write(self.style.SUCCESS(f'OK ({repr(result)})'))
+            self.stdout.write(self.style.SUCCESS(f"OK ({repr(result)})"))

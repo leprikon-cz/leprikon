@@ -8,6 +8,6 @@ def l_url(pattern, name):
 
 
 urlpatterns = [
-    l_url(r'^participants/(?P<subject_id>[0-9]+)/$', 'participants'),
-    l_url(r'^rocketchat/$', 'rocketchat'),
+    l_url(r"^participants/(?P<subject_id>[0-9]+)/$", "participants"),
+    l_url(r"^rocketchat/$", "rocketchat"),
 ]

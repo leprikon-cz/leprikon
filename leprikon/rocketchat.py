@@ -24,17 +24,17 @@ from .models.subjects import CHAT_GROUP_BROADCAST, Subject, SubjectRegistration
 
 User = get_user_model()
 
-http_re = re.compile('^http')
+http_re = re.compile("^http")
 
-Leprikon = {'_id': 'leprikon', 'username': settings.LEPRIKON_CHAT_USERNAME}
+Leprikon = {"_id": "leprikon", "username": settings.LEPRIKON_CHAT_USERNAME}
 
 
 def get_rc_url():
-    return LeprikonSite.objects.get_current().url + '/_chat'
+    return LeprikonSite.objects.get_current().url + "/_chat"
 
 
 def get_rc_ws_url():
-    return http_re.sub('ws', get_rc_url()) + '/websocket'
+    return http_re.sub("ws", get_rc_url()) + "/websocket"
 
 
 class QuerySet:
@@ -57,10 +57,8 @@ class QuerySet:
     def _list(self):
         return [
             self._instance(doc)
-            for doc in self._collection.find(
-                self._query,
-            ).sort(
-                'ts',
+            for doc in self._collection.find(self._query,).sort(
+                "ts",
                 DESCENDING,
             )
         ]
@@ -89,29 +87,29 @@ class QuerySet:
 def get_rc_config():
     ls = LeprikonSite.objects.get_current()
     return (
-        ('Accounts_iframe_enabled', True),
-        ('Accounts_iframe_url', reverse('leprikon:user_login')),
-        ('Accounts_Iframe_api_method', 'GET'),
-        ('Accounts_Iframe_api_url', reverse('leprikon:api:rocketchat')),
-        ('From_Email', settings.SERVER_EMAIL_PLAIN),
-        ('Organization_Name', ls.name),
-        ('Organization_Email', settings.SERVER_EMAIL_PLAIN),
-        ('Organization_Type', 'nonprofit'),
-        ('Country', 'czechRepublic'),
-        ('Industry', 'education'),
-        ('Language', 9),  # TODO: configurable language
-        ('Layout_Sidenav_Footer', ''),
-        ('Livechat_enabled', True),
-        ('Server_Type', 'privateTeam'),
-        ('Register_Server', False),
-        ('SMTP_Host', settings.EMAIL_HOST),
-        ('SMTP_Password', settings.EMAIL_HOST_PASSWORD),
-        ('SMTP_Port', settings.EMAIL_PORT),
-        ('SMTP_Username', settings.EMAIL_HOST_USER),
-        ('Show_Setup_Wizard', 'completed'),
-        ('Site_Name', ls.name),
-        ('Site_Url', get_rc_url()),
-        ('Website', ls.url + '/'),
+        ("Accounts_iframe_enabled", True),
+        ("Accounts_iframe_url", reverse("leprikon:user_login")),
+        ("Accounts_Iframe_api_method", "GET"),
+        ("Accounts_Iframe_api_url", reverse("leprikon:api:rocketchat")),
+        ("From_Email", settings.SERVER_EMAIL_PLAIN),
+        ("Organization_Name", ls.name),
+        ("Organization_Email", settings.SERVER_EMAIL_PLAIN),
+        ("Organization_Type", "nonprofit"),
+        ("Country", "czechRepublic"),
+        ("Industry", "education"),
+        ("Language", 9),  # TODO: configurable language
+        ("Layout_Sidenav_Footer", ""),
+        ("Livechat_enabled", True),
+        ("Server_Type", "privateTeam"),
+        ("Register_Server", False),
+        ("SMTP_Host", settings.EMAIL_HOST),
+        ("SMTP_Password", settings.EMAIL_HOST_PASSWORD),
+        ("SMTP_Port", settings.EMAIL_PORT),
+        ("SMTP_Username", settings.EMAIL_HOST_USER),
+        ("Show_Setup_Wizard", "completed"),
+        ("Site_Name", ls.name),
+        ("Site_Url", get_rc_url()),
+        ("Website", ls.url + "/"),
     )
 
 
@@ -119,116 +117,126 @@ def get_rc_default_home(ls=None):
     if ls is None:
         ls = LeprikonSite.objects.get_current()
     with translation.override(settings.LANGUAGE_CODE):
-        return get_template('rocketchat/home.html').render({
-            'leprikon_site': ls,
-        })
+        return get_template("rocketchat/home.html").render(
+            {
+                "leprikon_site": ls,
+            }
+        )
 
 
 rc_role_permissions = (
-    ('user', (
-        'create-c',
-        'create-d',
-        'create-p',
-        'create-personal-access-tokens',
-        'delete-own-message',
-        'leave-c',
-        'leave-p',
-        'mention-all',
-        'mention-here',
-        'view-c-room',
-        'view-d-room',
-        'view-history',
-        'view-p-room',
-        'preview-c-room',
-        'view-outside-room',
-        'start-discussion',
-        'start-discussion-other-user',
-    )),
-    ('guest', (
-        'create-d',
-        'create-personal-access-tokens',
-        'delete-own-message',
-        'view-d-room',
-        'view-history',
-        'view-joined-room',
-        'view-p-room',
-        'start-discussion',
-    )),
+    (
+        "user",
+        (
+            "create-c",
+            "create-d",
+            "create-p",
+            "create-personal-access-tokens",
+            "delete-own-message",
+            "leave-c",
+            "leave-p",
+            "mention-all",
+            "mention-here",
+            "view-c-room",
+            "view-d-room",
+            "view-history",
+            "view-p-room",
+            "preview-c-room",
+            "view-outside-room",
+            "start-discussion",
+            "start-discussion-other-user",
+        ),
+    ),
+    (
+        "guest",
+        (
+            "create-d",
+            "create-personal-access-tokens",
+            "delete-own-message",
+            "view-d-room",
+            "view-history",
+            "view-joined-room",
+            "view-p-room",
+            "start-discussion",
+        ),
+    ),
 )
 
 
 def get_rc_id(obj):
     if isinstance(obj, Subject):
-        return f'subject-{obj.id}'
-    return f'{obj.__class__.__name__.lower()}-{obj.id}'
+        return f"subject-{obj.id}"
+    return f"{obj.__class__.__name__.lower()}-{obj.id}"
 
 
 def get_rc_u(user):
-    return {'_id': get_rc_id(user), 'username': user.username}
+    return {"_id": get_rc_id(user), "username": user.username}
 
 
 def get_rc_leprikon_data():
     return {
-        '_id': 'leprikon',
-        'name': settings.LEPRIKON_CHAT_NAME,
-        'username': settings.LEPRIKON_CHAT_USERNAME,
-        'emails': [{
-            'address': settings.SERVER_EMAIL_PLAIN,
-            'verified': True,
-        }],
-        'active': True,
-        'type': 'user',
-        'roles': ['admin'],
-        '__insert': {
-            'createdAt': datetime.now(),
+        "_id": "leprikon",
+        "name": settings.LEPRIKON_CHAT_NAME,
+        "username": settings.LEPRIKON_CHAT_USERNAME,
+        "emails": [
+            {
+                "address": settings.SERVER_EMAIL_PLAIN,
+                "verified": True,
+            }
+        ],
+        "active": True,
+        "type": "user",
+        "roles": ["admin"],
+        "__insert": {
+            "createdAt": datetime.now(),
         },
     }
 
 
 def get_rc_user_data(user):
     return {
-        '_id': get_rc_id(user),
-        'createdAt': user.date_joined,
-        'name': user.get_full_name(),
-        'username': user.username,
-        'emails': [{'address': user.email, 'verified': True}],
-        'active': user.is_active,
-        'type': 'user',
-        'roles': ['admin', 'livechat-agent'] if user.is_superuser else (
-            ['user', 'livechat-agent'] if user.is_staff else ['guest']
-        ),
-        'lastLogin': user.last_login,
-        '_updatedAt': datetime.now(),
+        "_id": get_rc_id(user),
+        "createdAt": user.date_joined,
+        "name": user.get_full_name(),
+        "username": user.username,
+        "emails": [{"address": user.email, "verified": True}],
+        "active": user.is_active,
+        "type": "user",
+        "roles": ["admin", "livechat-agent"]
+        if user.is_superuser
+        else (["user", "livechat-agent"] if user.is_staff else ["guest"]),
+        "lastLogin": user.last_login,
+        "_updatedAt": datetime.now(),
     }
 
 
 def get_value(document, key):
-    parts = key.split('.', 1)
+    parts = key.split(".", 1)
     value = document[parts[0]]
     return get_value(value, parts[1]) if len(parts) == 2 else value
 
 
 def get_rc_subject_room_data(subject):
-    fname = f'{subject} ({subject.id})'
+    fname = f"{subject} ({subject.id})"
     now = datetime.now()
     broadcast = (subject.chat_group_type or subject.subject_type.chat_group_type) == CHAT_GROUP_BROADCAST
     return {
-        '_id': get_rc_id(subject),
-        'name': slugify(fname.replace('/', '-')),
-        'fname': fname,
-        't': 'p',
-        'ro': broadcast,
-        'broadcast': broadcast,
-        'sysMes': False,
-        'default': False,
-        'u': Leprikon,
-        '_updatedAt': now,
-        'customFields': {'leprikon': 'subject'},
-        '__insert': {
-            'msgs': 0,
-            'usersCount': 0,
-            'encrypted': False,
-            'ts': now,
+        "_id": get_rc_id(subject),
+        "name": slugify(fname.replace("/", "-")),
+        "fname": fname,
+        "t": "p",
+        "ro": broadcast,
+        "broadcast": broadcast,
+        "sysMes": False,
+        "default": False,
+        "u": Leprikon,
+        "_updatedAt": now,
+        "customFields": {"leprikon": "subject"},
+        "__insert": {
+            "msgs": 0,
+            "usersCount": 0,
+            "encrypted": False,
+            "ts": now,
         },
     }
 
@@ -236,49 +244,52 @@ def get_rc_subject_room_data(subject):
 def get_rc_subscription_data(room_data, user, alert, groupMentions, owner_ids=None):
     now = datetime.now()
     subscription_data = {
-        '_id': f'{room_data["_id"]}-{get_rc_id(user)}',
-        'rid': room_data['_id'],
-        'name': room_data['name'],
-        'fname': room_data['fname'],
-        't': room_data['t'],
-        'u': get_rc_u(user),
-        'customFields': {'leprikon': True},
-        '_updatedAt': now,
-        '__insert': {
-            'alert': alert,
-            'open': True,
-            'ts': now,
-            'ls': now,
-            'unread': 0,
-            'userMentions': 0,
-            'groupMentions': groupMentions,
+        "_id": f'{room_data["_id"]}-{get_rc_id(user)}',
+        "rid": room_data["_id"],
+        "name": room_data["name"],
+        "fname": room_data["fname"],
+        "t": room_data["t"],
+        "u": get_rc_u(user),
+        "customFields": {"leprikon": True},
+        "_updatedAt": now,
+        "__insert": {
+            "alert": alert,
+            "open": True,
+            "ts": now,
+            "ls": now,
+            "unread": 0,
+            "userMentions": 0,
+            "groupMentions": groupMentions,
         },
     }
     if owner_ids:
-        subscription_data['roles'] = ['owner'] if user.id in owner_ids else []
+        subscription_data["roles"] = ["owner"] if user.id in owner_ids else []
     return subscription_data
 
 
 def get_rc_subject_subscriptions_data(room_data, subject):
-    leader_users = {
-        lu.user.id: lu.user
-        for lu in subject.leaders.select_related('user')
-    }
+    leader_users = {lu.user.id: lu.user for lu in subject.leaders.select_related("user")}
     return chain(
         get_rc_subscription_data(room_data, user, False, 0, leader_users)
-        for user in set(chain(
-            leader_users.values(),
-            (r.user for r in subject.registrations.select_related('user')),
-        ))
+        for user in set(
+            chain(
+                leader_users.values(),
+                (r.user for r in subject.registrations.select_related("user")),
+            )
+        )
     )
 
 
 def rc_logout(auth_token, user_id):
-    return _RocketChat(
-        auth_token=auth_token,
-        user_id=user_id,
-        server_url=settings.ROCKETCHAT_API_URL,
-    ).logout().json()
+    return (
+        _RocketChat(
+            auth_token=auth_token,
+            user_id=user_id,
+            server_url=settings.ROCKETCHAT_API_URL,
+        )
+        .logout()
+        .json()
+    )
 
 
 class RocketChat:
@@ -310,21 +321,25 @@ class RocketChat:
         return self._mongo_client.get_default_database()
 
     def _get_query(self, document):
-        on_insert = document.pop('__insert', False)
-        query = {'$set': document}
+        on_insert = document.pop("__insert", False)
+        query = {"$set": document}
         if on_insert:
-            query['$setOnInsert'] = on_insert
+            query["$setOnInsert"] = on_insert
         return query
 
-    def _sync_one(self, collection, document, keys=('_id',)):
-        return getattr(self._mongo, collection).update_one(
-            {key: get_value(document, key) for key in keys},
-            self._get_query(document),
-            session=self._mongo_session,
-            upsert=True,
-        ).raw_result
+    def _sync_one(self, collection, document, keys=("_id",)):
+        return (
+            getattr(self._mongo, collection)
+            .update_one(
+                {key: get_value(document, key) for key in keys},
+                self._get_query(document),
+                session=self._mongo_session,
+                upsert=True,
+            )
+            .raw_result
+        )
 
-    def _sync_many(self, collection, documents, keys=('_id',)):
+    def _sync_many(self, collection, documents, keys=("_id",)):
         operations = [
             UpdateOne(
                 {key: get_value(document, key) for key in keys},
@@ -334,33 +349,38 @@ class RocketChat:
             for document in documents
         ]
         if operations:
-            return getattr(self._mongo, collection).bulk_write(
-                operations,
-                session=self._mongo_session,
-            ).bulk_api_result
+            return (
+                getattr(self._mongo, collection)
+                .bulk_write(
+                    operations,
+                    session=self._mongo_session,
+                )
+                .bulk_api_result
+            )
 
     # RC proxy
     @cached_property
     def rc(self):
         self.sync_leprikon_user()
         return _RocketChat(
-            user_id='leprikon',
-            auth_token=self.create_login_token('leprikon'),
+            user_id="leprikon",
+            auth_token=self.create_login_token("leprikon"),
             server_url=settings.ROCKETCHAT_API_URL,
         )
 
     # Leprikon RC API
     def configure(self):
-        return self._mongo.rocketchat_settings.bulk_write([
-            UpdateOne({'_id': key}, {'$set': {'value': value, 'blocked': True}})
-            for key, value in get_rc_config()
-        ] + [
-            # One time settings
-            UpdateOne(
-                {'_id': 'Layout_Home_Body', 'value': {'$regex': 'Welcome to Rocket.Chat'}},
-                {'$set': {'value': get_rc_default_home()}},
-            ),
-        ], session=self._mongo_session).bulk_api_result
+        return self._mongo.rocketchat_settings.bulk_write(
+            [UpdateOne({"_id": key}, {"$set": {"value": value, "blocked": True}}) for key, value in get_rc_config()]
+            + [
+                # One time settings
+                UpdateOne(
+                    {"_id": "Layout_Home_Body", "value": {"$regex": "Welcome to Rocket.Chat"}},
+                    {"$set": {"value": get_rc_default_home()}},
+                ),
+            ],
+            session=self._mongo_session,
+        ).bulk_api_result
 
     def create_login_token(self, user_id):
         login_token = secrets.token_hex()
@@ -368,83 +388,82 @@ class RocketChat:
         h.update(login_token.encode())
         hashed_token = base64.encodebytes(h.digest()).decode().strip()
         self._mongo.users.update_one(
-            {'_id': user_id},
-            {'$push': {
-                'services.resume.loginTokens': {
-                    'when': datetime.now(),
-                    'hashedToken': hashed_token,
+            {"_id": user_id},
+            {
+                "$push": {
+                    "services.resume.loginTokens": {
+                        "when": datetime.now(),
+                        "hashedToken": hashed_token,
+                    }
                 }
-            }},
+            },
             session=self._mongo_session,
         )
         return login_token
 
     def sync_leprikon_user(self):
-        return self._sync_one('users', get_rc_leprikon_data())
+        return self._sync_one("users", get_rc_leprikon_data())
 
     def sync_user(self, user):
-        return self._sync_one('users', get_rc_user_data(user))
+        return self._sync_one("users", get_rc_user_data(user))
 
     def sync_users(self):
-        return self._sync_many('users', map(get_rc_user_data, User.objects.iterator()))
+        return self._sync_many("users", map(get_rc_user_data, User.objects.iterator()))
 
     def sync_roles(self):
-        return self._mongo.rocketchat_permissions.bulk_write(list(chain.from_iterable(
-            (
-                # add missing permissions
-                UpdateMany(
-                    {
-                        '_id': {'$in': permissions},
-                        'roles': {'$ne': role},
-                    },
-                    {'$push': {'roles': role}}
-                ),
-                # remove other permissions
-                UpdateMany(
-                    {
-                        '_id': {'$nin': permissions},
-                        'roles': role,
-                    },
-                    {'$pull': {'roles': role}}
-                ),
-            ) for role, permissions in rc_role_permissions
-        )), session=self._mongo_session).bulk_api_result
+        return self._mongo.rocketchat_permissions.bulk_write(
+            list(
+                chain.from_iterable(
+                    (
+                        # add missing permissions
+                        UpdateMany(
+                            {
+                                "_id": {"$in": permissions},
+                                "roles": {"$ne": role},
+                            },
+                            {"$push": {"roles": role}},
+                        ),
+                        # remove other permissions
+                        UpdateMany(
+                            {
+                                "_id": {"$nin": permissions},
+                                "roles": role,
+                            },
+                            {"$pull": {"roles": role}},
+                        ),
+                    )
+                    for role, permissions in rc_role_permissions
+                )
+            ),
+            session=self._mongo_session,
+        ).bulk_api_result
 
     def sync_subject(self, subject):
         room_data = get_rc_subject_room_data(subject)
         with self:
             return (
-                self._sync_one('rocketchat_room', room_data),
-                self._sync_many(
-                    'rocketchat_subscription',
-                    get_rc_subject_subscriptions_data(room_data, subject)
-                ),
+                self._sync_one("rocketchat_room", room_data),
+                self._sync_many("rocketchat_subscription", get_rc_subject_subscriptions_data(room_data, subject)),
             )
 
     def sync_subjects(self):
         room_data_subjects = [
             (get_rc_subject_room_data(subject), subject)
-            for subject in Subject.objects.select_related('subject_type').iterator()
+            for subject in Subject.objects.select_related("subject_type").iterator()
         ]
         with self:
             return (
+                self._sync_many("rocketchat_room", (rds[0] for rds in room_data_subjects)),
                 self._sync_many(
-                    'rocketchat_room',
-                    (rds[0] for rds in room_data_subjects)
-                ),
-                self._sync_many(
-                    'rocketchat_subscription',
-                    chain.from_iterable(
-                        get_rc_subject_subscriptions_data(*rds)
-                        for rds in room_data_subjects
-                    ),
+                    "rocketchat_subscription",
+                    chain.from_iterable(get_rc_subject_subscriptions_data(*rds) for rds in room_data_subjects),
                 ),
             )
 
     def sync_subscription(self, registration):
         room_data = get_rc_subject_room_data(registration.subject)
         return self._sync_one(
-            'rocketchat_subscription',
+            "rocketchat_subscription",
             get_rc_subscription_data(room_data, registration.user, False, 0),
         )
 
@@ -454,28 +473,30 @@ class RocketChat:
         target_u = get_rc_u(target)
         with self:
             # merge rocketchat_livechat_department_agents
-            for department_agent in self._mongo.rocketchat_livechat_department_agents.find({
-                'agentId': source_id
-            }, session=self._mongo_session):
-                self._mongo.rocketchat_livechat_department_agents.count_documents({
-                    'agentId': target_id,
-                    'departmentId': department_agent['departmentId'],
-                }) or self._sync_one(
-                    'rocketchat_livechat_department_agents',
+            for department_agent in self._mongo.rocketchat_livechat_department_agents.find(
+                {"agentId": source_id}, session=self._mongo_session
+            ):
+                self._mongo.rocketchat_livechat_department_agents.count_documents(
                     {
-                        '_id': department_agent['_id'],
-                        'agentId': target_id,
-                        'username': target.username,
+                        "agentId": target_id,
+                        "departmentId": department_agent["departmentId"],
+                    }
+                ) or self._sync_one(
+                    "rocketchat_livechat_department_agents",
+                    {
+                        "_id": department_agent["_id"],
+                        "agentId": target_id,
+                        "username": target.username,
                     },
                 )
             # merge rocketchat_subscription
-            for subscription in self._mongo.rocketchat_subscription.find({
-                'u._id': source_id
-            }, session=self._mongo_session):
-                subscription['_id'] = f'''{subscription['rid']}-{target_u['_id']}'''
-                subscription['u'] = target_u
+            for subscription in self._mongo.rocketchat_subscription.find(
+                {"u._id": source_id}, session=self._mongo_session
+            ):
+                subscription["_id"] = f"""{subscription['rid']}-{target_u['_id']}"""
+                subscription["u"] = target_u
                 self._sync_one(
-                    'rocketchat_subscription',
+                    "rocketchat_subscription",
                     subscription,
                 )
             # merge transfer messages and rooms
@@ -484,87 +505,99 @@ class RocketChat:
                 self._mongo.rocketchat_room,
             ):
                 collection.update_many(
-                    {'u._id': source_id},
-                    {'$set': {'u._id': target_id}},
+                    {"u._id": source_id},
+                    {"$set": {"u._id": target_id}},
                     session=self._mongo_session,
                 )
 
     def get_leprikon_private_rooms_queryset(self):
-        return QuerySet(Message, self._mongo.rocketchat_room, {
-            't': 'p',
-            'customFields.leprikon': {'$in': ['subject', 'broadcast']},
-        })
+        return QuerySet(
+            Message,
+            self._mongo.rocketchat_room,
+            {
+                "t": "p",
+                "customFields.leprikon": {"$in": ["subject", "broadcast"]},
+            },
+        )
 
     def get_broadcast_room_choices(self):
         return (
-            (r['_id'], r['fname'])
+            (r["_id"], r["fname"])
             for r in self._mongo.rocketchat_room.find(
                 {
-                    't': 'p',
-                    'broadcast': True,
-                    'customFields.leprikon': 'broadcast',
+                    "t": "p",
+                    "broadcast": True,
+                    "customFields.leprikon": "broadcast",
                 },
-                ('_id', 'fname'),
+                ("_id", "fname"),
             )
         )
 
     def subscribe_users_to_broadcast_room(self, rid, users):
         with self:
-            room_data = self._mongo.rocketchat_room.find_one({
-                '_id': rid,
-                't': 'p',
-                'broadcast': True,
-                'customFields.leprikon': 'broadcast',
-            }, session=self._mongo_session)
+            room_data = self._mongo.rocketchat_room.find_one(
+                {
+                    "_id": rid,
+                    "t": "p",
+                    "broadcast": True,
+                    "customFields.leprikon": "broadcast",
+                },
+                session=self._mongo_session,
+            )
             self._sync_many(
-                'rocketchat_subscription',
+                "rocketchat_subscription",
                 (get_rc_subscription_data(room_data, user, True, 1) for user in users),
-                keys=('rid', 'u._id'),
+                keys=("rid", "u._id"),
             )
             self._sync_one(
-                'rocketchat_room',
+                "rocketchat_room",
                 {
-                    '_id': rid,
-                    'usersCount': self._mongo.rocketchat_subscription.count_documents({'rid': rid}),
+                    "_id": rid,
+                    "usersCount": self._mongo.rocketchat_subscription.count_documents({"rid": rid}),
                 },
             )
 
     def create_broadcast_room(self, author, subject, text, recipients):
         with self:
-            name = slugify(subject.replace('/', '-'))
+            name = slugify(subject.replace("/", "-"))
             now = datetime.now()
             room_data = {
-                '_id': uuid.uuid4().hex[:10],
-                'name': name,
-                'fname': subject,
-                't': 'p',
-                'ro': True,
-                'sysMes': False,
-                'default': False,
-                'u': get_rc_u(author),
-                '_updatedAt': now,
-                'msgs': 1,
-                'usersCount': 0,
-                'customFields': {'leprikon': 'broadcast'},
-                'broadcast': True,
-                'encrypted': False,
-                'ts': now,
+                "_id": uuid.uuid4().hex[:10],
+                "name": name,
+                "fname": subject,
+                "t": "p",
+                "ro": True,
+                "sysMes": False,
+                "default": False,
+                "u": get_rc_u(author),
+                "_updatedAt": now,
+                "msgs": 1,
+                "usersCount": 0,
+                "customFields": {"leprikon": "broadcast"},
+                "broadcast": True,
+                "encrypted": False,
+                "ts": now,
             }
             self._mongo.rocketchat_room.insert_one(room_data, session=self._mongo_session)
-            self._mongo.rocketchat_message.insert_one({
-                '_id': room_data['_id'],
-                'rid': room_data['_id'],
-                'msg': text,
-                'ts': room_data['ts'],
-                'u': room_data['u'],
-                'mentions': [{
-                    '_id': 'all',
-                    'username': 'all',
-                }],
-                'channels': [],
-                '_updatedAt': now,
-            }, session=self._mongo_session)
-            self.subscribe_users_to_broadcast_room(room_data['_id'], recipients)
+            self._mongo.rocketchat_message.insert_one(
+                {
+                    "_id": room_data["_id"],
+                    "rid": room_data["_id"],
+                    "msg": text,
+                    "ts": room_data["ts"],
+                    "u": room_data["u"],
+                    "mentions": [
+                        {
+                            "_id": "all",
+                            "username": "all",
+                        }
+                    ],
+                    "channels": [],
+                    "_updatedAt": now,
+                },
+                session=self._mongo_session,
+            )
+            self.subscribe_users_to_broadcast_room(room_data["_id"], recipients)
 
 
 @receiver(post_save)

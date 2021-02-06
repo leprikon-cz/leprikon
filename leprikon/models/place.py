@@ -3,17 +3,17 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class Place(models.Model):
-    name = models.CharField(_('name'), max_length=50)
-    place = models.CharField(_('place'), max_length=50, blank=True, default='')
+    name = models.CharField(_("name"), max_length=50)
+    place = models.CharField(_("place"), max_length=50, blank=True, default="")
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('place',)
-        verbose_name = _('place')
-        verbose_name_plural = _('places')
+        app_label = "leprikon"
+        ordering = ("place",)
+        verbose_name = _("place")
+        verbose_name_plural = _("places")
 
     def __str__(self):
         if self.place:
-            return '{name}, {place}'.format(name=self.name, place=self.place)
+            return "{name}, {place}".format(name=self.name, place=self.place)
         else:
-            return '{name}'.format(name=self.name)
+            return "{name}".format(name=self.name)

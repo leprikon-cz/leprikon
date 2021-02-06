@@ -5,8 +5,8 @@ from ..models.leprikonsite import LeprikonSite
 
 @admin.register(LeprikonSite)
 class LeprikonSiteAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    filter_horizontal = ('registration_agreements',)
+    list_display = ("name",)
+    filter_horizontal = ("registration_agreements",)
 
     def has_add_permission(self, request):
         return False
@@ -16,6 +16,6 @@ class LeprikonSiteAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super(LeprikonSiteAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del(actions['delete_selected'])
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
         return actions

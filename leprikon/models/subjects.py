@@ -34,17 +34,12 @@ from multiselectfield import MultiSelectField
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
-from ..utils import (
-    FEMALE, MALE, comma_separated, currency, lazy_paragraph as paragraph,
-    localeconv, spayd,
-)
+from ..utils import FEMALE, MALE, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
 from .citizenship import Citizenship
 from .department import Department
-from .fields import (
-    BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField,
-)
+from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
 from .place import Place
@@ -54,141 +49,174 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
-from .utils import (
-    generate_variable_symbol, lazy_help_text_with_html_default, shorten,
-)
+from .utils import generate_variable_symbol, lazy_help_text_with_html_default, shorten
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_TEXTS = {
-    'text_registration_received': paragraph(_(
-        'Hello,\n'
-        'thank You for submitting the registration.\n'
-        'We will inform you about its further processing.'
-    )),
-
-    'text_registration_approved': paragraph(_(
-        'Hello,\n'
-        'we are pleased to inform You, that Your registration was approved.\n'
-        'We are looking forward to see You.'
-    )),
-
-    'text_registration_refused': paragraph(_(
-        'Hello,\n'
-        'we are sorry to inform You, that Your registration was refused.'
-    )),
-
-    'text_registration_payment_request': paragraph(_(
-        'Hello,\n'
-        'we\'d like to ask You to pay for Your registration.\n'
-        'If You have already made the payment recently, please ignore this message.'
-    )),
-
-    'text_registration_canceled': paragraph(_(
-        'Hello,\n'
-        'Your registration was canceled.'
-    )),
-
-    'text_discount_granted': paragraph(_(
-        'Hello,\n'
-        'we have just grated a discount for Your registration.'
-    )),
-
-    'text_payment_received': paragraph(_(
-        'Hello,\n'
-        'we have just received Your payment. Thank You.\n'
-        'Please see the recipe attached.'
-    )),
+    "text_registration_received": paragraph(
+        _("Hello,\n" "thank You for submitting the registration.\n" "We will inform you about its further processing.")
+    ),
+    "text_registration_approved": paragraph(
+        _(
+            "Hello,\n"
+            "we are pleased to inform You, that Your registration was approved.\n"
+            "We are looking forward to see You."
+        )
+    ),
+    "text_registration_refused": paragraph(
+        _("Hello,\n" "we are sorry to inform You, that Your registration was refused.")
+    ),
+    "text_registration_payment_request": paragraph(
+        _(
+            "Hello,\n"
+            "we'd like to ask You to pay for Your registration.\n"
+            "If You have already made the payment recently, please ignore this message."
+        )
+    ),
+    "text_registration_canceled": paragraph(_("Hello,\n" "Your registration was canceled.")),
+    "text_discount_granted": paragraph(_("Hello,\n" "we have just grated a discount for Your registration.")),
+    "text_payment_received": paragraph(
+        _("Hello,\n" "we have just received Your payment. Thank You.\n" "Please see the recipe attached.")
+    ),
 }
 
-CHAT_GROUP_BROADCAST = 'B'
-CHAT_GROUP_CHAT = 'C'
-CHAT_GROUP_TYPE_LABELS = OrderedDict([
-    (CHAT_GROUP_BROADCAST, _('broadcast group')),
-    (CHAT_GROUP_CHAT, _('chat group')),
-])
+CHAT_GROUP_BROADCAST = "B"
+CHAT_GROUP_CHAT = "C"
+CHAT_GROUP_TYPE_LABELS = OrderedDict(
+    [
+        (CHAT_GROUP_BROADCAST, _("broadcast group")),
+        (CHAT_GROUP_CHAT, _("chat group")),
+    ]
+)
 
 CHAT_GROUP_TYPE_HELP_TEXT = _(
-    'Only the leader can write to broadcast group. Users may reply to the sender with direct messages.\n'
-    'Chat group allows all members to chat with each other.'
+    "Only the leader can write to broadcast group. Users may reply to the sender with direct messages.\n"
+    "Chat group allows all members to chat with each other."
 )
 
 
 class SubjectType(models.Model):
-    COURSE = 'course'
-    EVENT = 'event'
-    ORDERABLE = 'orderable'
-    subject_type_labels = OrderedDict([
-        (COURSE, _('course')),
-        (EVENT, _('event')),
-        (ORDERABLE, _('orderable event')),
-    ])
-    subject_type_type_labels = OrderedDict([
-        (COURSE, _('course type')),
-        (EVENT, _('event type')),
-        (ORDERABLE, _('orderable event type')),
-    ])
-    subject_type = models.CharField(_('subjects'), max_length=10, choices=subject_type_labels.items())
-    name = models.CharField(_('name (singular)'), max_length=150)
-    name_genitiv = models.CharField(_('name (genitiv)'), max_length=150, blank=True)
-    name_akuzativ = models.CharField(_('name (akuzativ)'), max_length=150, blank=True)
-    plural = models.CharField(_('name (plural)'), max_length=150)
+    COURSE = "course"
+    EVENT = "event"
+    ORDERABLE = "orderable"
+    subject_type_labels = OrderedDict(
+        [
+            (COURSE, _("course")),
+            (EVENT, _("event")),
+            (ORDERABLE, _("orderable event")),
+        ]
+    )
+    subject_type_type_labels = OrderedDict(
+        [
+            (COURSE, _("course type")),
+            (EVENT, _("event type")),
+            (ORDERABLE, _("orderable event type")),
+        ]
+    )
+    subject_type = models.CharField(_("subjects"), max_length=10, choices=subject_type_labels.items())
+    name = models.CharField(_("name (singular)"), max_length=150)
+    name_genitiv = models.CharField(_("name (genitiv)"), max_length=150, blank=True)
+    name_akuzativ = models.CharField(_("name (akuzativ)"), max_length=150, blank=True)
+    plural = models.CharField(_("name (plural)"), max_length=150)
     slug = models.SlugField()
-    order = models.IntegerField(_('order'), blank=True, default=0)
+    order = models.IntegerField(_("order"), blank=True, default=0)
     questions = models.ManyToManyField(
-        Question, blank=True, related_name='+', verbose_name=_('additional questions'),
-        help_text=_('Add additional questions to be asked in the registration form.'),
+        Question,
+        blank=True,
+        related_name="+",
+        verbose_name=_("additional questions"),
+        help_text=_("Add additional questions to be asked in the registration form."),
     )
     registration_agreements = models.ManyToManyField(
-        Agreement, blank=True, related_name='+', verbose_name=_('additional legal agreements'),
-        help_text=_('Add additional legal agreements specific to this subject type.'),
+        Agreement,
+        blank=True,
+        related_name="+",
+        verbose_name=_("additional legal agreements"),
+        help_text=_("Add additional legal agreements specific to this subject type."),
     )
-    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        related_name='+', verbose_name=_('registration print setup'))
-    pr_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                       related_name='+', verbose_name=_('payment request print setup'))
-    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                         related_name='+', verbose_name=_('payment print setup'))
-    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
-                                     related_name='+', verbose_name=_('organization'))
+    reg_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("registration print setup"),
+    )
+    pr_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("payment request print setup"),
+    )
+    bill_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("payment print setup"),
+    )
+    organization = models.ForeignKey(
+        Organization, blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("organization")
+    )
     chat_group_type = models.CharField(
-        _('default chat group type'), max_length=1, choices=CHAT_GROUP_TYPE_LABELS.items(),
-        default=CHAT_GROUP_BROADCAST, help_text=CHAT_GROUP_TYPE_HELP_TEXT,
+        _("default chat group type"),
+        max_length=1,
+        choices=CHAT_GROUP_TYPE_LABELS.items(),
+        default=CHAT_GROUP_BROADCAST,
+        help_text=CHAT_GROUP_TYPE_HELP_TEXT,
     )
     text_registration_received = HTMLField(
-        _('text: registration received'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_registration_received']),
+        _("text: registration received"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_received"]),
     )
     text_registration_approved = HTMLField(
-        _('text: registration approved'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_registration_approved']),
+        _("text: registration approved"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_approved"]),
     )
     text_registration_refused = HTMLField(
-        _('text: registration refused'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_registration_refused']),
+        _("text: registration refused"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_refused"]),
     )
     text_registration_payment_request = HTMLField(
-        _('text: registration payment request'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_registration_payment_request']),
+        _("text: registration payment request"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_payment_request"]),
     )
     text_registration_canceled = HTMLField(
-        _('text: registration canceled'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_registration_canceled']),
+        _("text: registration canceled"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_canceled"]),
     )
     text_discount_granted = HTMLField(
-        _('text: discount granted'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_discount_granted']),
+        _("text: discount granted"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_discount_granted"]),
     )
     text_payment_received = HTMLField(
-        _('text: payment received'), blank=True, default='',
-        help_text=lazy_help_text_with_html_default('', DEFAULT_TEXTS['text_payment_received']),
+        _("text: payment received"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_payment_received"]),
     )
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('subject type')
-        verbose_name_plural = _('subject types')
+        app_label = "leprikon"
+        ordering = ("order",)
+        verbose_name = _("subject type")
+        verbose_name_plural = _("subject types")
 
     def __str__(self):
         return self.name
@@ -209,68 +237,76 @@ class SubjectType(models.Model):
         return list(self.attachments.all())
 
     def get_absolute_url(self):
-        return reverse(self.slug + ':subject_list')
+        return reverse(self.slug + ":subject_list")
 
     def get_subjects_url(self):
-        change_list = reverse(f'admin:leprikon_{self.subject_type}_changelist')
-        return f'{change_list}?subject_type__id__exact={self.id}'
+        change_list = reverse(f"admin:leprikon_{self.subject_type}_changelist")
+        return f"{change_list}?subject_type__id__exact={self.id}"
 
     def get_registrations_url(self):
-        change_list = reverse(f'admin:leprikon_{self.subject_type}registration_changelist')
-        return f'{change_list}?subject__subject_type__id__exact={self.id}'
+        change_list = reverse(f"admin:leprikon_{self.subject_type}registration_changelist")
+        return f"{change_list}?subject__subject_type__id__exact={self.id}"
 
     def get_discounts_url(self):
-        change_list = reverse(f'admin:leprikon_{self.subject_type}discount_changelist')
-        return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
+        change_list = reverse(f"admin:leprikon_{self.subject_type}discount_changelist")
+        return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
 
     def get_payments_url(self):
-        change_list = reverse('admin:leprikon_subjectpayment_changelist')
-        return f'{change_list}?registration__subject__subject_type__id__exact={self.id}'
+        change_list = reverse("admin:leprikon_subjectpayment_changelist")
+        return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
 
 
 class BaseAttachment(models.Model):
-    file = FilerFileField(on_delete=models.CASCADE, related_name='+')
-    public = models.BooleanField(_('public'), default=True,
-                                 help_text=_('The attachment will be available before registration.'))
-    events = MultiSelectField(_('send when'), blank=True, choices=(
-        ('registration_received', _('registration received')),
-        ('registration_approved', _('registration approved')),
-        ('registration_refused', _('registration refused')),
-        ('registration_payment_request', _('payment requested')),
-        ('registration_canceled', _('registration canceled')),
-        ('discount_granted', _('discount granted')),
-        ('payment_received', _('payment received')),
-    ), default=[], help_text=_('The attachment will be sent with notification on selected events.'))
-    order = models.IntegerField(_('order'), blank=True, default=0)
+    file = FilerFileField(on_delete=models.CASCADE, related_name="+")
+    public = models.BooleanField(
+        _("public"), default=True, help_text=_("The attachment will be available before registration.")
+    )
+    events = MultiSelectField(
+        _("send when"),
+        blank=True,
+        choices=(
+            ("registration_received", _("registration received")),
+            ("registration_approved", _("registration approved")),
+            ("registration_refused", _("registration refused")),
+            ("registration_payment_request", _("payment requested")),
+            ("registration_canceled", _("registration canceled")),
+            ("discount_granted", _("discount granted")),
+            ("payment_received", _("payment received")),
+        ),
+        default=[],
+        help_text=_("The attachment will be sent with notification on selected events."),
+    )
+    order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
         abstract = True
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
+        app_label = "leprikon"
+        ordering = ("order",)
+        verbose_name = _("attachment")
+        verbose_name_plural = _("attachments")
 
     def __str__(self):
         return force_text(self.file)
 
 
 class SubjectTypeAttachment(BaseAttachment):
-    subject_type = models.ForeignKey(SubjectType, on_delete=models.CASCADE,
-                                     related_name='attachments', verbose_name=_('subject type'))
+    subject_type = models.ForeignKey(
+        SubjectType, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("subject type")
+    )
 
 
 class SubjectGroup(models.Model):
-    name = models.CharField(_('name'), max_length=150)
-    plural = models.CharField(_('plural'), max_length=150)
-    color = ColorField(_('color'))
-    order = models.IntegerField(_('order'), blank=True, default=0)
-    subject_types = models.ManyToManyField(SubjectType, related_name='groups', verbose_name=_('subject type'))
+    name = models.CharField(_("name"), max_length=150)
+    plural = models.CharField(_("plural"), max_length=150)
+    color = ColorField(_("color"))
+    order = models.IntegerField(_("order"), blank=True, default=0)
+    subject_types = models.ManyToManyField(SubjectType, related_name="groups", verbose_name=_("subject type"))
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('subject group')
-        verbose_name_plural = _('subject groups')
+        app_label = "leprikon"
+        ordering = ("order",)
+        verbose_name = _("subject group")
+        verbose_name_plural = _("subject groups")
 
     def __str__(self):
         return self.name
@@ -282,16 +318,16 @@ class SubjectGroup(models.Model):
             int(self.color[3:5], 16) / 255.0,
             int(self.color[5:6], 16) / 255.0,
         )
-        if v > .5:
+        if v > 0.5:
             v = 0
         else:
             v = 1
-        if s > .5:
+        if s > 0.5:
             s = 0
         else:
             s = 1
         (r, g, b) = colorsys.hsv_to_rgb(h, s, v)
-        return '#{:02x}{:02x}{:02x}'.format(
+        return "#{:02x}{:02x}{:02x}".format(
             int(r * 255),
             int(g * 255),
             int(b * 255),
@@ -302,24 +338,27 @@ class PdfExportAndMailMixin(object):
     all_attachments = []
 
     def get_absolute_url(self):
-        return reverse('leprikon:{}_pdf'.format(self.object_name), kwargs={'pk': self.pk, 'slug': self.slug})
+        return reverse("leprikon:{}_pdf".format(self.object_name), kwargs={"pk": self.pk, "slug": self.slug})
 
     def select_template(self, event, suffix):
-        return select_template([
-            'leprikon/{}_{}/{}.{}'.format(self.object_name, event, param, suffix) for param in (
-                self.subject.subject_type.slug,
-                self.subject.subject_type.subject_type,
-                'subject',
-            )
-        ])
+        return select_template(
+            [
+                "leprikon/{}_{}/{}.{}".format(self.object_name, event, param, suffix)
+                for param in (
+                    self.subject.subject_type.slug,
+                    self.subject.subject_type.subject_type,
+                    "subject",
+                )
+            ]
+        )
 
     def get_context(self, event):
         return {
-            'event': event,
-            'pdf_filename': self.get_pdf_filename(event),
-            'print_setup': self.get_print_setup(event),
-            'object': self,
-            'site': LeprikonSite.objects.get_current(),
+            "event": event,
+            "pdf_filename": self.get_pdf_filename(event),
+            "print_setup": self.get_print_setup(event),
+            "object": self,
+            "site": LeprikonSite.objects.get_current(),
         }
 
     def get_mail_subject(self, event):
@@ -331,9 +370,9 @@ class PdfExportAndMailMixin(object):
     def get_attachments(self, event):
         return None
 
-    def send_mail(self, event='received'):
-        template_txt = self.select_template(event, 'txt')
-        template_html = self.select_template(event, 'html')
+    def send_mail(self, event="received"):
+        template_txt = self.select_template(event, "txt")
+        template_html = self.select_template(event, "html")
         context = self.get_context(event)
         content_txt = template_txt.render(context)
         content_html = template_html.render(context)
@@ -342,16 +381,16 @@ class PdfExportAndMailMixin(object):
             body=content_txt,
             from_email=settings.SERVER_EMAIL,
             to=self.all_recipients,
-            headers={'X-Mailer': 'Leprikon (http://leprikon.cz/)'},
-            alternatives=[(content_html, 'text/html')],
+            headers={"X-Mailer": "Leprikon (http://leprikon.cz/)"},
+            alternatives=[(content_html, "text/html")],
             attachments=self.get_attachments(event),
         ).send()
 
     def get_pdf_filename(self, event):
-        return self.slug + '.pdf'
+        return self.slug + ".pdf"
 
     def get_pdf_attachment(self, event):
-        return (self.get_pdf_filename(event), self.get_pdf(event), 'application/pdf')
+        return (self.get_pdf_filename(event), self.get_pdf(event), "application/pdf")
 
     def get_pdf(self, event):
         output = BytesIO()
@@ -361,9 +400,9 @@ class PdfExportAndMailMixin(object):
 
     def write_pdf(self, event, output):
         # get plain pdf from rml
-        template = self.select_template(event, 'rml')
+        template = self.select_template(event, "rml")
         rml_content = template.render(self.get_context(event))
-        pdf_content = trml2pdf.parseString(rml_content.encode('utf-8'))
+        pdf_content = trml2pdf.parseString(rml_content.encode("utf-8"))
         print_setup = self.get_print_setup(event)
 
         # merge with background
@@ -388,104 +427,146 @@ class PdfExportAndMailMixin(object):
 
 
 class Subject(PdfExportAndMailMixin, models.Model):
-    object_name = 'subject'
+    object_name = "subject"
 
-    PARTICIPANTS = 'P'
-    GROUPS = 'G'
+    PARTICIPANTS = "P"
+    GROUPS = "G"
     REGISTRATION_TYPE_CHOICES = [
-        (PARTICIPANTS, _('participants')),
-        (GROUPS, _('groups')),
+        (PARTICIPANTS, _("participants")),
+        (GROUPS, _("groups")),
     ]
     REGISTRATION_TYPES = dict(REGISTRATION_TYPE_CHOICES)
 
-    school_year = models.ForeignKey(SchoolYear, editable=False, on_delete=models.CASCADE,
-                                    related_name='subjects', verbose_name=_('school year'))
-    subject_type = models.ForeignKey(SubjectType, on_delete=models.PROTECT,
-                                     related_name='subjects', verbose_name=_('subject type'))
-    registration_type = models.CharField(_('registration type'), choices=REGISTRATION_TYPE_CHOICES, max_length=1)
-    code = models.PositiveSmallIntegerField(_('accounting code'), blank=True, default=0)
-    name = models.CharField(_('name'), max_length=150)
-    description = HTMLField(_('description'), blank=True, default='')
-    department = models.ForeignKey(Department, blank=True, null=True, on_delete=models.SET_NULL,
-                                   related_name='subjects', verbose_name=_('department'))
-    groups = models.ManyToManyField(SubjectGroup, verbose_name=_('groups'), related_name='subjects', blank=True)
-    place = models.ForeignKey(Place, blank=True, null=True, on_delete=models.SET_NULL,
-                              related_name='subjects', verbose_name=_('place'))
-    age_groups = models.ManyToManyField(AgeGroup, related_name='subjects', verbose_name=_('age groups'))
-    target_groups = models.ManyToManyField(TargetGroup, related_name='subjects', verbose_name=_('target groups'))
-    leaders = models.ManyToManyField(Leader, blank=True, related_name='subjects', verbose_name=_('leaders'))
-    price = PriceField(_('price'), blank=True, null=True)
-    public = models.BooleanField(_('public'), default=False)
-    reg_from = models.DateTimeField(_('registration active from'), blank=True, null=True)
-    reg_to = models.DateTimeField(_('registration active to'), blank=True, null=True)
-    photo = FilerImageField(verbose_name=_('photo'), blank=True, null=True,
-                            related_name='+', on_delete=models.SET_NULL)
-    page = PageField(blank=True, null=True, on_delete=models.SET_NULL,
-                     related_name='+', verbose_name=_('page'))
+    school_year = models.ForeignKey(
+        SchoolYear, editable=False, on_delete=models.CASCADE, related_name="subjects", verbose_name=_("school year")
+    )
+    subject_type = models.ForeignKey(
+        SubjectType, on_delete=models.PROTECT, related_name="subjects", verbose_name=_("subject type")
+    )
+    registration_type = models.CharField(_("registration type"), choices=REGISTRATION_TYPE_CHOICES, max_length=1)
+    code = models.PositiveSmallIntegerField(_("accounting code"), blank=True, default=0)
+    name = models.CharField(_("name"), max_length=150)
+    description = HTMLField(_("description"), blank=True, default="")
+    department = models.ForeignKey(
+        Department,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="subjects",
+        verbose_name=_("department"),
+    )
+    groups = models.ManyToManyField(SubjectGroup, verbose_name=_("groups"), related_name="subjects", blank=True)
+    place = models.ForeignKey(
+        Place, blank=True, null=True, on_delete=models.SET_NULL, related_name="subjects", verbose_name=_("place")
+    )
+    age_groups = models.ManyToManyField(AgeGroup, related_name="subjects", verbose_name=_("age groups"))
+    target_groups = models.ManyToManyField(TargetGroup, related_name="subjects", verbose_name=_("target groups"))
+    leaders = models.ManyToManyField(Leader, blank=True, related_name="subjects", verbose_name=_("leaders"))
+    price = PriceField(_("price"), blank=True, null=True)
+    public = models.BooleanField(_("public"), default=False)
+    reg_from = models.DateTimeField(_("registration active from"), blank=True, null=True)
+    reg_to = models.DateTimeField(_("registration active to"), blank=True, null=True)
+    photo = FilerImageField(verbose_name=_("photo"), blank=True, null=True, related_name="+", on_delete=models.SET_NULL)
+    page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
     min_participants_count = models.PositiveIntegerField(
-        _('minimal participants count per registration'),
+        _("minimal participants count per registration"),
         default=1,
-        help_text=_('Participant details include birth number (birth day), age group, contacts, parent, etc.'),
+        help_text=_("Participant details include birth number (birth day), age group, contacts, parent, etc."),
     )
     max_participants_count = models.PositiveIntegerField(
-        _('maximal participants count per registration'),
+        _("maximal participants count per registration"),
         default=1,
-        help_text=_('Participant details include birth number (birth day), age group, contacts, parent, etc.'),
+        help_text=_("Participant details include birth number (birth day), age group, contacts, parent, etc."),
     )
     min_group_members_count = models.PositiveIntegerField(
-        _('minimal group members count per registration'),
-        help_text=_('Group member details only include name and note.'),
+        _("minimal group members count per registration"),
+        help_text=_("Group member details only include name and note."),
     )
     max_group_members_count = models.PositiveIntegerField(
-        _('maximal group members count per registration'),
-        help_text=_('Group member details only include name and note.'),
+        _("maximal group members count per registration"),
+        help_text=_("Group member details only include name and note."),
     )
-    min_registrations_count = models.PositiveIntegerField(_('minimal registrations count'), blank=True, null=True)
-    max_registrations_count = models.PositiveIntegerField(_('maximal registrations count'), blank=True, null=True)
-    min_due_date_days = models.PositiveIntegerField(_('minimal number of days to due date'), default=3)
-    risks = HTMLField(_('risks'), blank=True)
-    plan = HTMLField(_('plan'), blank=True)
-    evaluation = HTMLField(_('evaluation'), blank=True)
-    note = models.CharField(_('note'), max_length=300, blank=True, default='')
-    questions = models.ManyToManyField(Question, verbose_name=_('additional questions'),
-                                       related_name='+', blank=True,
-                                       help_text=_('Add additional questions to be asked in the registration form.'))
+    min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
+    max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
+    min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=3)
+    risks = HTMLField(_("risks"), blank=True)
+    plan = HTMLField(_("plan"), blank=True)
+    evaluation = HTMLField(_("evaluation"), blank=True)
+    note = models.CharField(_("note"), max_length=300, blank=True, default="")
+    questions = models.ManyToManyField(
+        Question,
+        verbose_name=_("additional questions"),
+        related_name="+",
+        blank=True,
+        help_text=_("Add additional questions to be asked in the registration form."),
+    )
     registration_agreements = models.ManyToManyField(
-        Agreement, blank=True, related_name='+', verbose_name=_('additional legal agreements'),
-        help_text=_('Add additional legal agreements specific for this subject.'),
+        Agreement,
+        blank=True,
+        related_name="+",
+        verbose_name=_("additional legal agreements"),
+        help_text=_("Add additional legal agreements specific for this subject."),
     )
-    reg_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                        related_name='+', verbose_name=_('registration print setup'),
-                                        help_text=_('Only use to set value specific for this subject.'))
-    pr_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                       related_name='+', verbose_name=_('payment request print setup'),
-                                       help_text=_('Only use to set value specific for this subject.'))
-    bill_print_setup = models.ForeignKey(PrintSetup, blank=True, null=True, on_delete=models.SET_NULL,
-                                         related_name='+', verbose_name=_('payment print setup'),
-                                         help_text=_('Only use to set value specific for this subject.'))
-    organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.SET_NULL,
-                                     related_name='+', verbose_name=_('organization'),
-                                     help_text=_('Only use to set value specific for this subject.'))
+    reg_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("registration print setup"),
+        help_text=_("Only use to set value specific for this subject."),
+    )
+    pr_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("payment request print setup"),
+        help_text=_("Only use to set value specific for this subject."),
+    )
+    bill_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("payment print setup"),
+        help_text=_("Only use to set value specific for this subject."),
+    )
+    organization = models.ForeignKey(
+        Organization,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("organization"),
+        help_text=_("Only use to set value specific for this subject."),
+    )
     chat_group_type = models.CharField(
-        _('chat group type'), blank=True, max_length=1, null=True, choices=CHAT_GROUP_TYPE_LABELS.items(),
+        _("chat group type"),
+        blank=True,
+        max_length=1,
+        null=True,
+        choices=CHAT_GROUP_TYPE_LABELS.items(),
         help_text=CHAT_GROUP_TYPE_HELP_TEXT,
     )
-    text_registration_received = HTMLField(_('text: registration received'), blank=True, default='')
-    text_registration_approved = HTMLField(_('text: registration approved'), blank=True, default='')
-    text_registration_refused = HTMLField(_('text: registration refused'), blank=True, default='')
-    text_registration_payment_request = HTMLField(_('text: registration payment request'), blank=True, default='')
-    text_registration_canceled = HTMLField(_('text: registration canceled'), blank=True, default='')
-    text_discount_granted = HTMLField(_('text: discount granted'), blank=True, default='')
-    text_payment_received = HTMLField(_('text: payment received'), blank=True, default='')
+    text_registration_received = HTMLField(_("text: registration received"), blank=True, default="")
+    text_registration_approved = HTMLField(_("text: registration approved"), blank=True, default="")
+    text_registration_refused = HTMLField(_("text: registration refused"), blank=True, default="")
+    text_registration_payment_request = HTMLField(_("text: registration payment request"), blank=True, default="")
+    text_registration_canceled = HTMLField(_("text: registration canceled"), blank=True, default="")
+    text_discount_granted = HTMLField(_("text: discount granted"), blank=True, default="")
+    text_payment_received = HTMLField(_("text: payment received"), blank=True, default="")
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('code', 'name')
-        verbose_name = _('subject')
-        verbose_name_plural = _('subjects')
+        app_label = "leprikon"
+        ordering = ("code", "name")
+        verbose_name = _("subject")
+        verbose_name_plural = _("subjects")
 
     def __str__(self):
-        return '{} {}'.format(self.school_year, self.display_name)
+        return "{} {}".format(self.school_year, self.display_name)
 
     def save(self, *args, **kwargs):
         if self.registration_type_participants:
@@ -521,7 +602,7 @@ class Subject(PdfExportAndMailMixin, models.Model):
     @cached_property
     def display_name(self):
         if settings.LEPRIKON_SHOW_SUBJECT_CODE and self.code:
-            return '{} – {}'.format(self.code, self.name)
+            return "{} – {}".format(self.code, self.name)
         else:
             return self.name
 
@@ -556,9 +637,7 @@ class Subject(PdfExportAndMailMixin, models.Model):
     @cached_property
     def public_attachments(self):
         return [
-            attachment
-            for attachment in (self.subject_type.all_attachments + self.all_attachments)
-            if attachment.public
+            attachment for attachment in (self.subject_type.all_attachments + self.all_attachments) if attachment.public
         ]
 
     @cached_property
@@ -569,10 +648,10 @@ class Subject(PdfExportAndMailMixin, models.Model):
         qs = SubjectRegistrationParticipant.objects
         if self.subject_type.subject_type == SubjectType.COURSE:
             qs = qs.filter(
-                models.Q(registration__courseregistration__course_history__course_id=self.id) &
-                (
-                    models.Q(registration__courseregistration__course_history__end__isnull=True) |
-                    models.Q(registration__courseregistration__course_history__end__gte=d)
+                models.Q(registration__courseregistration__course_history__course_id=self.id)
+                & (
+                    models.Q(registration__courseregistration__course_history__end__isnull=True)
+                    | models.Q(registration__courseregistration__course_history__end__gte=d)
                 )
             )
         else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
@@ -586,11 +665,9 @@ class Subject(PdfExportAndMailMixin, models.Model):
     def all_approved_participants(self):
         qs = SubjectRegistrationParticipant.objects
         if self.subject_type.subject_type == SubjectType.COURSE:
-            qs = qs.filter(
-                registration__courseregistration__course_history__course_id=self.id,
-            ).annotate(
-                approved=models.F('registration__approved'),
-                canceled=models.F('registration__canceled'),
+            qs = qs.filter(registration__courseregistration__course_history__course_id=self.id,).annotate(
+                approved=models.F("registration__approved"),
+                canceled=models.F("registration__canceled"),
             )
         else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
             qs = qs.filter(
@@ -603,10 +680,10 @@ class Subject(PdfExportAndMailMixin, models.Model):
     def registration_allowed(self):
         now = timezone.now()
         return (
-            self.price is not None and
-            (self.reg_from or self.reg_to) and
-            (self.reg_from is None or self.reg_from <= now) and
-            (self.reg_to is None or self.reg_to > now)
+            self.price is not None
+            and (self.reg_from or self.reg_to)
+            and (self.reg_from is None or self.reg_from <= now)
+            and (self.reg_to is None or self.reg_to > now)
         )
 
     @property
@@ -614,39 +691,43 @@ class Subject(PdfExportAndMailMixin, models.Model):
         now = timezone.now()
         if self.price is not None:
             if self.reg_from > now:
-                return _('Registering will start on {}.').format(self.reg_from)
+                return _("Registering will start on {}.").format(self.reg_from)
             if self.reg_to < now:
-                return _('Registering ended on {}').format(self.reg_to)
-        return _('Registering is currently not allowed.')
+                return _("Registering ended on {}").format(self.reg_to)
+        return _("Registering is currently not allowed.")
 
     @property
     def full(self):
         return self.max_registrations_count and self.active_registrations_count >= self.max_registrations_count
 
     def get_absolute_url(self):
-        return reverse(self.subject_type.slug + ':subject_detail', args=(self.id,))
+        return reverse(self.subject_type.slug + ":subject_detail", args=(self.id,))
 
     def get_registration_url(self):
-        return reverse(self.subject_type.slug + ':subject_registration_form', args=(self.id,))
+        return reverse(self.subject_type.slug + ":subject_registration_form", args=(self.id,))
 
     def get_edit_url(self):
-        return reverse('admin:leprikon_{}_change'.format(self.subject._meta.model_name), args=(self.id,))
+        return reverse("admin:leprikon_{}_change".format(self.subject._meta.model_name), args=(self.id,))
 
     def get_age_groups_list(self):
         return comma_separated(self.all_age_groups)
-    get_age_groups_list.short_description = _('age groups list')
+
+    get_age_groups_list.short_description = _("age groups list")
 
     def get_groups_list(self):
         return comma_separated(self.all_groups)
-    get_groups_list.short_description = _('groups list')
+
+    get_groups_list.short_description = _("groups list")
 
     def get_leaders_list(self):
         return comma_separated(self.all_leaders)
-    get_leaders_list.short_description = _('leaders list')
+
+    get_leaders_list.short_description = _("leaders list")
 
     def get_target_groups_list(self):
         return comma_separated(self.all_target_groups)
-    get_target_groups_list.short_description = _('target groups list')
+
+    get_target_groups_list.short_description = _("target groups list")
 
     def get_print_setup(self, event):
         return PrintSetup()
@@ -706,7 +787,7 @@ class Subject(PdfExportAndMailMixin, models.Model):
                 self.subject_type.registration_agreements.all(),
                 LeprikonSite.objects.get_current().registration_agreements.all(),
             ),
-            key=lambda agreement: agreement.order
+            key=lambda agreement: agreement.order,
         )
 
 
@@ -732,8 +813,8 @@ class JournalPeriod:
                 participant
                 for participant in self.subject.all_approved_participants
                 if (
-                    participant.approved.date() <= self.period.end and
-                    (participant.canceled is None or participant.canceled.date() >= self.period.start)
+                    participant.approved.date() <= self.period.end
+                    and (participant.canceled is None or participant.canceled.date() >= self.period.start)
                 )
             ]
         else:  # event
@@ -747,16 +828,12 @@ class JournalPeriod:
                 alternates.add(alternate)
         return list(alternates)
 
-    PresenceRecord = namedtuple('PresenceRecord', ('person', 'presences'))
+    PresenceRecord = namedtuple("PresenceRecord", ("person", "presences"))
 
     def get_participant_presences(self):
         return [
             self.PresenceRecord(
-                participant,
-                [
-                    participant.id in entry.all_participants_idset
-                    for entry in self.all_journal_entries
-                ]
+                participant, [participant.id in entry.all_participants_idset for entry in self.all_journal_entries]
             )
             for participant in self.all_approved_participants
         ]
@@ -764,110 +841,142 @@ class JournalPeriod:
     def get_leader_presences(self):
         return [
             self.PresenceRecord(
-                leader,
-                [
-                    entry.all_leader_entries_by_leader.get(leader, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for leader in self.subject.all_leaders
+                leader, [entry.all_leader_entries_by_leader.get(leader, None) for entry in self.all_journal_entries]
+            )
+            for leader in self.subject.all_leaders
         ]
 
     def get_alternate_presences(self):
         return [
             self.PresenceRecord(
                 alternate,
-                [
-                    entry.all_leader_entries_by_leader.get(alternate, None)
-                    for entry in self.all_journal_entries
-                ]
-            ) for alternate in self.all_alternates
+                [entry.all_leader_entries_by_leader.get(alternate, None) for entry in self.all_journal_entries],
+            )
+            for alternate in self.all_alternates
         ]
 
 
 class SubjectVariant(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='variants', verbose_name=_('subject'))
-    name = models.CharField(_('variant name'), max_length=150)
-    description = HTMLField(_('variant description'), blank=True, default='')
-    price = PriceField(_('price'), blank=True, null=True)
-    order = models.IntegerField(_('order'), blank=True, default=0)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="variants", verbose_name=_("subject"))
+    name = models.CharField(_("variant name"), max_length=150)
+    description = HTMLField(_("variant description"), blank=True, default="")
+    price = PriceField(_("price"), blank=True, null=True)
+    order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('variant')
-        verbose_name_plural = _('variants')
+        app_label = "leprikon"
+        ordering = ("order",)
+        verbose_name = _("variant")
+        verbose_name_plural = _("variants")
 
     def __str__(self):
         return self.name
 
 
 class SubjectAttachment(BaseAttachment):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE,
-                                related_name='attachments', verbose_name=_('subject'))
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("subject")
+    )
 
 
 class SubjectRegistration(PdfExportAndMailMixin, models.Model):
-    object_name = 'registration'
+    object_name = "registration"
 
     slug = models.SlugField(editable=False, max_length=250, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                             related_name='leprikon_registrations', verbose_name=_('user'))
-    subject = models.ForeignKey(Subject, on_delete=models.PROTECT,
-                                related_name='registrations', verbose_name=_('subject'))
-    subject_variant = models.ForeignKey(SubjectVariant, null=True, on_delete=models.PROTECT,
-                                        related_name='registrations', verbose_name=_('variant'))
-    price = PriceField(_('price'), editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="leprikon_registrations",
+        verbose_name=_("user"),
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("subject")
+    )
+    subject_variant = models.ForeignKey(
+        SubjectVariant, null=True, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("variant")
+    )
+    price = PriceField(_("price"), editable=False)
 
-    created = models.DateTimeField(_('time of registration'), editable=False, auto_now_add=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
-                                   related_name='+', verbose_name=_('created by'))
-    approved = models.DateTimeField(_('time of approval'), editable=False, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('approved by'))
-    payment_requested = models.DateTimeField(_('payment request time'), editable=False, null=True)
+    created = models.DateTimeField(_("time of registration"), editable=False, auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("created by"),
+    )
+    approved = models.DateTimeField(_("time of approval"), editable=False, null=True)
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("approved by"),
+    )
+    payment_requested = models.DateTimeField(_("payment request time"), editable=False, null=True)
     payment_requested_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT, related_name='+',
-        verbose_name=_('payment requested by'),
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("payment requested by"),
     )
-    cancelation_requested = models.DateTimeField(_('time of cancellation request'), editable=False, null=True)
+    cancelation_requested = models.DateTimeField(_("time of cancellation request"), editable=False, null=True)
     cancelation_requested_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT, related_name='+',
-        verbose_name=_('cancelation requested by'),
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("cancelation requested by"),
     )
-    canceled = models.DateTimeField(_('time of cancellation'), editable=False, null=True)
-    canceled_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('canceled by'))
-    note = models.CharField(_('note'), max_length=300, blank=True, default='')
+    canceled = models.DateTimeField(_("time of cancellation"), editable=False, null=True)
+    canceled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("canceled by"),
+    )
+    note = models.CharField(_("note"), max_length=300, blank=True, default="")
 
-    questions = models.ManyToManyField(Question, editable=False, related_name='registrations')
-    agreements = models.ManyToManyField(Agreement, editable=False, related_name='registrations')
-    agreement_options = models.ManyToManyField(AgreementOption, blank=True, verbose_name=_('legal agreements'))
+    questions = models.ManyToManyField(Question, editable=False, related_name="registrations")
+    agreements = models.ManyToManyField(Agreement, editable=False, related_name="registrations")
+    agreement_options = models.ManyToManyField(AgreementOption, blank=True, verbose_name=_("legal agreements"))
 
-    variable_symbol = models.BigIntegerField(_('variable symbol'), db_index=True, editable=False, null=True)
+    variable_symbol = models.BigIntegerField(_("variable symbol"), db_index=True, editable=False, null=True)
 
     registration_link = models.ForeignKey(
-        'leprikon.RegistrationLink', editable=False, null=True,
-        on_delete=models.SET_NULL, related_name='registrations', verbose_name=_('registration link'),
+        "leprikon.RegistrationLink",
+        editable=False,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="registrations",
+        verbose_name=_("registration link"),
     )
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('registration')
-        verbose_name_plural = _('registrations')
+        app_label = "leprikon"
+        verbose_name = _("registration")
+        verbose_name_plural = _("registrations")
 
     def __str__(self):
-        return '{} - {}'.format(
+        return "{} - {}".format(
             self.subject,
-            self.group if self.subject.registration_type_groups else comma_separated([
-                p.full_name for p in self.all_participants
-            ])
+            self.group
+            if self.subject.registration_type_groups
+            else comma_separated([p.full_name for p in self.all_participants]),
         )
 
     def get_edit_url(self):
-        return reverse('admin:leprikon_{}_change'.format(self.subjectregistration._meta.model_name), args=(self.id,))
+        return reverse("admin:leprikon_{}_change".format(self.subjectregistration._meta.model_name), args=(self.id,))
 
     def get_payment_request_url(self):
-        return reverse('leprikon:registration_payment_request', args=(self.id, self.variable_symbol))
+        return reverse("leprikon:registration_payment_request", args=(self.id, self.variable_symbol))
 
     @cached_property
     def subjectregistration(self):
@@ -884,24 +993,28 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.participants.all())
 
     def participants_list(self):
-        return '\n'.join(map(str, self.all_participants))
-    participants_list.short_description = _('participants')
+        return "\n".join(map(str, self.all_participants))
+
+    participants_list.short_description = _("participants")
 
     def participants_list_html(self):
-        return mark_safe('<br/>'.join(map(str, self.all_participants)))
-    participants_list_html.short_description = _('participants')
+        return mark_safe("<br/>".join(map(str, self.all_participants)))
+
+    participants_list_html.short_description = _("participants")
 
     @cached_property
     def all_group_members(self):
         return list(self.group_members.all())
 
     def group_members_list(self):
-        return '\n'.join(map(str, self.all_group_members))
-    group_members_list.short_description = _('group members')
+        return "\n".join(map(str, self.all_group_members))
+
+    group_members_list.short_description = _("group members")
 
     def group_members_list_html(self):
-        return mark_safe('<br/>'.join(map(str, self.all_group_members)))
-    group_members_list_html.short_description = _('group members')
+        return mark_safe("<br/>".join(map(str, self.all_group_members)))
+
+    group_members_list_html.short_description = _("group members")
 
     @cached_property
     def all_questions(self):
@@ -918,14 +1031,17 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def agreement_options_list(self):
         lines = []
         for agreement in self.all_agreements:
-            lines.append(agreement.name + ':')
+            lines.append(agreement.name + ":")
             for option in agreement.all_options:
-                lines.append('{checkbox} {option_name}'.format(
-                    checkbox=('☑' if option.required or option in self.all_agreement_options else '☐'),
-                    option_name=option.name,
-                ))
-        return '\n'.join(lines)
-    agreement_options_list.short_description = _('agreement options')
+                lines.append(
+                    "{checkbox} {option_name}".format(
+                        checkbox=("☑" if option.required or option in self.all_agreement_options else "☐"),
+                        option_name=option.name,
+                    )
+                )
+        return "\n".join(lines)
+
+    agreement_options_list.short_description = _("agreement options")
 
     @cached_property
     def all_attachments(self):
@@ -955,22 +1071,22 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     @cached_property
     def organization(self):
         return (
-            self.subject.organization or
-            self.subject.subject_type.organization or
-            LeprikonSite.objects.get_current().organization or
-            Organization()
+            self.subject.organization
+            or self.subject.subject_type.organization
+            or LeprikonSite.objects.get_current().organization
+            or Organization()
         )
 
     @cached_property
     def spayd(self):
         org = self.organization
         return spayd(
-            ('ACC', ('%s+%s' % (org.iban, org.bic)) if org.bic else org.iban),
-            ('AM', self.payment_status.amount_due),
-            ('CC', localeconv['int_curr_symbol'].strip()),
-            ('MSG', '%s, %s' % (self.subject.name[:29], str(self)[:29])),
-            ('RN', slugify(self.organization.name).replace('*', '')[:35]),
-            ('X-VS', self.variable_symbol),
+            ("ACC", ("%s+%s" % (org.iban, org.bic)) if org.bic else org.iban),
+            ("AM", self.payment_status.amount_due),
+            ("CC", localeconv["int_curr_symbol"].strip()),
+            ("MSG", "%s, %s" % (self.subject.name[:29], str(self)[:29])),
+            ("RN", slugify(self.organization.name).replace("*", "")[:35]),
+            ("X-VS", self.variable_symbol),
         )
 
     @cached_property
@@ -986,57 +1102,57 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     @cached_property
     def text_registration_received(self):
         return (
-            self.subject.text_registration_received or
-            self.subject.subject_type.text_registration_received or
-            DEFAULT_TEXTS['text_registration_received']
+            self.subject.text_registration_received
+            or self.subject.subject_type.text_registration_received
+            or DEFAULT_TEXTS["text_registration_received"]
         )
 
     @cached_property
     def text_registration_approved(self):
         return (
-            self.subject.text_registration_approved or
-            self.subject.subject_type.text_registration_approved or
-            DEFAULT_TEXTS['text_registration_approved']
+            self.subject.text_registration_approved
+            or self.subject.subject_type.text_registration_approved
+            or DEFAULT_TEXTS["text_registration_approved"]
         )
 
     @cached_property
     def text_registration_refused(self):
         return (
-            self.subject.text_registration_refused or
-            self.subject.subject_type.text_registration_refused or
-            DEFAULT_TEXTS['text_registration_refused']
+            self.subject.text_registration_refused
+            or self.subject.subject_type.text_registration_refused
+            or DEFAULT_TEXTS["text_registration_refused"]
         )
 
     @cached_property
     def text_registration_payment_request(self):
         return (
-            self.subject.text_registration_payment_request or
-            self.subject.subject_type.text_registration_payment_request or
-            DEFAULT_TEXTS['text_registration_payment_request']
+            self.subject.text_registration_payment_request
+            or self.subject.subject_type.text_registration_payment_request
+            or DEFAULT_TEXTS["text_registration_payment_request"]
         )
 
     @cached_property
     def text_registration_canceled(self):
         return (
-            self.subject.text_registration_canceled or
-            self.subject.subject_type.text_registration_canceled or
-            DEFAULT_TEXTS['text_registration_canceled']
+            self.subject.text_registration_canceled
+            or self.subject.subject_type.text_registration_canceled
+            or DEFAULT_TEXTS["text_registration_canceled"]
         )
 
     @cached_property
     def text_discount_granted(self):
         return (
-            self.subject.text_discount_granted or
-            self.subject.subject_type.text_discount_granted or
-            DEFAULT_TEXTS['text_discount_granted']
+            self.subject.text_discount_granted
+            or self.subject.subject_type.text_discount_granted
+            or DEFAULT_TEXTS["text_discount_granted"]
         )
 
     @cached_property
     def text_payment_received(self):
         return (
-            self.subject.text_payment_received or
-            self.subject.subject_type.text_payment_received or
-            DEFAULT_TEXTS['text_payment_received']
+            self.subject.text_payment_received
+            or self.subject.subject_type.text_payment_received
+            or DEFAULT_TEXTS["text_payment_received"]
         )
 
     def get_discounts(self, d):
@@ -1052,9 +1168,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             return self.all_payments
 
     def get_pdf_filename(self, event):
-        if event == 'payment_request':
+        if event == "payment_request":
             return basename(self.get_payment_request_url())
-        return self.slug + '.pdf'
+        return self.slug + ".pdf"
 
     def get_discounted(self, d=None):
         return sum(p.amount for p in self.get_discounts(d))
@@ -1072,8 +1188,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         qrcode.make(self.spayd, border=1).save(output)
 
     def write_pdf(self, event, output):
-        if event == 'payment_request':
-            with NamedTemporaryFile(buffering=0, suffix='.png') as qr_code_file:
+        if event == "payment_request":
+            with NamedTemporaryFile(buffering=0, suffix=".png") as qr_code_file:
                 self.write_qr_code(qr_code_file)
                 qr_code_file.flush()
                 self.qr_code_filename = qr_code_file.name
@@ -1082,11 +1198,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             return super().write_pdf(event, output)
 
     mail_subject_patterns = {
-        'received': _('Registration for {subject_type} {subject}'),
-        'payment_request': _('Registration for {subject_type} {subject} - payment request'),
-        'approved': _('Registration for {subject_type} {subject} was approved'),
-        'refused': _('Registration for {subject_type} {subject} was refused'),
-        'canceled': _('Registration for {subject_type} {subject} was canceled'),
+        "received": _("Registration for {subject_type} {subject}"),
+        "payment_request": _("Registration for {subject_type} {subject} - payment request"),
+        "approved": _("Registration for {subject_type} {subject} was approved"),
+        "refused": _("Registration for {subject_type} {subject} was refused"),
+        "canceled": _("Registration for {subject_type} {subject} was canceled"),
     }
 
     @transaction.atomic
@@ -1097,15 +1213,17 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             self.approved = timezone.now()
             self.approved_by = approved_by
             self.save()
-            self.send_mail('approved')
+            self.send_mail("approved")
             if not self.payment_requested:
                 self.request_payment(approved_by)
         else:
-            raise ValidationError((
-                _('Unfortunately, it is not possible to restore canceled registration {r}. Please create new one.')
-                if self.canceled else
-                _('The registration {r} has already been approved.')
-            ).format(r=self))
+            raise ValidationError(
+                (
+                    _("Unfortunately, it is not possible to restore canceled registration {r}. Please create new one.")
+                    if self.canceled
+                    else _("The registration {r} has already been approved.")
+                ).format(r=self)
+            )
 
     @transaction.atomic
     def request_payment(self, payment_requested_by):
@@ -1116,7 +1234,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             # refresh all cached statuses
             self = type(self).objects.get(id=self.id)
         if self.payment_status.amount_due:
-            self.send_mail('payment_request')
+            self.send_mail("payment_request")
 
     def refuse(self, refused_by):
         if self.approved is None:
@@ -1125,13 +1243,15 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     self.canceled = timezone.now()
                     self.canceled_by = refused_by
                     self.save()
-                    self.send_mail('refused')
+                    self.send_mail("refused")
             else:
-                raise ValidationError(_('The registration {r} has already been refued.').format(r=self))
+                raise ValidationError(_("The registration {r} has already been refued.").format(r=self))
         else:
-            raise ValidationError(_(
-                'Unfortunately, it is not possible to refuse the registration {r}. However, You may cancel it.'
-            ).format(r=self))
+            raise ValidationError(
+                _(
+                    "Unfortunately, it is not possible to refuse the registration {r}. However, You may cancel it."
+                ).format(r=self)
+            )
 
     def cancel(self, canceled_by):
         if self.approved:
@@ -1140,56 +1260,60 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     self.canceled = timezone.now()
                     self.canceled_by = canceled_by
                     self.save()
-                    self.send_mail('canceled')
+                    self.send_mail("canceled")
             else:
-                raise ValidationError(_('The registration {r} has already been canceled.').format(r=self))
+                raise ValidationError(_("The registration {r} has already been canceled.").format(r=self))
         else:
-            raise ValidationError(_(
-                'Unfortunately, it is not possible to cancel the registration {r}. However, You may refuse it.'
-            ).format(r=self))
+            raise ValidationError(
+                _(
+                    "Unfortunately, it is not possible to cancel the registration {r}. However, You may refuse it."
+                ).format(r=self)
+            )
 
     def generate_variable_symbol_and_slug(self):
         self.variable_symbol = generate_variable_symbol(self)
-        self.slug = '{}-{}'.format(
-            slugify('{}-{}'.format(
-                self.subject.name[:100],
-                self.group if self.subject.registration_type_groups else comma_separated([
-                    p.full_name for p in self.all_participants
-                ]),
-            ))[:200],
+        self.slug = "{}-{}".format(
+            slugify(
+                "{}-{}".format(
+                    self.subject.name[:100],
+                    self.group
+                    if self.subject.registration_type_groups
+                    else comma_separated([p.full_name for p in self.all_participants]),
+                )
+            )[:200],
             self.variable_symbol,
         )
         self.save()
 
     def get_print_setup(self, event):
-        if event == 'payment_request':
+        if event == "payment_request":
             return (
-                self.subject.pr_print_setup or
-                self.subject.subject_type.pr_print_setup or
-                LeprikonSite.objects.get_current().pr_print_setup or
-                PrintSetup()
+                self.subject.pr_print_setup
+                or self.subject.subject_type.pr_print_setup
+                or LeprikonSite.objects.get_current().pr_print_setup
+                or PrintSetup()
             )
         return (
-            self.subject.reg_print_setup or
-            self.subject.subject_type.reg_print_setup or
-            LeprikonSite.objects.get_current().reg_print_setup or
-            PrintSetup()
+            self.subject.reg_print_setup
+            or self.subject.subject_type.reg_print_setup
+            or LeprikonSite.objects.get_current().reg_print_setup
+            or PrintSetup()
         )
 
     def get_attachments(self, event):
         attachments = []
 
-        if event == 'payment_request':
+        if event == "payment_request":
             if self.organization.iban:
                 qr_code = MIMEImage(self.get_qr_code())
-                qr_code.add_header('Content-ID', '<qr_code>')
+                qr_code.add_header("Content-ID", "<qr_code>")
                 attachments.append(qr_code)
             attachments.append(self.get_pdf_attachment(event))
 
         attachments += [
-            (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
+            (basename(attachment.file.file.path), open(attachment.file.file.path, "rb").read())
             for attachment in self.all_attachments
-            if f'registration_{event}' in attachment.events
+            if f"registration_{event}" in attachment.events
         ]
         return attachments or None
 
@@ -1202,26 +1326,26 @@ class QuestionsMixin:
         answers = self.get_answers()
         for q in self.registration.all_questions:
             yield {
-                'question': q.question,
-                'answer': answers.get(q.name, ''),
+                "question": q.question,
+                "answer": answers.get(q.name, ""),
             }
 
 
 class PersonMixin:
     @cached_property
     def full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return "{} {}".format(self.first_name, self.last_name)
 
     @cached_property
     def address(self):
-        return '{}, {}, {}'.format(self.street, self.city, self.postal_code)
+        return "{}, {}, {}".format(self.street, self.city, self.postal_code)
 
     @cached_property
     def contact(self):
         if self.email and self.phone:
-            return '{}, {}'.format(self.phone, self.email)
+            return "{}, {}".format(self.phone, self.email)
         else:
-            return self.email or self.phone or ''
+            return self.email or self.phone or ""
 
 
 class SchoolMixin:
@@ -1231,62 +1355,65 @@ class SchoolMixin:
 
     @cached_property
     def school_and_class(self):
-        return '{}, {}'.format(self.school_name, self.school_class)
+        return "{}, {}".format(self.school_name, self.school_class)
 
 
 class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
-    registration = models.ForeignKey(SubjectRegistration, on_delete=models.CASCADE,
-                                     related_name='participants', verbose_name=_('registration'))
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
-    citizenship = models.ForeignKey(Citizenship, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('citizenship'))
-    birth_num = BirthNumberField(_('birth number'), blank=True, null=True)
-    birth_date = models.DateField(_('birth date'))
-    gender = models.CharField(_('gender'), max_length=1,
-                              choices=((MALE, _('male / boy')), (FEMALE, _('female / girl'))))
-    age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT,
-                                  related_name='+', verbose_name=_('age group'))
-    street = models.CharField(_('street'), max_length=150)
-    city = models.CharField(_('city'), max_length=150)
-    postal_code = PostalCodeField(_('postal code'))
-    phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    email = EmailField(_('email address'), blank=True, default='')
+    registration = models.ForeignKey(
+        SubjectRegistration, on_delete=models.CASCADE, related_name="participants", verbose_name=_("registration")
+    )
+    first_name = models.CharField(_("first name"), max_length=30)
+    last_name = models.CharField(_("last name"), max_length=30)
+    citizenship = models.ForeignKey(
+        Citizenship, on_delete=models.PROTECT, related_name="+", verbose_name=_("citizenship")
+    )
+    birth_num = BirthNumberField(_("birth number"), blank=True, null=True)
+    birth_date = models.DateField(_("birth date"))
+    gender = models.CharField(
+        _("gender"), max_length=1, choices=((MALE, _("male / boy")), (FEMALE, _("female / girl")))
+    )
+    age_group = models.ForeignKey(AgeGroup, on_delete=models.PROTECT, related_name="+", verbose_name=_("age group"))
+    street = models.CharField(_("street"), max_length=150)
+    city = models.CharField(_("city"), max_length=150)
+    postal_code = PostalCodeField(_("postal code"))
+    phone = models.CharField(_("phone"), max_length=30, blank=True, default="")
+    email = EmailField(_("email address"), blank=True, default="")
 
-    school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
-                               related_name='+', verbose_name=_('school'))
-    school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
-    health = models.TextField(_('health'), blank=True, default='')
+    school = models.ForeignKey(
+        School, blank=True, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("school")
+    )
+    school_other = models.CharField(_("other school"), max_length=150, blank=True, default="")
+    school_class = models.CharField(_("class"), max_length=30, blank=True, default="")
+    health = models.TextField(_("health"), blank=True, default="")
 
-    has_parent1 = models.BooleanField(_('first parent'), default=False)
-    parent1_first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
-    parent1_last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
-    parent1_street = models.CharField(_('street'), max_length=150, blank=True, null=True)
-    parent1_city = models.CharField(_('city'), max_length=150, blank=True, null=True)
-    parent1_postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    parent1_phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
-    parent1_email = EmailField(_('email address'), blank=True, null=True)
+    has_parent1 = models.BooleanField(_("first parent"), default=False)
+    parent1_first_name = models.CharField(_("first name"), max_length=30, blank=True, null=True)
+    parent1_last_name = models.CharField(_("last name"), max_length=30, blank=True, null=True)
+    parent1_street = models.CharField(_("street"), max_length=150, blank=True, null=True)
+    parent1_city = models.CharField(_("city"), max_length=150, blank=True, null=True)
+    parent1_postal_code = PostalCodeField(_("postal code"), blank=True, null=True)
+    parent1_phone = models.CharField(_("phone"), max_length=30, blank=True, null=True)
+    parent1_email = EmailField(_("email address"), blank=True, null=True)
 
-    has_parent2 = models.BooleanField(_('second parent'), default=False)
-    parent2_first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
-    parent2_last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
-    parent2_street = models.CharField(_('street'), max_length=150, blank=True, null=True)
-    parent2_city = models.CharField(_('city'), max_length=150, blank=True, null=True)
-    parent2_postal_code = PostalCodeField(_('postal code'), blank=True, null=True)
-    parent2_phone = models.CharField(_('phone'), max_length=30, blank=True, null=True)
-    parent2_email = EmailField(_('email address'), blank=True, null=True)
+    has_parent2 = models.BooleanField(_("second parent"), default=False)
+    parent2_first_name = models.CharField(_("first name"), max_length=30, blank=True, null=True)
+    parent2_last_name = models.CharField(_("last name"), max_length=30, blank=True, null=True)
+    parent2_street = models.CharField(_("street"), max_length=150, blank=True, null=True)
+    parent2_city = models.CharField(_("city"), max_length=150, blank=True, null=True)
+    parent2_postal_code = PostalCodeField(_("postal code"), blank=True, null=True)
+    parent2_phone = models.CharField(_("phone"), max_length=30, blank=True, null=True)
+    parent2_email = EmailField(_("email address"), blank=True, null=True)
 
-    answers = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
+    answers = models.TextField(_("additional answers"), blank=True, default="{}", editable=False)
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('last_name', 'first_name')
-        verbose_name = _('participant')
-        verbose_name_plural = _('participants')
+        app_label = "leprikon"
+        ordering = ("last_name", "first_name")
+        verbose_name = _("participant")
+        verbose_name_plural = _("participants")
 
     def __str__(self):
-        return '{full_name} ({birth_year})'.format(
+        return "{full_name} ({birth_year})".format(
             full_name=self.full_name,
             birth_year=self.birth_date.year,
         )
@@ -1298,18 +1425,20 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
     @cached_property
     def parent1(self):
         if self.has_parent1:
-            return self.Parent(self, 'parent1')
+            return self.Parent(self, "parent1")
         else:
             return None
-    parent1.short_description = _('first parent')
+
+    parent1.short_description = _("first parent")
 
     @cached_property
     def parent2(self):
         if self.has_parent2:
-            return self.Parent(self, 'parent2')
+            return self.Parent(self, "parent2")
         else:
             return None
-    parent2.short_description = _('second parent')
+
+    parent2.short_description = _("second parent")
 
     @cached_property
     def all_recipients(self):
@@ -1357,90 +1486,100 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
             self._role = role
 
         def __getattr__(self, attr):
-            return getattr(self._registration, '{}_{}'.format(self._role, attr))
+            return getattr(self._registration, "{}_{}".format(self._role, attr))
 
         def __str__(self):
             return self.full_name
 
 
 class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
-    registration = models.OneToOneField(SubjectRegistration, on_delete=models.CASCADE,
-                                        related_name='group', verbose_name=_('registration'))
-    target_group = models.ForeignKey(TargetGroup, on_delete=models.PROTECT,
-                                     related_name='+', verbose_name=_('target group'))
-    name = models.CharField(_('group name'), blank=True, default='', max_length=150)
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
-    street = models.CharField(_('street'), max_length=150)
-    city = models.CharField(_('city'), max_length=150)
-    postal_code = PostalCodeField(_('postal code'))
-    phone = models.CharField(_('phone'), max_length=30)
-    email = EmailField(_('email address'))
-    school = models.ForeignKey(School, blank=True, null=True, on_delete=models.PROTECT,
-                               related_name='+', verbose_name=_('school'))
-    school_other = models.CharField(_('other school'), max_length=150, blank=True, default='')
-    school_class = models.CharField(_('class'), max_length=30, blank=True, default='')
+    registration = models.OneToOneField(
+        SubjectRegistration, on_delete=models.CASCADE, related_name="group", verbose_name=_("registration")
+    )
+    target_group = models.ForeignKey(
+        TargetGroup, on_delete=models.PROTECT, related_name="+", verbose_name=_("target group")
+    )
+    name = models.CharField(_("group name"), blank=True, default="", max_length=150)
+    first_name = models.CharField(_("first name"), max_length=30)
+    last_name = models.CharField(_("last name"), max_length=30)
+    street = models.CharField(_("street"), max_length=150)
+    city = models.CharField(_("city"), max_length=150)
+    postal_code = PostalCodeField(_("postal code"))
+    phone = models.CharField(_("phone"), max_length=30)
+    email = EmailField(_("email address"))
+    school = models.ForeignKey(
+        School, blank=True, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("school")
+    )
+    school_other = models.CharField(_("other school"), max_length=150, blank=True, default="")
+    school_class = models.CharField(_("class"), max_length=30, blank=True, default="")
 
-    answers = models.TextField(_('additional answers'), blank=True, default='{}', editable=False)
+    answers = models.TextField(_("additional answers"), blank=True, default="{}", editable=False)
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('registered group')
-        verbose_name_plural = _('registered groups')
+        app_label = "leprikon"
+        verbose_name = _("registered group")
+        verbose_name_plural = _("registered groups")
 
     def __str__(self):
         return self.name or self.full_name
 
 
 class SubjectRegistrationGroupMember(models.Model):
-    registration = models.ForeignKey(SubjectRegistration, on_delete=models.CASCADE,
-                                     related_name='group_members', verbose_name=_('registration'))
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
-    note = models.CharField(_('note'), max_length=150, blank=True, default='')
+    registration = models.ForeignKey(
+        SubjectRegistration, on_delete=models.CASCADE, related_name="group_members", verbose_name=_("registration")
+    )
+    first_name = models.CharField(_("first name"), max_length=30)
+    last_name = models.CharField(_("last name"), max_length=30)
+    note = models.CharField(_("note"), max_length=150, blank=True, default="")
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('group member')
-        verbose_name_plural = _('group members')
+        app_label = "leprikon"
+        verbose_name = _("group member")
+        verbose_name_plural = _("group members")
 
     def __str__(self):
-        return '{full_name} ({note})'.format(
-            full_name=self.full_name,
-            note=self.note,
-        ) if self.note else self.full_name
+        return (
+            "{full_name} ({note})".format(
+                full_name=self.full_name,
+                note=self.note,
+            )
+            if self.note
+            else self.full_name
+        )
 
     @cached_property
     def full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return "{} {}".format(self.first_name, self.last_name)
 
 
 class SubjectRegistrationBillingInfo(models.Model):
-    registration = models.OneToOneField(SubjectRegistration, on_delete=models.CASCADE,
-                                        related_name='billing_info', verbose_name=_('registration'))
-    name = models.CharField(_('name'), max_length=150)
-    street = models.CharField(_('street'), max_length=150, blank=True, default='')
-    city = models.CharField(_('city'), max_length=150, blank=True, default='')
-    postal_code = PostalCodeField(_('postal code'), blank=True, default='')
-    company_num = models.CharField(_('company number'), max_length=8, blank=True, default='')
-    vat_number = models.CharField(_('VAT number'), max_length=12, blank=True, default='')
-    contact_person = models.CharField(_('contact person'), max_length=60, blank=True, default='')
-    phone = models.CharField(_('phone'), max_length=30, blank=True, default='')
-    email = EmailField(_('email address'), blank=True, default='')
-    employee = models.CharField(_('employee ID'), max_length=150, blank=True, default='')
+    registration = models.OneToOneField(
+        SubjectRegistration, on_delete=models.CASCADE, related_name="billing_info", verbose_name=_("registration")
+    )
+    name = models.CharField(_("name"), max_length=150)
+    street = models.CharField(_("street"), max_length=150, blank=True, default="")
+    city = models.CharField(_("city"), max_length=150, blank=True, default="")
+    postal_code = PostalCodeField(_("postal code"), blank=True, default="")
+    company_num = models.CharField(_("company number"), max_length=8, blank=True, default="")
+    vat_number = models.CharField(_("VAT number"), max_length=12, blank=True, default="")
+    contact_person = models.CharField(_("contact person"), max_length=60, blank=True, default="")
+    phone = models.CharField(_("phone"), max_length=30, blank=True, default="")
+    email = EmailField(_("email address"), blank=True, default="")
+    employee = models.CharField(_("employee ID"), max_length=150, blank=True, default="")
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('billing information')
-        verbose_name_plural = _('billing information')
+        app_label = "leprikon"
+        verbose_name = _("billing information")
+        verbose_name_plural = _("billing information")
 
     def __str__(self):
         return self.name
 
     @cached_property
     def address(self):
-        return ', '.join(filter(bool, (self.street, self.city, self.postal_code)))
-    address.short_description = _('address')
+        return ", ".join(filter(bool, (self.street, self.city, self.postal_code)))
+
+    address.short_description = _("address")
 
 
 class TransactionMixin(object):
@@ -1451,83 +1590,102 @@ class TransactionMixin(object):
     def clean(self):
         errors = {}
         if self.amount == 0:
-            errors['amount'] = [_('Amount can not be zero.')]
+            errors["amount"] = [_("Amount can not be zero.")]
         if self.accounted:
             max_closure_date = LeprikonSite.objects.get_current().max_closure_date
             if max_closure_date and self.accounted.date() <= max_closure_date:
-                errors['accounted'] = [
-                    _('Date must be after the last account closure ({}).').format(
-                        formats.date_format(max_closure_date)
-                    )
+                errors["accounted"] = [
+                    _("Date must be after the last account closure ({}).").format(formats.date_format(max_closure_date))
                 ]
         if errors:
             raise ValidationError(errors)
 
 
 class SubjectDiscount(TransactionMixin, models.Model):
-    accounted = models.DateTimeField(_('accounted time'), default=timezone.now)
-    amount = PriceField(_('discount'), default=0)
-    explanation = models.CharField(_('discount explanation'), max_length=250, blank=True, default='')
+    accounted = models.DateTimeField(_("accounted time"), default=timezone.now)
+    amount = PriceField(_("discount"), default=0)
+    explanation = models.CharField(_("discount explanation"), max_length=250, blank=True, default="")
 
     class Meta:
         abstract = True
-        app_label = 'leprikon'
-        verbose_name = _('discount')
-        verbose_name_plural = _('discounts')
-        ordering = ('accounted',)
+        app_label = "leprikon"
+        verbose_name = _("discount")
+        verbose_name_plural = _("discounts")
+        ordering = ("accounted",)
 
     def __str__(self):
         return currency(self.amount)
 
 
 class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
-    object_name = 'payment'
+    object_name = "payment"
 
-    PAYMENT_CASH = 'PAYMENT_CASH'
-    PAYMENT_BANK = 'PAYMENT_BANK'
-    PAYMENT_ONLINE = 'PAYMENT_ONLINE'
-    PAYMENT_TRANSFER = 'PAYMENT_TRANSFER'
-    RETURN_CASH = 'RETURN_CASH'
-    RETURN_BANK = 'RETURN_BANK'
-    RETURN_TRANSFER = 'RETURN_TRANSFER'
-    payment_type_labels = OrderedDict([
-        (PAYMENT_CASH, _('payment - cash')),
-        (PAYMENT_BANK, _('payment - bank')),
-        (PAYMENT_ONLINE, _('payment - online')),
-        (PAYMENT_TRANSFER, _('payment - transfer from return')),
-        (RETURN_CASH, _('return - cash')),
-        (RETURN_BANK, _('return - bank')),
-        (RETURN_TRANSFER, _('return - transfer to payment')),
-    ])
+    PAYMENT_CASH = "PAYMENT_CASH"
+    PAYMENT_BANK = "PAYMENT_BANK"
+    PAYMENT_ONLINE = "PAYMENT_ONLINE"
+    PAYMENT_TRANSFER = "PAYMENT_TRANSFER"
+    RETURN_CASH = "RETURN_CASH"
+    RETURN_BANK = "RETURN_BANK"
+    RETURN_TRANSFER = "RETURN_TRANSFER"
+    payment_type_labels = OrderedDict(
+        [
+            (PAYMENT_CASH, _("payment - cash")),
+            (PAYMENT_BANK, _("payment - bank")),
+            (PAYMENT_ONLINE, _("payment - online")),
+            (PAYMENT_TRANSFER, _("payment - transfer from return")),
+            (RETURN_CASH, _("return - cash")),
+            (RETURN_BANK, _("return - bank")),
+            (RETURN_TRANSFER, _("return - transfer to payment")),
+        ]
+    )
     payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
     returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
 
-    registration = models.ForeignKey(SubjectRegistration, on_delete=models.PROTECT,
-                                     related_name='payments', verbose_name=_('registration'))
-    accounted = models.DateTimeField(_('accounted time'), default=timezone.now)
-    mail_sent = models.DateTimeField(_('mail sent'), editable=False, null=True)
-    payment_type = models.CharField(_('payment type'), max_length=30, choices=payment_type_labels.items())
-    amount = PriceField(_('amount'), help_text=_('positive value for payment, negative value for return'))
-    note = models.CharField(_('note'), max_length=300, blank=True, default='')
-    related_payment = models.OneToOneField('self', blank=True, limit_choices_to={
-        'payment_type__in': (PAYMENT_TRANSFER, RETURN_TRANSFER)
-    }, null=True, on_delete=models.PROTECT, related_name='related_payments', verbose_name=_('related payment'))
-    bankreader_transaction = models.OneToOneField(BankreaderTransaction, blank=True, null=True,
-                                                  on_delete=models.PROTECT, verbose_name=_('bank account transaction'))
-    pays_payment = models.OneToOneField(PaysPayment, blank=True, editable=False,
-                                        limit_choices_to={'status': PaysPayment.REALIZED},
-                                        null=True, on_delete=models.PROTECT, verbose_name=_('online payment'))
-    received_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT,
-                                    related_name='+', verbose_name=_('received by'))
+    registration = models.ForeignKey(
+        SubjectRegistration, on_delete=models.PROTECT, related_name="payments", verbose_name=_("registration")
+    )
+    accounted = models.DateTimeField(_("accounted time"), default=timezone.now)
+    mail_sent = models.DateTimeField(_("mail sent"), editable=False, null=True)
+    payment_type = models.CharField(_("payment type"), max_length=30, choices=payment_type_labels.items())
+    amount = PriceField(_("amount"), help_text=_("positive value for payment, negative value for return"))
+    note = models.CharField(_("note"), max_length=300, blank=True, default="")
+    related_payment = models.OneToOneField(
+        "self",
+        blank=True,
+        limit_choices_to={"payment_type__in": (PAYMENT_TRANSFER, RETURN_TRANSFER)},
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="related_payments",
+        verbose_name=_("related payment"),
+    )
+    bankreader_transaction = models.OneToOneField(
+        BankreaderTransaction,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name=_("bank account transaction"),
+    )
+    pays_payment = models.OneToOneField(
+        PaysPayment,
+        blank=True,
+        editable=False,
+        limit_choices_to={"status": PaysPayment.REALIZED},
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name=_("online payment"),
+    )
+    received_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("received by")
+    )
 
     class Meta:
-        app_label = 'leprikon'
-        verbose_name = _('payment')
-        verbose_name_plural = _('payments')
-        ordering = ('accounted',)
+        app_label = "leprikon"
+        verbose_name = _("payment")
+        verbose_name_plural = _("payments")
+        ordering = ("accounted",)
 
     def __str__(self):
-        return '{payment_type} {amount}'.format(
+        return "{payment_type} {amount}".format(
             payment_type=self.payment_type_label,
             amount=currency(abs(self.amount)),
         )
@@ -1535,27 +1693,28 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     @cached_property
     def organization(self):
         return (
-            self.registration.subject.organization or
-            self.registration.subject.subject_type.organization or
-            LeprikonSite.objects.get_current().organization or
-            Organization()
+            self.registration.subject.organization
+            or self.registration.subject.subject_type.organization
+            or LeprikonSite.objects.get_current().organization
+            or Organization()
         )
 
     @cached_property
     def payment_type_label(self):
-        return self.payment_type_labels.get(self.payment_type, '-')
-    payment_type_label.short_description = _('payment type')
+        return self.payment_type_labels.get(self.payment_type, "-")
+
+    payment_type_label.short_description = _("payment type")
 
     @cached_property
     def slug(self):
-        return '{}-{}'.format(self.registration.slug, self.id)
+        return "{}-{}".format(self.registration.slug, self.id)
 
     def get_print_setup(self, event):
         return (
-            self.registration.subject.bill_print_setup or
-            self.registration.subject.subject_type.bill_print_setup or
-            LeprikonSite.objects.get_current().bill_print_setup or
-            PrintSetup()
+            self.registration.subject.bill_print_setup
+            or self.registration.subject.subject_type.bill_print_setup
+            or LeprikonSite.objects.get_current().bill_print_setup
+            or PrintSetup()
         )
 
     @cached_property
@@ -1563,19 +1722,19 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         return self.registration.subject
 
     mail_subject_patterns = {
-        'received': _('Registration for {subject_type} {subject} - payment confirmation'),
+        "received": _("Registration for {subject_type} {subject} - payment confirmation"),
     }
 
     def get_attachments(self, event):
         attachments = []
 
-        if event == 'received':
-            attachments.append(self.get_pdf_attachment('pdf'))
+        if event == "received":
+            attachments.append(self.get_pdf_attachment("pdf"))
 
         attachments += [
-            (basename(attachment.file.file.path), open(attachment.file.file.path, 'rb').read())
+            (basename(attachment.file.file.path), open(attachment.file.file.path, "rb").read())
             for attachment in self.registration.all_attachments
-            if f'payment_{event}' in attachment.events
+            if f"payment_{event}" in attachment.events
         ]
         return attachments or None
 
@@ -1592,11 +1751,11 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
 
         # ensure at most one relation
         if [self.related_payment, self.bankreader_transaction, self.pays_payment].count(None) < 2:
-            message = _('Payment can only have one relation.')
+            message = _("Payment can only have one relation.")
             if self.related_payment:
-                errors['related_payment'] = message
+                errors["related_payment"] = message
             if self.bankreader_transaction:
-                errors['bankreader_transaction'] = message
+                errors["bankreader_transaction"] = message
         else:
             if self.related_payment:
                 valid_payment_type = (
@@ -1614,19 +1773,19 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
                 valid_amount = self.bankreader_transaction.amount
             if self.related_payment or self.bankreader_transaction:
                 if self.payment_type != valid_payment_type:
-                    errors.setdefault('payment_type', []).append(
-                        _('Payment type must be {valid_payment_type}.').format(
+                    errors.setdefault("payment_type", []).append(
+                        _("Payment type must be {valid_payment_type}.").format(
                             valid_payment_type=self.payment_type_labels[valid_payment_type],
                         )
                     )
                 if self.amount != valid_amount:
-                    errors.setdefault('amount', []).append(
-                        _('Amount must be {valid_amount}.').format(valid_amount=valid_amount)
+                    errors.setdefault("amount", []).append(
+                        _("Amount must be {valid_amount}.").format(valid_amount=valid_amount)
                     )
         if errors:
             raise ValidationError(errors)
 
-    def send_mail(self, event='received'):
+    def send_mail(self, event="received"):
         with transaction.atomic():
             self.mail_sent = timezone.now()
             self.save()
@@ -1650,7 +1809,7 @@ def payment_create_subject_payment(instance, **kwargs):
         accounted=payment.created,
         payment_type=SubjectPayment.PAYMENT_ONLINE,
         amount=payment.amount / payment.base_units,
-        note=_('received online payment'),
+        note=_("received online payment"),
         pays_payment=payment,
     )
 
@@ -1675,6 +1834,6 @@ def transaction_create_subject_payment(instance, **kwargs):
         accounted=timezone.make_aware(datetime.combine(transaction.accounted_date, time(12))),
         payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
         amount=transaction.amount,
-        note=_('imported from account statement'),
+        note=_("imported from account statement"),
         bankreader_transaction=transaction,
     )

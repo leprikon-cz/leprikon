@@ -14,7 +14,7 @@ from .models.orderables import OrderableRegistration
 
 class SentryCronJobBase(CronJobBase):
     def dojob(self):
-        raise NotImplementedError(f'{self.__class__.__name__}.dojob must be implemented.')
+        raise NotImplementedError(f"{self.__class__.__name__}.dojob must be implemented.")
 
     def do(self):
         try:
@@ -27,7 +27,7 @@ class SentryCronJobBase(CronJobBase):
 
 class SendPaymentRequest(SentryCronJobBase):
     schedule = Schedule(run_at_times=[settings.CRON_SEND_PAYMENT_REQUEST_TIME])
-    code = 'leprikon.cronjobs.SendPaymentRequest'
+    code = "leprikon.cronjobs.SendPaymentRequest"
 
     def dojob(self):
         today = date.today()
@@ -39,7 +39,7 @@ class SendPaymentRequest(SentryCronJobBase):
                     registration__canceled__isnull=True,
                     payment_requested=False,
                     period__due_from__lte=today,
-                ).select_related('registration')
+                ).select_related("registration")
             ),
             EventRegistration.objects.filter(
                 approved__isnull=False,
@@ -53,7 +53,7 @@ class SendPaymentRequest(SentryCronJobBase):
                     approved__isnull=False,
                     canceled__isnull=True,
                     payment_requested__isnull=True,
-                ).select_related('subject__orderable')
+                ).select_related("subject__orderable")
                 if registration.get_due_from() <= today
             ),
         ):

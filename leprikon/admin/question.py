@@ -6,5 +6,5 @@ from .filters import ActiveListFilter
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'question', 'field')
+    list_display = ("name", "question", "field")
     list_filter = (ActiveListFilter,)

@@ -9,21 +9,21 @@ from ..models.subjects import Subject, SubjectGroup, SubjectType
 class SchoolYearListFilter(admin.FieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         try:
-            request.school_year = SchoolYear.objects.get(year=params['year'])
+            request.school_year = SchoolYear.objects.get(year=params["year"])
         except (SchoolYear.DoesNotExist, ValueError, KeyError):
             pass
         self.school_year = request.school_year
         super(SchoolYearListFilter, self).__init__(field, request, params, model, model_admin, field_path)
 
     def expected_parameters(self):
-        return ['year']
+        return ["year"]
 
     def choices(self, cl):
         return [
             {
-                'selected': school_year == self.school_year,
-                'query_string': cl.get_query_string({'year': school_year.year}),
-                'display': school_year,
+                "selected": school_year == self.school_year,
+                "query_string": cl.get_query_string({"year": school_year.year}),
+                "display": school_year,
             }
             for school_year in SchoolYear.objects.all()
         ]
@@ -33,17 +33,17 @@ class SchoolYearListFilter(admin.FieldListFilter):
 
 
 class ActiveListFilter(admin.SimpleListFilter):
-    title = _('status')
-    parameter_name = 'status'
+    title = _("status")
+    parameter_name = "status"
 
     def lookups(self, request, model_admin):
         return (
-            (None, _('active')),
-            ('inactive', _('inactive')),
+            (None, _("active")),
+            ("inactive", _("inactive")),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'inactive':
+        if self.value() == "inactive":
             return queryset.filter(active=False)
         else:
             return queryset.filter(active=True)
@@ -52,47 +52,47 @@ class ActiveListFilter(admin.SimpleListFilter):
         value = self.value()
         return [
             {
-                'selected': value != 'inactive',
-                'query_string': cl.get_query_string({}, [self.parameter_name]),
-                'display': _('active'),
+                "selected": value != "inactive",
+                "query_string": cl.get_query_string({}, [self.parameter_name]),
+                "display": _("active"),
             },
             {
-                'selected': value == 'inactive',
-                'query_string': cl.get_query_string({self.parameter_name: 'inactive'}),
-                'display': _('inactive'),
+                "selected": value == "inactive",
+                "query_string": cl.get_query_string({self.parameter_name: "inactive"}),
+                "display": _("inactive"),
             },
         ]
 
 
 class ApprovedListFilter(admin.SimpleListFilter):
-    title = _('approval')
-    parameter_name = 'approved'
+    title = _("approval")
+    parameter_name = "approved"
 
     def lookups(self, request, model_admin):
         return (
-            ('yes', _('approved')),
-            ('no', _('unapproved')),
+            ("yes", _("approved")),
+            ("no", _("unapproved")),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'yes':
+        if self.value() == "yes":
             return queryset.filter(approved__isnull=False)
-        if self.value() == 'no':
+        if self.value() == "no":
             return queryset.filter(approved__isnull=True)
 
 
 class CanceledListFilter(admin.SimpleListFilter):
-    title = _('cancelation')
-    parameter_name = 'canceled'
+    title = _("cancelation")
+    parameter_name = "canceled"
 
     def lookups(self, request, model_admin):
         return (
-            (None, _('not canceled')),
-            ('yes', _('canceled')),
+            (None, _("not canceled")),
+            ("yes", _("canceled")),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'yes':
+        if self.value() == "yes":
             return queryset.filter(canceled__isnull=False)
         else:
             return queryset.filter(canceled__isnull=True)
@@ -101,14 +101,14 @@ class CanceledListFilter(admin.SimpleListFilter):
         value = self.value()
         return [
             {
-                'selected': value != 'yes',
-                'query_string': cl.get_query_string({}, [self.parameter_name]),
-                'display': _('active'),
+                "selected": value != "yes",
+                "query_string": cl.get_query_string({}, [self.parameter_name]),
+                "display": _("active"),
             },
             {
-                'selected': value == 'yes',
-                'query_string': cl.get_query_string({self.parameter_name: 'yes'}),
-                'display': _('canceled'),
+                "selected": value == "yes",
+                "query_string": cl.get_query_string({self.parameter_name: "yes"}),
+                "display": _("canceled"),
             },
         ]
 
@@ -116,7 +116,7 @@ class CanceledListFilter(admin.SimpleListFilter):
 class SubjectTypeListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.subject_types = SubjectType.objects.all()
-        subject_type_type = getattr(model_admin, 'subject_type_type', None)
+        subject_type_type = getattr(model_admin, "subject_type_type", None)
         if subject_type_type:
             self.subject_types = self.subject_types.filter(subject_type=subject_type_type)
         super(SubjectTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
@@ -130,8 +130,8 @@ class SubjectTypeListFilter(admin.RelatedFieldListFilter):
 
 class SubjectGroupListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        subject_type_type = getattr(model_admin, 'subject_type_type', None)
-        if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
+        subject_type_type = getattr(model_admin, "subject_type_type", None)
+        if hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
             self.groups = SubjectGroup.objects.filter(subject_types__id=request.leprikon_subject_type_id)
         elif subject_type_type:
             self.groups = SubjectGroup.objects.filter(subject_types__subject_type=subject_type_type)
@@ -149,12 +149,12 @@ class SubjectListFilter(admin.RelatedFieldListFilter):
 
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.subjects = self.model.objects.filter(school_year=request.school_year)
-        subject_type_type = getattr(model_admin, 'subject_type_type', None)
-        if hasattr(request, 'leprikon_subject_type_id') and request.leprikon_subject_type_id:
+        subject_type_type = getattr(model_admin, "subject_type_type", None)
+        if hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
             self.subjects = self.subjects.filter(subject_type__id=request.leprikon_subject_type_id)
         elif subject_type_type:
             self.subjects = self.subjects.filter(subject_type__subject_type=subject_type_type)
-        if hasattr(request, 'leprikon_subject_group_id') and request.leprikon_subject_group_id:
+        if hasattr(request, "leprikon_subject_group_id") and request.leprikon_subject_group_id:
             self.subjects = self.subjects.filter(subject_group__id=request.leprikon_subject_group_id)
         super(SubjectListFilter, self).__init__(field, request, params, model, model_admin, field_path)
         if subject_type_type:
@@ -175,27 +175,29 @@ class LeaderListFilter(admin.RelatedFieldListFilter):
 
 class IsNullFieldListFilter(admin.FieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        self.lookup_kwarg = '%s__isnull' % field_path
+        self.lookup_kwarg = "%s__isnull" % field_path
         self.lookup_val = request.GET.get(self.lookup_kwarg)
-        if not hasattr(field, 'verbose_name') and hasattr(field, 'related_model'):
+        if not hasattr(field, "verbose_name") and hasattr(field, "related_model"):
             field.verbose_name = field.related_model._meta.verbose_name
         super().__init__(field, request, params, model, model_admin, field_path)
-        if (self.used_parameters and self.lookup_kwarg in self.used_parameters and
-                self.used_parameters[self.lookup_kwarg] in ('1', '0')):
+        if (
+            self.used_parameters
+            and self.lookup_kwarg in self.used_parameters
+            and self.used_parameters[self.lookup_kwarg] in ("1", "0")
+        ):
             self.used_parameters[self.lookup_kwarg] = bool(int(self.used_parameters[self.lookup_kwarg]))
 
     def expected_parameters(self):
         return [self.lookup_kwarg]
 
     def choices(self, changelist):
-        for lookup, title in (
-                (None, _('All')),
-                ('0', _('Set')),
-                ('1', _('Not set'))):
+        for lookup, title in ((None, _("All")), ("0", _("Set")), ("1", _("Not set"))):
             yield {
-                'selected': self.lookup_val == lookup,
-                'query_string': changelist.get_query_string({
-                    self.lookup_kwarg: lookup,
-                }),
-                'display': title,
+                "selected": self.lookup_val == lookup,
+                "query_string": changelist.get_query_string(
+                    {
+                        self.lookup_kwarg: lookup,
+                    }
+                ),
+                "display": title,
             }

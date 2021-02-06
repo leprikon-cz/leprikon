@@ -17,8 +17,8 @@ def start_end_by_date(d):
     # we work with monthly timesheets by default
     # TODO: allow weekly and quarterly timesheets by settings
     return {
-        'start': date(d.year, d.month, 1),
-        'end': date(d.year, d.month, calendar.monthrange(d.year, d.month)[1]),
+        "start": date(d.year, d.month, 1),
+        "end": date(d.year, d.month, calendar.monthrange(d.year, d.month)[1]),
     }
 
 
@@ -28,16 +28,16 @@ class TimesheetPeriodManager(models.Manager):
 
 
 class TimesheetPeriod(StartEndMixin, models.Model):
-    start = models.DateField(_('start date'), editable=False, unique=True)
-    end = models.DateField(_('end date'), editable=False, unique=True)
+    start = models.DateField(_("start date"), editable=False, unique=True)
+    end = models.DateField(_("end date"), editable=False, unique=True)
 
     objects = TimesheetPeriodManager()
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('-start',)
-        verbose_name = _('timesheet period')
-        verbose_name_plural = _('timesheet periods')
+        app_label = "leprikon"
+        ordering = ("-start",)
+        verbose_name = _("timesheet period")
+        verbose_name_plural = _("timesheet periods")
 
     def __str__(self):
         return self.name
@@ -46,7 +46,7 @@ class TimesheetPeriod(StartEndMixin, models.Model):
     def name(self):
         # we work with monthly timesheets by default
         # TODO: allow weekly and quarterly timesheets by settings
-        return DateFormat(self.start).format('F Y')
+        return DateFormat(self.start).format("F Y")
 
     @cached_property
     def all_timesheets(self):
@@ -54,7 +54,6 @@ class TimesheetPeriod(StartEndMixin, models.Model):
 
 
 class TimesheetManager(models.Manager):
-
     def for_leader_and_date(self, leader, date):
         return self.get_or_create(
             leader=leader,
@@ -63,24 +62,26 @@ class TimesheetManager(models.Manager):
 
 
 class Timesheet(models.Model):
-    period = models.ForeignKey(TimesheetPeriod, verbose_name=_('period'), editable=False,
-                               related_name='timesheets', on_delete=models.PROTECT)
-    leader = models.ForeignKey(Leader, verbose_name=_('leader'), editable=False,
-                               related_name='timesheets', on_delete=models.PROTECT)
-    submitted = models.BooleanField(_('submitted'), default=False)
-    paid = models.BooleanField(_('paid'), default=False)
+    period = models.ForeignKey(
+        TimesheetPeriod, verbose_name=_("period"), editable=False, related_name="timesheets", on_delete=models.PROTECT
+    )
+    leader = models.ForeignKey(
+        Leader, verbose_name=_("leader"), editable=False, related_name="timesheets", on_delete=models.PROTECT
+    )
+    submitted = models.BooleanField(_("submitted"), default=False)
+    paid = models.BooleanField(_("paid"), default=False)
 
     objects = TimesheetManager()
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('-period__start',)
-        unique_together = (('period', 'leader'),)
-        verbose_name = _('timesheet')
-        verbose_name_plural = _('timesheets')
+        app_label = "leprikon"
+        ordering = ("-period__start",)
+        unique_together = (("period", "leader"),)
+        verbose_name = _("timesheet")
+        verbose_name_plural = _("timesheets")
 
     def __str__(self):
-        return '{leader}, {period}'.format(
+        return "{leader}, {period}".format(
             leader=self.leader,
             period=self.period.name,
         )
@@ -100,7 +101,7 @@ class Timesheet(models.Model):
             key=lambda e: e.datetime_start,
         )
 
-    class EntryGroup(namedtuple('_EntryGroup', ('name', 'entries'))):
+    class EntryGroup(namedtuple("_EntryGroup", ("name", "entries"))):
         @property
         def duration(self):
             return sum((e.duration for e in self.entries), timedelta())
@@ -119,37 +120,43 @@ class Timesheet(models.Model):
 
 
 class TimesheetEntryType(models.Model):
-    name = models.CharField(_('name'), max_length=150)
-    order = models.IntegerField(_('order'), blank=True, default=0)
+    name = models.CharField(_("name"), max_length=150)
+    order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('order',)
-        verbose_name = _('timesheet entry type')
-        verbose_name_plural = _('timesheet entry types')
+        app_label = "leprikon"
+        ordering = ("order",)
+        verbose_name = _("timesheet entry type")
+        verbose_name_plural = _("timesheet entry types")
 
     def __str__(self):
         return self.name
 
 
 class TimesheetEntry(StartEndMixin, models.Model):
-    timesheet = models.ForeignKey(Timesheet, verbose_name=_('timesheet'), editable=False,
-                                  related_name='timesheet_entries', on_delete=models.PROTECT)
-    entry_type = models.ForeignKey(TimesheetEntryType, verbose_name=_('entry type'), null=True,
-                                   related_name='entries', on_delete=models.PROTECT)
-    date = models.DateField(_('date'))
-    start = models.TimeField(_('start time'))
-    end = models.TimeField(_('end time'))
-    description = HTMLField(_('work description'))
+    timesheet = models.ForeignKey(
+        Timesheet,
+        verbose_name=_("timesheet"),
+        editable=False,
+        related_name="timesheet_entries",
+        on_delete=models.PROTECT,
+    )
+    entry_type = models.ForeignKey(
+        TimesheetEntryType, verbose_name=_("entry type"), null=True, related_name="entries", on_delete=models.PROTECT
+    )
+    date = models.DateField(_("date"))
+    start = models.TimeField(_("start time"))
+    end = models.TimeField(_("end time"))
+    description = HTMLField(_("work description"))
 
     class Meta:
-        app_label = 'leprikon'
-        ordering = ('start',)
-        verbose_name = _('timesheet entry')
-        verbose_name_plural = _('timesheet entries')
+        app_label = "leprikon"
+        ordering = ("start",)
+        verbose_name = _("timesheet entry")
+        verbose_name_plural = _("timesheet entries")
 
     def __str__(self):
-        return '{}'.format(self.duration)
+        return "{}".format(self.duration)
 
     @cached_property
     def datetime_start(self):
@@ -162,14 +169,15 @@ class TimesheetEntry(StartEndMixin, models.Model):
     @cached_property
     def duration(self):
         return self.datetime_end - self.datetime_start
-    duration.short_description = _('duration')
+
+    duration.short_description = _("duration")
 
     @property
     def group(self):
         return self.entry_type
 
     def get_edit_url(self):
-        return reverse('leprikon:timesheetentry_update', args=(self.id,))
+        return reverse("leprikon:timesheetentry_update", args=(self.id,))
 
     def get_delete_url(self):
-        return reverse('leprikon:timesheetentry_delete', args=(self.id,))
+        return reverse("leprikon:timesheetentry_delete", args=(self.id,))

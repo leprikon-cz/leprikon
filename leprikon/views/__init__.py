@@ -4,16 +4,30 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..conf import settings
 from . import (
-    billing_info, journals, leaders, messages, parents, participants,
-    registrationlink, registrations, reports, schoolyear, subjects, summaries,
-    terms_conditions, timesheets, user,
+    billing_info,
+    journals,
+    leaders,
+    messages,
+    parents,
+    participants,
+    registrationlink,
+    registrations,
+    reports,
+    schoolyear,
+    subjects,
+    summaries,
+    terms_conditions,
+    timesheets,
+    user,
 )
 from .reports import (
-    courses as reports_courses, debtors as reports_debtors,
-    events as reports_events, orderables as reports_orderables,
+    courses as reports_courses,
+    debtors as reports_debtors,
+    events as reports_events,
+    orderables as reports_orderables,
 )
 
-login_url = reverse('leprikon:user_login')
+login_url = reverse("leprikon:user_login")
 
 
 def _user_is_leader(u):
