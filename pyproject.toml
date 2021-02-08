@@ -20,7 +20,7 @@ use_parentheses = true
 
 [tool.poetry]
 name = "leprikon"
-version = "2.28.0"
+version = "2.28.1"
 description = "Django CMS based IS for education"
 authors = ["Jakub Dorňák <jakub.dornak@misli.cz>"]
 license = "BSD-3-Clause"
