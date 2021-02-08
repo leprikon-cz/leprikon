@@ -13,7 +13,10 @@ from .filters import LeaderListFilter, SchoolYearListFilter, SubjectListFilter
 class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form = JournalLeaderEntryAdminForm
     list_display = ("timesheet", "date", "start", "end", "duration", "subject")
-    list_filter = (("timesheet__leader", LeaderListFilter),)
+    list_filter = (
+        ("timesheet__leader", LeaderListFilter),
+        ("journal_entry__subject", SubjectListFilter),
+    )
     ordering = ("-journal_entry__date", "-start")
 
     def has_add_permission(self, request):
