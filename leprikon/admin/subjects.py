@@ -754,7 +754,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     def save_model(self, request, obj, form, change):
         if not change:
             # set price
-            obj.price = obj.subject_variant.price if obj.subject_variant else obj.subject.price
+            obj.price = obj.subject_variant.get_price() if obj.subject_variant else obj.subject.price
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 

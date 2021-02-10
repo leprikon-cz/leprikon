@@ -872,6 +872,9 @@ class SubjectVariant(models.Model):
     def __str__(self):
         return self.name
 
+    def get_price(self):
+        return self.price if self.price is not None else self.subject.price
+
 
 class SubjectAttachment(BaseAttachment):
     subject = models.ForeignKey(

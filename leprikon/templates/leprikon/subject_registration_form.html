@@ -69,7 +69,7 @@
                 <span id="price">
                 {% if form.subject_variant.value %}
                     {% for variant in form.instance.subject.all_variants %}
-                        {% if variant.id == form.subject_variant.value|add:0 %}{{ variant.price | currency }}{% endif %}
+                        {% if variant.id == form.subject_variant.value|add:0 %}{{ variant.get_price | currency }}{% endif %}
                     {% endfor %}
                 {% else %}
                     {{ form.instance.subject.price | currency }}
@@ -360,7 +360,7 @@ $(document).ready(function() {
     $('input[type=radio][name={{ form.subject_variant.html_name }}]').change(function() {
         {% for variant in form.instance.subject.all_variants %}
         if (this.value == {{ variant.id }}) {
-            $('#price').text('{{ variant.price | currency | escapejs }}');
+            $('#price').text('{{ variant.get_price | currency | escapejs }}');
         }{% endfor %}
     });
     {% endif %}
