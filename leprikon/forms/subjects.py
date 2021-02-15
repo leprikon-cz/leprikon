@@ -584,7 +584,8 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         if subject.registration_type_participants:
             registered_birth_nums = list(
                 SubjectRegistrationParticipant.objects.filter(
-                    registration_id__in=self.instance.subject.active_registrations.values("id")
+                    registration_id__in=self.instance.subject.active_registrations.values("id"),
+                    birth_num__isnull=False,
                 ).values_list("birth_num", flat=True)
             )
 
