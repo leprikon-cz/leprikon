@@ -12,7 +12,7 @@ class SummaryView(TemplateView):
     template_name = "leprikon/summary.html"
 
     def get_context_data(self, **kwargs):
-        context = super(SummaryView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
         context["payment_status"] = (
             sum(
@@ -34,7 +34,7 @@ class LeaderSummaryView(TemplateView):
     template_name = "leprikon/leader_summary.html"
 
     def get_context_data(self, **kwargs):
-        context = super(LeaderSummaryView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["subjects"] = self.request.leader.subjects.filter(school_year=self.request.school_year)
         context["timesheets"] = self.request.leader.timesheets.filter(submitted=False, period__end__lte=date.today())
         return context

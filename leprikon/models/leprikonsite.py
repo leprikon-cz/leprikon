@@ -30,7 +30,7 @@ class LeprikonSiteManager(models.Manager):
 
     def get_queryset(self):
         return (
-            super(LeprikonSiteManager, self)
+            super()
             .get_queryset()
             .select_related(
                 "bill_print_setup",

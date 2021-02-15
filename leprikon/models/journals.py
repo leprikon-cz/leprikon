@@ -103,7 +103,7 @@ class JournalEntry(StartEndMixin, models.Model):
     def save(self, *args, **kwargs):
         if self.end is None:
             self.end = self.start
-        super(JournalEntry, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_edit_url(self):
         return reverse("leprikon:journalentry_update", args=(self.id,))

@@ -29,7 +29,7 @@ class UserCreateView(CreateView):
         return _("User account {} has been created.").format(self.object)
 
     def form_valid(self, form):
-        response = super(UserCreateView, self).form_valid(form)
+        response = super().form_valid(form)
 
         # first user is superuser
         if self.model.objects.count() == 1:
@@ -74,7 +74,7 @@ class UserAgreementView(FormView):
                 user=self.request.user,
                 granted=now(),
             )
-        return super(UserAgreementView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class UserUpdateView(UpdateView):

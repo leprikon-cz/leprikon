@@ -13,9 +13,9 @@ class StartEndMixin(object):
             )
 
     def clean_fields(self, exclude=None):
-        super(StartEndMixin, self).clean_fields(exclude)
+        super().clean_fields(exclude)
         self.validate()
 
     def save(self, *args, **kwargs):
         self.validate()
-        super(StartEndMixin, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

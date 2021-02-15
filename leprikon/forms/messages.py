@@ -12,7 +12,7 @@ class MessageFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_("Search term"), required=False)
 
     def __init__(self, user, *args, **kwargs):
-        super(MessageFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.qs = user.leprikon_messages.all()
 
     def get_queryset(self):
@@ -54,7 +54,7 @@ class MessageAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
     def _save_m2m(self):
-        super(MessageAdminForm, self)._save_m2m()
+        super()._save_m2m()
         recipients = set(map(int, self.cleaned_data["recipients"]))
         for recipient in self.instance.all_recipients:
             if recipient.recipient_id not in recipients:

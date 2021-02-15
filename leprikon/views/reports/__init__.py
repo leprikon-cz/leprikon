@@ -16,7 +16,7 @@ class ReportsListView(TemplateView):
     Report = namedtuple("Report", ("title", "instructions", "form", "url"))
 
     def get_context_data(self, *args, **kwargs):
-        return super(ReportsListView, self).get_context_data(
+        return super().get_context_data(
             reports=[
                 self.Report(
                     title=_("Course payments"),

@@ -20,7 +20,7 @@ class TimesheetEntryAdminForm(forms.ModelForm):
 
     def __init__(self, **kwargs):
         self.leader = kwargs.pop("leader", None) or kwargs["instance"].timesheet.leader
-        super(TimesheetEntryAdminForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # make date, start and end read only, if timesheet is already submitted
         if self.instance.id and self.instance.timesheet.submitted:

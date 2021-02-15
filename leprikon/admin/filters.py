@@ -13,7 +13,7 @@ class SchoolYearListFilter(admin.FieldListFilter):
         except (SchoolYear.DoesNotExist, ValueError, KeyError):
             pass
         self.school_year = request.school_year
-        super(SchoolYearListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        super().__init__(field, request, params, model, model_admin, field_path)
 
     def expected_parameters(self):
         return ["year"]
@@ -119,7 +119,7 @@ class SubjectTypeListFilter(admin.RelatedFieldListFilter):
         subject_type_type = getattr(model_admin, "subject_type_type", None)
         if subject_type_type:
             self.subject_types = self.subject_types.filter(subject_type=subject_type_type)
-        super(SubjectTypeListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        super().__init__(field, request, params, model, model_admin, field_path)
         if subject_type_type:
             self.title = SubjectType.subject_type_type_labels[subject_type_type]
         request.leprikon_subject_type_id = self.lookup_val
@@ -137,7 +137,7 @@ class SubjectGroupListFilter(admin.RelatedFieldListFilter):
             self.groups = SubjectGroup.objects.filter(subject_types__subject_type=subject_type_type)
         else:
             self.groups = SubjectGroup.objects.all()
-        super(SubjectGroupListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        super().__init__(field, request, params, model, model_admin, field_path)
         request.leprikon_subject_group_id = self.lookup_val
 
     def field_choices(self, field, request, model_admin):
@@ -156,7 +156,7 @@ class SubjectListFilter(admin.RelatedFieldListFilter):
             self.subjects = self.subjects.filter(subject_type__subject_type=subject_type_type)
         if hasattr(request, "leprikon_subject_group_id") and request.leprikon_subject_group_id:
             self.subjects = self.subjects.filter(subject_group__id=request.leprikon_subject_group_id)
-        super(SubjectListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        super().__init__(field, request, params, model, model_admin, field_path)
         if subject_type_type:
             self.title = SubjectType.subject_type_labels[subject_type_type]
 
@@ -167,7 +167,7 @@ class SubjectListFilter(admin.RelatedFieldListFilter):
 class LeaderListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.leaders = Leader.objects.filter(school_years=request.school_year)
-        super(LeaderListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        super().__init__(field, request, params, model, model_admin, field_path)
 
     def field_choices(self, field, request, model_admin):
         return [(leader.id, leader) for leader in self.leaders]

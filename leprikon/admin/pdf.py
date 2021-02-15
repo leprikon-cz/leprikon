@@ -37,7 +37,7 @@ class PdfExportAdminMixin:
     export_pdf.short_description = _("Export selected items in single PDF.")
 
     def get_urls(self):
-        urls = super(PdfExportAdminMixin, self).get_urls()
+        urls = super().get_urls()
         return [
             urls_url(
                 r"(?P<obj_id>\d+).pdf$",

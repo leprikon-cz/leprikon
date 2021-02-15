@@ -89,7 +89,7 @@ class SubjectTypeAdmin(BulkUpdateMixin, admin.ModelAdmin):
     inlines = (SubjectTypeAttachmentInlineAdmin,)
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(SubjectTypeAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
 
         # limit choices of registration agreements
         registration_agreements_choices = form.base_fields["registration_agreements"].widget.widget.choices
@@ -354,7 +354,7 @@ class ChangeformRedirectMixin:
             obj = self.get_object(request, unquote(object_id))
             if obj:
                 return HttpResponseRedirect(obj.get_edit_url())
-        return super(ChangeformRedirectMixin, self).changeform_view(request, object_id, form_url, extra_context)
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
 
 @admin.register(Subject)
@@ -598,19 +598,19 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
 
     @property
     def media(self):
-        m = super(SubjectRegistrationBaseAdmin, self).media
+        m = super().media
         m.add_js(["leprikon/js/Popup.js"])
         m.add_css({"all": ["leprikon/css/registrations.changelist.css"]})
         return m
 
     def has_delete_permission(self, request, obj=None):
         if obj and obj.approved is None and obj.payments.count() == 0:
-            return super(SubjectRegistrationBaseAdmin, self).has_delete_permission(request, obj)
+            return super().has_delete_permission(request, obj)
         else:
             return False
 
     def get_actions(self, request):
-        actions = super(SubjectRegistrationBaseAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if "delete_selected" in actions:
             del actions["delete_selected"]
         return actions
@@ -737,7 +737,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         else:
             kwargs["form"] = forms.ModelForm
             kwargs["fields"] = ["subject"]
-        return super(SubjectRegistrationBaseAdmin, self).get_form(request, obj, **kwargs)
+        return super().get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
         if request.subject:
@@ -981,7 +981,7 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     exclude = ("received_by",)
 
     def get_urls(self):
-        urls = super(SubjectPaymentAdmin, self).get_urls()
+        urls = super().get_urls()
         populate_view = self.admin_site.admin_view(permission_required("leprikon.add_subjectpayment")(self.populate))
         return [urls_url(r"populate.json$", populate_view, name="leprikon_subjectpayment_populate")] + urls
 
@@ -1027,7 +1027,7 @@ class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.received_by = request.user
-        super(SubjectPaymentAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
 
     def send_mail(self, request, queryset):
         for payment in queryset.all():

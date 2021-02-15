@@ -226,7 +226,7 @@ class SubjectType(models.Model):
             self.name_genitiv = self.name
         if self.name_akuzativ is None:
             self.name_akuzativ = self.name
-        super(SubjectType, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @cached_property
     def all_questions(self):
@@ -1588,7 +1588,7 @@ class SubjectRegistrationBillingInfo(models.Model):
 class TransactionMixin(object):
     def save(self, *args, **kwargs):
         self.clean()
-        super(TransactionMixin, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def clean(self):
         errors = {}
@@ -1748,7 +1748,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     def clean(self):
         errors = {}
         try:
-            super(SubjectPayment, self).clean()
+            super().clean()
         except ValidationError as e:
             errors = e.update_error_dict(errors)
 

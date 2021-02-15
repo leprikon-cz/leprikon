@@ -18,7 +18,7 @@ class JournalLeaderEntryAdminForm(forms.ModelForm):
         fields = ["start", "end"]
 
     def __init__(self, *args, **kwargs):
-        super(JournalLeaderEntryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.timesheet.submitted:
             try:
                 del self.fields["start"]
@@ -27,7 +27,7 @@ class JournalLeaderEntryAdminForm(forms.ModelForm):
                 pass
 
     def clean(self):
-        cleaned_data = super(JournalLeaderEntryAdminForm, self).clean()
+        cleaned_data = super().clean()
 
         # readonly start end
         if self.instance.id and self.instance.timesheet.submitted:
@@ -53,7 +53,7 @@ class JournalLeaderEntryAdminForm(forms.ModelForm):
 
 class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
     def __init__(self, *args, **kwargs):
-        super(JournalLeaderEntryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.readonly_fields = [
             ReadonlyField(label=_("Subject"), value=self.instance.journal_entry.subject.name),
             ReadonlyField(label=_("Date"), value=self.instance.journal_entry.date),
@@ -73,7 +73,7 @@ class JournalEntryAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
-        super(JournalEntryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.instance.subject = self.subject
 
         if self.instance.id:
@@ -180,7 +180,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
     alternates = forms.ModelMultipleChoiceField(Leader.objects, label=_("Alternates"), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(JournalEntryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.readonly_fields = [
             ReadonlyField(label=_("Subject"), value=self.subject),
         ]
@@ -201,7 +201,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
             self.initial["leaders"] = [leader.id for leader in leaders]
 
     def clean(self):
-        self.cleaned_data = super(JournalEntryForm, self).clean()
+        self.cleaned_data = super().clean()
         self.cleaned_entries = []
         self.deleted_entries = []
 
@@ -299,7 +299,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
         return self.cleaned_data
 
     def save(self, commit=True):
-        self.instance = super(JournalEntryForm, self).save(commit)
+        self.instance = super().save(commit)
         for entry in self.cleaned_entries:
             entry.journal_entry = self.instance
             entry.save()

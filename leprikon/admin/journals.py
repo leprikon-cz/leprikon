@@ -25,7 +25,7 @@ class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         if obj and obj.timesheet.submitted:
             return False
-        return super(JournalLeaderEntryAdmin, self).has_delete_permission(request, obj)
+        return super().has_delete_permission(request, obj)
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.timesheet.submitted:
@@ -56,7 +56,7 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
                 entries = obj.journal_entries
             if entries.filter(timesheet__submitted=True).exists():
                 return False
-        return super(JournalLeaderEntryInlineAdmin, self).has_delete_permission(request, obj)
+        return super().has_delete_permission(request, obj)
 
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(

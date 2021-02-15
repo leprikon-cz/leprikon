@@ -26,16 +26,16 @@ class ColorField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs["max_length"] = 10
-        super(ColorField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
         kwargs["widget"] = ColorInput
-        return super(ColorField, self).formfield(**kwargs)
+        return super().formfield(**kwargs)
 
 
 class EmailField(models.EmailField):
     def to_python(self, value):
-        v = super(EmailField, self).to_python(value)
+        v = super().to_python(value)
         return v and v.lower()
 
 
@@ -43,7 +43,7 @@ class PriceField(models.DecimalField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("decimal_places", settings.PRICE_DECIMAL_PLACES)
         kwargs.setdefault("max_digits", settings.PRICE_MAX_DIGITS)
-        super(PriceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 DAY_OF_WEEK = {
@@ -63,7 +63,7 @@ class DayOfWeekField(models.IntegerField):
             "choices": tuple(sorted(DAY_OF_WEEK.items())),
         }
         defaults.update(kwargs)
-        super(DayOfWeekField, self).__init__(*args, **defaults)
+        super().__init__(*args, **defaults)
 
 
 birth_num_regex = re.compile("^[0-9]{2}([0257][1-9]|[1368][0-2])[0-3][0-9]/?[0-9]{3,4}$")
@@ -92,15 +92,15 @@ class BirthNumberField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs["max_length"] = 11
-        super(BirthNumberField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def deconstruct(self):
-        name, path, args, kwargs = super(BirthNumberField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         del kwargs["max_length"]
         return name, path, args, kwargs
 
     def clean(self, value, model_instance):
-        value = super(BirthNumberField, self).clean(value, model_instance)
+        value = super().clean(value, model_instance)
         return value if value[6] == "/" else "{}/{}".format(value[:6], value[6:])
 
     def formfield(self, **kwargs):
@@ -119,20 +119,20 @@ class PostalCodeField(models.CharField):
     def __init__(self, *args, **kwargs):
         defaults = {"max_length": 6}
         defaults.update(kwargs)
-        super(PostalCodeField, self).__init__(*args, **defaults)
+        super().__init__(*args, **defaults)
 
     def deconstruct(self):
-        name, path, args, kwargs = super(PostalCodeField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         del kwargs["max_length"]
         return name, path, args, kwargs
 
     def formfield(self, **kwargs):
         defaults = {"form_class": _PostalCodeField}
         defaults.update(kwargs)
-        return super(PostalCodeField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
     def clean(self, value, model_instance):
-        return super(PostalCodeField, self).clean(
+        return super().clean(
             value[3] == " " and value or "{} {}".format(value[:3], value[3:]),
             model_instance,
         )

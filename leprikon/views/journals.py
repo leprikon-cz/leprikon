@@ -14,7 +14,7 @@ class AlternatingView(TemplateView):
         return _("Alternating in school year {}").format(self.request.school_year)
 
     def get_context_data(self, **kwargs):
-        context = super(AlternatingView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["alternate_leader_entries"] = self.request.leader.get_alternate_leader_entries(self.request.school_year)
         return context
 
@@ -24,7 +24,7 @@ class JournalView(DetailView):
     template_name_suffix = "_journal"
 
     def get_queryset(self):
-        qs = super(JournalView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs
@@ -42,10 +42,10 @@ class JournalEntryCreateView(CreateView):
             self.subject = get_object_or_404(Subject, id=int(kwargs.pop("subject")))
         else:
             self.subject = get_object_or_404(Subject, id=int(kwargs.pop("subject")), leaders=self.request.leader)
-        return super(JournalEntryCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        kwargs = super(JournalEntryCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["subject"] = self.subject
         return kwargs
 
@@ -58,7 +58,7 @@ class JournalEntryUpdateView(UpdateView):
     message = _("The journal entry has been updated.")
 
     def get_object(self):
-        obj = super(JournalEntryUpdateView, self).get_object()
+        obj = super().get_object()
         if self.request.user.is_staff or self.request.leader in obj.subject.all_leaders + obj.all_alternates:
             return obj
         else:
@@ -71,13 +71,13 @@ class JournalEntryDeleteView(DeleteView):
     message = _("The journal entry has been deleted.")
 
     def get_queryset(self):
-        qs = super(JournalEntryDeleteView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(subject__leaders=self.request.leader)
         return qs
 
     def get_object(self):
-        obj = super(JournalEntryDeleteView, self).get_object()
+        obj = super().get_object()
         if obj.affects_submitted_timesheets:
             raise Http404()
         return obj
@@ -94,7 +94,7 @@ class JournalLeaderEntryUpdateView(UpdateView):
     message = _("The timesheet entry has been updated.")
 
     def get_object(self):
-        obj = super(JournalLeaderEntryUpdateView, self).get_object()
+        obj = super().get_object()
         if (
             self.request.user.is_staff
             or obj.timesheet.leader == self.request.leader
@@ -112,7 +112,7 @@ class JournalLeaderEntryDeleteView(DeleteView):
 
     def get_queryset(self):
         return (
-            super(JournalLeaderEntryDeleteView, self)
+            super()
             .get_queryset()
             .filter(
                 timesheet__leader=self.request.leader,

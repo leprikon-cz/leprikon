@@ -58,7 +58,7 @@ class CMSSubjectTypeMixin(SubjectTypeMixin):
         if cms_page.application_urls != "LeprikonSubjectTypeApp":
             # In such case show regular CMS Page
             return cms_view_details(request, *args, **kwargs)
-        return super(CMSSubjectTypeMixin, self).dispatch(request, cms_page.application_namespace, **kwargs)
+        return super().dispatch(request, cms_page.application_namespace, **kwargs)
 
 
 class SubjectListBaseView(FilteredListView):
@@ -100,7 +100,7 @@ class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
             "leprikon/{}_list_mine.html".format(self.subject_type.slug),
             "leprikon/{}_list_mine.html".format(self.subject_type.subject_type),
             "leprikon/subject_list_mine.html",
-        ] + super(SubjectListMineView, self).get_template_names()
+        ] + super().get_template_names()
 
     def get_title(self):
         return _("My {subject_type} in school year {school_year}").format(
@@ -109,12 +109,12 @@ class SubjectListMineView(SubjectTypeMixin, SubjectListBaseView):
         )
 
     def get_queryset(self):
-        return super(SubjectListMineView, self).get_queryset().filter(leaders=self.request.leader)
+        return super().get_queryset().filter(leaders=self.request.leader)
 
 
 class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
     def get_queryset(self):
-        qs = super(SubjectDetailView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(public=True)
         return qs
@@ -124,13 +124,13 @@ class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
     template_name_suffix = "_registrations"
 
     def get_queryset(self):
-        qs = super(SubjectRegistrationsView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super(SubjectRegistrationsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["site"] = LeprikonSite.objects.get_current()
         return context
 
@@ -151,7 +151,7 @@ class SubjectUpdateView(SubjectTypeMixin, UpdateView):
         )
 
     def get_queryset(self):
-        qs = super(SubjectUpdateView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leaders=self.request.leader)
         return qs
@@ -281,12 +281,7 @@ class UserPaymentMixin:
     model = SubjectPayment
 
     def get_queryset(self):
-        return (
-            super(UserPaymentMixin, self)
-            .get_queryset()
-            .filter(registration__user=self.request.user)
-            .order_by("-accounted")
-        )
+        return super().get_queryset().filter(registration__user=self.request.user).order_by("-accounted")
 
 
 class SubjectPaymentsListView(UserPaymentMixin, ListView):

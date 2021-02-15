@@ -9,7 +9,7 @@ class LeaderFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_("Search term"), required=False)
 
     def __init__(self, school_year, *args, **kwargs):
-        super(LeaderFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.qs = school_year.leaders.all()
 
     def get_queryset(self):

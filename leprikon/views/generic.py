@@ -20,9 +20,7 @@ class GenericViewMixin(object):
     title = ""
 
     def get_context_data(self, *args, **kwargs):
-        context = super(GenericViewMixin, self).get_context_data(
-            *args, placeholder=self.get_placeholder(), title=self.get_title(), **kwargs
-        )
+        context = super().get_context_data(*args, placeholder=self.get_placeholder(), title=self.get_title(), **kwargs)
         return context
 
     def get_placeholder(self):
@@ -53,7 +51,7 @@ class ListView(GenericViewMixin, _ListView):
         return self.message_empty
 
     def get_context_data(self, *args, **kwargs):
-        return super(ListView, self).get_context_data(
+        return super().get_context_data(
             *args,
             preview_template=self.preview_template,
             add_url=self.get_add_url(),
@@ -72,7 +70,7 @@ class FilteredListView(ListView):
         return self.form_class(data=self.request.GET)
 
     def get_context_data(self, *args, **kwargs):
-        return super(FilteredListView, self).get_context_data(*args, form=self.get_form(), **kwargs)
+        return super().get_context_data(*args, form=self.get_form(), **kwargs)
 
 
 class BackViewMixin(object):
@@ -80,9 +78,7 @@ class BackViewMixin(object):
     back_label = _("Back")
 
     def get_context_data(self, *args, **kwargs):
-        return super(BackViewMixin, self).get_context_data(
-            *args, back_url=self.get_back_url(), back_label=self.get_back_label(), **kwargs
-        )
+        return super().get_context_data(*args, back_url=self.get_back_url(), back_label=self.get_back_label(), **kwargs)
 
     def get_back_label(self):
         return self.back_label
@@ -106,7 +102,7 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
     message = None
 
     def get_context_data(self, *args, **kwargs):
-        return super(FormViewMixin, self).get_context_data(
+        return super().get_context_data(
             *args,
             form_item_template=self.get_form_item_template_name(),
             instructions=self.get_instructions(),
@@ -130,7 +126,7 @@ class FormViewMixin(BackViewMixin, GenericViewMixin):
         return self.message
 
     def form_valid(self, form):
-        response = super(FormViewMixin, self).form_valid(form)
+        response = super().form_valid(form)
         message = self.get_message()
         if message:
             messages.info(
@@ -150,11 +146,11 @@ class ConfirmFormViewMixin(FormViewMixin):
         return self.question
 
     def get_context_data(self, *args, **kwargs):
-        return super(ConfirmFormViewMixin, self).get_context_data(*args, question=self.get_question(), **kwargs)
+        return super().get_context_data(*args, question=self.get_question(), **kwargs)
 
     def form_valid(self, form):
         self.confirmed()
-        return super(ConfirmFormViewMixin, self).form_valid(form)
+        return super().form_valid(form)
 
     def confirmed(self):
         pass
@@ -184,7 +180,7 @@ class DeleteView(ConfirmFormViewMixin, _DeleteView):
     submit_label = _("Delete")
 
     def delete(self, request, *args, **kwargs):
-        response = super(DeleteView, self).delete(request, *args, **kwargs)
+        response = super().delete(request, *args, **kwargs)
         message = self.get_message()
         if message:
             messages.info(

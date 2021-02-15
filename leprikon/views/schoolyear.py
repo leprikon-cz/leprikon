@@ -12,10 +12,10 @@ class SchoolYearView(FormView):
         return _("You now work with school year {}.").format(self.request.school_year)
 
     def get_form_kwargs(self):
-        kwargs = super(SchoolYearView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
 
     def form_valid(self, form):
         self.request.school_year = form.cleaned_data["school_year"]
-        return super(SchoolYearView, self).form_valid(form)
+        return super().form_valid(form)

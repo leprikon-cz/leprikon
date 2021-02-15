@@ -68,7 +68,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     }
 
     def __init__(self, subject_type_type, subject_types, school_year, is_staff, data, **kwargs):
-        super(SubjectFilterForm, self).__init__(data=data, **kwargs)
+        super().__init__(data=data, **kwargs)
         self.subject_type_type = subject_type_type
 
         # pre filter subjects by initial params
@@ -401,7 +401,7 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
     @cached_property
     def required_forms(self):
         return [
-            super(RegistrationParticipantForm, self),
+            super(),
             self.participant_select_form,
             self.questions_form,
             self.parent1_select_form,
@@ -531,7 +531,7 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
     @cached_property
     def required_forms(self):
         return [
-            super(RegistrationGroupForm, self),
+            super(),
             self.questions_form,
         ]
 
@@ -570,7 +570,7 @@ class RegistrationBillingInfoForm(FormMixin, forms.ModelForm):
 
 class RegistrationForm(FormMixin, forms.ModelForm):
     def __init__(self, subject, user, **kwargs):
-        super(RegistrationForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.user = user
         self.instance.subject = subject
 
@@ -686,7 +686,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
     @cached_property
     def required_forms(self):
         return [
-            super(RegistrationForm, self),
+            super(),
             self.billing_info_select_form,
         ] + self.agreement_forms
 

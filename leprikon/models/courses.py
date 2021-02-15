@@ -351,7 +351,7 @@ class CourseRegistrationHistory(StartEndMixin, models.Model):
             # end can not be lower than max journal date
             if self.end and max_journal_date and self.end < max_journal_date:
                 self.end = max_journal_date
-        super(CourseRegistrationHistory, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 @receiver(models.signals.post_save, sender=CourseRegistration)

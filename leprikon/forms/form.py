@@ -3,7 +3,7 @@ class FormMixin(object):
     use_get = False
 
     def __init__(self, *args, **kwargs):
-        super(FormMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for f in self.fields:
             # add form-control to classes
             classes = set(self.fields[f].widget.attrs.get("class", "").split())

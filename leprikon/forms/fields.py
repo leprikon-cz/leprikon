@@ -25,7 +25,7 @@ class AgreementBooleanField(forms.ChoiceField):
                 (True, agree_label),
             ]
         )
-        super(AgreementBooleanField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_python(self, value):
         if value == "True":

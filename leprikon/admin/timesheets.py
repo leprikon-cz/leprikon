@@ -32,7 +32,7 @@ class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         if obj and obj.timesheet.submitted:
             return False
-        return super(TimesheetEntryAdmin, self).has_delete_permission(request, obj)
+        return super().has_delete_permission(request, obj)
 
 
 class TimesheetEntryInlineAdmin(admin.TabularInline):
@@ -51,7 +51,7 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         if obj and obj.submitted:
             return False
-        return super(TimesheetEntryInlineAdmin, self).has_delete_permission(request, obj)
+        return super().has_delete_permission(request, obj)
 
     def description_html(self, obj):
         return obj.description
@@ -88,7 +88,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
         return super().has_delete_permission(request, obj) and (obj is None or not obj.submitted)
 
     def get_actions(self, request):
-        actions = super(TimesheetAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         if "delete_selected" in actions:
 
             def delete_selected(model_admin, request, queryset):

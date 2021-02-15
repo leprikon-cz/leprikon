@@ -77,7 +77,7 @@ class MessageRecipient(models.Model):
             self.slug = uuid.uuid4()
             while MessageRecipient.objects.filter(slug=self.slug).exists():
                 self.slug = uuid.uuid4()
-        super(MessageRecipient, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("leprikon:message_detail", args=(self.slug,))

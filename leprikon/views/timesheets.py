@@ -18,14 +18,14 @@ class TimesheetListView(ListView):
         return _("Timesheets")
 
     def get_queryset(self):
-        return super(TimesheetListView, self).get_queryset().filter(leader=self.request.leader)
+        return super().get_queryset().filter(leader=self.request.leader)
 
 
 class TimesheetDetailView(DetailView):
     model = Timesheet
 
     def get_queryset(self):
-        qs = super(TimesheetDetailView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(leader=self.request.leader)
         return qs
@@ -37,7 +37,7 @@ class TimesheetSubmitView(ConfirmUpdateView):
 
     def get_queryset(self):
         return (
-            super(TimesheetSubmitView, self)
+            super()
             .get_queryset()
             .filter(
                 leader=self.request.leader,
@@ -67,7 +67,7 @@ class TimesheetEntryCreateView(CreateView):
     message = _("New timesheet entry has been created.")
 
     def get_form_kwargs(self):
-        kwargs = super(TimesheetEntryCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["leader"] = self.request.leader
         return kwargs
 
@@ -80,7 +80,7 @@ class TimesheetEntryUpdateView(UpdateView):
     message = _("The timesheet entry has been updated.")
 
     def get_queryset(self):
-        qs = super(TimesheetEntryUpdateView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(timesheet__leader=self.request.leader)
         return qs
@@ -92,13 +92,13 @@ class TimesheetEntryDeleteView(DeleteView):
     message = _("The timesheet entry has been deleted.")
 
     def get_queryset(self):
-        qs = super(TimesheetEntryDeleteView, self).get_queryset()
+        qs = super().get_queryset()
         if not self.request.user.is_staff:
             qs = qs.filter(timesheet__leader=self.request.leader)
         return qs
 
     def get_object(self):
-        obj = super(TimesheetEntryDeleteView, self).get_object()
+        obj = super().get_object()
         if obj.timesheet.submitted:
             raise Http404()
         return obj

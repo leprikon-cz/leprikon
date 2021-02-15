@@ -39,7 +39,7 @@ class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
     # create user with random password
     # users without password may not reset the password themselves
     def save(self, commit=True):
-        user = super(UserAdminCreateForm, self).save(commit)
+        user = super().save(commit)
         user.set_password(User.objects.make_random_password())
         user.save()
         return user
@@ -58,7 +58,7 @@ class UserCreateForm(UserFormMixin, _UserCreationForm):
     agreement = forms.BooleanField(label=_("I agree with the terms."), required=True)
 
     def __init__(self, **kwargs):
-        super(UserCreateForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.fields["username"].help_text = None
         self.fields["password1"].help_text = password_validation.password_validators_help_text_html()
 
@@ -81,7 +81,7 @@ class UserEmailForm(UserFormMixin, forms.ModelForm):
 
 class UserUpdateForm(UserFormMixin, forms.ModelForm):
     def __init__(self, **kwargs):
-        super(UserUpdateForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.fields["username"].help_text = None
 
     class Meta:

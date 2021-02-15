@@ -33,7 +33,7 @@ class MessageDetailView(BackViewMixin, DetailView):
     model = MessageRecipient
 
     def get_object(self):
-        obj = super(MessageDetailView, self).get_object()
+        obj = super().get_object()
         if obj.viewed is None:
             obj.viewed = now()
             obj.save()

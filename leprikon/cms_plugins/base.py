@@ -8,7 +8,7 @@ class LeprikonPluginBase(CMSPluginBase):
     text_enabled = True
 
     def render(self, context, instance, placeholder):
-        context = super(LeprikonPluginBase, self).render(context, instance, placeholder)
+        context = super().render(context, instance, placeholder)
         if hasattr(instance, "render"):
             context.update(instance.render(context))
         return context

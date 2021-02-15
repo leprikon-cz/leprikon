@@ -116,7 +116,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
     reset_password.short_description = _("Send instructions to reset password to selected users")
 
     def get_list_display(self, request):
-        list_display = ["id"] + list(super(UserAdmin, self).get_list_display(request))
+        list_display = ["id"] + list(super().get_list_display(request))
         if request.user.is_superuser:
             list_display += ["login_as_link_superuser"]
         elif request.user.has_perm("auth.change_user"):
@@ -124,7 +124,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         return list_display
 
     def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(UserAdmin, self).get_readonly_fields(request, obj)) + [
+        readonly_fields = list(super().get_readonly_fields(request, obj)) + [
             "last_login",
             "date_joined",
         ]
@@ -133,7 +133,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         return readonly_fields
 
     def get_search_fields(self, request):
-        return list(super(UserAdmin, self).get_search_fields(request)) + [
+        return list(super().get_search_fields(request)) + [
             "leprikon_parents__first_name",
             "leprikon_parents__last_name",
             "leprikon_parents__email",
@@ -143,7 +143,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         ]
 
     def get_urls(self):
-        urls = super(UserAdmin, self).get_urls()
+        urls = super().get_urls()
         login_as_view = self.admin_site.admin_view(permission_required("auth.change_user")(self.login_as))
         return [
             urls_url(

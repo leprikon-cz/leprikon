@@ -10,7 +10,7 @@ class RegistrationsListView(TemplateView):
     template_name = "leprikon/registrations.html"
 
     def get_context_data(self, **kwargs):
-        context = super(RegistrationsListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["site"] = LeprikonSite.objects.get_current()
         context["courseregistrations"] = CourseRegistration.objects.filter(
             subject__school_year=self.request.school_year,

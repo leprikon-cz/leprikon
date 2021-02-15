@@ -86,7 +86,7 @@ class MessageAdmin(admin.ModelAdmin):
     search_fields = ("subject", "text")
 
     def get_changeform_initial_data(self, request):
-        initial = super(MessageAdmin, self).get_changeform_initial_data(request)
+        initial = super().get_changeform_initial_data(request)
         try:
             initial["recipients"] = request.leprikon_message_recipients
         except Exception:
@@ -136,7 +136,7 @@ class MessageAdmin(admin.ModelAdmin):
     def get_urls(self):
         return [
             url(r"^send-mails/$", self.admin_site.admin_view(self.send_mails), name="leprikon_message_send_mails"),
-        ] + super(MessageAdmin, self).get_urls()
+        ] + super().get_urls()
 
     def send_mails(self, request):
         try:
@@ -186,7 +186,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
                 "message_opts": Message._meta,
             }
         )
-        return super(MessageRecipientAdmin, self).changelist_view(request, extra_context)
+        return super().changelist_view(request, extra_context)
 
     def get_urls(self):
         return [
@@ -195,7 +195,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.send_mail),
                 name="leprikon_messagerecipient_send_mail",
             )
-        ] + super(MessageRecipientAdmin, self).get_urls()
+        ] + super().get_urls()
 
     @transaction.atomic
     def send_mail(self, request):
