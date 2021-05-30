@@ -15,7 +15,7 @@ from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin
+from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 class CourseTimeInlineAdmin(admin.TabularInline):
@@ -179,6 +179,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         "price",
         "course_discounts",
         "course_payments",
+        "returned_payments",
         "created_with_by",
         "approved_with_by",
         "payment_requested_with_by",
@@ -326,18 +327,17 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         for period in obj.period_payment_statuses:
             html.append(
                 format_html(
-                    '{period}: <a class="popup-link" style="color: {color}" href="{href}" title="{title}">'
-                    "<b>{amount}</b></a>",
+                    '{period}: <a style="color: {color}" href="{href}" title="{title}">' "<b>{amount}</b></a>",
                     period=period.registration_period.period.name,
                     color=period.status.color,
-                    href=reverse("admin:leprikon_subjectpayment_changelist") + "?registration={}".format(obj.id),
+                    href=reverse("admin:leprikon_subjectreceivedpayment_changelist") + f"?target_registration={obj.id}",
                     title=period.status.title,
                     amount=currency(period.status.paid),
                 )
                 + format_html(
                     '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
                     '<img src="{icon}" alt="+"/></a>',
-                    href=reverse("admin:leprikon_subjectpayment_add") + "?registration={}".format(obj.id),
+                    href=reverse("admin:leprikon_subjectreceivedpayment_add") + f"?target_registration={obj.id}",
                     title=_("add payment"),
                     icon=static("admin/img/icon-addlink.svg"),
                 )
@@ -349,7 +349,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
 
 @admin.register(CourseDiscount)
-class CourseDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+class CourseDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
     form = CourseDiscountAdminForm
     list_display = ("accounted", "registration", "subject", "period", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "period", "amount", "explanation")

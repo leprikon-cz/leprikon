@@ -5,6 +5,7 @@ from . import (  # noqa
     citizenship,
     courses,
     department,
+    donation,
     events,
     fields,
     journals,
@@ -23,6 +24,7 @@ from . import (  # noqa
     subjects,
     targetgroup,
     timesheets,
+    transaction,
     useragreement,
     utils,
 )

@@ -1,0 +1,3 @@
+{{ object.registration.text_payment_returned|striptags }}
+
+{% include 'leprikon/registration_mail_footer.txt' with object=object.registration %}

@@ -13,10 +13,10 @@
         <pageTemplate id="main">
             <pageGraphics>
                 <place x="{{ print_setup.x1 }}" y="{{ print_setup.bill_y1 }}" width="{{ print_setup.width }}" height="{{ print_setup.bill_height }}">
-                    {% include 'leprikon/payment_pdf/recipe.rml' %}
+                    {% include 'leprikon/received_payment_pdf/recipe.rml' %}
                 </place>
                 <place x="{{ print_setup.x1 }}" y="{{ print_setup.y1 }}" width="{{ print_setup.width }}" height="{{ print_setup.bill_height }}">
-                    {% include 'leprikon/payment_pdf/recipe.rml' %}
+                    {% include 'leprikon/received_payment_pdf/recipe.rml' %}
                 </place>
                 <lineMode width="1" dash="5,5" colorName="silver"/>
                 <lines>1cm 148.5mm 20cm 148.5mm</lines>

@@ -26,11 +26,18 @@ class ReportCoursePaymentsView(FormView):
         context = form.cleaned_data
         context["form"] = form
         context["payments"] = SubjectPayment.objects.filter(
-            registration__subject__subject_type__subject_type=SubjectType.COURSE,
+            target_registration__subject__subject_type__subject_type=SubjectType.COURSE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["sum"] = context["payments"].aggregate(Sum("amount"))["amount__sum"]
+        context["returned_payments"] = SubjectPayment.objects.filter(
+            source_registration__subject__subject_type__subject_type=SubjectType.COURSE,
+            accounted__gte=context["date_start"],
+            accounted__lte=context["date_end"],
+        )
+        context["payments_sum"] = context["payments"].aggregate(sum=Sum("amount"))["sum"]
+        context["returned_payments_sum"] = context["returned_payments"].aggregate(sum=Sum("amount"))["sum"]
+        context["sum"] = context["payments_sum"] - context["returned_payments_sum"]
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
 

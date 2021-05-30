@@ -14,6 +14,7 @@ from . import (  # NOQA
     citizenship,
     courses,
     department,
+    donation,
     events,
     journals,
     leprikonsite,
@@ -30,6 +31,7 @@ from . import (  # NOQA
     subjects,
     targetgroup,
     timesheets,
+    transaction,
     user,
 )
 

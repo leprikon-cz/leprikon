@@ -95,6 +95,14 @@ class LeprikonMenu(CMSAttachMenu):
             )
             nodes.append(
                 NavigationNode(
+                    _("Donations"),
+                    reverse("leprikon:donation_list"),
+                    len(nodes),
+                    attr={"visible_for_anonymous": False},
+                )
+            )
+            nodes.append(
+                NavigationNode(
                     _("Participants"),
                     reverse("leprikon:participant_list"),
                     len(nodes),

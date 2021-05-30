@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with subject_type=object.registration.subject.subject_type subject=object.registration.subject %}Registration for {{subject_type}} {{subject}} - returned payment confirmation{% endblocktrans %}

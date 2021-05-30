@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ..conf import settings
 from . import (
     billing_info,
+    donation,
     journals,
     leaders,
     messages,
@@ -86,7 +87,11 @@ registration_link = registrationlink.RegistrationLinkView.as_view()
 registration_link_form = login_required(registrationlink.RegistrationLinkFormView.as_view())
 
 payment_list = login_required(subjects.SubjectPaymentsListView.as_view())
-payment_pdf = login_required(subjects.SubjectPaymentPdfView.as_view())
+received_payment_pdf = login_required(subjects.SubjectReceivedPaymentPdfView.as_view())
+returned_payment_pdf = login_required(subjects.SubjectReturnedPaymentPdfView.as_view())
+
+donation_list = login_required(donation.DonationListView.as_view())
+donation_pdf = login_required(donation.DonationPdfView.as_view())
 
 participant_list = login_required(participants.ParticipantListView.as_view())
 participant_create = login_required(participants.ParticipantCreateView.as_view())

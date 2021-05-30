@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.models import BICField, IBANField
 
 from .fields import EmailField, PostalCodeField
+from .printsetup import PrintSetup
 from .utils import BankAccount
 
 
@@ -18,6 +19,14 @@ class Organization(models.Model):
     vat_number = models.CharField(_("VAT number"), max_length=12, blank=True, default="")
     iban = IBANField(_("IBAN"), blank=True, default="")
     bic = BICField(_("BIC (SWIFT)"), blank=True, default="")
+    donation_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("donation print setup"),
+    )
 
     class Meta:
         app_label = "leprikon"

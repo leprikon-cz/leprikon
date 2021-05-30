@@ -1,16 +1,14 @@
-from bankreader.models import Transaction as BankreaderTransaction
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.admin.utils import unquote
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import permission_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, Func
 from django.db.models.expressions import Random
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.formats import date_format
@@ -31,12 +29,13 @@ from ..models.subjects import (
     Subject,
     SubjectAttachment,
     SubjectGroup,
-    SubjectPayment,
+    SubjectReceivedPayment,
     SubjectRegistration,
     SubjectRegistrationBillingInfo,
     SubjectRegistrationGroup,
     SubjectRegistrationGroupMember,
     SubjectRegistrationParticipant,
+    SubjectReturnedPayment,
     SubjectType,
     SubjectTypeAttachment,
     SubjectVariant,
@@ -56,7 +55,9 @@ from .filters import (
     SubjectTypeListFilter,
 )
 from .messages import SendMessageAdminMixin
-from .pdf import PdfExportAdminMixin
+from .sendmail import SendMailAdminMixin
+from .transaction import TransactionAdminMixin, TransactionBaseAdmin, TransactionTypeListFilter
+from .utils import datetime_with_by
 
 
 class IsNull(Func):
@@ -226,6 +227,7 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                 "text_registration_canceled",
                 "text_discount_granted",
                 "text_payment_received",
+                "text_payment_returned",
             ]:
                 form.base_fields[field_name].help_text = lazy_help_text_with_html_default(
                     form.base_fields[field_name].help_text,
@@ -359,7 +361,7 @@ class ChangeformRedirectMixin:
 
 @admin.register(Subject)
 class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
-    """ Hidden admin used for raw id fields """
+    """Hidden admin used for raw id fields"""
 
     list_display = (
         "id",
@@ -482,7 +484,7 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdminMixin, admin.ModelAdmin):
     form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)
     list_editable = ("note",)
@@ -604,7 +606,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
         return m
 
     def has_delete_permission(self, request, obj=None):
-        if obj and obj.approved is None and obj.payments.count() == 0:
+        if obj and obj.approved is None and obj.payments.count() == 0 and obj.returned_payments.count() == 0:
             return super().has_delete_permission(request, obj)
         else:
             return False
@@ -639,6 +641,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             .prefetch_related(
                 "discounts",
                 "payments",
+                "returned_payments",
             )
             .select_related(
                 "subject",
@@ -802,35 +805,15 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
             return mark_safe(f'<span title="{by}">{d_formated}</span>') if by else d_formated
         return "-"
 
-    def created_with_by(self, obj):
-        return self._datetime_with_by(obj, "created")
+    created_with_by = datetime_with_by("created", _("time of registration"))
 
-    created_with_by.admin_order_field = "created"
-    created_with_by.short_description = _("time of registration")
+    approved_with_by = datetime_with_by("approved", _("time of approval"))
 
-    def approved_with_by(self, obj):
-        return self._datetime_with_by(obj, "approved")
+    payment_requested_with_by = datetime_with_by("payment_requested", _("payment request time"))
 
-    approved_with_by.admin_order_field = "approved"
-    approved_with_by.short_description = _("time of approval")
+    cancelation_requested_with_by = datetime_with_by("cancelation_requested", _("time of cancellation request"))
 
-    def payment_requested_with_by(self, obj):
-        return self._datetime_with_by(obj, "payment_requested")
-
-    payment_requested_with_by.admin_order_field = "payment_requested"
-    payment_requested_with_by.short_description = _("payment request time")
-
-    def cancelation_requested_with_by(self, obj):
-        return self._datetime_with_by(obj, "cancelation_requested")
-
-    cancelation_requested_with_by.admin_order_field = "cancelation_requested"
-    cancelation_requested_with_by.short_description = _("time of cancellation request")
-
-    def canceled_with_by(self, obj):
-        return self._datetime_with_by(obj, "canceled")
-
-    canceled_with_by.admin_order_field = "canceled"
-    canceled_with_by.short_description = _("time of cancellation")
+    canceled_with_by = datetime_with_by("canceled", _("time of cancellation"))
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_registrations__in=queryset).distinct()
@@ -841,10 +824,26 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMessageAdminMixin, admi
     random_number.admin_order_field = "random_number"
     random_number.short_description = _("random number")
 
+    def returned_payments(self, obj):
+        return format_html(
+            '<a href="{href}"><b>{amount}</b></a>',
+            href=reverse("admin:leprikon_subjectreturnedpayment_changelist") + f"?source_registration={obj.id}",
+            amount=currency(sum(r.amount for r in obj.all_returned_payments)),
+        ) + format_html(
+            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
+            '<img src="{icon}" alt="+"/></a>',
+            href=reverse("admin:leprikon_subjectreturnedpayment_add") + f"?source_registration={obj.id}",
+            title=_("add returned payment"),
+            icon=static("admin/img/icon-addlink.svg"),
+        )
+
+    returned_payments.allow_tags = True
+    returned_payments.short_description = _("returned payments")
+
 
 @admin.register(SubjectRegistration)
 class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
-    """ Hidden admin used for raw id fields """
+    """Hidden admin used for raw id fields"""
 
     list_display = (
         "id",
@@ -891,7 +890,7 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, Changefo
         return {}
 
 
-class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
+class SubjectDiscountBaseAdmin(TransactionAdminMixin, AdminExportMixin, admin.ModelAdmin):
     list_filter = (
         ("registration__subject__school_year", SchoolYearListFilter),
         "registration__subject__department",
@@ -900,138 +899,121 @@ class SubjectPaymentBaseAdmin(AdminExportMixin, admin.ModelAdmin):
         ("registration__subject__leaders", LeaderListFilter),
     )
     search_fields = (
+        "registration__variable_symbol",
         "registration__subject__name",
         "registration__participants__first_name",
         "registration__participants__last_name",
         "registration__participants__birth_num",
     )
-    date_hierarchy = "accounted"
-    ordering = ("-accounted",)
     raw_id_fields = ("registration",)
     closed_fields = ("accounted", "registration", "amount")
-
-    def is_closed(self, request, obj):
-        return (
-            obj
-            and request.leprikon_site.max_closure_date
-            and request.leprikon_site.max_closure_date > obj.accounted.date()
-        )
-
-    def has_delete_permission(self, request, obj=None):
-        if self.is_closed(request, obj):
-            return False
-        else:
-            return super().has_delete_permission(request, obj)
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj:
-            # it is strange, but obj given to this method contains values from request.POST
-            # but we need to decide according to current state in database
-            obj = self.model.objects.get(pk=obj.pk)
-        if self.is_closed(request, obj):
-            return self.closed_fields
-        else:
-            return ()
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if "delete_selected" in actions:
-
-            def delete_selected(model_admin, request, queryset):
-                if request.leprikon_site.max_closure_date:
-                    queryset = queryset.filter(accounted__date__gt=request.leprikon_site.max_closure_date)
-                return admin.actions.delete_selected(model_admin, request, queryset)
-
-            actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
-        return actions
 
     def subject(self, obj):
         return obj.registration.subject
 
     subject.short_description = _("subject")
 
+    list_export = (
+        "id",
+        "accounted",
+        "accounted_by",
+        "transaction_type_label",
+        "amount",
+        "organization",
+        "donor__username",
+        "donor",
+        "last_updated",
+        "last_updated_by",
+        "mail_sent",
+        "note",
+    )
+
+
+class SubjectPaymentAdminMixin:
+    list_display = (
+        "id",
+        "accounted_with_by",
+        "download_tag",
+        "transaction_type",
+        "amount_html",
+        "registration",
+        "last_updated_with_by",
+        "mail_sent",
+        "note",
+    )
+    list_export = (
+        "id",
+        "accounted",
+        "accounted_by",
+        "transaction_type_label",
+        "amount",
+        "registration",
+        "variable_symbol",
+        "last_updated",
+        "last_updated_by",
+        "note",
+    )
+
+    def variable_symbol(self, obj):
+        return obj.registration.variable_symbol
+
+    variable_symbol.short_description = _("variable symbol")
+
+
+@admin.register(SubjectReceivedPayment)
+class SubjectReceivedPaymentAdmin(SubjectPaymentAdminMixin, TransactionBaseAdmin):
+    exclude = ("donor", "organization")
+    list_filter = (
+        ("target_registration__subject__school_year", SchoolYearListFilter),
+        ("transaction_type", TransactionTypeListFilter),
+        "target_registration__subject__department",
+        ("target_registration__subject__subject_type", SubjectTypeListFilter),
+        ("target_registration__subject", SubjectListFilter),
+        ("target_registration__subject__leaders", LeaderListFilter),
+    )
+    search_fields = (
+        "target_registration__subject__name",
+        "target_registration__participants__first_name",
+        "target_registration__participants__last_name",
+        "target_registration__participants__birth_num",
+    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["target_registration"].required = True
+        return form
+
+
+@admin.register(SubjectReturnedPayment)
+class SubjectReturnedPaymentAdmin(SubjectPaymentAdminMixin, TransactionBaseAdmin):
+    exclude = ("pays_payment",)
+    list_filter = (
+        ("source_registration__subject__school_year", SchoolYearListFilter),
+        ("transaction_type", TransactionTypeListFilter),
+        "source_registration__subject__department",
+        ("source_registration__subject__subject_type", SubjectTypeListFilter),
+        ("source_registration__subject", SubjectListFilter),
+        ("source_registration__subject__leaders", LeaderListFilter),
+    )
+    search_fields = (
+        "source_registration__subject__name",
+        "source_registration__participants__first_name",
+        "source_registration__participants__last_name",
+        "source_registration__participants__birth_num",
+    )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["source_registration"].required = True
+        return form
+
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
-            color=amount_color(obj.amount),
-            amount=currency(abs(obj.amount)),
+            color=amount_color(-obj.amount),
+            amount=currency(obj.amount),
         )
 
     amount_html.short_description = _("amount")
     amount_html.admin_order_field = "amount"
     amount_html.allow_tags = True
-
-
-@admin.register(SubjectPayment)
-class SubjectPaymentAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
-    actions = ("send_mail",)
-    list_display = (
-        "accounted",
-        "download_tag",
-        "registration",
-        "payment_type_label",
-        "amount_html",
-        "received_by",
-        "mail_sent",
-        "note",
-    )
-    list_editable = ("note",)
-    list_export = ("accounted", "registration", "subject", "payment_type_label", "amount")
-    raw_id_fields = ("registration", "related_payment", "bankreader_transaction", "pays_payment")
-    exclude = ("received_by",)
-
-    def get_urls(self):
-        urls = super().get_urls()
-        populate_view = self.admin_site.admin_view(permission_required("leprikon.add_subjectpayment")(self.populate))
-        return [urls_url(r"populate.json$", populate_view, name="leprikon_subjectpayment_populate")] + urls
-
-    def populate(self, request):
-        if "related_payment" in request.GET:
-            try:
-                related_payment = get_object_or_404(
-                    SubjectPayment,
-                    id=int(request.GET["related_payment"]),
-                    payment_type__in=(SubjectPayment.PAYMENT_TRANSFER, SubjectPayment.RETURN_TRANSFER),
-                )
-            except ValueError:
-                return HttpResponseBadRequest()
-            return JsonResponse(
-                {
-                    "amount": -related_payment.amount,
-                    "payment_type": (
-                        SubjectPayment.RETURN_TRANSFER
-                        if related_payment.payment_type == SubjectPayment.PAYMENT_TRANSFER
-                        else SubjectPayment.PAYMENT_TRANSFER
-                    ),
-                }
-            )
-        elif "bankreader_transaction" in request.GET:
-            try:
-                bankreader_transaction = get_object_or_404(
-                    BankreaderTransaction,
-                    id=int(request.GET["bankreader_transaction"]),
-                )
-            except ValueError:
-                return HttpResponseBadRequest()
-            return JsonResponse(
-                {
-                    "amount": bankreader_transaction.amount,
-                    "payment_type": (
-                        SubjectPayment.PAYMENT_BANK if bankreader_transaction.amount > 0 else SubjectPayment.RETURN_BANK
-                    ),
-                }
-            )
-        else:
-            return HttpResponseBadRequest()
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.received_by = request.user
-        super().save_model(request, obj, form, change)
-
-    def send_mail(self, request, queryset):
-        for payment in queryset.all():
-            payment.send_mail()
-        self.message_user(request, _("Selected items were sent by e-mail."))
-
-    send_mail.short_description = _("Send selected items by e-mail")

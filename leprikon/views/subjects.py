@@ -1,6 +1,6 @@
 from cms.views import details as cms_view_details
 from django.core.exceptions import PermissionDenied
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy as reverse
@@ -18,7 +18,14 @@ from ..models.courses import Course
 from ..models.events import Event
 from ..models.leprikonsite import LeprikonSite
 from ..models.orderables import Orderable
-from ..models.subjects import Subject, SubjectPayment, SubjectRegistration, SubjectType
+from ..models.subjects import (
+    Subject,
+    SubjectPayment,
+    SubjectReceivedPayment,
+    SubjectRegistration,
+    SubjectReturnedPayment,
+    SubjectType,
+)
 from .generic import ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView
 
 
@@ -277,20 +284,32 @@ class SubjectRegistrationCancelView(UserRegistrationMixin, ConfirmUpdateView):
             self.object.refuse(self.request.user)
 
 
-class UserPaymentMixin:
+class SubjectPaymentsListView(ListView):
     model = SubjectPayment
-
-    def get_queryset(self):
-        return super().get_queryset().filter(registration__user=self.request.user).order_by("-accounted")
-
-
-class SubjectPaymentsListView(UserPaymentMixin, ListView):
     template_name = "leprikon/payments.html"
     paginate_by = 20
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(Q(target_registration__user=self.request.user) | Q(source_registration__user=self.request.user))
+            .order_by("-accounted")
+        )
 
     def get_title(self):
         return _("Payments")
 
 
-class SubjectPaymentPdfView(PDFMixin, UserPaymentMixin, DetailView):
-    pass
+class SubjectReceivedPaymentPdfView(PDFMixin, DetailView):
+    model = SubjectReceivedPayment
+
+    def get_queryset(self):
+        return super().get_queryset().filter(target_registration__user=self.request.user)
+
+
+class SubjectReturnedPaymentPdfView(PDFMixin, DetailView):
+    model = SubjectReturnedPayment
+
+    def get_queryset(self):
+        return super().get_queryset().filter(source_registration__user=self.request.user)

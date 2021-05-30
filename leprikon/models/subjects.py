@@ -10,16 +10,13 @@ from os.path import basename
 from tempfile import NamedTemporaryFile
 
 import qrcode
-import trml2pdf
 from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
-from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.dispatch import receiver
-from django.template.loader import select_template
 from django.urls import reverse
-from django.utils import formats, timezone
+from django.utils import timezone
 from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -31,7 +28,6 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
 from multiselectfield import MultiSelectField
-from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
 from ..utils import FEMALE, MALE, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
@@ -42,6 +38,7 @@ from .department import Department
 from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
+from .pdfmail import PdfExportAndMailMixin
 from .place import Place
 from .printsetup import PrintSetup
 from .question import Question
@@ -49,6 +46,7 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
+from .transaction import AbstractTransaction, Transaction
 from .utils import generate_variable_symbol, lazy_help_text_with_html_default, shorten
 
 logger = logging.getLogger(__name__)
@@ -78,6 +76,9 @@ DEFAULT_TEXTS = {
     "text_discount_granted": paragraph(_("Hello,\n" "we have just grated a discount for Your registration.")),
     "text_payment_received": paragraph(
         _("Hello,\n" "we have just received Your payment. Thank You.\n" "Please see the recipe attached.")
+    ),
+    "text_payment_returned": paragraph(
+        _("Hello,\n" "we have just returned Your payment. Thank You.\n" "Please see the recipe attached.")
     ),
 }
 
@@ -211,6 +212,12 @@ class SubjectType(models.Model):
         default="",
         help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_payment_received"]),
     )
+    text_payment_returned = HTMLField(
+        _("text: payment returned"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_payment_returned"]),
+    )
 
     class Meta:
         app_label = "leprikon"
@@ -252,8 +259,12 @@ class SubjectType(models.Model):
         return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
 
     def get_payments_url(self):
-        change_list = reverse("admin:leprikon_subjectpayment_changelist")
-        return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
+        change_list = reverse("admin:leprikon_subjectreceivedpayment_changelist")
+        return f"{change_list}?target_registration__subject__subject_type__id__exact={self.id}"
+
+    def get_returned_payments_url(self):
+        change_list = reverse("admin:leprikon_subjectreturnedpayment_changelist")
+        return f"{change_list}?source_registration__subject__subject_type__id__exact={self.id}"
 
 
 class BaseAttachment(models.Model):
@@ -272,6 +283,7 @@ class BaseAttachment(models.Model):
             ("registration_canceled", _("registration canceled")),
             ("discount_granted", _("discount granted")),
             ("payment_received", _("payment received")),
+            ("payment_returned", _("payment returned")),
         ),
         default=[],
         help_text=_("The attachment will be sent with notification on selected events."),
@@ -334,101 +346,7 @@ class SubjectGroup(models.Model):
         )
 
 
-class PdfExportAndMailMixin(object):
-    all_attachments = []
-
-    def get_absolute_url(self):
-        return reverse("leprikon:{}_pdf".format(self.object_name), kwargs={"pk": self.pk, "slug": self.slug})
-
-    def select_template(self, event, suffix):
-        return select_template(
-            [
-                "leprikon/{}_{}/{}.{}".format(self.object_name, event, param, suffix)
-                for param in (
-                    self.subject.subject_type.slug,
-                    self.subject.subject_type.subject_type,
-                    "subject",
-                )
-            ]
-        )
-
-    def get_context(self, event):
-        return {
-            "event": event,
-            "pdf_filename": self.get_pdf_filename(event),
-            "print_setup": self.get_print_setup(event),
-            "object": self,
-            "site": LeprikonSite.objects.get_current(),
-        }
-
-    def get_mail_subject(self, event):
-        return self.mail_subject_patterns[event].format(
-            subject_type=self.subject.subject_type.name_akuzativ,
-            subject=self.subject.name,
-        )
-
-    def get_attachments(self, event):
-        return None
-
-    def send_mail(self, event="received"):
-        template_txt = self.select_template(event, "txt")
-        template_html = self.select_template(event, "html")
-        context = self.get_context(event)
-        content_txt = template_txt.render(context)
-        content_html = template_html.render(context)
-        EmailMultiAlternatives(
-            subject=self.get_mail_subject(event),
-            body=content_txt,
-            from_email=settings.SERVER_EMAIL,
-            to=self.all_recipients,
-            headers={"X-Mailer": "Leprikon (http://leprikon.cz/)"},
-            alternatives=[(content_html, "text/html")],
-            attachments=self.get_attachments(event),
-        ).send()
-
-    def get_pdf_filename(self, event):
-        return self.slug + ".pdf"
-
-    def get_pdf_attachment(self, event):
-        return (self.get_pdf_filename(event), self.get_pdf(event), "application/pdf")
-
-    def get_pdf(self, event):
-        output = BytesIO()
-        self.write_pdf(event, output)
-        output.seek(0)
-        return output.read()
-
-    def write_pdf(self, event, output):
-        # get plain pdf from rml
-        template = self.select_template(event, "rml")
-        rml_content = template.render(self.get_context(event))
-        pdf_content = trml2pdf.parseString(rml_content.encode("utf-8"))
-        print_setup = self.get_print_setup(event)
-
-        # merge with background
-        if print_setup.background:
-            template_pdf = PdfFileReader(print_setup.background.file)
-            registration_pdf = PdfFileReader(BytesIO(pdf_content))
-            writer = PdfFileWriter()
-            # merge pages from both template and registration
-            for i in range(registration_pdf.getNumPages()):
-                if i < template_pdf.getNumPages():
-                    page = template_pdf.getPage(i)
-                    page.mergePage(registration_pdf.getPage(i))
-                else:
-                    page = registration_pdf.getPage(i)
-                writer.addPage(page)
-            # write result to output
-            writer.write(output)
-        else:
-            # write basic pdf registration to response
-            output.write(pdf_content)
-        return output
-
-
 class Subject(PdfExportAndMailMixin, models.Model):
-    object_name = "subject"
-
     PARTICIPANTS = "P"
     GROUPS = "G"
     REGISTRATION_TYPE_CHOICES = [
@@ -558,6 +476,7 @@ class Subject(PdfExportAndMailMixin, models.Model):
     text_registration_canceled = HTMLField(_("text: registration canceled"), blank=True, default="")
     text_discount_granted = HTMLField(_("text: discount granted"), blank=True, default="")
     text_payment_received = HTMLField(_("text: payment received"), blank=True, default="")
+    text_payment_returned = HTMLField(_("text: payment returned"), blank=True, default="")
 
     class Meta:
         app_label = "leprikon"
@@ -732,6 +651,13 @@ class Subject(PdfExportAndMailMixin, models.Model):
     def get_print_setup(self, event):
         return PrintSetup()
 
+    def get_template_variants(self):
+        return (
+            self.subject_type.slug,
+            self.subject_type.subject_type,
+            "subject",
+        )
+
     @property
     def active_registrations(self):
         return self.registrations.filter(canceled=None)
@@ -884,7 +810,6 @@ class SubjectAttachment(BaseAttachment):
 
 class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     object_name = "registration"
-
     slug = models.SlugField(editable=False, max_length=250, null=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -1068,6 +993,10 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.payments.all())
 
     @cached_property
+    def all_returned_payments(self):
+        return list(self.returned_payments.all())
+
+    @cached_property
     def payment_status(self):
         return self.get_payment_status()
 
@@ -1158,6 +1087,14 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             or DEFAULT_TEXTS["text_payment_received"]
         )
 
+    @cached_property
+    def text_payment_returned(self):
+        return (
+            self.subject.text_payment_returned
+            or self.subject.subject_type.text_payment_returned
+            or DEFAULT_TEXTS["text_payment_returned"]
+        )
+
     def get_discounts(self, d):
         if d:
             return [p for p in self.all_discounts if p.accounted.date() <= d]
@@ -1170,6 +1107,12 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         else:
             return self.all_payments
 
+    def get_returned_payments(self, d):
+        if d:
+            return [r for r in self.all_returned_payments if r.accounted.date() <= d]
+        else:
+            return self.all_returned_payments
+
     def get_pdf_filename(self, event):
         if event == "payment_request":
             return basename(self.get_payment_request_url())
@@ -1179,7 +1122,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return sum(p.amount for p in self.get_discounts(d))
 
     def get_paid(self, d=None):
-        return sum(p.amount for p in self.get_payments(d))
+        return sum(p.amount for p in self.get_payments(d)) - sum(r.amount for r in self.get_returned_payments(d))
 
     def get_qr_code(self):
         output = BytesIO()
@@ -1199,14 +1142,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 return super().write_pdf(event, output)
         else:
             return super().write_pdf(event, output)
-
-    mail_subject_patterns = {
-        "received": _("Registration for {subject_type} {subject}"),
-        "payment_request": _("Registration for {subject_type} {subject} - payment request"),
-        "approved": _("Registration for {subject_type} {subject} was approved"),
-        "refused": _("Registration for {subject_type} {subject} was refused"),
-        "canceled": _("Registration for {subject_type} {subject} was canceled"),
-    }
 
     @transaction.atomic
     def approve(self, approved_by):
@@ -1301,6 +1236,13 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             or self.subject.subject_type.reg_print_setup
             or LeprikonSite.objects.get_current().reg_print_setup
             or PrintSetup()
+        )
+
+    def get_template_variants(self):
+        return (
+            self.subject.subject_type.slug,
+            self.subject.subject_type.subject_type,
+            "subject",
         )
 
     def get_attachments(self, event):
@@ -1585,27 +1527,7 @@ class SubjectRegistrationBillingInfo(models.Model):
     address.short_description = _("address")
 
 
-class TransactionMixin(object):
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-
-    def clean(self):
-        errors = {}
-        if self.amount == 0:
-            errors["amount"] = [_("Amount can not be zero.")]
-        if self.accounted:
-            max_closure_date = LeprikonSite.objects.get_current().max_closure_date
-            if max_closure_date and self.accounted.date() <= max_closure_date:
-                errors["accounted"] = [
-                    _("Date must be after the last account closure ({}).").format(formats.date_format(max_closure_date))
-                ]
-        if errors:
-            raise ValidationError(errors)
-
-
-class SubjectDiscount(TransactionMixin, models.Model):
-    accounted = models.DateTimeField(_("accounted time"), default=timezone.now)
+class SubjectDiscount(AbstractTransaction):
     amount = PriceField(_("discount"), default=0)
     explanation = models.CharField(_("discount explanation"), max_length=250, blank=True, default="")
 
@@ -1620,81 +1542,9 @@ class SubjectDiscount(TransactionMixin, models.Model):
         return currency(self.amount)
 
 
-class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
-    object_name = "payment"
-
-    PAYMENT_CASH = "PAYMENT_CASH"
-    PAYMENT_BANK = "PAYMENT_BANK"
-    PAYMENT_ONLINE = "PAYMENT_ONLINE"
-    PAYMENT_TRANSFER = "PAYMENT_TRANSFER"
-    RETURN_CASH = "RETURN_CASH"
-    RETURN_BANK = "RETURN_BANK"
-    RETURN_TRANSFER = "RETURN_TRANSFER"
-    payment_type_labels = OrderedDict(
-        [
-            (PAYMENT_CASH, _("payment - cash")),
-            (PAYMENT_BANK, _("payment - bank")),
-            (PAYMENT_ONLINE, _("payment - online")),
-            (PAYMENT_TRANSFER, _("payment - transfer from return")),
-            (RETURN_CASH, _("return - cash")),
-            (RETURN_BANK, _("return - bank")),
-            (RETURN_TRANSFER, _("return - transfer to payment")),
-        ]
-    )
-    payments = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, PAYMENT_TRANSFER})
-    returns = frozenset({RETURN_CASH, RETURN_BANK, RETURN_TRANSFER})
-
-    registration = models.ForeignKey(
-        SubjectRegistration, on_delete=models.PROTECT, related_name="payments", verbose_name=_("registration")
-    )
-    accounted = models.DateTimeField(_("accounted time"), default=timezone.now)
-    mail_sent = models.DateTimeField(_("mail sent"), editable=False, null=True)
-    payment_type = models.CharField(_("payment type"), max_length=30, choices=payment_type_labels.items())
-    amount = PriceField(_("amount"), help_text=_("positive value for payment, negative value for return"))
-    note = models.CharField(_("note"), max_length=300, blank=True, default="")
-    related_payment = models.OneToOneField(
-        "self",
-        blank=True,
-        limit_choices_to={"payment_type__in": (PAYMENT_TRANSFER, RETURN_TRANSFER)},
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="related_payments",
-        verbose_name=_("related payment"),
-    )
-    bankreader_transaction = models.OneToOneField(
-        BankreaderTransaction,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name=_("bank account transaction"),
-    )
-    pays_payment = models.OneToOneField(
-        PaysPayment,
-        blank=True,
-        editable=False,
-        limit_choices_to={"status": PaysPayment.REALIZED},
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name=_("online payment"),
-    )
-    received_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("received by")
-    )
-
-    class Meta:
-        app_label = "leprikon"
-        verbose_name = _("payment")
-        verbose_name_plural = _("payments")
-        ordering = ("accounted",)
-
-    def __str__(self):
-        return "{payment_type} {amount}".format(
-            payment_type=self.payment_type_label,
-            amount=currency(abs(self.amount)),
-        )
-
+class SubjectPaymentMixin:
     @cached_property
-    def organization(self):
+    def subject_organization(self):
         return (
             self.registration.subject.organization
             or self.registration.subject.subject_type.organization
@@ -1703,14 +1553,8 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         )
 
     @cached_property
-    def payment_type_label(self):
-        return self.payment_type_labels.get(self.payment_type, "-")
-
-    payment_type_label.short_description = _("payment type")
-
-    @cached_property
     def slug(self):
-        return "{}-{}".format(self.registration.slug, self.id)
+        return f"{self.registration.slug}-{self.id}"
 
     def get_print_setup(self, event):
         return (
@@ -1720,13 +1564,12 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
             or PrintSetup()
         )
 
-    @cached_property
-    def subject(self):
-        return self.registration.subject
-
-    mail_subject_patterns = {
-        "received": _("Registration for {subject_type} {subject} - payment confirmation"),
-    }
+    def get_template_variants(self):
+        return (
+            self.registration.subject.subject_type.slug,
+            self.registration.subject.subject_type.subject_type,
+            "subject",
+        )
 
     def get_attachments(self, event):
         attachments = []
@@ -1737,7 +1580,7 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
         attachments += [
             (basename(attachment.file.file.path), open(attachment.file.file.path, "rb").read())
             for attachment in self.registration.all_attachments
-            if f"payment_{event}" in attachment.events
+            if f"{self.object_name}_{event}" in attachment.events
         ]
         return attachments or None
 
@@ -1745,54 +1588,64 @@ class SubjectPayment(PdfExportAndMailMixin, TransactionMixin, models.Model):
     def all_recipients(self):
         return self.registration.all_recipients
 
-    def clean(self):
-        errors = {}
-        try:
-            super().clean()
-        except ValidationError as e:
-            errors = e.update_error_dict(errors)
 
-        # ensure at most one relation
-        if [self.related_payment, self.bankreader_transaction, self.pays_payment].count(None) < 2:
-            message = _("Payment can only have one relation.")
-            if self.related_payment:
-                errors["related_payment"] = message
-            if self.bankreader_transaction:
-                errors["bankreader_transaction"] = message
-        else:
-            if self.related_payment:
-                valid_payment_type = (
-                    SubjectPayment.PAYMENT_TRANSFER
-                    if self.related_payment.payment_type == SubjectPayment.RETURN_TRANSFER
-                    else SubjectPayment.RETURN_TRANSFER
-                )
-                valid_amount = -self.related_payment.amount
-            if self.bankreader_transaction:
-                valid_payment_type = (
-                    SubjectPayment.PAYMENT_BANK
-                    if self.bankreader_transaction.amount > 0
-                    else SubjectPayment.RETURN_BANK
-                )
-                valid_amount = self.bankreader_transaction.amount
-            if self.related_payment or self.bankreader_transaction:
-                if self.payment_type != valid_payment_type:
-                    errors.setdefault("payment_type", []).append(
-                        _("Payment type must be {valid_payment_type}.").format(
-                            valid_payment_type=self.payment_type_labels[valid_payment_type],
-                        )
-                    )
-                if self.amount != valid_amount:
-                    errors.setdefault("amount", []).append(
-                        _("Amount must be {valid_amount}.").format(valid_amount=valid_amount)
-                    )
-        if errors:
-            raise ValidationError(errors)
+class SubjectPayment(Transaction):
+    object_name = "payment"
+    transaction_types = Transaction.SUBJECTS
 
-    def send_mail(self, event="received"):
-        with transaction.atomic():
-            self.mail_sent = timezone.now()
-            self.save()
-            super().send_mail(event)
+    class Meta:
+        proxy = True
+        verbose_name = _("payment")
+        verbose_name_plural = _("payments")
+
+    @cached_property
+    def sub_payments(self):
+        sub_payments = []
+        if self.target_registration:
+            sub_payments.append(
+                SubjectReceivedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
+            )
+        if self.source_registration:
+            sub_payments.append(
+                SubjectReturnedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
+            )
+        return sub_payments
+
+
+class SubjectReceivedPayment(SubjectPaymentMixin, Transaction):
+    object_name = "received_payment"
+    transaction_types = Transaction.PAYMENTS
+
+    class Meta:
+        proxy = True
+        verbose_name = _("received payment")
+        verbose_name_plural = _("received payments")
+
+    @property
+    def real_amount(self):
+        return self.amount
+
+    @cached_property
+    def registration(self):
+        return self.target_registration
+
+
+class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
+    object_name = "returned_payment"
+    transaction_types = Transaction.RETURNS
+
+    class Meta:
+        proxy = True
+        verbose_name = _("returned payment")
+        verbose_name_plural = _("returned payments")
+
+    @property
+    def real_amount(self):
+        return -self.amount
+
+    @cached_property
+    def registration(self):
+        return self.source_registration
 
 
 @receiver(models.signals.post_save, sender=PaysPayment)
@@ -1807,10 +1660,10 @@ def payment_create_subject_payment(instance, **kwargs):
     except (ValueError, SubjectRegistration.DoesNotExist):
         return
     # create payment
-    SubjectPayment.objects.create(
-        registration=registration,
+    Transaction.objects.create(
+        transaction_type=Transaction.PAYMENT_ONLINE,
+        target_registration=registration,
         accounted=payment.created,
-        payment_type=SubjectPayment.PAYMENT_ONLINE,
         amount=payment.amount / payment.base_units,
         note=_("received online payment"),
         pays_payment=payment,
@@ -1832,11 +1685,21 @@ def transaction_create_subject_payment(instance, **kwargs):
     if not registration:
         return
     # create payment
-    SubjectPayment.objects.create(
-        registration=registration,
+    if transaction.amount < 0:
+        kwargs = {
+            "transaction_type": Transaction.RETURN_BANK,
+            "source_registration": registration,
+            "amount": -transaction.amount,
+        }
+    else:
+        kwargs = {
+            "transaction_type": Transaction.PAYMENT_BANK,
+            "target_registration": registration,
+            "amount": transaction.amount,
+        }
+    Transaction.objects.create(
         accounted=timezone.make_aware(datetime.combine(transaction.accounted_date, time(12))),
-        payment_type=SubjectPayment.PAYMENT_BANK if transaction.amount >= 0 else SubjectPayment.RETURN_BANK,
-        amount=transaction.amount,
         note=_("imported from account statement"),
         bankreader_transaction=transaction,
+        **kwargs,
     )

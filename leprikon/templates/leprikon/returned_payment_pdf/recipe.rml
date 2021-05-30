@@ -1,0 +1,63 @@
+{% load i18n leprikon_tags %}
+
+<blockTable style="without-borders">
+    <tr>
+        <td><para style="title">{% trans 'Receipt for returned payment' %}</para></td>
+        <td><para style="right">{% trans 'recipe number' %}: {{ object.id }}</para></td>
+    </tr>
+    <tr>
+        <td>
+            <blockTable style="with-borders">
+                <tr>
+                    <td>
+                        <para style="title">{{ object.subject_organization.name }}</para>
+                        <spacer length="2mm"/>
+                        <para style="left">{% trans 'address' %}:</para>
+                        <para style="left">{{ object.subject_organization.street }}</para>
+                        <para style="left">{{ object.subject_organization.postal_code }}, {{ object.subject_organization.city }}</para>
+                        <spacer length="2mm"/>
+                        {% if object.subject_organization.email %}<para style="left">{% trans 'email' %}: {{ object.subject_organization.email }}</para>{% endif %}
+                        {% if object.subject_organization.phone %}<para style="left">{% trans 'phone' %}: {{ object.subject_organization.phone }}</para>{% endif %}
+                        {% if object.subject_organization.email or object.subject_organization.phone %}<spacer length="2mm"/>{% endif %}
+                        <para style="left">{% trans 'company number' %}: {{ object.subject_organization.company_num }}</para>
+                    </td>
+                </tr>
+            </blockTable>
+        </td>
+        <td>
+            <blockTable style="with-borders">
+                <tr>
+                    <td><para style="left">{% trans 'variable symbol' %}</para></td>
+                    <td><para style="left">{{ object.registration.variable_symbol }}</para></td>
+                </tr>
+                <tr>
+                    <td><para style="left">{% trans 'payment date' %}</para></td>
+                    <td><para style="left">{{ object.accounted.date }}</para></td>
+                </tr>
+                <tr>
+                    <td><para style="left">{% trans 'amount' %}</para></td>
+                    <td><para style="left">{{ object.real_amount | currency }}</para></td>
+                </tr>
+            </blockTable>
+            <spacer length="2mm"/>
+            <para style="small">{% trans 'payment type' %}:</para>
+            <para style="left">{{ object.transaction_type_label }}</para>
+        </td>
+    </tr>
+</blockTable>
+
+<spacer length="2mm"/>
+
+<blockTable style="without-borders">
+    <tr>
+        <td>
+            {% include 'leprikon/registration_recipe.rml' with registration=object.registration %}
+        </td>
+        <td>
+            {% if object.received_by %}
+            <para style="small">{% trans 'payment received by' %}:</para>
+            <para style="left">{{ object.received_by.get_full_name }}</para>
+            {% endif %}
+        </td>
+    </tr>
+</blockTable>

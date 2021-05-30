@@ -12,24 +12,28 @@
 <table class="table">
     <tr>
         <th>{% trans 'Date' %}</th>
-        <th>{% trans 'Subject' %}</th>
         <th>{% trans 'Payment Type' %}</th>
-        <th>{% trans 'Amount' %}</th>
+        <th>{% trans 'Registration' %}</th>
+        <th class="right">{% trans 'Amount' %}</th>
         <th></th>
     </tr>
 {% for payment in object_list %}
+    {% for sub_payment in payment.sub_payments %}
     <tr>
-        <td>{{ payment.accounted.date }}</td>
-        <td>{{ payment.registration }}</td>
-        <td>{{ payment.payment_type_label }}</td>
-        <td>{{ payment.amount | currency }}</td>
+        {% if forloop.first %}
+        <td rowspan="{{ payment.sub_payments|length }}">{{ payment.accounted.date }}</td>
+        <td rowspan="{{ payment.sub_payments|length }}">{{ payment.transaction_type_label }}</td>
+        {% endif %}
+        <td>{{ sub_payment.registration }}</td>
+        <td class="right">{{ sub_payment.real_amount | currency }}</td>
         <td>
-            <a class="btn btn-primary btn-xs" href="{{ payment.get_absolute_url }}">
+            <a class="btn btn-primary btn-xs" href="{{ sub_payment.get_absolute_url }}">
                 <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
                 {% trans 'download' %}
             </a>
         </td>
     </tr>
+    {% endfor %}
 {% empty %}
     <tr>
         <td colspan="5">{{ message_empty }}</td>

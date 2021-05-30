@@ -13,7 +13,7 @@ from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectPaymentBaseAdmin, SubjectRegistrationBaseAdmin
+from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 @admin.register(Event)
@@ -150,6 +150,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
         "price",
         "event_discounts",
         "event_payments",
+        "returned_payments",
         "created_with_by",
         "approved_with_by",
         "payment_requested_with_by",
@@ -224,9 +225,9 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
-            href_list=reverse("admin:leprikon_eventdiscount_changelist") + "?registration={}".format(obj.id),
+            href_list=reverse("admin:leprikon_eventdiscount_changelist") + f"?registration={obj.id}",
             amount=currency(obj.payment_status.discount),
-            href_add=reverse("admin:leprikon_eventdiscount_add") + "?registration={}".format(obj.id),
+            href_add=reverse("admin:leprikon_eventdiscount_add") + f"?registration={obj.id}",
             icon_add=static("admin/img/icon-addlink.svg"),
             title_add=_("add discount"),
         )
@@ -236,14 +237,15 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
     def event_payments(self, obj):
         return format_html(
-            '<a class="popup-link" style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
+            '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
             color=obj.payment_status.color,
-            href_list=reverse("admin:leprikon_subjectpayment_changelist") + "?registration={}".format(obj.id),
+            href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist")
+            + "?target_registration={}".format(obj.id),
             title=obj.payment_status.title,
             amount=currency(obj.payment_status.paid),
-            href_add=reverse("admin:leprikon_subjectpayment_add") + "?registration={}".format(obj.id),
+            href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + "?target_registration={}".format(obj.id),
             icon_add=static("admin/img/icon-addlink.svg"),
             title_add=_("add payment"),
         )
@@ -253,6 +255,6 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
 
 @admin.register(EventDiscount)
-class EventDiscountAdmin(PdfExportAdminMixin, SubjectPaymentBaseAdmin):
+class EventDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
     list_display = ("accounted", "registration", "subject", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "amount", "explanation")
