@@ -89,12 +89,15 @@ social-auth-app-django = "^4.0.0"
 trml2pdf = "^0.6"
 uWSGI = "^2.0.19"
 Whoosh = "^2.7.4"
+schwifty = "^2021.5.2"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
 flake8 = "^3.8.4"
 isort = "^5.7.0"
 python-dotenv = "^0.15.0"
+pytest = "^6.2.4"
+mypy = "^0.812"
 
 [tool.poetry.scripts]
 leprikon = 'leprikon.__main__:main'

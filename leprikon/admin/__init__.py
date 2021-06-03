@@ -24,6 +24,7 @@ from . import (  # NOQA
     place,
     printsetup,
     question,
+    refundrequest,
     registrationlink,
     roles,
     school,

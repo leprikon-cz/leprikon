@@ -1,4 +1,5 @@
 import re
+from typing import Any, Optional
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -9,6 +10,7 @@ from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
 from ..utils import get_birth_date
+from .utils import BankAccount, parse_bank_account
 
 
 class ColorInput(forms.TextInput):
@@ -96,7 +98,8 @@ class BirthNumberField(models.CharField):
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        del kwargs["max_length"]
+        if kwargs["max_length"] == 11:
+            del kwargs["max_length"]
         return name, path, args, kwargs
 
     def clean(self, value, model_instance):
@@ -106,6 +109,40 @@ class BirthNumberField(models.CharField):
     def formfield(self, **kwargs):
         kwargs.setdefault("form_class", BirthNumberFormField)
         return super().formfield(**kwargs)
+
+
+class BankAccountFormField(forms.CharField):
+    validators = [parse_bank_account]
+
+
+class BankAccountField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 34)
+        super().__init__(*args, **kwargs)
+        self.validators = [parse_bank_account]
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        if kwargs["max_length"] == 34:
+            del kwargs["max_length"]
+        return name, path, args, kwargs
+
+    def formfield(self, **kwargs):
+        kwargs.setdefault("form_class", BankAccountFormField)
+        return super().formfield(**kwargs)
+
+    def from_db_value(self, value: Optional[str], expression, connection, context):
+        if value is None:
+            return value
+        return BankAccount(value)
+
+    def get_prep_value(self, value: Optional[BankAccount]) -> Optional[str]:
+        return value and value.compact
+
+    def to_python(self, value: Any) -> Optional[BankAccount]:
+        if value is None:
+            return value
+        return parse_bank_account(value)
 
 
 class _PostalCodeField(CZPostalCodeField, forms.CharField):

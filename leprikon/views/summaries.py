@@ -1,5 +1,7 @@
 from datetime import date
 
+from django.db.models import F
+
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from ..models.orderables import OrderableRegistration
@@ -12,19 +14,23 @@ class SummaryView(TemplateView):
     template_name = "leprikon/summary.html"
 
     def get_context_data(self, **kwargs):
+        payment_status = PaymentStatusSum(0, 0, 0, 0, 0, 0)
+        overpaid_registrations = []
+        for Registration in (CourseRegistration, EventRegistration, OrderableRegistration):
+            for registration in (
+                Registration.objects.filter(user=self.request.user, approved__isnull=False)
+                .annotate(
+                    refund_bank_account=F("refund_request__bank_account"),
+                )
+                .iterator()
+            ):
+                payment_status += registration.payment_status
+                if registration.payment_status.overpaid:
+                    overpaid_registrations.append(registration)
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
-        context["payment_status"] = (
-            sum(
-                sum(reg.payment_status for reg in Model.objects.filter(user=self.request.user, approved__isnull=False))
-                for Model in (
-                    CourseRegistration,
-                    EventRegistration,
-                    OrderableRegistration,
-                )
-            )
-            + PaymentStatusSum(0, 0, 0, 0, 0, 0)
-        )
+        context["payment_status"] = payment_status
+        context["overpaid_registrations"] = overpaid_registrations
         context["new_messages"] = self.request.user.leprikon_messages.filter(viewed=None)
         return context
 

@@ -11,6 +11,7 @@ from . import (
     messages,
     parents,
     participants,
+    refundrequest,
     registrationlink,
     registrations,
     reports,
@@ -90,6 +91,11 @@ payment_list = login_required(subjects.SubjectPaymentsListView.as_view())
 received_payment_pdf = login_required(subjects.SubjectReceivedPaymentPdfView.as_view())
 returned_payment_pdf = login_required(subjects.SubjectReturnedPaymentPdfView.as_view())
 
+refund_request_create = login_required(refundrequest.RefundRequestCreateView.as_view())
+refund_request_update = login_required(refundrequest.RefundRequestUpdateView.as_view())
+refund_request_delete = login_required(refundrequest.RefundRequestDeleteView.as_view())
+payment_transfer_create = login_required(refundrequest.PaymentTransferCreateView.as_view())
+donation_create = login_required(refundrequest.DonationCreateView.as_view())
 donation_list = login_required(donation.DonationListView.as_view())
 donation_pdf = login_required(donation.DonationPdfView.as_view())
 

@@ -7,15 +7,8 @@
 
 {% static_placeholder "summary" %}
 
-<h2>{% trans 'New messages' %}</h2>
-
-{% if new_messages.count %}
-{% include 'leprikon/messages_table.html' with object_list=new_messages %}
-{% else %}
-<p><i>{% trans 'You have no new messages.' %}</i></p>
-{% endif %}
-
 <h2>{% trans 'Payments overview' %}</h2>
+
 <p>
     {% if payment_status.overdue %}
     <strong style="color: {{ payment_status.color }}">
@@ -33,5 +26,60 @@
     {% blocktrans with overpaid=payment_status.overpaid|currency %}You have overpaid {{ overpaid }}.{% endblocktrans %}
     {% endif %}
 </p>
+
+{% if payment_status.overpaid %}
+<table class="table table-hover overpaid-registrations">
+    <tr>
+        <th>{% trans 'Registration' %}</th>
+        <th>{% trans 'Overpaid amount' %}</th>
+        <th>{% trans 'Refund options' %}</th>
+    </tr>
+    {% for registration in overpaid_registrations %}
+    <tr>
+        <td>
+            {{ registration.subject.subject_type.name | first_upper }}: {{ registration.subject.name }}<br/>
+            {% if registration.subject.registration_type_participants %}
+                {% if registration.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}:
+                {{ registration.all_participants|comma_separated }}<br/>
+            {% elif registration.subject.registration_type_groups %}
+                {% trans 'Contact person' %}: {{ registration.group.full_name }}
+                {% if registration.group.name %}<br/>{% trans 'Group name' %}: {{ registration.group.name }}{% endif %}
+            {% endif %}
+        </td>
+        <td><strong>{{ registration.payment_status.overpaid|currency }}</strong></td>
+        <td>
+            {% if registration.refund_bank_account %}
+                {% trans 'You have requested a refund to the bank account:' %}<br/>
+                <strong>{{ registration.refund_bank_account }}</strong><br/>
+                <a href="{% url 'leprikon:refund_request_update' registration.refund_request.id %}">
+                    {% trans 'change account number' %}
+                </a><br/>
+                <a href="{% url 'leprikon:refund_request_delete' registration.refund_request.id %}">
+                    {% trans 'cancel refund request' %}
+                </a><br/>
+            {% else %}
+                <a href="{% url 'leprikon:refund_request_create' registration.id %}">
+                    {% trans 'request refund to a bank account' %}
+                </a><br/>
+                <a href="{% url 'leprikon:payment_transfer_create' registration.id %}">
+                    {% trans 'transfer to a payment' %}
+                </a><br/>
+                <a href="{% url 'leprikon:donation_create' registration.id %}">
+                    {% trans 'donate' %}
+                </a><br/>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<h2>{% trans 'New messages' %}</h2>
+
+{% if new_messages.count %}
+{% include 'leprikon/messages_table.html' with object_list=new_messages %}
+{% else %}
+<p><i>{% trans 'You have no new messages.' %}</i></p>
+{% endif %}
 
 {% endblock %}

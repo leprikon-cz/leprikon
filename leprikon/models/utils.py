@@ -1,10 +1,14 @@
+import re
 from collections import namedtuple
 from datetime import date, datetime
+from typing import Any
 
+from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property, lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from schwifty.iban import IBAN
 
 from ..conf import settings
 from ..utils import currency, paragraph
@@ -127,32 +131,50 @@ class PaymentStatusSum(
     pass
 
 
-class BankAccount:
-    def __init__(self, iban):
-        self.iban = iban
+class BankAccount(IBAN):
+    czech_bban_regex = re.compile(r"(([0-9]{1,6})\s?-\s?)?([0-9]{1,10})\s?/\s?([0-9]{4})")
 
-    @cached_property
-    def country_code(self):
-        return self.iban[:2]
-
-    @cached_property
-    def bank_code(self):
-        return self.iban[4:8]
+    def __init__(self, bank_account: str):
+        match = self.czech_bban_regex.match(bank_account)
+        if match:
+            x, prefix, account, bank_code = match.groups()
+            account_code = (prefix or "").zfill(6) + account.zfill(10)
+            bank_account = f"CZ??{bank_code}{account_code}"
+        super().__init__(bank_account)
 
     @cached_property
     def account_prefix(self):
-        return self.iban[8:14].lstrip("0")
+        return self.account_code[:6].lstrip("0")
 
     @cached_property
     def account_number(self):
-        return self.iban[14:].lstrip("0")
+        return self.account_code[6:].lstrip("0")
 
     def __str__(self):
-        return "%s%s%s/%s" % (
-            self.account_prefix,
-            self.account_prefix and "-",
-            self.account_number,
-            self.bank_code,
+        if self.country_code == "CZ":
+            return "%s%s%s/%s" % (
+                self.account_prefix,
+                self.account_prefix and "-",
+                self.account_number,
+                self.bank_code,
+            )
+        else:
+            return self.formatted
+
+
+def parse_bank_account(bank_account: Any) -> BankAccount:
+    if isinstance(bank_account, BankAccount):
+        return bank_account
+    if isinstance(bank_account, IBAN):
+        return BankAccount(bank_account.compact)
+    if not isinstance(bank_account, str):
+        bank_account = str(bank_account)
+    try:
+        return BankAccount(bank_account)
+    except ValueError:
+        raise ValidationError(
+            message=_("Enter a valid account number."),
+            code="invalid",
         )
 
 

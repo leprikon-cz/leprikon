@@ -47,7 +47,7 @@ from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
 from .transaction import AbstractTransaction, Transaction
-from .utils import generate_variable_symbol, lazy_help_text_with_html_default, shorten
+from .utils import PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default, shorten
 
 logger = logging.getLogger(__name__)
 
@@ -997,7 +997,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.returned_payments.all())
 
     @cached_property
-    def payment_status(self):
+    def payment_status(self) -> PaymentStatus:
         return self.get_payment_status()
 
     @cached_property

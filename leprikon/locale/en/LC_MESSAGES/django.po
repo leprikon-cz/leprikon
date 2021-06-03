@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-03 03:48+0200\n"
+"POT-Creation-Date: 2021-06-03 04:51+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=(n==1) ? 0 : 1;\n"
 
-#: admin/__init__.py:40 admin/__init__.py:41 admin/__init__.py:53
+#: admin/__init__.py:41 admin/__init__.py:42 admin/__init__.py:54
 msgid "Leprikon administration"
 msgstr ""
 
@@ -369,6 +369,26 @@ msgstr ""
 msgid "download"
 msgstr ""
 
+#: admin/refundrequest.py:53 models/organizations.py:20
+msgid "IBAN"
+msgstr ""
+
+#: admin/refundrequest.py:58 models/organizations.py:21
+msgid "BIC (SWIFT)"
+msgstr ""
+
+#: admin/refundrequest.py:67 admin/subjects.py:1017 admin/transaction.py:102
+#: models/refundrequest.py:43 models/transaction.py:116
+#: templates/leprikon/donation_pdf/recipe.rml:34
+#: templates/leprikon/received_payment_pdf/recipe.rml:38
+#: templates/leprikon/returned_payment_pdf/recipe.rml:38
+msgid "amount"
+msgstr ""
+
+#: admin/refundrequest.py:71 models/refundrequest.py:13
+msgid "requested time"
+msgstr ""
+
 #: admin/registrationlink.py:114 admin/registrationlink.py:117
 #: models/registrationlink.py:34 models/subjects.py:887
 msgid "registration link"
@@ -600,13 +620,6 @@ msgstr ""
 msgid "variable symbol"
 msgstr ""
 
-#: admin/subjects.py:1017 admin/transaction.py:102 models/transaction.py:116
-#: templates/leprikon/donation_pdf/recipe.rml:34
-#: templates/leprikon/received_payment_pdf/recipe.rml:38
-#: templates/leprikon/returned_payment_pdf/recipe.rml:38
-msgid "amount"
-msgstr ""
-
 #: admin/timesheets.py:59 models/roles.py:27 models/subjects.py:367
 #: templates/leprikon/registration_payment_request/subject.rml:109
 #: templates/leprikon/timesheet_detail.html:29
@@ -762,9 +775,11 @@ msgstr ""
 msgid "Donations"
 msgstr ""
 
-#: cms_menus.py:106 templates/leprikon/registration_mail_details.html:6
+#: cms_menus.py:106 forms/refundrequest.py:23
+#: templates/leprikon/registration_mail_details.html:6
 #: templates/leprikon/registration_mail_details.txt:2
 #: templates/leprikon/subject_journal.html:180
+#: templates/leprikon/summary.html:42
 msgid "Participants"
 msgstr ""
 
@@ -1026,6 +1041,39 @@ msgstr ""
 
 #: forms/messages.py:33 forms/messages.py:36
 msgid "Recipients"
+msgstr ""
+
+#: forms/refundrequest.py:25 templates/leprikon/registration_details.html:32
+#: templates/leprikon/registration_mail_details.html:6
+#: templates/leprikon/registration_mail_details.txt:2
+#: templates/leprikon/registration_pdf/subject.rml:99
+#: templates/leprikon/registration_preview.html:62
+#: templates/leprikon/subject_registration_form.html:92
+#: templates/leprikon/summary.html:42
+msgid "Participant"
+msgstr ""
+
+#: forms/refundrequest.py:30 templates/leprikon/registration_details.html:109
+#: templates/leprikon/registration_mail_details.html:9
+#: templates/leprikon/registration_mail_details.txt:3
+#: templates/leprikon/registration_pdf/subject.rml:235
+#: templates/leprikon/registration_preview.html:86
+#: templates/leprikon/subject_registration_form.html:186
+#: templates/leprikon/summary.html:45
+msgid "Contact person"
+msgstr ""
+
+#: forms/refundrequest.py:32 templates/leprikon/registration_details.html:97
+#: templates/leprikon/registration_mail_details.html:10
+#: templates/leprikon/registration_mail_details.txt:4
+#: templates/leprikon/registration_pdf/subject.rml:231
+#: templates/leprikon/registration_preview.html:80
+#: templates/leprikon/summary.html:46
+msgid "Group name"
+msgstr ""
+
+#: forms/refundrequest.py:34 templates/leprikon/summary.html:34
+msgid "Overpaid amount"
 msgstr ""
 
 #: forms/reports/courses.py:9 forms/reports/events.py:9
@@ -1368,9 +1416,9 @@ msgid "no period"
 msgstr ""
 
 #: models/courses.py:220 models/courses.py:288 models/events.py:136
-#: models/orderables.py:141 models/subjects.py:892 models/subjects.py:1308
-#: models/subjects.py:1442 models/subjects.py:1474 models/subjects.py:1502
-#: templates/leprikon/registration_links.html:4
+#: models/orderables.py:141 models/refundrequest.py:26 models/subjects.py:892
+#: models/subjects.py:1308 models/subjects.py:1442 models/subjects.py:1474
+#: models/subjects.py:1502 templates/leprikon/registration_links.html:4
 msgid "registration"
 msgstr ""
 
@@ -1532,39 +1580,39 @@ msgstr ""
 msgid "event groups"
 msgstr ""
 
-#: models/fields.py:22
+#: models/fields.py:24
 msgid "Enter a valid hex color."
 msgstr ""
 
-#: models/fields.py:50
+#: models/fields.py:52
 msgid "Monday"
 msgstr ""
 
-#: models/fields.py:51
+#: models/fields.py:53
 msgid "Tuesday"
 msgstr ""
 
-#: models/fields.py:52
+#: models/fields.py:54
 msgid "Wednesday"
 msgstr ""
 
-#: models/fields.py:53
+#: models/fields.py:55
 msgid "Thursday"
 msgstr ""
 
-#: models/fields.py:54
+#: models/fields.py:56
 msgid "Friday"
 msgstr ""
 
-#: models/fields.py:55
+#: models/fields.py:57
 msgid "Saturday"
 msgstr ""
 
-#: models/fields.py:56
+#: models/fields.py:58
 msgid "Sunday"
 msgstr ""
 
-#: models/fields.py:81
+#: models/fields.py:83
 msgid "Enter a valid birth number."
 msgstr ""
 
@@ -1778,14 +1826,6 @@ msgstr ""
 msgid "VAT number"
 msgstr ""
 
-#: models/organizations.py:20
-msgid "IBAN"
-msgstr ""
-
-#: models/organizations.py:21
-msgid "BIC (SWIFT)"
-msgstr ""
-
 #: models/organizations.py:28
 msgid "donation print setup"
 msgstr ""
@@ -1888,6 +1928,22 @@ msgstr ""
 
 #: models/question.py:62
 msgid "Failed to create field with given field args: {}"
+msgstr ""
+
+#: models/refundrequest.py:20
+msgid "requested by"
+msgstr ""
+
+#: models/refundrequest.py:28
+msgid "bank account number"
+msgstr ""
+
+#: models/refundrequest.py:33
+msgid "refund request"
+msgstr ""
+
+#: models/refundrequest.py:34
+msgid "refund requests"
 msgstr ""
 
 #: models/registrationlink.py:21 models/subjects.py:225 models/subjects.py:306
@@ -2550,7 +2606,7 @@ msgstr ""
 msgid "submitted"
 msgstr ""
 
-#: models/timesheets.py:72 models/utils.py:57
+#: models/timesheets.py:72 models/utils.py:61
 msgid "paid"
 msgstr ""
 
@@ -2698,31 +2754,35 @@ msgstr ""
 msgid "time of agreement"
 msgstr ""
 
-#: models/utils.py:50
+#: models/utils.py:54
 msgid "amount due {}"
 msgstr ""
 
-#: models/utils.py:52
+#: models/utils.py:56
 msgid "overdue {}"
 msgstr ""
 
-#: models/utils.py:54
+#: models/utils.py:58
 msgid "{} overpaid"
 msgstr ""
 
-#: models/utils.py:59
+#: models/utils.py:63
 msgid "payment not requested"
 msgstr ""
 
-#: models/utils.py:61
+#: models/utils.py:65
 msgid "payment not requested yet"
 msgstr ""
 
 #: models/utils.py:176
+msgid "Enter a valid account number."
+msgstr ""
+
+#: models/utils.py:198
 msgid "Keep empty to use default value:"
 msgstr ""
 
-#: models/utils.py:195
+#: models/utils.py:217
 msgid "Keep empty to use default value: {}"
 msgstr ""
 
@@ -3207,6 +3267,7 @@ msgstr ""
 #: templates/leprikon/reports/event_payments.html:39
 #: templates/leprikon/reports/orderable_payments.html:15
 #: templates/leprikon/reports/orderable_payments.html:39
+#: templates/leprikon/summary.html:33
 msgid "Registration"
 msgstr ""
 
@@ -3282,15 +3343,6 @@ msgstr ""
 msgid "awaiting approval"
 msgstr ""
 
-#: templates/leprikon/registration_details.html:32
-#: templates/leprikon/registration_mail_details.html:6
-#: templates/leprikon/registration_mail_details.txt:2
-#: templates/leprikon/registration_pdf/subject.rml:99
-#: templates/leprikon/registration_preview.html:62
-#: templates/leprikon/subject_registration_form.html:92
-msgid "Participant"
-msgstr ""
-
 #: templates/leprikon/registration_details.html:38
 #: templates/leprikon/registration_pdf/subject.rml:119
 msgid "Birth date"
@@ -3298,23 +3350,6 @@ msgstr ""
 
 #: templates/leprikon/registration_details.html:79
 msgid "Parent"
-msgstr ""
-
-#: templates/leprikon/registration_details.html:97
-#: templates/leprikon/registration_mail_details.html:10
-#: templates/leprikon/registration_mail_details.txt:4
-#: templates/leprikon/registration_pdf/subject.rml:231
-#: templates/leprikon/registration_preview.html:80
-msgid "Group name"
-msgstr ""
-
-#: templates/leprikon/registration_details.html:109
-#: templates/leprikon/registration_mail_details.html:9
-#: templates/leprikon/registration_mail_details.txt:3
-#: templates/leprikon/registration_pdf/subject.rml:235
-#: templates/leprikon/registration_preview.html:86
-#: templates/leprikon/subject_registration_form.html:186
-msgid "Contact person"
 msgstr ""
 
 #: templates/leprikon/registration_details.html:137
@@ -3919,34 +3954,62 @@ msgid "Maximal age for this age group is ${ageGroup.max_age}."
 msgstr ""
 
 #: templates/leprikon/summary.html:10
-msgid "New messages"
-msgstr ""
-
-#: templates/leprikon/summary.html:15
-msgid "You have no new messages."
-msgstr ""
-
-#: templates/leprikon/summary.html:18
 msgid "Payments overview"
 msgstr ""
 
-#: templates/leprikon/summary.html:22
+#: templates/leprikon/summary.html:15
 #, python-format
 msgid "You have overdue of %(overdue)s."
 msgstr ""
 
-#: templates/leprikon/summary.html:27
+#: templates/leprikon/summary.html:20
 #, python-format
 msgid "Your current amount due is %(amount_due)s."
 msgstr ""
 
-#: templates/leprikon/summary.html:30
+#: templates/leprikon/summary.html:23
 msgid "All Your receivables have been paid."
 msgstr ""
 
-#: templates/leprikon/summary.html:33
+#: templates/leprikon/summary.html:26
 #, python-format
 msgid "You have overpaid %(overpaid)s."
+msgstr ""
+
+#: templates/leprikon/summary.html:35
+msgid "Refund options"
+msgstr ""
+
+#: templates/leprikon/summary.html:52
+msgid "You have requested a refund to the bank account:"
+msgstr ""
+
+#: templates/leprikon/summary.html:55
+msgid "change account number"
+msgstr ""
+
+#: templates/leprikon/summary.html:58
+msgid "cancel refund request"
+msgstr ""
+
+#: templates/leprikon/summary.html:62
+msgid "request refund to a bank account"
+msgstr ""
+
+#: templates/leprikon/summary.html:65
+msgid "transfer to a payment"
+msgstr ""
+
+#: templates/leprikon/summary.html:68
+msgid "donate"
+msgstr ""
+
+#: templates/leprikon/summary.html:77
+msgid "New messages"
+msgstr ""
+
+#: templates/leprikon/summary.html:82
+msgid "You have no new messages."
 msgstr ""
 
 #: templates/leprikon/terms_conditions.html:6
@@ -4165,6 +4228,63 @@ msgstr ""
 
 #: views/participants.py:73
 msgid "Do You really want to delete the information about participant: {}?"
+msgstr ""
+
+#: views/refundrequest.py:30
+msgid "New refund request"
+msgstr ""
+
+#: views/refundrequest.py:33
+msgid "Refund request have been created."
+msgstr ""
+
+#: views/refundrequest.py:43
+msgid "Refund request has been updated."
+msgstr ""
+
+#: views/refundrequest.py:44
+msgid "Update refund request"
+msgstr ""
+
+#: views/refundrequest.py:54
+msgid "Cancel refund request"
+msgstr ""
+
+#: views/refundrequest.py:55
+msgid "Refund request has been canceled."
+msgstr ""
+
+#: views/refundrequest.py:58
+msgid "Do You really want to cancel the refund request: {}?"
+msgstr ""
+
+#: views/refundrequest.py:63
+msgid "New payment transfer"
+msgstr ""
+
+#: views/refundrequest.py:66
+msgid ""
+"The payment may only be transferred to a registration, for which the payment "
+"is required. If You have submitted new registration recently, You may need "
+"to wait until the payment is requested for that registration."
+msgstr ""
+
+#: views/refundrequest.py:73
+msgid "The payment has been transferred."
+msgstr ""
+
+#: views/refundrequest.py:78
+msgid "New donation"
+msgstr ""
+
+#: views/refundrequest.py:80
+msgid ""
+"If You wish, You may transfer the overpaid amount to a donation for our "
+"organization."
+msgstr ""
+
+#: views/refundrequest.py:83
+msgid "Thank You. Your support is very appreciated."
 msgstr ""
 
 #: views/reports/__init__.py:22 views/reports/courses.py:21
