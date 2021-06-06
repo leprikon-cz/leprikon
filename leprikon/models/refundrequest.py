@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -35,6 +36,11 @@ class RefundRequest(models.Model):
 
     def __str__(self):
         return f"{self.registration}, {currency(self.amount)}"
+
+    def clean(self):
+        super().clean()
+        if not self.amount:
+            raise ValidationError({"registration": [_("Refund may only be requested for overpaid registrations.")]})
 
     @cached_property
     def amount(self):

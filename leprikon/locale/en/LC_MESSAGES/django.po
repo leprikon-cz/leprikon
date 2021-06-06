@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-03 04:51+0200\n"
+"POT-Creation-Date: 2021-06-06 11:48+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -378,14 +378,14 @@ msgid "BIC (SWIFT)"
 msgstr ""
 
 #: admin/refundrequest.py:67 admin/subjects.py:1017 admin/transaction.py:102
-#: models/refundrequest.py:43 models/transaction.py:116
+#: models/refundrequest.py:49 models/transaction.py:116
 #: templates/leprikon/donation_pdf/recipe.rml:34
 #: templates/leprikon/received_payment_pdf/recipe.rml:38
 #: templates/leprikon/returned_payment_pdf/recipe.rml:38
 msgid "amount"
 msgstr ""
 
-#: admin/refundrequest.py:71 models/refundrequest.py:13
+#: admin/refundrequest.py:71 models/refundrequest.py:14
 msgid "requested time"
 msgstr ""
 
@@ -1416,7 +1416,7 @@ msgid "no period"
 msgstr ""
 
 #: models/courses.py:220 models/courses.py:288 models/events.py:136
-#: models/orderables.py:141 models/refundrequest.py:26 models/subjects.py:892
+#: models/orderables.py:141 models/refundrequest.py:27 models/subjects.py:892
 #: models/subjects.py:1308 models/subjects.py:1442 models/subjects.py:1474
 #: models/subjects.py:1502 templates/leprikon/registration_links.html:4
 msgid "registration"
@@ -1930,20 +1930,24 @@ msgstr ""
 msgid "Failed to create field with given field args: {}"
 msgstr ""
 
-#: models/refundrequest.py:20
+#: models/refundrequest.py:21
 msgid "requested by"
 msgstr ""
 
-#: models/refundrequest.py:28
+#: models/refundrequest.py:29
 msgid "bank account number"
 msgstr ""
 
-#: models/refundrequest.py:33
+#: models/refundrequest.py:34
 msgid "refund request"
 msgstr ""
 
-#: models/refundrequest.py:34
+#: models/refundrequest.py:35
 msgid "refund requests"
+msgstr ""
+
+#: models/refundrequest.py:43
+msgid "Refund may only be requested for overpaid registrations."
 msgstr ""
 
 #: models/registrationlink.py:21 models/subjects.py:225 models/subjects.py:306
