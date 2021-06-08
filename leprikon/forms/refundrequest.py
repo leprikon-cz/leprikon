@@ -69,7 +69,7 @@ class PaymentTransferForm(RefundRequestBaseForm):
         if target_registration:
             self.instance.amount = min(
                 self.registration.payment_status.overpaid,
-                target_registration.subjectregistration.payment_status.amount_due,
+                target_registration.payment_status.amount_due,
             )
         return self.cleaned_data
 

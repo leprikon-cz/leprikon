@@ -44,6 +44,6 @@ class RefundRequest(models.Model):
 
     @cached_property
     def amount(self):
-        return self.registration and self.registration.subjectregistration.payment_status.overpaid
+        return self.registration and self.registration.payment_status.overpaid
 
     amount.short_description = _("amount")

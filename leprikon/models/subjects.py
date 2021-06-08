@@ -1000,6 +1000,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def payment_status(self) -> PaymentStatus:
         return self.get_payment_status()
 
+    def get_payment_status(self, d=None) -> PaymentStatus:
+        return self.subjectregistration.get_payment_status(d)
+
     @cached_property
     def organization(self):
         return (
