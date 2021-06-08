@@ -183,6 +183,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         "created_with_by",
         "approved_with_by",
         "payment_requested_with_by",
+        "refund_offered_with_by",
         "cancelation_requested_with_by",
         "canceled_with_by",
         "note",

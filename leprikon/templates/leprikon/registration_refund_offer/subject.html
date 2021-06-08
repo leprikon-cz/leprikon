@@ -1,0 +1,21 @@
+{% load i18n leprikon_tags %}
+
+{{ object.text_registration_refund_offer }}
+
+{% include 'leprikon/registration_mail_details.html' %}
+
+<p>{% trans 'Overpaid amount' %}: <strong>{{ object.payment_status.overpaid|currency }}</strong></p>
+
+<p>
+    <a href="{{ site.url }}{% url 'leprikon:refund_request_create' object.id %}">
+        {% trans 'request refund to a bank account' %}
+    </a><br/>
+    <a href="{{ site.url }}{% url 'leprikon:payment_transfer_create' object.id %}">
+        {% trans 'transfer to a payment' %}
+    </a><br/>
+    <a href="{{ site.url }}{% url 'leprikon:donation_create' object.id %}">
+        {% trans 'donate' %}
+    </a><br/>
+</p>
+
+{% include 'leprikon/registration_mail_footer.html' %}

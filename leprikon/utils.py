@@ -231,6 +231,7 @@ def merge_users(source, target):
         "created_by",
         "approved_by",
         "payment_requested_by",
+        "refund_offered_by",
         "cancelation_requested_by",
         "canceled_by",
     ):

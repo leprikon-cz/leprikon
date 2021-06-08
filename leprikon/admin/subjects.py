@@ -224,6 +224,7 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                 "text_registration_approved",
                 "text_registration_refused",
                 "text_registration_payment_request",
+                "text_registration_refund_offer",
                 "text_registration_canceled",
                 "text_discount_granted",
                 "text_payment_received",
@@ -501,6 +502,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         "created_by",
         "payment_requested",
         "payment_requested_by",
+        "refund_offered",
+        "refund_offered_by",
         "approved",
         "approved_by",
         "cancelation_requested",
@@ -579,7 +582,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         ("subject__leaders", LeaderListFilter),
         "subject__place",
     )
-    actions = ("approve", "refuse", "request_payment", "cancel")
+    actions = ("approve", "refuse", "request_payment", "offer_refund", "cancel")
     search_fields = (
         "variable_symbol",
         "participants__birth_num",
@@ -684,6 +687,13 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         self.message_user(request, _("Payment was requested for selected registrations."))
 
     request_payment.short_description = _("Request payment for selected registrations")
+
+    def offer_refund(self, request, queryset):
+        for registration in queryset.all():
+            registration.offer_refund(request.user)
+        self.message_user(request, _("Refund was offered for selected registrations."))
+
+    offer_refund.short_description = _("Offer refund for selected registrations")
 
     def cancel(self, request, queryset):
         for registration in queryset.all():
@@ -810,6 +820,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     approved_with_by = datetime_with_by("approved", _("time of approval"))
 
     payment_requested_with_by = datetime_with_by("payment_requested", _("payment request time"))
+
+    refund_offered_with_by = datetime_with_by("refund_offered", _("refund offer time"))
 
     cancelation_requested_with_by = datetime_with_by("cancelation_requested", _("time of cancellation request"))
 

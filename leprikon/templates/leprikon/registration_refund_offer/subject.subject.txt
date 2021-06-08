@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with subject_type=object.subject.subject_type subject=object.subject %}Registration for {{subject_type}} {{subject}} - refund offer{% endblocktrans %}

@@ -53,32 +53,33 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TEXTS = {
     "text_registration_received": paragraph(
-        _("Hello,\n" "thank You for submitting the registration.\n" "We will inform you about its further processing.")
+        _("Hello,\nthank You for submitting the registration.\nWe will inform you about its further processing.")
     ),
     "text_registration_approved": paragraph(
         _(
-            "Hello,\n"
-            "we are pleased to inform You, that Your registration was approved.\n"
+            "Hello,\nwe are pleased to inform You, that Your registration was approved.\n"
             "We are looking forward to see You."
         )
     ),
     "text_registration_refused": paragraph(
-        _("Hello,\n" "we are sorry to inform You, that Your registration was refused.")
+        _("Hello,\nwe are sorry to inform You, that Your registration was refused.")
     ),
     "text_registration_payment_request": paragraph(
         _(
-            "Hello,\n"
-            "we'd like to ask You to pay for Your registration.\n"
+            "Hello,\nwe'd like to ask You to pay for Your registration.\n"
             "If You have already made the payment recently, please ignore this message."
         )
     ),
-    "text_registration_canceled": paragraph(_("Hello,\n" "Your registration was canceled.")),
-    "text_discount_granted": paragraph(_("Hello,\n" "we have just grated a discount for Your registration.")),
+    "text_registration_refund_offer": paragraph(
+        _("Hello,\nYour registration has been overpaid.\nPlease, tell us how you wish us to refund.")
+    ),
+    "text_registration_canceled": paragraph(_("Hello,\nYour registration was canceled.")),
+    "text_discount_granted": paragraph(_("Hello,\nwe have just grated a discount for Your registration.")),
     "text_payment_received": paragraph(
-        _("Hello,\n" "we have just received Your payment. Thank You.\n" "Please see the recipe attached.")
+        _("Hello,\nwe have just received Your payment. Thank You.\nPlease see the recipe attached.")
     ),
     "text_payment_returned": paragraph(
-        _("Hello,\n" "we have just returned Your payment. Thank You.\n" "Please see the recipe attached.")
+        _("Hello,\nwe have just returned Your payment. Thank You.\nPlease see the recipe attached.")
     ),
 }
 
@@ -194,6 +195,12 @@ class SubjectType(models.Model):
         default="",
         help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_payment_request"]),
     )
+    text_registration_refund_offer = HTMLField(
+        _("text: registration refund offer"),
+        blank=True,
+        default="",
+        help_text=lazy_help_text_with_html_default("", DEFAULT_TEXTS["text_registration_refund_offer"]),
+    )
     text_registration_canceled = HTMLField(
         _("text: registration canceled"),
         blank=True,
@@ -280,6 +287,7 @@ class BaseAttachment(models.Model):
             ("registration_approved", _("registration approved")),
             ("registration_refused", _("registration refused")),
             ("registration_payment_request", _("payment requested")),
+            ("registration_refund_offer", _("payment requested")),
             ("registration_canceled", _("registration canceled")),
             ("discount_granted", _("discount granted")),
             ("payment_received", _("payment received")),
@@ -473,6 +481,7 @@ class Subject(PdfExportAndMailMixin, models.Model):
     text_registration_approved = HTMLField(_("text: registration approved"), blank=True, default="")
     text_registration_refused = HTMLField(_("text: registration refused"), blank=True, default="")
     text_registration_payment_request = HTMLField(_("text: registration payment request"), blank=True, default="")
+    text_registration_refund_offer = HTMLField(_("text: registration refund offer"), blank=True, default="")
     text_registration_canceled = HTMLField(_("text: registration canceled"), blank=True, default="")
     text_discount_granted = HTMLField(_("text: discount granted"), blank=True, default="")
     text_payment_received = HTMLField(_("text: payment received"), blank=True, default="")
@@ -852,6 +861,15 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         related_name="+",
         verbose_name=_("payment requested by"),
     )
+    refund_offered = models.DateTimeField(_("payment request time"), editable=False, null=True)
+    refund_offered_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name=_("payment requested by"),
+    )
     cancelation_requested = models.DateTimeField(_("time of cancellation request"), editable=False, null=True)
     cancelation_requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -1067,6 +1085,14 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         )
 
     @cached_property
+    def text_registration_refund_offer(self):
+        return (
+            self.subject.text_registration_refund_offer
+            or self.subject.subject_type.text_registration_refund_offer
+            or DEFAULT_TEXTS["text_registration_refund_offer"]
+        )
+
+    @cached_property
     def text_registration_canceled(self):
         return (
             self.subject.text_registration_canceled
@@ -1176,6 +1202,14 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             self = type(self).objects.get(id=self.id)
         if self.payment_status.amount_due:
             self.send_mail("payment_request")
+
+    @transaction.atomic
+    def offer_refund(self, refund_offered_by):
+        if self.payment_status.overpaid:
+            self.refund_offered = timezone.now()
+            self.refund_offered_by = refund_offered_by
+            self.save()
+            self.send_mail("refund_offer")
 
     def refuse(self, refused_by):
         if self.approved is None:
