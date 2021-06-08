@@ -18,7 +18,7 @@ class SummaryView(TemplateView):
         overpaid_registrations = []
         for Registration in (CourseRegistration, EventRegistration, OrderableRegistration):
             for registration in (
-                Registration.objects.filter(user=self.request.user, approved__isnull=False)
+                Registration.objects.filter(user=self.request.user)
                 .annotate(
                     refund_bank_account=F("refund_request__bank_account"),
                 )
