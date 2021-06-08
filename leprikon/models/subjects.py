@@ -1666,6 +1666,8 @@ class SubjectReceivedPayment(SubjectPaymentMixin, Transaction):
     def registration(self):
         return self.target_registration
 
+    registration.short_description = _("target registration")
+
 
 class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
     object_name = "returned_payment"
@@ -1683,6 +1685,8 @@ class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
     @cached_property
     def registration(self):
         return self.source_registration
+
+    registration.short_description = _("source registration")
 
 
 @receiver(models.signals.post_save, sender=PaysPayment)
