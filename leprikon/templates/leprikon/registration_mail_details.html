@@ -10,10 +10,3 @@
         {% if object.group.name %}<br/>{% trans 'Group name' %}: {{ object.group.name }}{% endif %}
     {% endif %}
 </p>
-
-<p>
-    {% trans 'You may download the registration in PDF using the following link:' %}<br/>
-    <a href="{{ site.url }}{{ object.get_absolute_url }}">
-        {{ site.url }}{{ object.get_absolute_url }}
-    </a>
-</p>
