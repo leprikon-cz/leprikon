@@ -486,6 +486,7 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    actions = ("approve", "refuse", "request_payment", "offer_refund", "generate_refund_request", "cancel")
     form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)
     list_editable = ("note",)
@@ -582,7 +583,6 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         ("subject__leaders", LeaderListFilter),
         "subject__place",
     )
-    actions = ("approve", "refuse", "request_payment", "offer_refund", "cancel")
     search_fields = (
         "variable_symbol",
         "participants__birth_num",
@@ -694,6 +694,13 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         self.message_user(request, _("Refund was offered for selected registrations."))
 
     offer_refund.short_description = _("Offer refund for selected registrations")
+
+    def generate_refund_request(self, request, queryset):
+        for registration in queryset.filter(refund_request__bank_account=None):
+            registration.generate_refund_request(request.user)
+        self.message_user(request, _("Refund requests were generated for selected registrations."))
+
+    generate_refund_request.short_description = _("Generate refund requests for selected registrations")
 
     def cancel(self, request, queryset):
         for registration in queryset.all():

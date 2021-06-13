@@ -102,6 +102,10 @@ def amount_color(amount):
         return settings.LEPRIKON_COLOR_ZERO
 
 
+def ascii(value):
+    return unicodedata.normalize("NFKD", value).encode("ascii", errors="ignore").decode("ascii")
+
+
 def comma_separated(lst):
     lst = list(map(smart_text, lst))
     if len(lst) > 2:

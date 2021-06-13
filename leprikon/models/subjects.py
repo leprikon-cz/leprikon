@@ -47,7 +47,7 @@ from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
 from .transaction import AbstractTransaction, Transaction
-from .utils import PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default, shorten
+from .utils import BankAccount, PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default, shorten
 
 logger = logging.getLogger(__name__)
 
@@ -1210,6 +1210,24 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             self.refund_offered_by = refund_offered_by
             self.save()
             self.send_mail("refund_offer")
+
+    @transaction.atomic
+    def generate_refund_request(self, generated_by):
+        from .refundrequest import RefundRequest
+
+        if not self.payment_status.overpaid:
+            return
+        remote_accounts = list(
+            self.payments.annotate(account=models.F("bankreader_transaction__remote_account_number")).values_list(
+                "account", flat=True
+            )
+        )
+        if len(remote_accounts) == 1 and remote_accounts[0]:
+            RefundRequest.objects.create(
+                registration=self,
+                requested_by=generated_by,
+                bank_account=BankAccount(remote_accounts[0]),
+            )
 
     def refuse(self, refused_by):
         if self.approved is None:
