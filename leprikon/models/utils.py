@@ -9,6 +9,7 @@ from django.utils.functional import cached_property, lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from schwifty.exceptions import InvalidAccountCode
 from schwifty.iban import IBAN
 
 from ..conf import settings
@@ -155,11 +156,21 @@ class PaymentStatusSum(
 
 class BankAccount(IBAN):
     czech_bban_regex = re.compile(r"(([0-9]{1,6})\s?-\s?)?([0-9]{1,10})\s?/\s?([0-9]{4})")
+    czech_bban_weights = (1, 2, 4, 8, 5, 10, 9, 7, 3, 6)
+
+    def _validate_czech(self, part: str) -> bool:
+        check = 0
+        for i, n in enumerate(reversed(part)):
+            check += int(n) * self.czech_bban_weights[i]
+        if check % 11:
+            raise InvalidAccountCode()
 
     def __init__(self, bank_account: str):
         match = self.czech_bban_regex.match(bank_account)
         if match:
             x, prefix, account, bank_code = match.groups()
+            self._validate_czech(prefix or "")
+            self._validate_czech(account)
             account_code = (prefix or "").zfill(6) + account.zfill(10)
             bank_account = f"CZ??{bank_code}{account_code}"
         super().__init__(bank_account)
