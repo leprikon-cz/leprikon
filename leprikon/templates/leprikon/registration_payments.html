@@ -25,14 +25,16 @@
                 {% for pps in reg.period_payment_statuses %}
                 {{ pps.period.name }}:
                 <strong style="color: {{ pps.status.color }}" title="{{ pps.status.title }}">
-                    {% blocktrans with paid=pps.status.paid|currency %}paid {{ paid }}{% endblocktrans %}
+                    {% blocktrans with received=pps.status.received|currency %}paid {{ received }}{% endblocktrans %}{% if pps.status.returned %},
+                    {% blocktrans with returned=pps.status.returned|currency %}refunded {{ returned }}{% endblocktrans %}{% endif %}
                 </strong>
                 {% if pps.status.discount %}({% trans 'discount' %}: {{ pps.status.discount | currency }}{% if pps.status.explanation %} - {{ pps.status.explanation }}{% endif %}){% endif %}
                 {% if not forloop.last %}<br />{% endif %}
                 {% endfor %}
             {% else %}
                 <strong style="color: {{ reg.payment_status.color }}" title="{{ reg.payment_status.title }}">
-                    {% blocktrans with paid=reg.payment_status.paid|currency %}paid {{ paid }}{% endblocktrans %}
+                    {% blocktrans with received=reg.payment_status.received|currency %}paid {{ received }}{% endblocktrans %}{% if reg.payment_status.returned %},
+                    {% blocktrans with returned=reg.payment_status.returned|currency %}refunded {{ returned }}{% endblocktrans %}{% endif %}
                 </strong>
                 {% if reg.payment_status.discount %}({% trans 'discount' %}: {{ reg.payment_status.discount | currency }}{% if reg.payment_status.explanation %} - {{ reg.payment_status.explanation }}{% endif %}){% endif %}
             {% endif %}

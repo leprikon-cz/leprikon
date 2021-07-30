@@ -132,16 +132,6 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             readonly_fields += ["is_staff", "is_superuser", "groups", "user_permissions"]
         return readonly_fields
 
-    def get_search_fields(self, request):
-        return list(super().get_search_fields(request)) + [
-            "leprikon_parents__first_name",
-            "leprikon_parents__last_name",
-            "leprikon_parents__email",
-            "leprikon_participants__first_name",
-            "leprikon_participants__last_name",
-            "leprikon_participants__email",
-        ]
-
     def get_urls(self):
         urls = super().get_urls()
         login_as_view = self.admin_site.admin_view(permission_required("auth.change_user")(self.login_as))

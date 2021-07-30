@@ -489,6 +489,25 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     actions = ("approve", "refuse", "request_payment", "offer_refund", "generate_refund_request", "cancel")
     form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)
+    list_display = (
+        "variable_symbol",
+        "download_tag",
+        "subject_name",
+        "participants_list_html",
+        "price",
+        "discounts",
+        "total_price",
+        "received_payments",
+        "returned_payments",
+        "created_with_by",
+        "approved_with_by",
+        "payment_requested_with_by",
+        "refund_offered_with_by",
+        "cancelation_requested_with_by",
+        "canceled_with_by",
+        "note",
+        "random_number",
+    )
     list_editable = ("note",)
     list_export = (
         "id",
@@ -609,7 +628,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         return m
 
     def has_delete_permission(self, request, obj=None):
-        if obj and obj.approved is None and obj.payments.count() == 0 and obj.returned_payments.count() == 0:
+        if obj and obj.approved is None and obj.received_payments.count() == 0 and obj.returned_payments.count() == 0:
             return super().has_delete_permission(request, obj)
         else:
             return False
@@ -643,7 +662,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
             .get_queryset(request)
             .prefetch_related(
                 "discounts",
-                "payments",
+                "received_payments",
                 "returned_payments",
             )
             .select_related(
@@ -843,21 +862,42 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     random_number.admin_order_field = "random_number"
     random_number.short_description = _("random number")
 
-    def returned_payments(self, obj):
+    def received_payments(self, obj: SubjectRegistration):
         return format_html(
-            '<a href="{href}"><b>{amount}</b></a>',
-            href=reverse("admin:leprikon_subjectreturnedpayment_changelist") + f"?source_registration={obj.id}",
-            amount=currency(sum(r.amount for r in obj.all_returned_payments)),
-        ) + format_html(
-            '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
-            '<img src="{icon}" alt="+"/></a>',
-            href=reverse("admin:leprikon_subjectreturnedpayment_add") + f"?source_registration={obj.id}",
-            title=_("add returned payment"),
-            icon=static("admin/img/icon-addlink.svg"),
+            '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
+            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+            '<img src="{icon_add}" alt="+"/></a>',
+            amount=currency(obj.payment_status.received),
+            color=obj.payment_status.color,
+            href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + f"?target_registration={obj.id}",
+            href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist") + f"?target_registration={obj.id}",
+            icon_add=static("admin/img/icon-addlink.svg"),
+            title=obj.payment_status.title,
+            title_add=_("add received payment"),
+        )
+
+    received_payments.allow_tags = True
+    received_payments.short_description = _("received payments")
+
+    def returned_payments(self, obj: SubjectRegistration):
+        return format_html(
+            '<a href="{href_list}"><b>{amount}</b></a>',
+            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+            '<img src="{icon_add}" alt="+"/></a>',
+            amount=currency(obj.payment_status.returned),
+            href_add=reverse("admin:leprikon_subjectreturnedpayment_add") + f"?source_registration={obj.id}",
+            href_list=reverse("admin:leprikon_subjectreturnedpayment_changelist") + f"?source_registration={obj.id}",
+            icon_add=static("admin/img/icon-addlink.svg"),
+            title_add=_("add returned payment"),
         )
 
     returned_payments.allow_tags = True
     returned_payments.short_description = _("returned payments")
+
+    def total_price(self, obj: SubjectRegistration):
+        return currency(obj.payment_status.receivable)
+
+    total_price.short_description = _("total price")
 
 
 @admin.register(SubjectRegistration)

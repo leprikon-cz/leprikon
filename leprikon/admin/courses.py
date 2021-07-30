@@ -171,24 +171,6 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     subject_type_type = SubjectType.COURSE
     actions = ("add_discounts",)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
-    list_display = (
-        "variable_symbol",
-        "download_tag",
-        "subject_name",
-        "participants_list_html",
-        "price",
-        "course_discounts",
-        "course_payments",
-        "returned_payments",
-        "created_with_by",
-        "approved_with_by",
-        "payment_requested_with_by",
-        "refund_offered_with_by",
-        "cancelation_requested_with_by",
-        "canceled_with_by",
-        "note",
-        "random_number",
-    )
 
     def get_queryset(self, request):
         return (
@@ -299,7 +281,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
     add_discounts.short_description = _("Add discounts to selected registrations")
 
-    def course_discounts(self, obj):
+    def discounts(self, obj: CourseRegistration):
         html = []
         for status in obj.period_payment_statuses:
             query = f"?registration={obj.id}&registration_period={status.registration_period.id}"
@@ -320,10 +302,25 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return "<br/>".join(html)
 
-    course_discounts.allow_tags = True
-    course_discounts.short_description = _("course discounts")
+    discounts.allow_tags = True
+    discounts.short_description = _("discounts")
 
-    def course_payments(self, obj):
+    def total_price(self, obj: CourseRegistration):
+        html = []
+        for status in obj.period_payment_statuses:
+            html.append(
+                format_html(
+                    "{period}: <b>{amount}</b>",
+                    period=status.registration_period.period.name,
+                    amount=currency(status.status.receivable),
+                )
+            )
+        return "<br/>".join(html)
+
+    total_price.allow_tags = True
+    total_price.short_description = _("total price")
+
+    def received_payments(self, obj: CourseRegistration):
         html = []
         for period in obj.period_payment_statuses:
             html.append(
@@ -333,7 +330,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     color=period.status.color,
                     href=reverse("admin:leprikon_subjectreceivedpayment_changelist") + f"?target_registration={obj.id}",
                     title=period.status.title,
-                    amount=currency(period.status.paid),
+                    amount=currency(period.status.received),
                 )
                 + format_html(
                     '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
@@ -345,8 +342,8 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return "<br/>".join(html)
 
-    course_payments.allow_tags = True
-    course_payments.short_description = _("course payments")
+    received_payments.allow_tags = True
+    received_payments.short_description = _("received payments")
 
 
 @admin.register(CourseDiscount)

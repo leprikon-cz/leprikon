@@ -1,7 +1,8 @@
 import re
 from collections import namedtuple
 from datetime import date, datetime
-from typing import Any
+from decimal import Decimal
+from typing import Any, Union
 
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property, lazy
@@ -13,18 +14,32 @@ from schwifty.iban import IBAN
 from ..conf import settings
 from ..utils import currency, paragraph
 
+Price = Union[Decimal, int]
+
 
 class PaymentStatusMixin:
+    price: Price
+    discount: Price
+    received: Price
+    returned: Price
+    amount_due: Price
+    overdue: Price
+    overpaid: Price
+
     @property
-    def receivable(self):
+    def paid(self) -> Price:
+        return self.received - self.returned
+
+    @property
+    def receivable(self) -> Price:
         return self.price - self.discount
 
     @property
-    def balance(self):
+    def balance(self) -> Price:
         return self.paid - self.receivable
 
     @property
-    def color(self):
+    def color(self) -> str:
         if self.overdue:
             return settings.LEPRIKON_COLOR_OVERDUE
         if self.amount_due:
@@ -34,7 +49,7 @@ class PaymentStatusMixin:
         return settings.LEPRIKON_COLOR_PAID
 
     @property
-    def amount_due_color(self):
+    def amount_due_color(self) -> str:
         if self.overdue:
             return settings.LEPRIKON_COLOR_OVERDUE
         if self.amount_due:
@@ -42,13 +57,13 @@ class PaymentStatusMixin:
         return settings.LEPRIKON_COLOR_PAID
 
     @property
-    def overpaid_color(self):
+    def overpaid_color(self) -> str:
         if self.overpaid:
             return settings.LEPRIKON_COLOR_OVERPAID
         return settings.LEPRIKON_COLOR_PAID
 
     @property
-    def title(self):
+    def title(self) -> str:
         titles = []
         if self.amount_due and (self.amount_due != self.overdue):
             titles.append(_("amount due {}").format(currency(self.amount_due)))
@@ -65,14 +80,15 @@ class PaymentStatusMixin:
             titles.append(_("payment not requested yet"))
         return ", ".join(map(str, titles))
 
-    def __xrepr__(self):
+    def __xrepr__(self) -> str:
         return (
-            "{type_name}(price={price}, discount={discount}, paid={paid}, balance={balance}, "
-            "amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})".format(
+            "{type_name}(price={price}, discount={discount}, received={received}, returned={returned}, "
+            "balance={balance}, amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})".format(
                 type_name=type(self).__name__,
                 price=self.price,
                 discount=self.discount,
-                paid=self.paid,
+                received=self.received,
+                returned=self.returned,
                 balance=self.balance,
                 amount_due=self.amount_due,
                 overdue=self.overdue,
@@ -84,7 +100,8 @@ class PaymentStatusMixin:
         return PaymentStatusSum(
             price=self.price + (other and other.price),
             discount=self.discount + (other and other.discount),
-            paid=self.paid + (other and other.paid),
+            received=self.received + (other and other.received),
+            returned=self.returned + (other and other.returned),
             amount_due=self.amount_due + (other and other.amount_due),
             overdue=self.overdue + (other and other.overdue),
             overpaid=self.overpaid + (other and other.overpaid),
@@ -97,22 +114,27 @@ class PaymentStatus(
     PaymentStatusMixin,
     namedtuple(
         "_PaymentsStatus",
-        ("price", "discount", "explanation", "paid", "current_date", "due_from", "due_date"),
+        ["price", "discount", "explanation", "received", "returned", "current_date", "due_from", "due_date"],
     ),
 ):
+    explanation: str
+    current_date: date
+    due_from: date
+    due_date: date
+
     @property
-    def amount_due(self):
+    def amount_due(self) -> Price:
         return max(self.receivable - self.paid, 0) if self.due_from and self.due_from <= self.current_date else 0
 
     @property
-    def overdue(self):
+    def overdue(self) -> Price:
         return self.amount_due if self.due_date and self.due_date < self.current_date else 0
 
     @property
-    def overpaid(self):
+    def overpaid(self) -> Price:
         return max(self.balance, 0)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return format_html(
             '<strong title="{title}" style="color: {color}">{balance}</strong>',
             color=self.color,
@@ -124,8 +146,8 @@ class PaymentStatus(
 class PaymentStatusSum(
     PaymentStatusMixin,
     namedtuple(
-        "_PaymentsStatusSum",
-        ("price", "discount", "paid", "amount_due", "overdue", "overpaid"),
+        "_PaymentStatusSum",
+        ["price", "discount", "received", "returned", "amount_due", "overdue", "overpaid"],
     ),
 ):
     pass

@@ -142,24 +142,6 @@ class EventAdmin(SubjectBaseAdmin):
 class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.EVENT
     actions = ("add_discounts",)
-    list_display = (
-        "variable_symbol",
-        "download_tag",
-        "subject_name",
-        "participants_list_html",
-        "price",
-        "event_discounts",
-        "event_payments",
-        "returned_payments",
-        "created_with_by",
-        "approved_with_by",
-        "payment_requested_with_by",
-        "refund_offered_with_by",
-        "cancelation_requested_with_by",
-        "canceled_with_by",
-        "note",
-        "random_number",
-    )
 
     def add_discounts(self, request, queryset):
         ABSOLUTE = "A"
@@ -221,7 +203,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
     add_discounts.short_description = _("Add discounts to selected registrations")
 
-    def event_discounts(self, obj):
+    def discounts(self, obj: EventRegistration):
         return format_html(
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
@@ -233,26 +215,8 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             title_add=_("add discount"),
         )
 
-    event_discounts.allow_tags = True
-    event_discounts.short_description = _("event discounts")
-
-    def event_payments(self, obj):
-        return format_html(
-            '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
-            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
-            '<img src="{icon_add}" alt="+"/></a>',
-            color=obj.payment_status.color,
-            href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist")
-            + "?target_registration={}".format(obj.id),
-            title=obj.payment_status.title,
-            amount=currency(obj.payment_status.paid),
-            href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + "?target_registration={}".format(obj.id),
-            icon_add=static("admin/img/icon-addlink.svg"),
-            title_add=_("add payment"),
-        )
-
-    event_payments.allow_tags = True
-    event_payments.short_description = _("event payments")
+    discounts.allow_tags = True
+    discounts.short_description = _("discounts")
 
 
 @admin.register(EventDiscount)

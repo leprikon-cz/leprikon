@@ -14,7 +14,7 @@ class SummaryView(TemplateView):
     template_name = "leprikon/summary.html"
 
     def get_context_data(self, **kwargs):
-        payment_status = PaymentStatusSum(0, 0, 0, 0, 0, 0)
+        payment_status = PaymentStatusSum(0, 0, 0, 0, 0, 0, 0)
         overpaid_registrations = []
         for Registration in (CourseRegistration, EventRegistration, OrderableRegistration):
             for registration in (

@@ -134,7 +134,7 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
         blank=True,
         null=True,
         on_delete=models.PROTECT,
-        related_name="payments",
+        related_name="received_payments",
         verbose_name=_("target registration"),
         help_text=_("The payment will be added to this registration."),
     )

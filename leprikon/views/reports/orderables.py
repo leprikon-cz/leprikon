@@ -25,7 +25,7 @@ class ReportOrderablePaymentsView(FormView):
     def form_valid(self, form):
         context = form.cleaned_data
         context["form"] = form
-        context["payments"] = SubjectPayment.objects.filter(
+        context["received_payments"] = SubjectPayment.objects.filter(
             target_registration__subject__subject_type__subject_type=SubjectType.ORDERABLE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
@@ -35,9 +35,9 @@ class ReportOrderablePaymentsView(FormView):
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["payments_sum"] = context["payments"].aggregate(sum=Sum("amount"))["sum"]
+        context["received_payments_sum"] = context["received_payments"].aggregate(sum=Sum("amount"))["sum"]
         context["returned_payments_sum"] = context["returned_payments"].aggregate(sum=Sum("amount"))["sum"]
-        context["sum"] = context["payments_sum"] - context["returned_payments_sum"]
+        context["sum"] = context["received_payments_sum"] - context["returned_payments_sum"]
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
 

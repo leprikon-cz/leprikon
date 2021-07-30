@@ -17,6 +17,7 @@
         <th>{% trans 'Discounts' %}</th>
         <th>{% trans 'Receivables' %}</th>
         <th>{% trans 'Received payments' %}</th>
+        <th>{% trans 'Returned payments' %}</th>
         <th>{% trans 'Amount due' %}</th>
         <th>{% trans 'Overpayments' %}</th>
     </tr>
@@ -31,7 +32,8 @@
         <td class="right">{{ report.registration_statuses | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
         <td class="right">{{ report.status.receivable | currency }}</td>
-        <td class="right">{{ report.status.paid | currency }}</td>
+        <td class="right">{{ report.status.received | currency }}</td>
+        <td class="right">{{ report.status.returned | currency }}</td>
         <td class="right">
             <strong style="color: {{ report.status.amount_due_color }}" title="{{ report.status.title }}">
                 {{ report.status.amount_due | currency }}
@@ -58,7 +60,12 @@
         <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">
             <a href="{% url 'admin:leprikon_subjectreceivedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
-                {{ rs.status.paid | currency }}
+                {{ rs.status.received | currency }}
+            </a>
+        </td>
+        <td class="right">
+            <a href="{% url 'admin:leprikon_subjectreturnedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+                {{ rs.status.returned | currency }}
             </a>
         </td>
         <td class="right">
@@ -80,7 +87,8 @@
         <td class="right">{{ sum.registrations }}</td>
         <td class="right">{{ sum.status.discount | currency }}</td>
         <td class="right">{{ sum.status.receivable | currency }}</td>
-        <td class="right">{{ sum.status.paid | currency }}</td>
+        <td class="right">{{ sum.status.received | currency }}</td>
+        <td class="right">{{ sum.status.returned | currency }}</td>
         <td class="right">
             <strong style="color: {{ sum.status.amount_due_color }}" title="{{ sum.status.title }}">
                 {{ sum.status.amount_due | currency }}

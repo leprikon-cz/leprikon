@@ -265,7 +265,7 @@ class SubjectType(models.Model):
         change_list = reverse(f"admin:leprikon_{self.subject_type}discount_changelist")
         return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
 
-    def get_payments_url(self):
+    def get_received_payments_url(self):
         change_list = reverse("admin:leprikon_subjectreceivedpayment_changelist")
         return f"{change_list}?target_registration__subject__subject_type__id__exact={self.id}"
 
@@ -1007,8 +1007,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.discounts.all())
 
     @cached_property
-    def all_payments(self):
-        return list(self.payments.all())
+    def all_received_payments(self):
+        return list(self.received_payments.all())
 
     @cached_property
     def all_returned_payments(self):
@@ -1130,11 +1130,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         else:
             return self.all_discounts
 
-    def get_payments(self, d):
+    def get_received_payments(self, d):
         if d:
-            return [p for p in self.all_payments if p.accounted.date() <= d]
+            return [p for p in self.all_received_payments if p.accounted.date() <= d]
         else:
-            return self.all_payments
+            return self.all_received_payments
 
     def get_returned_payments(self, d):
         if d:
@@ -1150,8 +1150,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def get_discounted(self, d=None):
         return sum(p.amount for p in self.get_discounts(d))
 
-    def get_paid(self, d=None):
-        return sum(p.amount for p in self.get_payments(d)) - sum(r.amount for r in self.get_returned_payments(d))
+    def get_received(self, d=None):
+        return sum(p.amount for p in self.get_received_payments(d))
+
+    def get_returned(self, d=None):
+        return sum(r.amount for r in self.get_returned_payments(d))
 
     def get_qr_code(self):
         output = BytesIO()
@@ -1218,9 +1221,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         if not self.payment_status.overpaid:
             return
         remote_accounts = list(
-            self.payments.annotate(account=models.F("bankreader_transaction__remote_account_number")).values_list(
-                "account", flat=True
-            )
+            self.received_payments.annotate(
+                account=models.F("bankreader_transaction__remote_account_number")
+            ).values_list("account", flat=True)
         )
         if len(remote_accounts) == 1 and remote_accounts[0]:
             RefundRequest.objects.create(

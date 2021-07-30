@@ -141,23 +141,7 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
     subject_type_type = SubjectType.ORDERABLE
     actions = ("add_discounts",)
     list_display = (
-        "variable_symbol",
-        "download_tag",
-        "subject_name",
-        "event_date",
-        "participants_list_html",
-        "price",
-        "orderable_discounts",
-        "orderable_payments",
-        "returned_payments",
-        "created_with_by",
-        "approved_with_by",
-        "payment_requested_with_by",
-        "refund_offered_with_by",
-        "cancelation_requested_with_by",
-        "canceled_with_by",
-        "note",
-        "random_number",
+        SubjectRegistrationBaseAdmin.list_display[:3] + ("event_date",) + SubjectRegistrationBaseAdmin.list_display[3:]
     )
 
     def add_discounts(self, request, queryset):
@@ -220,7 +204,7 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
 
     add_discounts.short_description = _("Add discounts to selected registrations")
 
-    def orderable_discounts(self, obj):
+    def discounts(self, obj: OrderableRegistration):
         return format_html(
             '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
@@ -232,26 +216,26 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
             title_add=_("add discount"),
         )
 
-    orderable_discounts.allow_tags = True
-    orderable_discounts.short_description = _("orderable event discounts")
+    discounts.allow_tags = True
+    discounts.short_description = _("discounts")
 
-    def orderable_payments(self, obj):
+    def received_payments(self, obj: OrderableRegistration):
         return format_html(
             '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
             color=obj.payment_status.color,
             href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist")
-            + "?target_egistration={}".format(obj.id),
+            + "?target_registration={}".format(obj.id),
             title=obj.payment_status.title,
-            amount=currency(obj.payment_status.paid),
+            amount=currency(obj.payment_status.received),
             href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + "?target_registration={}".format(obj.id),
             icon_add=static("admin/img/icon-addlink.svg"),
             title_add=_("add payment"),
         )
 
-    orderable_payments.allow_tags = True
-    orderable_payments.short_description = _("orderable event payments")
+    received_payments.allow_tags = True
+    received_payments.short_description = _("received payments")
 
 
 @admin.register(OrderableDiscount)

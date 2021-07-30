@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import date, datetime, timedelta
+from typing import List
 
 from cms.models import CMSPlugin
 from django.db import models, transaction
@@ -162,19 +163,23 @@ class CourseRegistration(SubjectRegistration):
         verbose_name_plural = _("course registrations")
 
     @cached_property
-    def all_registration_periods(self):
+    def all_registration_periods(self) -> List["CourseRegistrationPeriod"]:
         return list(self.course_registration_periods.select_related("period"))
 
     def get_period_payment_statuses(self, d=None):
-        paid = self.get_paid(d)
+        received = self.get_received(d)
+        returned = self.get_returned(d)
+
         for counter, registration_period in enumerate(self.all_registration_periods, start=1):
             period_payment_status = registration_period.get_payment_status(
-                paid=paid,
+                received=received,
+                returned=returned,
                 last_period=counter == len(self.all_registration_periods),
                 d=d,
             )
             yield period_payment_status
-            paid -= period_payment_status.status.paid
+            received -= period_payment_status.status.received
+            returned = 0  # all returned payments are "spent" to the first period
         if not self.all_registration_periods:
             # create fake registration period to ensure some payment status
             registration_period = CourseRegistrationPeriod(
@@ -190,7 +195,8 @@ class CourseRegistration(SubjectRegistration):
                     price=0,
                     discount=0,
                     explanation="",
-                    paid=paid,
+                    received=received,
+                    returned=returned,
                     current_date=d,
                     due_from=None,
                     due_date=None,
@@ -242,12 +248,17 @@ class CourseRegistrationPeriod(models.Model):
         # return list(self.discounts.all())
         return [discount for discount in self.registration.all_discounts if discount.registration_period_id == self.id]
 
-    PeriodPaymentStatus = namedtuple(
-        "PeriodPaymentStatus",
-        ("period", "registration_period", "status"),
-    )
+    class PeriodPaymentStatus(
+        namedtuple(
+            "PeriodPaymentStatus",
+            ["period", "registration_period", "status"],
+        )
+    ):
+        period: SchoolYearPeriod
+        registration_period: "CourseRegistrationPeriod"
+        status: PaymentStatus
 
-    def get_payment_status(self, paid, last_period, d=None):
+    def get_payment_status(self, received, returned, last_period, d=None) -> PeriodPaymentStatus:
         if d is None:
             d = date.today()
         discount = sum(discount.amount for discount in self.all_discounts if discount.accounted.date() <= d)
@@ -263,7 +274,8 @@ class CourseRegistrationPeriod(models.Model):
                 price=self.registration.price,
                 discount=discount,
                 explanation=explanation,
-                paid=min(self.registration.price - discount, paid) if not last_period else paid,
+                received=min(self.registration.price - discount + returned, received) if not last_period else received,
+                returned=returned,
                 current_date=d,
                 due_from=self.registration.payment_requested
                 and max(

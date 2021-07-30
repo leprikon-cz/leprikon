@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 help_text="The payment will be added to this registration.",
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
-                related_name="payments",
+                related_name="received_payments",
                 to="leprikon.SubjectRegistration",
                 verbose_name="target registration",
             ),

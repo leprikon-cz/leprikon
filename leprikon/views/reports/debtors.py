@@ -40,7 +40,8 @@ class ReportDebtorsView(FormView):
             )
             .prefetch_related(
                 "discounts",
-                "payments",
+                "received_payments",
+                "returned_payments",
             )
             .select_related("user")
             for qs in (

@@ -83,7 +83,8 @@ class OrderableRegistration(SubjectRegistration):
                 for discount in self.all_discounts
                 if (d is None or discount.accounted.date() <= d) and discount.explanation.strip()
             ),
-            paid=self.get_paid(d),
+            received=self.get_received(d),
+            returned=self.get_returned(d),
             current_date=d or date.today(),
             due_from=self.payment_requested
             and (
