@@ -881,7 +881,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
     def returned_payments(self, obj: SubjectRegistration):
         return format_html(
-            '<a href="{href_list}"><b>{amount}</b></a>',
+            '<a href="{href_list}"><b>{amount}</b></a>'
             ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
             '<img src="{icon_add}" alt="+"/></a>',
             amount=currency(obj.payment_status.returned),
