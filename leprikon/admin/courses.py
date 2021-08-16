@@ -10,17 +10,12 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
-from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory, CourseTime
+from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import currency
 from .pdf import PdfExportAdminMixin
 from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
-
-
-class CourseTimeInlineAdmin(admin.TabularInline):
-    model = CourseTime
-    extra = 0
 
 
 @admin.register(Course)
@@ -39,7 +34,7 @@ class CourseAdmin(SubjectBaseAdmin):
         "public",
         "registration_allowed_icon",
         "get_registrations_link",
-        "get_journal_link",
+        "journals_link",
         "icon",
         "note",
     )
@@ -69,7 +64,6 @@ class CourseAdmin(SubjectBaseAdmin):
         "get_unapproved_registrations_count",
         "note",
     )
-    inlines = (CourseTimeInlineAdmin,) + SubjectBaseAdmin.inlines
     actions = (
         "publish",
         "unpublish",

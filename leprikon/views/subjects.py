@@ -16,7 +16,6 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
-from ..models.leprikonsite import LeprikonSite
 from ..models.orderables import Orderable
 from ..models.subjects import (
     Subject,
@@ -93,9 +92,6 @@ class SubjectListBaseView(FilteredListView):
             data=self.request.GET,
         )
 
-    def get_queryset(self):
-        return self.get_form().get_queryset()
-
 
 class SubjectListView(CMSSubjectTypeMixin, SubjectListBaseView):
     pass
@@ -127,8 +123,8 @@ class SubjectDetailView(CMSSubjectTypeMixin, DetailView):
         return qs
 
 
-class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
-    template_name_suffix = "_registrations"
+class SubjectJournalsView(SubjectTypeMixin, DetailView):
+    template_name_suffix = "_journals"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -137,9 +133,29 @@ class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["site"] = LeprikonSite.objects.get_current()
-        return context
+        return super().get_context_data(
+            add_label=_("Create journal"),
+            add_url=reverse("leprikon:journal_create", kwargs={"subject": self.object.id}),
+            preview_template="leprikon/journal_preview.html",
+            message_empty=_("No journals matching given search parameters found."),
+            **kwargs,
+        )
+
+    def get_title(self):
+        return _("Journals of {subject_type} {subject}").format(
+            subject_type=self.subject_type.name_genitiv,
+            subject=self.object,
+        )
+
+
+class SubjectRegistrationsView(SubjectTypeMixin, DetailView):
+    template_name_suffix = "_registrations"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if not self.request.user.is_staff:
+            qs = qs.filter(leaders=self.request.leader)
+        return qs
 
 
 class SubjectUpdateView(SubjectTypeMixin, UpdateView):

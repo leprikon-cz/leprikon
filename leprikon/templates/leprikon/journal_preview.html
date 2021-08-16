@@ -1,0 +1,44 @@
+{% load i18n leprikon_tags sekizai_tags thumbnail %}
+
+<div class="box">
+    <div class="box-header">
+        <strong>{{ object }}</strong>
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journal_update' object.id %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            {% trans 'edit' %}
+        </a>
+        {% if not object.all_journal_entries %}
+        <a class="btn btn-default btn-xs" href="{% url_with_back 'leprikon:journal_delete' object.id %}">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            {% trans 'delete' %}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="box-content">
+        {% if object.all_times or object.place %}{# course or orderable #}
+        <p>
+            {% if object.all_times %}{% trans 'Time' %}: {{ object.all_times | comma_separated }}{% endif %}
+            {% if object.all_times and object.place %}<br/>{% endif %}
+            {% if object.place %}{% trans 'Place' %}: {{ object.place }}{% endif %}
+        </p>
+        {% endif %}
+
+        {% if object.all_leaders %}
+        <p>
+            {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
+            {{ object.all_leaders|comma_separated }}
+        </p>
+        {% endif %}
+
+        <div class="btn-group">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:journal' object.id %}">
+                {% trans 'journal' %}
+            </a>
+            <a class="btn btn-sm btn-primary" href="{% url_with_back 'leprikon:journalentry_create' object.id %}">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                {% trans 'add journal entry' %}
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.urls import reverse_lazy as reverse
+from django.utils.functional import cached_property
 from django.utils.http import is_safe_url
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
@@ -66,11 +67,18 @@ class FilteredListView(ListView):
     form_class = None
     message_empty = _("No items found matching given search parameters.")
 
+    @cached_property
+    def form(self):
+        return self.get_form()
+
     def get_form(self):
         return self.form_class(data=self.request.GET)
 
     def get_context_data(self, *args, **kwargs):
-        return super().get_context_data(*args, form=self.get_form(), **kwargs)
+        return super().get_context_data(*args, form=self.form, **kwargs)
+
+    def get_queryset(self):
+        return self.form.get_queryset()
 
 
 class BackViewMixin(object):

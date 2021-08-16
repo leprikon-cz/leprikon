@@ -4,12 +4,51 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
 
-from ..models.journals import JournalEntry, JournalLeaderEntry
+from ..models.journals import Journal, JournalEntry, JournalLeaderEntry
 from ..models.roles import Leader
+from ..models.subjects import SubjectRegistrationParticipant
 from ..models.timesheets import Timesheet, TimesheetPeriod
-from ..utils import comma_separated
+from ..utils import comma_separated, first_upper
 from .fields import ReadonlyField
 from .form import FormMixin
+from .widgets import CheckboxSelectMultipleBootstrap
+
+
+class JournalForm(FormMixin, forms.ModelForm):
+    class Meta:
+        model = Journal
+        exclude = ["subject"]
+        widgets = {
+            "leaders": CheckboxSelectMultipleBootstrap(),
+            "participants": CheckboxSelectMultipleBootstrap(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
+        super().__init__(*args, **kwargs)
+        self.instance.subject = self.subject
+        self.readonly_fields = [
+            ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
+        ]
+        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
+
+        participant_ids = set(
+            SubjectRegistrationParticipant.objects.filter(
+                registration__approved__isnull=False,
+                registration__subject_id=self.subject.id,
+            ).values_list("id", flat=True)
+        )
+        if self.instance.id:
+            participant_ids |= set(self.instance.participants.values_list("id", flat=True))
+            participant_ids |= set(
+                SubjectRegistrationParticipant.objects.filter(
+                    journal_entries__journal=self.instance,
+                ).values_list("id", flat=True),
+            )
+        self.fields["participants"].widget.choices = tuple(
+            (participant.id, participant)
+            for participant in SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
+        )
 
 
 class JournalLeaderEntryAdminForm(forms.ModelForm):
@@ -55,7 +94,7 @@ class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.readonly_fields = [
-            ReadonlyField(label=_("Subject"), value=self.instance.journal_entry.subject.name),
+            ReadonlyField(label=_("Journal"), value=self.instance.journal_entry.journal),
             ReadonlyField(label=_("Date"), value=self.instance.journal_entry.date),
             ReadonlyField(label=_("Leader"), value=self.instance.timesheet.leader),
         ]
@@ -72,9 +111,9 @@ class JournalEntryAdminForm(forms.ModelForm):
         fields = ["date", "start", "end", "agenda", "participants", "participants_instructed"]
 
     def __init__(self, *args, **kwargs):
-        self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
+        self.journal = kwargs.pop("journal", None) or kwargs["instance"].journal
         super().__init__(*args, **kwargs)
-        self.instance.subject = self.subject
+        self.instance.journal = self.journal
 
         if self.instance.id:
             d = self.instance.date
@@ -86,12 +125,12 @@ class JournalEntryAdminForm(forms.ModelForm):
             except KeyError:
                 pass
         else:
-            last = self.instance.subject.journal_entries.last()
+            last = self.instance.journal.journal_entries.last()
             if last:
                 last_end = last.datetime_end or last.date
             else:
                 last_end = None
-            next_time = self.instance.subject.subject.get_next_time(last_end)
+            next_time = self.instance.journal.get_next_time(last_end)
             if next_time:
                 self.initial["date"] = next_time.date
                 self.initial["start"] = next_time.start
@@ -102,10 +141,10 @@ class JournalEntryAdminForm(forms.ModelForm):
                 d = self.fields["date"].clean(kwargs["data"]["date"])
             except (KeyError, TypeError, ValidationError):
                 d = self.initial["date"]
-        self.fields["participants"].widget.choices.queryset = self.instance.subject.get_valid_participants(d)
+        self.fields["participants"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
         self.fields["participants"].help_text = None
 
-        self.fields["participants_instructed"].widget.choices.queryset = self.instance.subject.get_valid_participants(d)
+        self.fields["participants_instructed"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
         self.fields["participants_instructed"].help_text = None
 
     def clean(self):
@@ -122,7 +161,7 @@ class JournalEntryAdminForm(forms.ModelForm):
         # check overlaping entries
         if start:
             qs = JournalEntry.objects.filter(
-                subject=self.instance.subject,
+                journal=self.instance.journal,
                 date=self.cleaned_data.get("date", self.instance.date),
                 start__lt=end,
                 end__gt=start,
@@ -182,11 +221,11 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.readonly_fields = [
-            ReadonlyField(label=_("Subject"), value=self.subject),
+            ReadonlyField(label=_("Journal"), value=self.journal),
         ]
 
         # only allow to select leaders or alterates with not submitted timesheets
-        leaders = self.instance.subject.all_leaders
+        leaders = self.instance.journal.all_leaders
         alternates = [leader for leader in Leader.objects.all() if leader not in leaders]
 
         self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in leaders)

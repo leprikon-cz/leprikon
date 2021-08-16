@@ -1,12 +1,90 @@
 from django import forms
+from django.conf.urls import url as urls_url
 from django.contrib import admin
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.journals import JournalEntryAdminForm, JournalLeaderEntryAdminForm
-from ..models.journals import JournalEntry, JournalLeaderEntry
+from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from .export import AdminExportMixin
-from .filters import LeaderListFilter, SchoolYearListFilter, SubjectListFilter
+from .filters import JournalListFilter, LeaderListFilter, SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
+
+
+class JournalTimeInlineAdmin(admin.TabularInline):
+    model = JournalTime
+    extra = 0
+
+
+@admin.register(Journal)
+class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
+    inlines = (JournalTimeInlineAdmin,)
+    list_display = ("subject", "name", "get_times_list", "journal_links")
+    list_filter = (
+        ("subject__school_year", SchoolYearListFilter),
+        ("subject__subject_type", SubjectTypeListFilter),
+        ("leaders", LeaderListFilter),
+        ("subject", SubjectListFilter),
+    )
+
+    def get_urls(self):
+        return [
+            urls_url(
+                r"(?P<journal_id>\d+)/journal/$",
+                self.admin_site.admin_view(self.journal),
+                name="leprikon_journal_journal",
+            ),
+            urls_url(
+                r"(?P<journal_id>\d+)/journal-pdf/$",
+                self.admin_site.admin_view(self.journal_pdf),
+                name="leprikon_journal_journal_pdf",
+            ),
+        ] + super().get_urls()
+
+    def journal(self, request, journal_id):
+        journal = self.get_object(request, journal_id)
+
+        return render(
+            request,
+            "leprikon/journal_journal.html",
+            {
+                "journal": journal,
+                "admin": True,
+            },
+        )
+
+    def journal_pdf(self, request, journal_id):
+        journal = self.get_object(request, journal_id)
+
+        # create PDF response object
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(journal.get_pdf_filename("journal_pdf"))
+
+        # write PDF to response
+        return journal.write_pdf("journal_pdf", response)
+
+    def journal_links(self, obj):
+        return "<br/>".join(
+            (
+                format_html(
+                    '<a href="{url}" title="{title}" target="_blank">{journal}</a>',
+                    url=reverse("admin:leprikon_journal_journal", args=[obj.id]),
+                    title=_("printable journal"),
+                    journal=_("journal"),
+                ),
+                format_html(
+                    '<a href="{url}" title="{title}" target="_blank">{participants}</a>',
+                    url=reverse("admin:leprikon_journal_journal_pdf", args=[obj.id]),
+                    title=_("printable list of participants"),
+                    participants=_("participants"),
+                ),
+            )
+        )
+
+    journal_links.short_description = _("journal")
+    journal_links.allow_tags = True
 
 
 @admin.register(JournalLeaderEntry)
@@ -73,16 +151,16 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
 class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form = JournalEntryAdminForm
     date_hierarchy = "date"
-    list_display = ("id", "subject_name", "date", "start", "end", "duration", "agenda_html")
+    list_display = ("id", "journal_name", "date", "start", "end", "duration", "agenda_html")
     list_filter = (
-        ("subject__school_year", SchoolYearListFilter),
-        ("subject", SubjectListFilter),
+        ("journal__subject__school_year", SchoolYearListFilter),
+        ("journal", JournalListFilter),
     )
-    filter_horizontal = ("participants",)
+    filter_horizontal = ("participants", "participants_instructed")
     inlines = (JournalLeaderEntryInlineAdmin,)
     ordering = ("-date", "-start")
     readonly_fields = (
-        "subject_name",
+        "journal_name",
         "date",
     )
 
@@ -110,11 +188,11 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
-    def subject_name(self, obj):
-        return obj.subject.name
+    def journal_name(self, obj):
+        return obj.journal
 
-    subject_name.short_description = _("subject")
-    subject_name.admin_order_field = "subject__name"
+    journal_name.short_description = _("journal")
+    journal_name.admin_order_field = "journal"
 
     def agenda_html(self, obj):
         return obj.agenda

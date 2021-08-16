@@ -5,17 +5,17 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import localdate
 
-from ..models.subjects import Subject
+from ..models.journals import Journal
 from ..rocketchat import RocketChat, get_rc_id
 from ..views import leader_or_staff_required
 
 
 @leader_or_staff_required
-def participants(request, subject_id):
-    qs = Subject.objects.all()
+def participants(request, journal_id):
+    qs = Journal.objects.all()
     if not request.user.is_staff:
         qs = qs.filter(leaders=request.leader)
-    subject = get_object_or_404(qs, id=subject_id)
+    journal = get_object_or_404(qs, id=journal_id)
 
     try:
         d = localdate(datetime.utcfromtimestamp(int(request.GET["date"])).replace(tzinfo=pytz.utc))
@@ -24,7 +24,7 @@ def participants(request, subject_id):
 
     return JsonResponse(
         {
-            "participants": list({"value": p.id, "label": str(p)} for p in subject.get_valid_participants(d)),
+            "participants": list({"value": p.id, "label": str(p)} for p in journal.get_valid_participants(d)),
         }
     )
 

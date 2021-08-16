@@ -24,9 +24,6 @@ class MessageListView(FilteredListView):
             data=self.request.GET,
         )
 
-    def get_queryset(self):
-        return self.get_form().get_queryset()
-
 
 class MessageDetailView(BackViewMixin, DetailView):
     back_url = reverse("leprikon:message_list")

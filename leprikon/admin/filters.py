@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
+from ..models.journals import Journal
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import Subject, SubjectGroup, SubjectType
@@ -162,6 +163,25 @@ class SubjectListFilter(admin.RelatedFieldListFilter):
 
     def field_choices(self, field, request, model_admin):
         return [(s.id, s.name) for s in self.subjects]
+
+
+class JournalListFilter(admin.RelatedFieldListFilter):
+    model = Journal
+
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        self.journals = (
+            self.model.objects.filter(subject__school_year=request.school_year)
+            .select_related("subject")
+            .order_by("subject__name", "name")
+        )
+        if hasattr(request, "leprikon_subject_id") and request.leprikon_subject_id:
+            self.journals = self.journals.filter(subject_id=request.leprikon_subject_id)
+        elif hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
+            self.journals = self.journals.filter(subject__subject_type__id=request.leprikon_subject_type_id)
+        super().__init__(field, request, params, model, model_admin, field_path)
+
+    def field_choices(self, field, request, model_admin):
+        return [(journal.id, str(journal)) for journal in self.journals]
 
 
 class LeaderListFilter(admin.RelatedFieldListFilter):

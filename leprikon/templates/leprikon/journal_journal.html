@@ -9,7 +9,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <title>
-        {% trans 'Journal' %}: {{ subject.name }}
+        {% trans 'Journal' %}: {{ journal }}
     </title>
 
     <!-- Bootstrap -->
@@ -118,7 +118,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    {% for period in subject.all_journal_periods %}
+    {% for period in journal.all_journal_periods %}
     {% with period.all_journal_entries|length|add:2 as columns_count %}
     <div class="container paper">
         <h1>{% trans 'Attendance' %}{% if period.period %} - {{ period.period.name }}{% endif %}</h1>
@@ -146,7 +146,7 @@
                 {% if not admin %}
                 <th class="vertical">
                     <div>
-                        <a class="noprint" href="{% url_with_back 'leprikon:journalentry_create' subject.id %}">
+                        <a class="noprint" href="{% url_with_back 'leprikon:journalentry_create' journal.id %}">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                             {% trans 'add entry' %}
                         </a>
@@ -194,7 +194,7 @@
     {% endwith %}
     {% endfor %}
 
-    {% for period in subject.all_journal_periods %}
+    {% for period in journal.all_journal_periods %}
     <div class="container paper">
 
         <h1>{% trans 'Agenda' %}{% if period.period %} - {{ period.period.name }}{% endif %}</h1>
@@ -241,7 +241,7 @@
             {% if not admin %}
             <tr class="noprint">
                 <td colspan="6">
-                    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journalentry_create' subject.id %}">
+                    <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journalentry_create' journal.id %}">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                         {% trans 'add entry' %}
                     </a>
@@ -258,7 +258,7 @@
         <h1>
             {% trans 'Risks' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journal_update' journal.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>
@@ -267,17 +267,14 @@
 
         <table id="risks">
             <tr>
-                <th>{% trans 'Place / Risk' %}</th>
-            </tr>
-            <tr>
-                <td class="placeholder">{{ subject.risks | safe }}</td>
+                <td class="placeholder">{{ journal.risks | safe }}</td>
             </tr>
         </table>
 
         <h1>
             {% trans 'Plan for the activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journal_update' journal.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>
@@ -285,18 +282,14 @@
         </h1>
         <table id="plan">
             <tr>
-                <td class="placeholder" colspan="2">{{ subject.plan | safe }}</td>
-            </tr>
-            <tr>
-                <th>{% trans 'Signature' %}</th>
-                <td class="empty"></td>
+                <td class="placeholder" colspan="2">{{ journal.plan | safe }}</td>
             </tr>
         </table>
 
         <h1>
             {% trans 'Evaluation of the activity' %}
             {% if not admin %}
-            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' subject.subject_type.slug subject.id %}">
+            <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journal_update' journal.id %}">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 {% trans 'edit' %}
             </a>
@@ -304,11 +297,7 @@
         </h1>
         <table id="evaluation">
             <tr>
-                <td class="placeholder" colspan="2">{{ subject.evaluation | safe }}</td>
-            </tr>
-            <tr>
-                <th>{% trans 'Signature' %}</th>
-                <td class="empty"></td>
+                <td class="placeholder" colspan="2">{{ journal.evaluation | safe }}</td>
             </tr>
         </table>
     </div>

@@ -175,7 +175,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
 class SubjectForm(FormMixin, forms.ModelForm):
     class Meta:
         model = Subject
-        fields = ["description", "risks", "plan", "evaluation"]
+        fields = ["description"]
 
 
 class SubjectAdminForm(forms.ModelForm):

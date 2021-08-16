@@ -5,11 +5,14 @@ import trml2pdf
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import select_template
 from django.urls import reverse
+from django.utils.functional import cached_property
+from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..conf import settings
 from .leprikonsite import LeprikonSite
 from .printsetup import PrintSetup
+from .utils import shorten
 
 whitespace = re.compile(r"\s+")
 
@@ -73,6 +76,10 @@ class PdfExportAndMailMixin(object):
             alternatives=[(content_html, "text/html")],
             attachments=self.get_attachments(event),
         ).send()
+
+    @cached_property
+    def slug(self):
+        return shorten(slugify(self), 100)
 
     def get_pdf_filename(self, event):
         return self.slug + ".pdf"

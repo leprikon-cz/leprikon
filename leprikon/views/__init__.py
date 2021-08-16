@@ -115,6 +115,9 @@ billing_info_delete = login_required(billing_info.BillingInfoDeleteView.as_view(
 
 leader_summary = leader_required(summaries.LeaderSummaryView.as_view())
 alternating = leader_required(journals.AlternatingView.as_view())
+journal_create = leader_or_staff_required(journals.JournalCreateView.as_view())
+journal_update = leader_or_staff_required(journals.JournalUpdateView.as_view())
+journal_delete = leader_or_staff_required(journals.JournalDeleteView.as_view())
 journal = leader_or_staff_required(journals.JournalView.as_view())
 journalentry_create = leader_or_staff_required(journals.JournalEntryCreateView.as_view())
 journalentry_update = leader_or_staff_required(journals.JournalEntryUpdateView.as_view())
@@ -128,6 +131,7 @@ subject_detail = subjects.SubjectDetailView.as_view()
 subject_registration_form = login_required(subjects.SubjectRegistrationFormView.as_view())
 subject_update = leader_or_staff_required(subjects.SubjectUpdateView.as_view())
 subject_registrations = leader_or_staff_required(subjects.SubjectRegistrationsView.as_view())
+subject_journals = leader_or_staff_required(subjects.SubjectJournalsView.as_view())
 
 message_list = login_required(messages.MessageListView.as_view())
 message_detail = csrf_exempt(messages.MessageDetailView.as_view())

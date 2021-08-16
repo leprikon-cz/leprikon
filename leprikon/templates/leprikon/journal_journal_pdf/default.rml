@@ -29,7 +29,7 @@
         </blockTableStyle>
     </stylesheet>
     <story>
-        {% for page in object.all_approved_participants|paginator:28 %}
+        {% for page in object.all_participants|paginator:28 %}
         <blockTable style="blocktable" colWidths="80,200,80" rowHeights="40{% for participant in page %},23.36{% endfor %}" alignment="LEFT">
             <tr height="40">
                 <td></td>

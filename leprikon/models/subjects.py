@@ -46,8 +46,9 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear
 from .targetgroup import TargetGroup
+from .times import AbstractTime, TimesMixin
 from .transaction import AbstractTransaction, Transaction
-from .utils import BankAccount, PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default, shorten
+from .utils import BankAccount, PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default
 
 logger = logging.getLogger(__name__)
 
@@ -253,6 +254,10 @@ class SubjectType(models.Model):
     def get_absolute_url(self):
         return reverse(self.slug + ":subject_list")
 
+    def get_journals_url(self):
+        change_list = reverse("admin:leprikon_journal_changelist")
+        return f"{change_list}?subject__subject_type__id__exact={self.id}"
+
     def get_subjects_url(self):
         change_list = reverse(f"admin:leprikon_{self.subject_type}_changelist")
         return f"{change_list}?subject_type__id__exact={self.id}"
@@ -354,7 +359,7 @@ class SubjectGroup(models.Model):
         )
 
 
-class Subject(PdfExportAndMailMixin, models.Model):
+class Subject(TimesMixin, models.Model):
     PARTICIPANTS = "P"
     GROUPS = "G"
     REGISTRATION_TYPE_CHOICES = [
@@ -415,9 +420,6 @@ class Subject(PdfExportAndMailMixin, models.Model):
     min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
     min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=3)
-    risks = HTMLField(_("risks"), blank=True)
-    plan = HTMLField(_("plan"), blank=True)
-    evaluation = HTMLField(_("evaluation"), blank=True)
     note = models.CharField(_("note"), max_length=300, blank=True, default="")
     questions = models.ManyToManyField(
         Question,
@@ -517,10 +519,6 @@ class Subject(PdfExportAndMailMixin, models.Model):
         return self.registration_type == self.GROUPS
 
     @cached_property
-    def slug(self):
-        return shorten(slugify(self), 100)
-
-    @cached_property
     def subject(self):
         if self.subject_type.subject_type == self.subject_type.COURSE:
             return self.course
@@ -571,38 +569,6 @@ class Subject(PdfExportAndMailMixin, models.Model):
     @cached_property
     def all_registrations(self):
         return list(self.registrations.all())
-
-    def get_valid_participants(self, d):
-        qs = SubjectRegistrationParticipant.objects
-        if self.subject_type.subject_type == SubjectType.COURSE:
-            qs = qs.filter(
-                models.Q(registration__courseregistration__course_history__course_id=self.id)
-                & (
-                    models.Q(registration__courseregistration__course_history__end__isnull=True)
-                    | models.Q(registration__courseregistration__course_history__end__gte=d)
-                )
-            )
-        else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
-            qs = qs.filter(
-                registration__subject_id=self.id,
-                registration__approved__isnull=False,
-            )
-        return qs.exclude(registration__canceled__date__lt=d)
-
-    @cached_property
-    def all_approved_participants(self):
-        qs = SubjectRegistrationParticipant.objects
-        if self.subject_type.subject_type == SubjectType.COURSE:
-            qs = qs.filter(registration__courseregistration__course_history__course_id=self.id,).annotate(
-                approved=models.F("registration__approved"),
-                canceled=models.F("registration__canceled"),
-            )
-        else:  # self.subject_type.subject_type in (SubjectType.EVENT, SubjectType.ORDERABLE):
-            qs = qs.filter(
-                registration__subject_id=self.id,
-                registration__approved__isnull=False,
-            )
-        return list(qs)
 
     @property
     def registration_allowed(self):
@@ -687,13 +653,6 @@ class Subject(PdfExportAndMailMixin, models.Model):
     def all_approved_registrations(self):
         return list(self.approved_registrations.all())
 
-    @cached_property
-    def all_journal_periods(self):
-        if self.subject_type.subject_type == self.subject_type.COURSE:
-            return [JournalPeriod(self.course, period) for period in self.course.all_periods]
-        else:
-            return [JournalPeriod(self.event)]
-
     @property
     def unapproved_registrations(self):
         return self.active_registrations.filter(approved=None)
@@ -726,69 +685,14 @@ class Subject(PdfExportAndMailMixin, models.Model):
         )
 
 
-class JournalPeriod:
-    def __init__(self, subject, period=None):
-        self.subject = subject
-        self.period = period
+class SubjectTime(AbstractTime):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="times", verbose_name=_("course"))
 
-    @property
-    def all_journal_entries(self):
-        qs = self.subject.journal_entries.all()
-        if self.period:
-            if self.period != self.subject.all_periods[0]:
-                qs = qs.filter(date__gte=self.period.start)
-            if self.period != self.subject.all_periods[-1]:
-                qs = qs.filter(date__lte=self.period.end)
-        return list(qs)
-
-    @cached_property
-    def all_approved_participants(self):
-        if self.period:  # course
-            return [
-                participant
-                for participant in self.subject.all_approved_participants
-                if (
-                    participant.approved.date() <= self.period.end
-                    and (participant.canceled is None or participant.canceled.date() >= self.period.start)
-                )
-            ]
-        else:  # event
-            return self.subject.all_approved_participants
-
-    @cached_property
-    def all_alternates(self):
-        alternates = set()
-        for entry in self.all_journal_entries:
-            for alternate in entry.all_alternates:
-                alternates.add(alternate)
-        return list(alternates)
-
-    PresenceRecord = namedtuple("PresenceRecord", ("person", "presences"))
-
-    def get_participant_presences(self):
-        return [
-            self.PresenceRecord(
-                participant, [participant.id in entry.all_participants_idset for entry in self.all_journal_entries]
-            )
-            for participant in self.all_approved_participants
-        ]
-
-    def get_leader_presences(self):
-        return [
-            self.PresenceRecord(
-                leader, [entry.all_leader_entries_by_leader.get(leader, None) for entry in self.all_journal_entries]
-            )
-            for leader in self.subject.all_leaders
-        ]
-
-    def get_alternate_presences(self):
-        return [
-            self.PresenceRecord(
-                alternate,
-                [entry.all_leader_entries_by_leader.get(alternate, None) for entry in self.all_journal_entries],
-            )
-            for alternate in self.all_alternates
-        ]
+    class Meta:
+        app_label = "leprikon"
+        ordering = ("day_of_week", "start")
+        verbose_name = _("time")
+        verbose_name_plural = _("times")
 
 
 class SubjectVariant(models.Model):
@@ -1452,6 +1356,19 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         # if self.email:
         #     recipients.add(self.email)
         # return recipients
+
+    PresenceRecord = namedtuple("PresenceRecord", ("entry", "present"))
+
+    @property
+    def presences(self):
+        from .journals import JournalEntry
+
+        present_entry_ids = set(self.journal_entries.values_list("id", flat=True))
+
+        return [
+            self.PresenceRecord(entry, entry.id in present_entry_ids)
+            for entry in JournalEntry.objects.filter(journal__participants=self)
+        ]
 
     def save(self, *args, **kwargs):
         if not self.has_parent1:

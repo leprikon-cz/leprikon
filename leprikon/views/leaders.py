@@ -21,6 +21,3 @@ class LeaderListView(FilteredListView):
             school_year=self.request.school_year,
             data=self.request.GET,
         )
-
-    def get_queryset(self):
-        return self.get_form().get_queryset()
