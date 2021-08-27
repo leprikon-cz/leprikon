@@ -53,7 +53,7 @@ class AbstractTime(StartEndMixin, models.Model):
             next_date = now.date() + timedelta(daydelta)
         else:
             next_date = now + timedelta(daydelta)
-        return self.Time(
+        return Time(
             date=next_date,
             start=self.start,
             end=self.end,

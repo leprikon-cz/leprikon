@@ -14,6 +14,7 @@ from .roles import Leader
 from .schoolyear import SchoolYear
 from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
+from .times import Time
 from .utils import PaymentStatus, change_year
 
 
@@ -56,18 +57,16 @@ class Event(Subject):
 
     event_date.short_description = _("times")
 
-    Time = namedtuple("Time", ("date", "start", "end"))
-
     def get_next_time(self, now=None):
         if not now:
-            return self.Time(
+            return Time(
                 date=self.start_date,
                 start=self.start_time,
                 end=(self.end_time if self.end_date == self.start_date else None),
             )
         else:
             next_date = (now.date() if isinstance(now, datetime) else now) + timedelta(1)
-            return self.Time(
+            return Time(
                 date=next_date,
                 start=None,
                 end=(self.end_time if self.end_date == next_date else None),
