@@ -25,6 +25,7 @@ from ..models.subjects import (
     SubjectReturnedPayment,
     SubjectType,
 )
+from ..utils import reverse_with_back
 from .generic import ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView
 
 
@@ -135,7 +136,7 @@ class SubjectJournalsView(SubjectTypeMixin, DetailView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(
             add_label=_("Create journal"),
-            add_url=reverse("leprikon:journal_create", kwargs={"subject": self.object.id}),
+            add_url=reverse_with_back(self.request, "leprikon:journal_create", kwargs={"subject": self.object.id}),
             preview_template="leprikon/journal_preview.html",
             message_empty=_("No journals matching given search parameters found."),
             **kwargs,

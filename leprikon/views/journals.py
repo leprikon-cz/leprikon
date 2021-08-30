@@ -52,7 +52,7 @@ class JournalCreateView(CreateView):
         return kwargs
 
     def get_message(self):
-        return _("New parent {} has been created.").format(self.object)
+        return _("New journal {} has been created.").format(self.object)
 
 
 class JournalUpdateView(JournalQuerySetMixin, UpdateView):

@@ -2,9 +2,10 @@ from datetime import date
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
 
-from ..models.journals import Journal, JournalEntry, JournalLeaderEntry
+from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
 from ..models.subjects import SubjectRegistrationParticipant
 from ..models.timesheets import Timesheet, TimesheetPeriod
@@ -21,7 +22,6 @@ class JournalAdminForm(forms.ModelForm):
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
-        instance = kwargs.get("instance")
 
         # limit choices of leaders
         leaders_choices = self.fields["leaders"].widget.choices
@@ -46,6 +46,10 @@ class JournalAdminForm(forms.ModelForm):
 
 
 class JournalForm(FormMixin, forms.ModelForm):
+    JournalTimeFormset = inlineformset_factory(
+        Journal, JournalTime, fields=["day_of_week", "start", "end"], can_delete=True, extra=1
+    )
+
     class Meta:
         model = Journal
         exclude = ["subject"]
@@ -80,6 +84,16 @@ class JournalForm(FormMixin, forms.ModelForm):
             (participant.id, participant)
             for participant in SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
         )
+        self.inline_formsets = [self.JournalTimeFormset(data=kwargs.get("data"), instance=kwargs.get("instance"))]
+
+    def is_valid(self) -> bool:
+        return all((super().is_valid(), *(inline_formset.is_valid() for inline_formset in self.inline_formsets)))
+
+    def save(self, commit=True):
+        obj = super().save(commit=commit)
+        for inline_formset in self.inline_formsets:
+            inline_formset.save(commit=commit)
+        return obj
 
 
 class JournalLeaderEntryAdminForm(forms.ModelForm):

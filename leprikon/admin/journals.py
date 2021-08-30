@@ -1,4 +1,3 @@
-from leprikon.models.subjects import Subject
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
@@ -10,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.journals import JournalAdminForm, JournalEntryAdminForm, JournalLeaderEntryAdminForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
+from ..models.subjects import Subject
 from .export import AdminExportMixin
 from .filters import JournalListFilter, LeaderListFilter, SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
 

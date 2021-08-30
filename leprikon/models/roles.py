@@ -67,8 +67,8 @@ class Leader(models.Model):
 
         return JournalLeaderEntry.objects.filter(
             timesheet__leader=self,
-            journal_entry__subject__school_year=school_year,
-        ).exclude(journal_entry__subject__in=self.subjects.all())
+            journal_entry__journal__subject__school_year=school_year,
+        ).exclude(journal_entry__journal__subject__in=self.subjects.all())
 
     SubjectsGroup = namedtuple("SubjectsGroup", ("subject_type", "subjects"))
 
