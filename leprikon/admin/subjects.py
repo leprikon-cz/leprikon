@@ -267,6 +267,11 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
             url=reverse("admin:leprikon_journal_changelist")
             + f"?subject__subject_type__id__exact={obj.subject_type_id}&subject__id__exact={obj.id}",
             journals=_("journals"),
+        ) + format_html(
+            '<a href="{url}" style="background-position: 0 0" title="{title}">' '<img src="{icon}" alt="+"/></a>',
+            url=reverse("admin:leprikon_journal_add") + "?subject={}".format(obj.id),
+            title=_("add journal"),
+            icon=static("admin/img/icon-addlink.svg"),
         )
 
     journals_link.short_description = _("journal")

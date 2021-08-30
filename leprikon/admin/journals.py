@@ -1,13 +1,14 @@
+from leprikon.models.subjects import Subject
 from django import forms
 from django.conf.urls import url as urls_url
 from django.contrib import admin
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from ..forms.journals import JournalEntryAdminForm, JournalLeaderEntryAdminForm
+from ..forms.journals import JournalAdminForm, JournalEntryAdminForm, JournalLeaderEntryAdminForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from .export import AdminExportMixin
 from .filters import JournalListFilter, LeaderListFilter, SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
@@ -20,6 +21,7 @@ class JournalTimeInlineAdmin(admin.TabularInline):
 
 @admin.register(Journal)
 class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
+    filter_horizontal = ("leaders", "participants")
     inlines = (JournalTimeInlineAdmin,)
     list_display = ("subject", "name", "get_times_list", "journal_links")
     list_filter = (
@@ -28,6 +30,46 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
         ("leaders", LeaderListFilter),
         ("subject", SubjectListFilter),
     )
+    raw_id_fields = ("subject",)
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if not object_id and request.method == "POST" and len(request.POST) == 3:
+            return HttpResponseRedirect(f"{request.path}?subject=" + request.POST.get("subject", ""))
+        else:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def get_inline_instances(self, request, obj=None):
+        return [] if hasattr(request, "hide_inlines") else super().get_inline_instances(request, obj)
+
+    def get_form(self, request, obj, **kwargs):
+        # get subject
+        try:
+            # first try request.POST (user may want to change subject)
+            request.subject = Subject.objects.get(id=int(request.POST.get("subject")))
+        except (Subject.DoesNotExist, TypeError, ValueError):
+            if obj:
+                # use subject type from object
+                request.subject = obj.subject
+            else:
+                # try to get subject type from request.GET
+                try:
+                    request.subject = Subject.objects.get(
+                        id=int(request.GET.get("subject")),
+                    )
+                except (Subject.DoesNotExist, TypeError, ValueError):
+                    request.subject = None
+
+        if request.subject:
+            kwargs["form"] = type(
+                "JournalAdminForm",
+                (JournalAdminForm,),
+                {"subject": request.subject},
+            )
+        else:
+            kwargs["fields"] = ["subject"]
+            request.hide_inlines = True
+
+        return super().get_form(request, obj, **kwargs)
 
     def get_urls(self):
         return [

@@ -14,6 +14,37 @@ from .form import FormMixin
 from .widgets import CheckboxSelectMultipleBootstrap
 
 
+class JournalAdminForm(forms.ModelForm):
+    class Meta:
+        model = Journal
+        exclude = []
+
+    def __init__(self, data=None, *args, **kwargs):
+        super().__init__(data, *args, **kwargs)
+        instance = kwargs.get("instance")
+
+        # limit choices of leaders
+        leaders_choices = self.fields["leaders"].widget.choices
+        leaders_choices.queryset = leaders_choices.queryset.filter(subjects=self.subject)
+
+        participant_ids = set(
+            SubjectRegistrationParticipant.objects.filter(
+                registration__approved__isnull=False,
+                registration__subject_id=self.subject.id,
+            ).values_list("id", flat=True)
+        )
+        if self.instance.id:
+            participant_ids |= set(self.instance.participants.values_list("id", flat=True))
+            participant_ids |= set(
+                SubjectRegistrationParticipant.objects.filter(
+                    journal_entries__journal=self.instance,
+                ).values_list("id", flat=True),
+            )
+        self.fields["participants"].widget.choices.queryset = SubjectRegistrationParticipant.objects.filter(
+            id__in=participant_ids
+        )
+
+
 class JournalForm(FormMixin, forms.ModelForm):
     class Meta:
         model = Journal
