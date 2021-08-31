@@ -50,7 +50,7 @@ class LeprikonMenu(CMSAttachMenu):
                         first_upper(_("My {subject_type}").format(subject_type=subject_type.plural)),
                         reverse("leprikon:subject_list_mine", kwargs={"subject_type": subject_type.slug}),
                         len(nodes),
-                        attr={"require_leader": True},
+                        attr={"require_leader": subject_type.slug},
                     )
                 )
             nodes.append(
@@ -227,8 +227,12 @@ class LeprikonModifier(Modifier):
         backends_not_associated = backends(request)["backends"]["not_associated"]
         for node in nodes:
             show = True
-            if node.attr.get("require_leader", False):
-                if not request.leader or not request.leader.school_years.filter(id=request.school_year.id).exists():
+            require_leader = node.attr.get("require_leader", False)
+            if require_leader:
+                kwargs = {"school_year": request.school_year}
+                if isinstance(require_leader, str):
+                    kwargs["subject_type__slug"] = require_leader
+                if not request.leader or not request.leader.subjects.filter(**kwargs).exists():
                     show = False
             if node.attr.get("require_staff", False) and not request.user.is_staff:
                 show = False
