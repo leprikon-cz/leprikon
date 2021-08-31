@@ -22,7 +22,6 @@ def migrate_journals(apps, schema_editor):
     ).select_related("subject_type"):
         journal = Journal.objects.create(
             subject=subject,
-            place_id=subject.place_id,
             risks=subject.risks,
             plan=subject.plan,
             evaluation=subject.evaluation,
