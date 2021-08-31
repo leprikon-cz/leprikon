@@ -1,5 +1,5 @@
 {% extends 'leprikon/default.html' %}
-{% load i18n cms_tags sekizai_tags %}
+{% load i18n cms_tags leprikon_tags sekizai_tags %}
 
 {% block content %}
 
@@ -34,8 +34,7 @@
     {% endfor %}
 
     {% for inline_formset in form.inline_formsets %}
-    <fieldset>
-        <legend>inline_formset.model</legend>
+        <h3>{{ inline_formset.model.Meta.verbose_name_plural|first_upper }}</h3>
 		{{ inline_formset.management_form }}
 		{{ inline_formset.non_form_errors }}
         {% for form in inline_formset %}
@@ -45,8 +44,7 @@
 			{% endfor %}
 			</div>
 		{% endfor %}
-	</fieldset>
-    {% endfor %}
+	{% endfor %}
 
     <!-- SUBMIT -->
     <div class="form-group">

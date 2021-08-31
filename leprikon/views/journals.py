@@ -36,6 +36,7 @@ class JournalView(JournalQuerySetMixin, DetailView):
 class JournalCreateView(CreateView):
     model = Journal
     form_class = JournalForm
+    template_name = "leprikon/journal_form.html"
     title = _("New journal")
 
     def dispatch(self, request, subject):
@@ -59,6 +60,7 @@ class JournalUpdateView(JournalQuerySetMixin, UpdateView):
     model = Journal
     form_class = JournalForm
     success_url = reverse("leprikon:summary")
+    template_name = "leprikon/journal_form.html"
     title = _("Change journal")
 
 

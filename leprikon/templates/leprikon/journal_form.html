@@ -1,0 +1,24 @@
+{% extends 'leprikon/form.html' %}
+{% load i18n sekizai_tags staticfiles %}
+
+{% block content %}
+{{ block.super }}
+
+{% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+{% include 'leprikon/static/bootstrap-multiselect.html' %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('.inline select').multiselect();
+    $('.inline input[type="text"]').datetimepicker({
+        locale: '{{ LANGUAGE_CODE }}',
+        format: 'LT',
+    });
+});
+
+</script>
+{% endaddtoblock %}
+
+{% endblock %}

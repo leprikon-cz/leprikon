@@ -92,6 +92,7 @@ class JournalForm(FormMixin, forms.ModelForm):
     def save(self, commit=True):
         obj = super().save(commit=commit)
         for inline_formset in self.inline_formsets:
+            inline_formset.instance = obj
             inline_formset.save(commit=commit)
         return obj
 
