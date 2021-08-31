@@ -674,6 +674,10 @@ class Subject(TimesMixin, models.Model):
         return list(self.inactive_registrations.all())
 
     @cached_property
+    def all_journals(self):
+        return list(self.journals.all())
+
+    @cached_property
     def all_registration_agreements(self):
         return sorted(
             chain(
@@ -1090,6 +1094,10 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             self.send_mail("approved")
             if not self.payment_requested:
                 self.request_payment(approved_by)
+            if len(self.subject.all_journals) == 1:
+                journal = self.subject.all_journals[0]
+                for participant in self.all_participants:
+                    journal.participants.add(participant)
         else:
             raise ValidationError(
                 (
