@@ -1,5 +1,5 @@
 from collections import namedtuple
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.db import models
 from django.utils.encoding import force_text
@@ -10,7 +10,13 @@ from ..utils import comma_separated
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .startend import StartEndMixin
 
-Time = namedtuple("Time", ("date", "start", "end"))
+
+class Time(namedtuple("Time", ("date", "start", "end"))):
+    def comparable(self):
+        return (self.date, self.start or time(0, 0), self.end or time(0, 0))
+
+    def __lt__(self, other):
+        return self.comparable() < other.comparable()
 
 
 class AbstractTime(StartEndMixin, models.Model):
