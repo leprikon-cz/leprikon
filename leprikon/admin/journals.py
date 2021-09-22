@@ -135,7 +135,7 @@ class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display = ("timesheet", "date", "start", "end", "duration", "subject")
     list_filter = (
         ("timesheet__leader", LeaderListFilter),
-        ("journal_entry__subject", SubjectListFilter),
+        ("journal_entry__journal__subject", SubjectListFilter),
     )
     ordering = ("-journal_entry__date", "-start")
 
