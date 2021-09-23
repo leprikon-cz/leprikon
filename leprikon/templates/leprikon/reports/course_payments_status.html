@@ -6,7 +6,7 @@
 {{ block.super }}
 </div>
 
-{% if reports %}
+{% if form.is_valid %}
 <h1>{% blocktrans with date=date %}Course payments status by date {{ date }}{% endblocktrans %}</h1>
 
 <table class="table table-hover">

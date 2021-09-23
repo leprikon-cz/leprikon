@@ -35,8 +35,8 @@ class ReportOrderablePaymentsView(FormView):
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["received_payments_sum"] = context["received_payments"].aggregate(sum=Sum("amount"))["sum"]
-        context["returned_payments_sum"] = context["returned_payments"].aggregate(sum=Sum("amount"))["sum"]
+        context["received_payments_sum"] = context["received_payments"].aggregate(sum=Sum("amount"))["sum"] or 0
+        context["returned_payments_sum"] = context["returned_payments"].aggregate(sum=Sum("amount"))["sum"] or 0
         context["sum"] = context["received_payments_sum"] - context["returned_payments_sum"]
         return TemplateResponse(self.request, self.template_name, self.get_context_data(**context))
 
