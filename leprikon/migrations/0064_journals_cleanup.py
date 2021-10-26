@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 editable=False,
                 on_delete=django.db.models.deletion.PROTECT,
-                related_name="entries",
+                related_name="journal_entries",
                 to="leprikon.Journal",
                 verbose_name="journal",
             ),
