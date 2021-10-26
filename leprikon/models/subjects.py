@@ -1132,16 +1132,18 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
         if not self.payment_status.overpaid:
             return
-        remote_accounts = list(
-            self.received_payments.annotate(
+        remote_accounts = set(
+            account
+            for account in self.received_payments.annotate(
                 account=models.F("bankreader_transaction__remote_account_number")
             ).values_list("account", flat=True)
+            if account
         )
-        if len(remote_accounts) == 1 and remote_accounts[0]:
+        if len(remote_accounts) == 1:
             RefundRequest.objects.create(
                 registration=self,
                 requested_by=generated_by,
-                bank_account=BankAccount(remote_accounts[0]),
+                bank_account=BankAccount(remote_accounts.pop()),
             )
 
     def refuse(self, refused_by):
