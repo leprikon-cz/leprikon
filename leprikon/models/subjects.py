@@ -852,7 +852,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     participants_list.short_description = _("participants")
 
     def participants_list_html(self):
-        return mark_safe("<br/>".join(map(str, self.all_participants)))
+        if self.all_participants:
+            return mark_safe("<br/>".join(map(str, self.all_participants)))
+        return self.group_members_list_html()
 
     participants_list_html.short_description = _("participants")
 
