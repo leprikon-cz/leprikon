@@ -452,7 +452,15 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
 
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdminMixin, admin.ModelAdmin):
-    actions = ("approve", "refuse", "request_payment", "offer_refund", "generate_refund_request", "cancel")
+    actions = (
+        "approve",
+        "refuse",
+        "request_payment",
+        "offer_refund",
+        "generate_refund_request",
+        "cancel",
+        "cancel_cancelation_request",
+    )
     form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)
     list_display = (
@@ -700,6 +708,12 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                 )
 
     cancel.short_description = _("Cancel selected registrations")
+
+    def cancel_cancelation_request(self, request, queryset):
+        queryset.update(cancelation_requested=None, cancelation_requested_by=None)
+        self.message_user(request, _("The cancelation requests have been removed from selected registrations."))
+
+    cancel_cancelation_request.short_description = _("Cancel cancelation request for selected registrations")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
