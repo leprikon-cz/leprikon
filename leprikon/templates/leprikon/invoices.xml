@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MoneyData ExpDate="{% now 'Y-m-d' %}" ExpTime="{% now 'H:i:s' %}">
+    <SeznamFaktVyd>
+        {% for registration in registrations %}
+        {% if registration.payment_requested %}
+        <FaktVyd>
+            <Popis>{{ registration }}</Popis>
+            <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
+            <VarSymbol>{{ registration.variable_symbol }}</VarSymbol>
+            <Celkem>{{ registration.payment_status.receivable }}</Celkem>
+            <Typ>VF</Typ>
+            <Vystavil>{{ registration.approved_by.first_name }} {{ registration.approved_by.last_name }}</Vystavil>
+            {% if registration.billing_info %}
+            <DodOdb>
+                <Nazev>{{ registration.billing_info.name }}</Nazev>
+                <Adresa>
+                    <Ulice>{{ registration.billing_info.street }}</Ulice>
+                    <Misto>{{ registration.billing_info.city }}</Misto>
+                    <PSC>{{ registration.billing_info.postal_code }}</PSC>
+                </Adresa>
+                <EMail>{{ registration.billing_info.email }}</EMail>
+            </DodOdb>
+            {% endif %}
+            <KonecPrij>
+                <Nazev>{{ registration.user.first_name }} {{ registration.user.last_name }}</Nazev>
+                <EMail>{{ registration.user.email }}</EMail>
+            </KonecPrij>
+            <Sleva>{{ registration.payment_status.discount }}</Sleva>
+            <SeznamPolozek>
+                {% if registration.subject_type == "course" %}
+                {% for pps in registration.period_payment_statuses %}
+                <Polozka>
+                    <Popis>{{ registration }} {{ pps.period.name }}</Popis>
+                    <Cena>{{ pps.status.price }}</Cena>
+                    <Sleva>{{ pps.status.discount }}</Sleva>
+                    <CenaPoSleve>{{ pps.status.receivable }}</CenaPoSleve>
+                </Polozka>
+                {% endfor %}
+                {% else %}
+                <Polozka>
+                    <Popis>{{ registration }}</Popis>
+                    <Cena>{{ registration.payment_status.price }}</Cena>
+                    <Sleva>{{ registration.payment_status.discount }}</Sleva>
+                    <CenaPoSleve>{{ registration.payment_status.receivable }}</CenaPoSleve>
+                </Polozka>
+                {% endif %}
+            </SeznamPolozek>
+            <SeznamUhrad>
+                {% for payment in registration.received_payments.all %}
+                <Uhrada>
+                    <DokladUhr>
+                        <IDDokladu>{{ payment.id }}</IDDokladu>
+                        <DruhDokladu>{% if payment.transaction_type == "PAYMENT_BANK" %}B{% endif %}</DruhDokladu>
+                        <Rok>{{ payment.accounted.year }}</Rok>
+                    </DokladUhr>
+                    <Prijem>1</Prijem>
+                    <Datum>{{ payment.accounted|date:"Y-m-d" }}</Datum>
+                    <Castka>{{ payment.amount }}</Castka>
+                </Uhrada>
+                {% endfor %}
+                {% for payment in registration.returned_payments.all %}
+                <Uhrada>
+                    <DokladUhr>
+                        <IDDokladu>{{ payment.id }}</IDDokladu>
+                        <DruhDokladu>{% if payment.transaction_type == "RETURN_BANK" %}B{% endif %}</DruhDokladu>
+                        <Rok>{{ payment.accounted.year }}</Rok>
+                    </DokladUhr>
+                    <Prijem>0</Prijem>
+                    <Datum>{{ payment.accounted|date:"Y-m-d" }}</Datum>
+                    <Castka>{{ payment.amount }}</Castka>
+                </Uhrada>
+                {% endfor %}
+            </SeznamUhrad>
+            {% with org=registration.subject.organization %}
+            <MojeFirma>
+                <Nazev>{{ org.name }}</Nazev>
+                <Adresa>
+                    <Ulice>{{ org.street }}</Ulice>
+                    <Misto>{{ org.city }}</Misto>
+                    <PSC>{{ org.postal_code }}</PSC>
+                </Adresa>
+                <Tel><Cislo>{{ org.phone }}</Cislo></Tel>
+                <EMail>{{ org.email }}</EMail>
+                <WWW></WWW>
+                <ICO>{{ org.company_num }}</ICO>
+                <DIC>{{ org.vat_number }}</DIC>
+                <Banka>{{ org.bank_account. }}</Banka>
+                <Ucet>{% if org.bank_account.account_prefix %}{{ org.bank_account.account_prefix }}-{% endif %}{{ org.bank_account.account_number }}</Ucet>
+                <KodBanky>{{ org.bank_account.bank_code }}</KodBanky>
+            </MojeFirma>
+            {% endwith %}
+        </FaktVyd>
+        {% endif %}
+        {% endfor %}
+    </SeznamFaktVyd>
+</MoneyData>

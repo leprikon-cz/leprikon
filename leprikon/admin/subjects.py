@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, Func
 from django.db.models.expressions import Random
 from django.http import HttpResponseRedirect
+from django.template.response import SimpleTemplateResponse
 from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.html import format_html
@@ -458,6 +459,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         "request_payment",
         "offer_refund",
         "generate_refund_request",
+        "export_invoices_xml",
         "cancel",
         "cancel_cancelation_request",
     )
@@ -694,6 +696,13 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         self.message_user(request, _("Refund requests were generated for selected registrations."))
 
     generate_refund_request.short_description = _("Generate refund requests for selected registrations")
+
+    def export_invoices_xml(self, request, queryset):
+        response = SimpleTemplateResponse("leprikon/invoices.xml", {"registrations": queryset}, content_type="text/xml")
+        response["Content-Disposition"] = 'attachment; filename="invoices.xml"'
+        return response
+
+    export_invoices_xml.short_description = _("Export selected registrations as invoices in XML")
 
     def cancel(self, request, queryset):
         for registration in queryset.all():

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-24 15:02+0100\n"
+"POT-Creation-Date: 2021-12-04 19:26+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -121,7 +121,7 @@ msgstr "přidat slevu"
 msgid "discounts"
 msgstr "slevy"
 
-#: admin/courses.py:315 admin/subjects.py:880
+#: admin/courses.py:315 admin/subjects.py:889
 msgid "total price"
 msgstr "výsledná cena"
 
@@ -129,7 +129,7 @@ msgstr "výsledná cena"
 msgid "add payment"
 msgstr "přidat platbu"
 
-#: admin/courses.py:340 admin/orderables.py:240 admin/subjects.py:860
+#: admin/courses.py:340 admin/orderables.py:240 admin/subjects.py:869
 #: models/subjects.py:1609
 msgid "received payments"
 msgstr "přijaté platby"
@@ -224,7 +224,7 @@ msgid "printable journal"
 msgstr "tisknutelný deník"
 
 #: admin/journals.py:117 admin/journals.py:128 admin/journals.py:236
-#: admin/subjects.py:277 models/journals.py:96 models/journals.py:97
+#: admin/subjects.py:278 models/journals.py:96 models/journals.py:97
 #: models/journals.py:131 models/journals.py:142 models/journals.py:276
 #: templates/leprikon/journal_preview.html:36
 msgid "journal"
@@ -385,7 +385,7 @@ msgstr "IBAN"
 msgid "BIC (SWIFT)"
 msgstr "BIC (SWIFT)"
 
-#: admin/refundrequest.py:77 admin/subjects.py:1056 admin/transaction.py:102
+#: admin/refundrequest.py:77 admin/subjects.py:1065 admin/transaction.py:102
 #: models/refundrequest.py:49 models/transaction.py:116
 #: templates/leprikon/donation_pdf/recipe.rml:34
 #: templates/leprikon/received_payment_pdf/recipe.rml:38
@@ -418,7 +418,7 @@ msgstr "Exportovat vybrané záznamy ve formátu ABO (KB:KM)"
 msgid "registration link"
 msgstr "přihlášovací odkaz"
 
-#: admin/registrationlink.py:142 admin/subjects.py:324 models/subjects.py:819
+#: admin/registrationlink.py:142 admin/subjects.py:325 models/subjects.py:819
 #: templates/leprikon/subject_preview.html:101
 msgid "registrations"
 msgstr "přihlášky"
@@ -478,7 +478,7 @@ msgstr "akce"
 msgid "orderable events"
 msgstr "akce na objednání"
 
-#: admin/roles.py:178 admin/subjects.py:351 admin/subjects.py:400
+#: admin/roles.py:178 admin/subjects.py:352 admin/subjects.py:401
 #: models/roles.py:28 models/subjects.py:400
 msgid "photo"
 msgstr "fotka"
@@ -505,165 +505,169 @@ msgstr "Vybrané položky byly odeslány e-mailem."
 msgid "Send selected items by e-mail"
 msgstr "Odeslat vybrané položky e-mailem"
 
-#: admin/subjects.py:269 templates/leprikon/subject_preview.html:105
+#: admin/subjects.py:270 templates/leprikon/subject_preview.html:105
 msgid "journals"
 msgstr "deníky"
 
-#: admin/subjects.py:273
+#: admin/subjects.py:274
 msgid "add journal"
 msgstr "přidat deník"
 
-#: admin/subjects.py:289
+#: admin/subjects.py:290
 msgid "There are no approved registrations for this {}."
 msgstr "Na {} nejsou žádné aktivní přihlášky."
 
-#: admin/subjects.py:291
+#: admin/subjects.py:292
 msgid "The number of approved registrations is lower than {}."
 msgstr "Schválených přihlášek je méně než {}."
 
-#: admin/subjects.py:293
+#: admin/subjects.py:294
 msgid "The number of approved registrations is greater than {}."
 msgstr "Schválených přihlášek je více než {}."
 
-#: admin/subjects.py:320
+#: admin/subjects.py:321
 msgid "add registration"
 msgstr "vytvořit přihlášku"
 
-#: admin/subjects.py:330
+#: admin/subjects.py:331
 msgid "registration allowed"
 msgstr "povoleno přihlášování"
 
-#: admin/subjects.py:335
+#: admin/subjects.py:336
 msgid "approved registrations count"
 msgstr "počet schválených přihlášek"
 
-#: admin/subjects.py:341
+#: admin/subjects.py:342
 msgid "unapproved registrations count"
 msgstr "počet neschválených přihlášek"
 
-#: admin/subjects.py:658
+#: admin/subjects.py:660
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/subjects.py:661
+#: admin/subjects.py:663
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/subjects.py:672
+#: admin/subjects.py:674
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/subjects.py:675
+#: admin/subjects.py:677
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/subjects.py:680
+#: admin/subjects.py:682
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky."
 
-#: admin/subjects.py:682
+#: admin/subjects.py:684
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/subjects.py:687
+#: admin/subjects.py:689
 msgid "Refund was offered for selected registrations."
 msgstr "Nabídka vrácení přeplatku byla odeslána pro vybrané přihlášky."
 
-#: admin/subjects.py:689
+#: admin/subjects.py:691
 msgid "Offer refund for selected registrations"
 msgstr "Odeslat nabídku vrácení přeplatku pro vybrané přihlášky"
 
-#: admin/subjects.py:694
+#: admin/subjects.py:696
 msgid "Refund requests were generated for selected registrations."
 msgstr "Žádosti o vrácení přeplatku byly vygenerovány pro vybrané přihlášky."
 
-#: admin/subjects.py:696
+#: admin/subjects.py:698
 msgid "Generate refund requests for selected registrations"
 msgstr "Vygenerovat žádosti o vrácení přeplatku pro vybrané přihlášky"
 
-#: admin/subjects.py:707
+#: admin/subjects.py:705
+msgid "Export selected registrations as invoices in XML"
+msgstr "Exportovat vybrané záznamy ve formátu XML pro Money S3 (experimentální)"
+
+#: admin/subjects.py:716
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/subjects.py:710
+#: admin/subjects.py:719
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/subjects.py:714
+#: admin/subjects.py:723
 msgid "The cancelation requests have been removed from selected registrations."
 msgstr "U vybraných přihlášek byla zrušena žádost o odhlášení."
 
-#: admin/subjects.py:716
+#: admin/subjects.py:725
 msgid "Cancel cancelation request for selected registrations"
 msgstr "Zrušit žádost o odhlášení pro vybrané přihlášky"
 
-#: admin/subjects.py:805
+#: admin/subjects.py:814
 msgid "cancelation requested"
 msgstr "požádáno o odhlášení"
 
-#: admin/subjects.py:806
+#: admin/subjects.py:815
 msgid "new registration"
 msgstr "nová přihláška"
 
-#: admin/subjects.py:807
+#: admin/subjects.py:816
 msgid "new registration, capacity full"
 msgstr "nová přihláška, naplěná kapacita"
 
-#: admin/subjects.py:808
+#: admin/subjects.py:817
 msgid "approved registration"
 msgstr "schválená přihláška"
 
-#: admin/subjects.py:814 admin/subjects.py:953 models/journals.py:84
+#: admin/subjects.py:823 admin/subjects.py:962 models/journals.py:84
 #: models/journals.py:282 models/messages.py:28 models/roles.py:261
 #: models/subjects.py:495 models/subjects.py:703 models/subjects.py:724
 #: models/subjects.py:738 templates/leprikon/alternating.html:15
 msgid "subject"
 msgstr "předmět"
 
-#: admin/subjects.py:824 models/subjects.py:745
+#: admin/subjects.py:833 models/subjects.py:745
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: admin/subjects.py:826 models/subjects.py:754
+#: admin/subjects.py:835 models/subjects.py:754
 msgid "time of approval"
 msgstr "čas schválení"
 
-#: admin/subjects.py:828 models/subjects.py:763 models/subjects.py:772
+#: admin/subjects.py:837 models/subjects.py:763 models/subjects.py:772
 msgid "payment request time"
 msgstr "odeslání výzvy k platbě"
 
-#: admin/subjects.py:830
+#: admin/subjects.py:839
 msgid "refund offer time"
 msgstr "čas nabídky vrácení přeplatku"
 
-#: admin/subjects.py:832 models/subjects.py:781
+#: admin/subjects.py:841 models/subjects.py:781
 msgid "time of cancellation request"
 msgstr "čas žádosti o odhlášení"
 
-#: admin/subjects.py:834 models/subjects.py:790
+#: admin/subjects.py:843 models/subjects.py:790
 msgid "time of cancellation"
 msgstr "čas odhlášení"
 
-#: admin/subjects.py:843
+#: admin/subjects.py:852
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/subjects.py:856
+#: admin/subjects.py:865
 msgid "add received payment"
 msgstr "přidat přijatou platbu"
 
-#: admin/subjects.py:871
+#: admin/subjects.py:880
 msgid "add returned payment"
 msgstr "přidat vrácenou platbu"
 
-#: admin/subjects.py:875 models/subjects.py:1629
+#: admin/subjects.py:884 models/subjects.py:1629
 msgid "returned payments"
 msgstr "vrácené platby"
 
-#: admin/subjects.py:999 models/subjects.py:805
+#: admin/subjects.py:1008 models/subjects.py:805
 #: templates/leprikon/received_payment_pdf/recipe.rml:30
 #: templates/leprikon/registration_payment_request/subject.rml:193
 #: templates/leprikon/returned_payment_pdf/recipe.rml:30
