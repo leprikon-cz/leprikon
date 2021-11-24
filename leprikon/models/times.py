@@ -50,6 +50,14 @@ class AbstractTime(StartEndMixin, models.Model):
     def day(self):
         return DAY_OF_WEEK[self.day_of_week]
 
+    @property
+    def delta(self):
+        if self.start is not None and self.end is not None:
+            d = date(1, 1, 1)
+            return datetime.combine(d, self.end) - datetime.combine(d, self.start)
+        else:
+            return timedelta(0)
+
     def get_next_time(self, now=None):
         now = now or datetime.now()
         daydelta = (self.day_of_week - now.isoweekday()) % 7

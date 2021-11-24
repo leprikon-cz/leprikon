@@ -1,4 +1,5 @@
 from collections import namedtuple
+from datetime import timedelta
 
 from django.db.models import Sum
 from django.template.response import TemplateResponse
@@ -10,6 +11,7 @@ from ...forms.reports.courses import CoursePaymentsForm, CoursePaymentsStatusFor
 from ...models.agegroup import AgeGroup
 from ...models.citizenship import Citizenship
 from ...models.courses import Course, CourseRegistration
+from ...models.journals import JournalTime
 from ...models.roles import Participant
 from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectType
 from ...views.generic import FormView
@@ -131,6 +133,17 @@ class ReportCourseStatsView(FormView):
             participants = list(participants)
 
         context["courses_count"] = len(set(participant.registration.subject_id for participant in participants))
+        delta = sum(
+            (
+                sum(
+                    (jt.delta for jt in JournalTime.objects.filter(journal__participants=participant)),
+                    start=timedelta(0),
+                )
+                for participant in participants
+            ),
+            start=timedelta(0),
+        )
+        context["participant_hours_count"] = delta.days * 24 + delta.seconds / 3600
 
         if unique_participants:
             participants_by_name_and_birth_date = {

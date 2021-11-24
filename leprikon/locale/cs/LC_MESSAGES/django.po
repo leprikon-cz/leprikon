@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-24 14:01+0100\n"
+"POT-Creation-Date: 2021-11-24 15:02+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -813,7 +813,7 @@ msgid "Messages"
 msgstr "Zprávy"
 
 #: cms_menus.py:82 templates/leprikon/admin/dashboard.html:36
-#: templates/leprikon/reports/course_stats.html:19
+#: templates/leprikon/reports/course_stats.html:23
 #: templates/leprikon/reports/event_stats.html:19
 #: templates/leprikon/reports/orderable_stats.html:19
 msgid "Registrations"
@@ -1608,7 +1608,7 @@ msgid "event"
 msgstr "akce"
 
 #: models/events.py:58 models/journals.py:137 models/subjects.py:699
-#: models/times.py:32 models/times.py:77
+#: models/times.py:32 models/times.py:85
 msgid "times"
 msgstr "časy"
 
@@ -3116,7 +3116,7 @@ msgstr "IČ"
 #: templates/leprikon/journalentry_form.html:44
 #: templates/leprikon/journalentry_form.html:56
 #: templates/leprikon/leader_list.html:18
-#: templates/leprikon/reports/course_stats.html:63
+#: templates/leprikon/reports/course_stats.html:67
 #: templates/leprikon/reports/event_stats.html:63
 #: templates/leprikon/reports/index.html:58
 #: templates/leprikon/reports/orderable_stats.html:63
@@ -3316,7 +3316,7 @@ msgstr "přidat záznam deníku"
 #: templates/leprikon/journalentry_form.html:28
 #: templates/leprikon/journalentry_form.html:40
 #: templates/leprikon/journalentry_form.html:52
-#: templates/leprikon/reports/course_stats.html:59
+#: templates/leprikon/reports/course_stats.html:63
 #: templates/leprikon/reports/event_stats.html:59
 #: templates/leprikon/reports/index.html:54
 #: templates/leprikon/reports/orderable_stats.html:59
@@ -3327,7 +3327,7 @@ msgstr "vybrat všechny"
 #: templates/leprikon/journalentry_form.html:30
 #: templates/leprikon/journalentry_form.html:42
 #: templates/leprikon/journalentry_form.html:54
-#: templates/leprikon/reports/course_stats.html:61
+#: templates/leprikon/reports/course_stats.html:65
 #: templates/leprikon/reports/event_stats.html:61
 #: templates/leprikon/reports/index.html:56
 #: templates/leprikon/reports/orderable_stats.html:61
@@ -3985,24 +3985,28 @@ msgid "Courses count"
 msgstr "Počet kurzů"
 
 #: templates/leprikon/reports/course_stats.html:18
+msgid "Participant hours count"
+msgstr "Počet účastníkohodin"
+
+#: templates/leprikon/reports/course_stats.html:22
 #: templates/leprikon/reports/event_stats.html:18
 #: templates/leprikon/reports/orderable_stats.html:18
 msgid "Age Group"
 msgstr "Věková skupina"
 
-#: templates/leprikon/reports/course_stats.html:20
+#: templates/leprikon/reports/course_stats.html:24
 #: templates/leprikon/reports/event_stats.html:20
 #: templates/leprikon/reports/orderable_stats.html:20
 msgid "Boys"
 msgstr "Muži"
 
-#: templates/leprikon/reports/course_stats.html:21
+#: templates/leprikon/reports/course_stats.html:25
 #: templates/leprikon/reports/event_stats.html:21
 #: templates/leprikon/reports/orderable_stats.html:21
 msgid "Girls"
 msgstr "Ženy"
 
-#: templates/leprikon/reports/course_stats.html:38
+#: templates/leprikon/reports/course_stats.html:42
 #: templates/leprikon/reports/debtors.html:39
 #: templates/leprikon/reports/event_stats.html:38
 #: templates/leprikon/reports/orderable_stats.html:38
@@ -4050,8 +4054,8 @@ msgstr "Statistiky akcí ke dni %(date)s"
 msgid "Events count"
 msgstr "Počet akcí"
 
-#: templates/leprikon/reports/index.html:37 views/reports/courses.py:22
-#: views/reports/courses.py:48 views/reports/courses.py:99
+#: templates/leprikon/reports/index.html:37 views/reports/courses.py:24
+#: views/reports/courses.py:50 views/reports/courses.py:101
 #: views/reports/debtors.py:20 views/reports/events.py:22
 #: views/reports/events.py:48 views/reports/events.py:98
 #: views/reports/orderables.py:22 views/reports/orderables.py:48
@@ -4483,7 +4487,7 @@ msgstr "Pokud chcete, můžete přeplatek věnovat naší organizaci."
 msgid "Thank You. Your support is very appreciated."
 msgstr "Děkujeme Vám, velmi si vážíme Vaší podpory."
 
-#: views/reports/__init__.py:22 views/reports/courses.py:21
+#: views/reports/__init__.py:22 views/reports/courses.py:23
 msgid "Course payments"
 msgstr "Platby za kurzy"
 
@@ -4495,7 +4499,7 @@ msgstr "Platby za akce"
 msgid "Orderable event payments"
 msgstr "Platby za akce na objednání"
 
-#: views/reports/__init__.py:40 views/reports/courses.py:47
+#: views/reports/__init__.py:40 views/reports/courses.py:49
 msgid "Course payments status"
 msgstr "Stav plateb za kurzy"
 
@@ -4507,7 +4511,7 @@ msgstr "Stav plateb za akce"
 msgid "Orderable event payments status"
 msgstr "Stav plateb za akce na objednání"
 
-#: views/reports/__init__.py:58 views/reports/courses.py:98
+#: views/reports/__init__.py:58 views/reports/courses.py:100
 msgid "Course statistics"
 msgstr "Statistiky kurzů"
 
