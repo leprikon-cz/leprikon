@@ -109,6 +109,7 @@ class ReportCourseStatsView(FormView):
     def form_valid(self, form):
         d = form.cleaned_data["date"]
         paid_only = form.cleaned_data["paid_only"]
+        unique_participants = form.cleaned_data["unique_participants"]
         context = form.cleaned_data
         context["form"] = form
 
@@ -128,7 +129,14 @@ class ReportCourseStatsView(FormView):
             ]
         else:
             participants = list(participants)
+
         context["courses_count"] = len(set(participant.registration.subject_id for participant in participants))
+
+        if unique_participants:
+            participants_by_name_and_birth_date = {
+                (p.first_name.lower(), p.last_name.lower(), p.birth_date): p for p in participants
+            }
+            participants = list(participants_by_name_and_birth_date.values())
 
         citizenships = list(Citizenship.objects.all())
         context["citizenships"] = citizenships

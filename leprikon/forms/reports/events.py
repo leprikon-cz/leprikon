@@ -21,6 +21,7 @@ class EventStatsForm(FormMixin, forms.Form):
         label=_("Events"),
     )
     paid_only = forms.BooleanField(label=_("Count only paid registrations"), required=False)
+    unique_participants = forms.BooleanField(label=_("Count only unique participants"), required=False)
 
     def __init__(self, *args, **kwargs):
         school_year = kwargs.pop("school_year")

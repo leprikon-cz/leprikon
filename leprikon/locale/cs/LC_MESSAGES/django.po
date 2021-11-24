@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-12 10:52+0100\n"
+"POT-Creation-Date: 2021-11-24 14:01+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1166,6 +1166,11 @@ msgstr "Kurzy"
 #: forms/reports/orderables.py:23
 msgid "Count only paid registrations"
 msgstr "Započítat pouze zaplacené přihlášky"
+
+#: forms/reports/courses.py:24 forms/reports/events.py:24
+#: forms/reports/orderables.py:24
+msgid "Count only unique participants"
+msgstr "Započítat pouze unikátní účastníky"
 
 #: forms/reports/events.py:21
 msgid "Events"
