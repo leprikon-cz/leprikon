@@ -13,7 +13,7 @@ from ...models.citizenship import Citizenship
 from ...models.courses import Course, CourseRegistration
 from ...models.journals import JournalTime
 from ...models.roles import Participant
-from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectType
+from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectTime, SubjectType
 from ...views.generic import FormView
 
 
@@ -103,6 +103,26 @@ class ReportCourseStatsView(FormView):
 
     ReportItem = namedtuple("ReportItem", ("age_group", "all", "boys", "girls", "citizenships"))
 
+    _journal_deltas = {}
+    _subject_deltas = {}
+
+    def get_delta(self, cache, model, **kwargs):
+        [id] = kwargs.values()
+        try:
+            return cache[id]
+        except KeyError:
+            cache[id] = sum(
+                (t.delta for t in model.objects.filter(**kwargs)),
+                start=timedelta(0),
+            )
+        return cache[id]
+
+    def get_journal_delta(self, journal_id):
+        return self.get_delta(self._journal_deltas, JournalTime, journal_id=journal_id)
+
+    def get_subject_delta(self, subject_id):
+        return self.get_delta(self._subject_deltas, SubjectTime, subject_id=subject_id)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["school_year"] = self.request.school_year
@@ -136,9 +156,10 @@ class ReportCourseStatsView(FormView):
         delta = sum(
             (
                 sum(
-                    (jt.delta for jt in JournalTime.objects.filter(journal__participants=participant)),
+                    (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
                     start=timedelta(0),
                 )
+                or self.get_subject_delta(participant.registration.subject_id)
                 for participant in participants
             ),
             start=timedelta(0),
