@@ -1,6 +1,7 @@
 import re
 from typing import Any, Optional
 
+from cms.forms.fields import PageSelectFormField
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -173,3 +174,25 @@ class PostalCodeField(models.CharField):
             value[3] == " " and value or "{} {}".format(value[:3], value[3:]),
             model_instance,
         )
+
+
+class UniquePageField(models.OneToOneField):
+    """
+    This is a copy of PageField based on OneToOneField instead of ForeignKey.
+    """
+
+    default_form_class = PageSelectFormField
+
+    def __init__(self, **kwargs):
+        # We hard-code the `to` argument for ForeignKey.__init__
+        # since a PageField can only be a ForeignKey to a Page
+        kwargs["to"] = "cms.Page"
+        kwargs["on_delete"] = kwargs.get("on_delete", models.CASCADE)
+        super().__init__(**kwargs)
+
+    def formfield(self, **kwargs):
+        defaults = {
+            "form_class": self.default_form_class,
+        }
+        defaults.update(kwargs)
+        return super().formfield(**defaults)

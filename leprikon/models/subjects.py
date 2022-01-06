@@ -12,6 +12,8 @@ from tempfile import NamedTemporaryFile
 import qrcode
 from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
+from cms.models.pagemodel import Page
+from cms.signals.apphook import set_restart_trigger
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.dispatch import receiver
@@ -35,7 +37,7 @@ from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
 from .citizenship import Citizenship
 from .department import Department
-from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField
+from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField, UniquePageField
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
 from .pdfmail import PdfExportAndMailMixin
@@ -123,6 +125,9 @@ class SubjectType(models.Model):
     name_akuzativ = models.CharField(_("name (akuzativ)"), max_length=150, blank=True)
     plural = models.CharField(_("name (plural)"), max_length=150)
     slug = models.SlugField()
+    page = UniquePageField(
+        blank=True, null=True, on_delete=models.SET_NULL, related_name="leprikon_subject_type", verbose_name=_("page")
+    )
     order = models.IntegerField(_("order"), blank=True, default=0)
     questions = models.ManyToManyField(
         Question,
@@ -1659,6 +1664,55 @@ def payment_create_subject_payment(instance, **kwargs):
         note=_("received online payment"),
         pays_payment=payment,
     )
+
+
+@receiver(models.signals.post_save, sender=SubjectType)
+def subject_type_update_page(instance, **kwargs):
+    subject_type = instance
+    if subject_type.page_id:
+        updated = Page.objects.filter(
+            application_urls="LeprikonSubjectTypeApp",
+            application_namespace=subject_type.slug,
+        ).exclude(models.Q(id=subject_type.page_id) | models.Q(publisher_draft=subject_type.page_id)).update(
+            application_urls=None,
+            application_namespace=None,
+        ) + Page.objects.filter(
+            models.Q(id=subject_type.page_id) | models.Q(publisher_draft=subject_type.page_id)
+        ).update(
+            application_urls="LeprikonSubjectTypeApp",
+            application_namespace=subject_type.slug,
+        )
+    else:
+        updated = Page.objects.filter(
+            application_urls="LeprikonSubjectTypeApp",
+            application_namespace=subject_type.slug,
+        ).update(
+            application_urls=None,
+            application_namespace=None,
+        )
+    if updated:
+        set_restart_trigger()
+
+
+@receiver(models.signals.post_save, sender=Page)
+def page_update_subject_type(instance, **kwargs):
+    page = instance
+    if not page.publisher_is_draft:
+        return
+    if page.application_urls != "LeprikonSubjectTypeApp":
+        SubjectType.objects.filter(page=page).update(page=None)
+        return
+    subject_type = SubjectType.objects.filter(slug=page.application_namespace).first()
+    if subject_type is None:
+        Page.objects.filter(id=page.id).update(
+            application_urls=None,
+            application_namespace=None,
+        )
+        set_restart_trigger()
+        return
+    SubjectType.objects.filter(page=page).exclude(id=subject_type.id).update(page=None)
+    if subject_type.page_id != page.id:
+        SubjectType.objects.filter(id=subject_type.id).update(page=page)
 
 
 @receiver(models.signals.post_save, sender=BankreaderTransaction)
