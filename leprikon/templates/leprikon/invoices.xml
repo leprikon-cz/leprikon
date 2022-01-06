@@ -4,7 +4,8 @@
         {% for registration in registrations %}
         {% if registration.payment_requested %}
         <FaktVyd>
-            <Popis>{{ registration }}</Popis>
+            <Doklad>{{ registration.variable_symbol }}</Doklad>
+            <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
             <VarSymbol>{{ registration.variable_symbol }}</VarSymbol>
             <Celkem>{{ registration.payment_status.receivable }}</Celkem>
@@ -25,23 +26,24 @@
                 <Nazev>{{ registration.user.first_name }} {{ registration.user.last_name }}</Nazev>
                 <EMail>{{ registration.user.email }}</EMail>
             </KonecPrij>
-            <Sleva>{{ registration.payment_status.discount }}</Sleva>
             <SeznamPolozek>
                 {% if registration.subject_type == "course" %}
                 {% for pps in registration.period_payment_statuses %}
                 <Polozka>
-                    <Popis>{{ registration }} {{ pps.period.name }}</Popis>
+                    <Popis>{{ registration|stringformat:"s"|slice:"0:25" }} {{ pps.period.name|stringformat:"s"|slice:"0:23" }}</Popis>
+                    <PocetMJ>1</PocetMJ>
                     <Cena>{{ pps.status.price }}</Cena>
                     <Sleva>{{ pps.status.discount }}</Sleva>
-                    <CenaPoSleve>{{ pps.status.receivable }}</CenaPoSleve>
+                    <CenaPoSleve>0</CenaPoSleve>
                 </Polozka>
                 {% endfor %}
                 {% else %}
                 <Polozka>
-                    <Popis>{{ registration }}</Popis>
+                    <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
+                    <PocetMJ>1</PocetMJ>
                     <Cena>{{ registration.payment_status.price }}</Cena>
                     <Sleva>{{ registration.payment_status.discount }}</Sleva>
-                    <CenaPoSleve>{{ registration.payment_status.receivable }}</CenaPoSleve>
+                    <CenaPoSleve>0</CenaPoSleve>
                 </Polozka>
                 {% endif %}
             </SeznamPolozek>
@@ -71,7 +73,7 @@
                 </Uhrada>
                 {% endfor %}
             </SeznamUhrad>
-            {% with org=registration.subject.organization %}
+            {% with org=registration.organization %}
             <MojeFirma>
                 <Nazev>{{ org.name }}</Nazev>
                 <Adresa>
