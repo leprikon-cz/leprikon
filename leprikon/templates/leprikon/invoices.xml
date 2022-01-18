@@ -4,7 +4,6 @@
         {% for registration in registrations %}
         {% if registration.payment_requested %}
         <FaktVyd>
-            <Doklad>{{ registration.variable_symbol }}</Doklad>
             <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
             <VarSymbol>{{ registration.variable_symbol }}</VarSymbol>
@@ -21,6 +20,18 @@
                 </Adresa>
                 <EMail>{{ registration.billing_info.email }}</EMail>
             </DodOdb>
+            {% else %}
+            {% with person=registration.all_participants.0.parent1|default:registration.all_participants.0 %}
+            <DodOdb>
+                <Nazev>{{ person.full_name }}</Nazev>
+                <Adresa>
+                    <Ulice>{{ person.street }}</Ulice>
+                    <Misto>{{ person.city }}</Misto>
+                    <PSC>{{ person.postal_code }}</PSC>
+                </Adresa>
+                <EMail>{{ person.email }}</EMail>
+            </DodOdb>
+            {% endwith %}
             {% endif %}
             <KonecPrij>
                 <Nazev>{{ registration.user.first_name }} {{ registration.user.last_name }}</Nazev>
