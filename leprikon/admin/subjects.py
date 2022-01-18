@@ -5,8 +5,9 @@ from django.contrib.admin.utils import unquote
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
-from django.db.models import BooleanField, Func
+from django.db.models import BooleanField, F, Func
 from django.db.models.expressions import Random
+from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.urls import reverse
@@ -569,6 +570,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         "subject__department",
         ("subject__subject_type", SubjectTypeListFilter),
         "subject__registration_type",
+        "subject__organization",
         ApprovedListFilter,
         CanceledListFilter,
         "registration_link",
@@ -645,7 +647,13 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                 "subject",
                 "user",
             )
-            .annotate(random_number=Random())
+            .annotate(
+                random_number=Random(),
+                subject__organization__id=Coalesce(
+                    F("subject__organization_id"),
+                    F("subject__subject_type__organization_id"),
+                ),
+            )
         )
 
     def approve(self, request, queryset):
