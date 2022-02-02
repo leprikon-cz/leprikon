@@ -17,7 +17,7 @@ from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
-from .utils import PaymentStatus, change_year
+from .utils import PaymentStatus, change_year, copy_related_objects
 
 
 class Course(Subject):
@@ -74,7 +74,6 @@ class Course(Subject):
         new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
         new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
         new.save()
-        new.times.set(old.times.all())
         new.groups.set(old.groups.all())
         new.age_groups.set(old.age_groups.all())
         new.target_groups.set(old.target_groups.all())
@@ -82,7 +81,12 @@ class Course(Subject):
             school_year.leaders.add(leader)
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
-        new.attachments.set(old.attachments.all())
+        copy_related_objects(
+            new,
+            attachments=old.attachments,
+            times=old.times,
+            variants=old.variants,
+        )
         return new
 
 

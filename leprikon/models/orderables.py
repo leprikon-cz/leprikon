@@ -14,7 +14,7 @@ from .roles import Leader
 from .schoolyear import SchoolYear
 from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
-from .utils import PaymentStatus
+from .utils import PaymentStatus, copy_related_objects
 
 
 class Orderable(Subject):
@@ -60,7 +60,12 @@ class Orderable(Subject):
             school_year.leaders.add(leader)
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
-        new.attachments.set(old.attachments.all())
+        copy_related_objects(
+            new,
+            attachments=old.attachments,
+            times=old.times,
+            variants=old.variants,
+        )
         return new
 
 

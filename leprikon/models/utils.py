@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import Any, Union
 
 from django.core.exceptions import ValidationError
+from django.db.models import Model, QuerySet
 from django.utils.functional import cached_property, lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -274,3 +275,13 @@ def shorten(string, length):
         return string
     half = length // 2 - 1
     return f"{string[:half]}...{string[half + 3 - length:]}"
+
+
+def copy_related_objects(target: Model, **kwargs: QuerySet):
+    for attr, qs in kwargs.items():
+        related_objects = list(qs.all())
+        remote_field_name = target._meta.get_field(attr).remote_field.name
+        for obj in related_objects:
+            obj.pk = None
+            setattr(obj, remote_field_name, target)
+        qs.model.objects.bulk_create(related_objects)

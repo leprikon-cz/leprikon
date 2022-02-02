@@ -15,7 +15,7 @@ from .schoolyear import SchoolYear
 from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
 from .times import Time
-from .utils import PaymentStatus, change_year
+from .utils import PaymentStatus, change_year, copy_related_objects
 
 
 class Event(Subject):
@@ -94,7 +94,12 @@ class Event(Subject):
             school_year.leaders.add(leader)
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
-        new.attachments.set(old.attachments.all())
+        copy_related_objects(
+            new,
+            attachments=old.attachments,
+            times=old.times,
+            variants=old.variants,
+        )
         return new
 
 
