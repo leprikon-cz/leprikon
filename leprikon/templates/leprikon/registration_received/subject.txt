@@ -1,6 +1,6 @@
 {% load i18n %}{{ object.text_registration_received|striptags }}
 
-{% if object.subject.full %}{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
+{% if object.subject.over_capapcity %}{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
 The registration may be refused.{% endblocktrans %}
 
 {% endif %}{% include 'leprikon/registration_mail_details.txt' %}

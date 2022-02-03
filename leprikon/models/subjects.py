@@ -599,6 +599,10 @@ class Subject(TimesMixin, models.Model):
     def full(self):
         return self.max_registrations_count and self.active_registrations_count >= self.max_registrations_count
 
+    @property
+    def over_capapcity(self):
+        return self.max_registrations_count and self.active_registrations_count > self.max_registrations_count
+
     def get_absolute_url(self):
         return reverse(self.subject_type.slug + ":subject_detail", args=(self.id,))
 

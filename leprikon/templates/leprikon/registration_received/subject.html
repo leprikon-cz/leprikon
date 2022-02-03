@@ -2,7 +2,7 @@
 
 {{ object.text_registration_received }}
 
-{% if object.subject.full %}
+{% if object.subject.over_capapcity %}
 <p>
 {% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Unfortunately, the capacity of this {{ subject_type }} has already been filled.
 The registration may be refused.{% endblocktrans %}
