@@ -19,16 +19,12 @@ if [[ ! "${AUTO_ROCKETCHATSYNC,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .rocketcha
 fi
 
 # ensure ownership of likely mounted directory
-chown www-data:www-data data htdocs/media run
+chown www-data:www-data data htdocs/media run &
 
 # run uwsgi server
-exec uwsgi --chdir=/app \
-    --uid=${UWSGI_UID:-www-data} --gid=${UWSGI_GID:-www-data} \
-    --module=${UWSGI_MODULE:-leprikon.site.wsgi:application} \
-    --master \
-    --enable-threads \
-    --socket=${UWSGI_SOCKET:-/app/run/socket} \
-    --chmod-socket=${UWSGI_CHMOD_SOCKET:-600} \
-    --max-worker-lifetime=${UWSGI_MAX_WORKER_LIFETIME:-300} \
-    --processes=${UWSGI_PROCESSES:-3} \
-    ${UWSGI_OPTIONS}
+exec gunicorn \
+    --user=${GUNICORN_UID:-www-data} --group=${GUNICORN_GID:-www-data} \
+    -b ${GUNICORN_SOCKET:-unix:///app/run/socket} \
+    --timeout=${GUNICORN_TIMEOUT:-300} \
+    ${GUNICORN_OPTIONS} \
+    ${GUNICORN_MODULE:-leprikon.site.wsgi:application}

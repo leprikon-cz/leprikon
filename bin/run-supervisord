@@ -5,7 +5,7 @@
 # Runs all components (*) by default.
 #
 # Example:
-#   SUPERVISORD_RUN="nginx uwsgi" /app/bin/run-supervisord
+#   SUPERVISORD_RUN="nginx gunicorn" /app/bin/run-supervisord
 
 cp /app/conf/supervisord.base.conf /app/run/supervisord.conf
 

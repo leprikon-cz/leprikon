@@ -18,4 +18,5 @@
 /media
 /mongo*
 /mysql*
+/redis
 /uploads
