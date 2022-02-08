@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
-if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
-    if su -s /bin/bash -c 'exec leprikon migrate --no-input' www-data; then
-        touch .migrated
-    else
-        exit 1
-    fi
+if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]]; then
+    while ! su -s /bin/bash -c 'exec leprikon migrate --no-input' www-data; do
+        echo "Waiting for DB to start ..."
+        sleep 5
+    done
 fi
 
 # run leprikon rocketchatsync on first boot (unless AUTO_ROCKETCHATSYNC=0|n|no|f|false)
