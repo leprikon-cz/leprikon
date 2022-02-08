@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             name="page",
             field=leprikon.models.fields.UniquePageField(
                 blank=True,
-                default=None,
+                help_text="Select page, where the subjects will be listed. New subject type requireds new page. If You assign an existing page, the current content of the page will be replaced with the new subject list.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="leprikon_subject_type",
