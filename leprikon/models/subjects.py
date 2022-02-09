@@ -124,7 +124,7 @@ class SubjectType(models.Model):
     name_genitiv = models.CharField(_("name (genitiv)"), max_length=150, blank=True)
     name_akuzativ = models.CharField(_("name (akuzativ)"), max_length=150, blank=True)
     plural = models.CharField(_("name (plural)"), max_length=150)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     page = UniquePageField(
         blank=True,
         null=True,
