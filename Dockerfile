@@ -16,6 +16,7 @@ ENV TZ=Europe/Prague
 RUN apt-get update \
  && apt-get -y upgrade \
  && apt-get -y --no-install-recommends install \
+    git \
     locales \
     python3-pip \
     tzdata \
@@ -34,7 +35,6 @@ FROM base AS build
 RUN apt-get -y --no-install-recommends install \
     build-essential \
     gcc \
-    git \
     libicu-dev \
     libmysqlclient-dev \
     libssl-dev \
