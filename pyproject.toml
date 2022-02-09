@@ -46,7 +46,7 @@ classifiers = [
 python = "^3.8"
 certbot-nginx = "^1.12.0"
 certbot = "^1.12.0"
-cmsplugin-filer = "^1.1.3"
+cmsplugin-filer = { git = "https://github.com/leprikon-cz/cmsplugin-filer.git", branch = "fix-folder-render" }
 django-bankreader = "<0.7"
 djangocms-googlemap = "<1.5"
 djangocms-link = "<2.7"
