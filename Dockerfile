@@ -14,15 +14,15 @@ ENV TZ=Europe/Prague
 
 # install requirements and generate czech locale
 RUN apt-get update \
- && apt-get -y upgrade \
- && apt-get -y --no-install-recommends install \
-    git \
-    locales \
-    python3-pip \
-    tzdata \
- && pip3 install --no-cache-dir --upgrade pip \
- && ln -s /usr/bin/python3 /usr/local/bin/python \
- && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
+  && apt-get -y upgrade \
+  && apt-get -y --no-install-recommends install \
+  git \
+  locales \
+  python3-pip \
+  tzdata \
+  && pip3 install --no-cache-dir --upgrade pip \
+  && ln -s /usr/bin/python3 /usr/local/bin/python \
+  && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 ENV LC_ALL cs_CZ.UTF-8
 
 
@@ -33,14 +33,14 @@ ENV LC_ALL cs_CZ.UTF-8
 FROM base AS build
 
 RUN apt-get -y --no-install-recommends install \
-    build-essential \
-    gcc \
-    libicu-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    pkg-config \
-    python3-dev \
-    libpython3.7
+  build-essential \
+  gcc \
+  libicu-dev \
+  libmysqlclient-dev \
+  libssl-dev \
+  pkg-config \
+  python3-dev \
+  libpython3.7
 RUN pip install poetry wheel
 COPY poetry.lock pyproject.toml ./
 RUN poetry export -f requirements.txt --without-hashes \
@@ -60,27 +60,30 @@ LABEL name="Leprikón"
 LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
 
 RUN apt-get -y --no-install-recommends install \
-    libmysqlclient21 \
-    libpython3.8 \
-    mariadb-client \
-    nginx \
-    postgresql-client \
-    sqlite3 \
-    supervisor
+  libmysqlclient21 \
+  libpython3.8 \
+  mariadb-client \
+  nginx \
+  patch \
+  postgresql-client \
+  sqlite3 \
+  supervisor
 
 COPY --from=build /app/dist /app/dist
 
 RUN pip install --no-deps /app/dist/*
 
+COPY patch /app/patch
 COPY . /src
 
 RUN cp -a /src/translations/* /usr/local/lib/python3.8/dist-packages/ \
- && cp -a /src/conf /src/bin /src/startup ./ \
- && rm -r /src \
- && mkdir -p data/ipython htdocs/media htdocs/static run \
- && leprikon collectstatic --no-input \
- && rm data/db.sqlite3 \
- && chown www-data:www-data data htdocs/media run
+  && patch /usr/local/lib/python3.8/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
+  && cp -a /src/conf /src/bin /src/startup ./ \
+  && rm -r /src \
+  && mkdir -p data/ipython htdocs/media htdocs/static run \
+  && leprikon collectstatic --no-input \
+  && rm data/db.sqlite3 \
+  && chown www-data:www-data data htdocs/media run
 
 VOLUME /app/data /app/htdocs/media
 
