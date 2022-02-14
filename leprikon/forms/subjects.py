@@ -738,7 +738,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
         # set price
         self.instance.price = (
-            self.instance.subject_variant.price if self.instance.subject_variant else self.instance.subject.price
+            self.instance.subject_variant.get_price() if self.instance.subject_variant else self.instance.subject.price
         )
 
         # create
