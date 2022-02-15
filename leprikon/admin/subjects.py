@@ -24,7 +24,6 @@ from ..forms.subjects import (
     SubjectAdminForm,
 )
 from ..models.subjects import (
-    CHAT_GROUP_TYPE_LABELS,
     DEFAULT_TEXTS,
     Subject,
     SubjectAttachment,
@@ -241,10 +240,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                     form.base_fields[field_name].help_text,
                     getattr(request.subject_type, field_name) or DEFAULT_TEXTS[field_name],
                 )
-            form.base_fields["chat_group_type"].help_text = lazy_help_text_with_default(
-                form.base_fields["chat_group_type"].help_text,
-                CHAT_GROUP_TYPE_LABELS[request.subject_type.chat_group_type],
-            )
 
         return form
 

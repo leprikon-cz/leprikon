@@ -8,7 +8,6 @@ from .models.leprikonsite import LeprikonSite
 from .models.roles import Leader
 from .models.schoolyear import SchoolYear
 from .models.useragreement import UserAgreement
-from .rocketchat import get_rc_id, rc_logout
 
 
 class school_year:
@@ -104,19 +103,7 @@ class LeprikonMiddleware:
             else:
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
 
-        response = self.get_response(request)
-
-        if "rc_uid" in request.COOKIES and (
-            not request.user.is_authenticated or request.COOKIES["rc_uid"] != get_rc_id(request.user)
-        ):
-            try:
-                rc_logout(
-                    auth_token=request.COOKIES["rc_token"],
-                    user_id=request.COOKIES["rc_uid"],
-                )
-            except Exception:
-                pass
-        return response
+        return self.get_response(request)
 
     def process_exception(self, request, exception):
         if isinstance(exception, PermissionDenied):

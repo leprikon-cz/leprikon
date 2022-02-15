@@ -1,4 +1,4 @@
-{% load i18n cms_tags menu_tags leprikon_tags rocketchat sekizai_tags staticfiles ganalytics %}
+{% load i18n cms_tags menu_tags leprikon_tags sekizai_tags staticfiles ganalytics %}
 <!DOCTYPE html>
 <html lang="cs-CZ">
 
@@ -25,7 +25,6 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/css/layout.css' %}"/>
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/css/colors.css' %}"/>
-    <link rel="stylesheet" type="text/css" media="all" href="{% static 'leprikon/css/chat.css' %}"/>
     {% render_block "css" %}
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -58,7 +57,6 @@
             <div class="col-sm-3">
                 {% school_year_form %}
                 {% include 'leprikon/user_dropdown.html' %}
-                {% chat %}
             </div>
         </div>
     </div>
@@ -82,8 +80,6 @@
     </div>
 
     {% render_block "js" %}
-
-    {% livechat %}
 
 </body>
 </html>

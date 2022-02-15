@@ -83,7 +83,6 @@ INSTALLED_APPS = [
     "ganalytics",
     "html2rml",
     "qr_code",
-    "rocketchat_API",
     "social_django",
     "verified_email_field",
 ]
@@ -231,12 +230,6 @@ if DATABASES["default"]["ENGINE"].endswith("mysql"):
 # Leprikon URL
 LEPRIKON_DOMAIN = os.environ.get("LEPRIKON_DOMAIN")
 LEPRIKON_URL = os.environ.get("LEPRIKON_URL", LEPRIKON_DOMAIN and f"https://{LEPRIKON_DOMAIN}")
-
-# RocketChat API
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017/rocketchat")
-ROCKETCHAT_API_URL = os.environ.get("ROCKETCHAT_API_URL", "http://localhost:3000/_chat")
-LEPRIKON_CHAT_NAME = os.environ.get("LEPRIKON_CHAT_NAME", "Leprikón")
-LEPRIKON_CHAT_USERNAME = os.environ.get("LEPRIKON_CHAT_USERNAME", "leprikon")
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

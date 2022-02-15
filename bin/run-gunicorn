@@ -8,15 +8,6 @@ if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]]; then
     done
 fi
 
-# run leprikon rocketchatsync on first boot (unless AUTO_ROCKETCHATSYNC=0|n|no|f|false)
-if [[ ! "${AUTO_ROCKETCHATSYNC,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .rocketchatsynced ]; then
-    if su -s /bin/bash -c 'exec leprikon rocketchatsync' www-data; then
-        touch .rocketchatsynced
-    else
-        exit 1
-    fi
-fi
-
 # ensure ownership of likely mounted directory
 chown www-data:www-data data htdocs/media run &
 

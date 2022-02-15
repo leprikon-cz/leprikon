@@ -16,7 +16,6 @@
 /docker-compose.*.yml
 /env
 /media
-/mongo*
 /mysql*
 /redis
 /uploads

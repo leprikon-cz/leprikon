@@ -5,8 +5,6 @@ services:
     image: leprikon/leprikon:latest
     build: .
     depends_on:
-      - chat
-      - mongo
       - mysql
       - redis
       - smtp
@@ -20,12 +18,8 @@ services:
       EMAIL_HOST_USER: leprikon
       EMAIL_HOST_PASSWORD: EMAIL_HOST_PASSWORD
       EMAIL_SUBJECT_PREFIX: '[Leprikón]'
-      LEPRIKON_CHAT_NAME: 'Leprikón'
-      LEPRIKON_CHAT_USERNAME: leprikon
       LEPRIKON_DOMAIN: example.leprikon.cz
       CACHE_LOCATION: unix:///var/run/redis/redis.sock
-      MONGO_URL: mongodb://mongo:27017/rocketchat
-      ROCKETCHAT_API_URL: http://chat:3000/_chat
       SECRET_KEY: SECRET_KEY
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
     ports:
@@ -54,51 +48,6 @@ services:
     volumes:
       - mysql:/var/run/mysqld
       - ./mysql:/var/lib/mysql
-
-  mongo:
-    image: mongo:4
-    hostname: mongo
-    volumes:
-     - ./mongo:/data/db
-    command: mongod --oplogSize 128 --replSet rs0
-
-  # this container's job is just run the command to initialize the replica set.
-  # it will run the command and remove himself (it will not stay running)
-  mongo-init-replica:
-    image: mongo:4
-    command: >
-      bash -c
-        "for i in `seq 1 30`; do
-          mongo mongo/rocketchat --eval \"
-            rs.initiate({
-              _id: 'rs0',
-              members: [ { _id: 0, host: 'localhost:27017' } ]})\" &&
-          s=$$? && break || s=$$?;
-          echo \"Tried $$i times. Waiting 5 secs...\";
-          sleep 5;
-        done; (exit $$s)"
-    depends_on:
-      - mongo
-
-  chat:
-    image: rocketchat/rocket.chat:latest
-    command: >
-      bash -c
-        "for i in `seq 1 30`; do
-          node main.js &&
-          s=$$? && break || s=$$?;
-          echo \"Tried $$i times. Waiting 5 secs...\";
-          sleep 5;
-        done; (exit $$s)"
-    volumes:
-      - ./uploads:/app/uploads
-    environment:
-      PORT: 3000
-      MONGO_URL: mongodb://mongo:27017/rocketchat
-      MONGO_OPLOG_URL: mongodb://mongo:27017/local
-      ROOT_URL: http://leprikon.localhost/_chat
-    depends_on:
-      - mongo
 
   smtp:
     image: catatnight/postfix

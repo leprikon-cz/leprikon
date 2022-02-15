@@ -279,10 +279,6 @@ def merge_users(source, target):
     except AttributeError:
         pass
 
-    from .rocketchat import RocketChat
-
-    RocketChat().merge_users(source, target)
-
     source.delete()
 
 

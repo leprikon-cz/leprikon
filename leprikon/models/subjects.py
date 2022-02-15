@@ -86,20 +86,6 @@ DEFAULT_TEXTS = {
     ),
 }
 
-CHAT_GROUP_BROADCAST = "B"
-CHAT_GROUP_CHAT = "C"
-CHAT_GROUP_TYPE_LABELS = OrderedDict(
-    [
-        (CHAT_GROUP_BROADCAST, _("broadcast group")),
-        (CHAT_GROUP_CHAT, _("chat group")),
-    ]
-)
-
-CHAT_GROUP_TYPE_HELP_TEXT = _(
-    "Only the leader can write to broadcast group. Users may reply to the sender with direct messages.\n"
-    "Chat group allows all members to chat with each other."
-)
-
 
 class SubjectType(models.Model):
     COURSE = "course"
@@ -177,13 +163,6 @@ class SubjectType(models.Model):
     )
     organization = models.ForeignKey(
         Organization, blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("organization")
-    )
-    chat_group_type = models.CharField(
-        _("default chat group type"),
-        max_length=1,
-        choices=CHAT_GROUP_TYPE_LABELS.items(),
-        default=CHAT_GROUP_BROADCAST,
-        help_text=CHAT_GROUP_TYPE_HELP_TEXT,
     )
     text_registration_received = HTMLField(
         _("text: registration received"),
@@ -483,14 +462,6 @@ class Subject(TimesMixin, models.Model):
         related_name="+",
         verbose_name=_("organization"),
         help_text=_("Only use to set value specific for this subject."),
-    )
-    chat_group_type = models.CharField(
-        _("chat group type"),
-        blank=True,
-        max_length=1,
-        null=True,
-        choices=CHAT_GROUP_TYPE_LABELS.items(),
-        help_text=CHAT_GROUP_TYPE_HELP_TEXT,
     )
     text_registration_received = HTMLField(_("text: registration received"), blank=True, default="")
     text_registration_approved = HTMLField(_("text: registration approved"), blank=True, default="")
