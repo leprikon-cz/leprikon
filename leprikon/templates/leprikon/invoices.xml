@@ -4,8 +4,18 @@
         {% for registration in registrations %}
         {% if registration.payment_requested %}
         <FaktVyd>
+            <CisRada>0</CisRada>
             <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
+            <DatUcPr>{{ registration.payment_requested|date:"Y-m-d" }}</DatUcPr>
+            <PlnenoDPH>{{ registration.payment_requested|date:"Y-m-d" }}</PlnenoDPH>
+            {% if registration.subject_type == "course" %}
+            {% for pps in registration.period_payment_statuses %}
+            {% if forloop.last %}<Splatno>{{ pps.status.due_date|date:"Y-m-d" }}</Splatno>{% endif %}
+            {% endfor %}
+            {% else %}
+            <Splatno>{{ registration.payment_status.due_date|date:"Y-m-d" }}</Splatno>
+            {% endif %}
             <VarSymbol>{{ registration.variable_symbol }}</VarSymbol>
             <Celkem>{{ registration.payment_status.receivable }}</Celkem>
             <Typ>VF</Typ>
@@ -23,13 +33,24 @@
             {% else %}
             {% with person=registration.all_participants.0.parent1|default:registration.all_participants.0 %}
             <DodOdb>
+                <ObchNazev>{{ person.full_name }}</ObchNazev>
+                <ObchAdresa>
+                    <Ulice>{{ person.street }}</Ulice>
+                    <Misto>{{ person.city }}</Misto>
+                    <PSC>{{ person.postal_code }}</PSC>
+                </ObchAdresa>
+                <FaktNazev>{{ person.full_name }}</FaktNazev>
+                <FaktAdresa>
+                    <Ulice>{{ person.street }}</Ulice>
+                    <Misto>{{ person.city }}</Misto>
+                    <PSC>{{ person.postal_code }}</PSC>
+                </FaktAdresa>
                 <Nazev>{{ person.full_name }}</Nazev>
                 <Adresa>
                     <Ulice>{{ person.street }}</Ulice>
                     <Misto>{{ person.city }}</Misto>
                     <PSC>{{ person.postal_code }}</PSC>
                 </Adresa>
-                <EMail>{{ person.email }}</EMail>
             </DodOdb>
             {% endwith %}
             {% endif %}
@@ -43,8 +64,8 @@
                 <Polozka>
                     <Popis>{{ registration|stringformat:"s"|slice:"0:25" }} {{ pps.period.name|stringformat:"s"|slice:"0:23" }}</Popis>
                     <PocetMJ>1</PocetMJ>
-                    <Cena>{{ pps.status.price }}</Cena>
-                    <Sleva>{{ pps.status.discount }}</Sleva>
+                    <Cena>{{ pps.status.receivable }}</Cena>
+                    <Sleva>0</Sleva>
                     <CenaPoSleve>0</CenaPoSleve>
                 </Polozka>
                 {% endfor %}
