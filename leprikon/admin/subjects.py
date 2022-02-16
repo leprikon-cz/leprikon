@@ -40,7 +40,7 @@ from ..models.subjects import (
     SubjectTypeAttachment,
     SubjectVariant,
 )
-from ..models.utils import lazy_help_text_with_default, lazy_help_text_with_html_default
+from ..models.utils import lazy_help_text_with_html_default
 from ..utils import amount_color, currency
 from .bulkupdate import BulkUpdateMixin
 from .export import AdminExportMixin

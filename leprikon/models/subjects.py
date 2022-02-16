@@ -119,7 +119,8 @@ class SubjectType(models.Model):
         verbose_name=_("page"),
         help_text=_(
             "Select page, where the subjects will be listed. New subject type requireds new page. "
-            "If You assign an existing page, the current content of the page will be replaced with the new subject list."
+            "If You assign an existing page, the current content of the page will be replaced "
+            "with the new subject list."
         ),
     )
     order = models.IntegerField(_("order"), blank=True, default=0)
