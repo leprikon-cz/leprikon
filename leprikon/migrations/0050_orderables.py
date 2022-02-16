@@ -7,7 +7,6 @@ import django.db.models.deletion
 import django.utils.timezone
 import leprikon.models.fields
 import leprikon.models.subjects
-import leprikon.models.transaction
 
 
 class Migration(migrations.Migration):
@@ -93,7 +92,6 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "orderable event discounts",
                 "ordering": ("accounted",),
             },
-            bases=(leprikon.models.transaction.AbstractTransaction,),
         ),
         migrations.CreateModel(
             name="OrderableListPlugin",
