@@ -118,13 +118,17 @@
         {% endfor %}
     </div>
     {% endif %}
+    <div class="container paper">
+        <h1>{% trans 'Journal' %}: {{ journal }}</h1>
+    </div>
     {% for period in journal.all_journal_periods %}
-    {% with period.all_journal_entries|length|add:2 as columns_count %}
+    {% with period.all_journal_entries|length|add:3 as columns_count %}
     <div class="container paper">
         <h1>{% trans 'Attendance' %}{% if period.period %} - {{ period.period.name }}{% endif %}</h1>
         <div style="overflow: auto">
         <table class="table-hover presence">
             <tr>
+                <th>{% trans 'No.' %}</th>
                 <th>{% trans 'Name' context 'person' %}</th>
                 {% for entry in period.all_journal_entries %}
                 <th class="vertical">
@@ -160,6 +164,7 @@
             </tr>
             {% for presence_record in period.get_leader_presences %}
             <tr>
+                <td>{{ forloop.counter }}.</td>
                 <td>{{ presence_record.person }}</td>
                 {% for p in presence_record.presences %}
                 <td>{% if p %}<a href="{{ p.get_edit_url }}?{% param_back %}={% current_url %}">&#x2717;</a>{% endif %}</td>
@@ -169,6 +174,7 @@
             {% endfor %}
             {% for presence_record in period.get_alternate_presences %}
             <tr>
+                <td>{{ forloop.counter }}.</td>
                 <td>{{ presence_record.person }}</td>
                 {% for p in presence_record.presences %}
                 <td>{% if p %}<a href="{{ p.get_edit_url }}?{% param_back %}={% current_url %}">&#x2717;</a>{% endif %}</td>
@@ -181,6 +187,7 @@
             </tr>
             {% for presence_record in period.get_participant_presences %}
             <tr>
+                <td>{{ forloop.counter }}.</td>
                 <td>{{ presence_record.person }}</td>
                 {% for p in presence_record.presences %}
                 <td>{% if p %}&#x2717;{% endif %}</td>
@@ -200,6 +207,7 @@
         <h1>{% trans 'Agenda' %}{% if period.period %} - {{ period.period.name }}{% endif %}</h1>
         <table class="journal">
             <tr>
+                <th>{% trans 'No.' %}</th>
                 <th>{% trans 'Date' %}</th>
                 <th>{% trans 'Time' %}</th>
                 <th>{% trans 'Number of hours' %}</th>
@@ -209,6 +217,7 @@
             </tr>
             {% for entry in period.all_journal_entries %}
             <tr>
+                <th>{{ forloop.counter }}.</th>
                 <td>{{ entry.date }}</td>
                 <td>{% if entry.duration %}{{ entry.start }}{% else %}{% trans 'skipped' %}{% endif %}</td>
                 <td>{% if entry.duration %}{{ entry.duration }}{% else %}{% trans 'skipped' %}{% endif %}</td>
