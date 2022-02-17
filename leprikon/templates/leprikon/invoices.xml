@@ -4,7 +4,7 @@
         {% for registration in registrations %}
         {% if registration.payment_requested %}
         <FaktVyd>
-            <CisRada>0</CisRada>
+            <Doklad>{{ registration.variable_symbol }}</Doklad>
             <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
             <DatUcPr>{{ registration.payment_requested|date:"Y-m-d" }}</DatUcPr>
@@ -18,10 +18,22 @@
             {% endif %}
             <VarSymbol>{{ registration.variable_symbol }}</VarSymbol>
             <Celkem>{{ registration.payment_status.receivable }}</Celkem>
-            <Typ>VF</Typ>
-            <Vystavil>{{ registration.approved_by.first_name }} {{ registration.approved_by.last_name }}</Vystavil>
+            <Typ>ZF</Typ>
+            <Vystavil>{{ registration.approved_by.get_full_name|default:registration.approved_by.username }}</Vystavil>
             {% if registration.billing_info %}
             <DodOdb>
+                <ObchNazev>{{ registration.billing_info.name }}</ObchNazev>
+                <ObchAdresa>
+                    <Ulice>{{ registration.billing_info.street }}</Ulice>
+                    <Misto>{{ registration.billing_info.city }}</Misto>
+                    <PSC>{{ registration.billing_info.postal_code }}</PSC>
+                </ObchAdresa>
+                <FaktNazev>{{ registration.billing_info.name }}</FaktNazev>
+                <FaktAdresa>
+                    <Ulice>{{ registration.billing_info.street }}</Ulice>
+                    <Misto>{{ registration.billing_info.city }}</Misto>
+                    <PSC>{{ registration.billing_info.postal_code }}</PSC>
+                </FaktAdresa>
                 <Nazev>{{ registration.billing_info.name }}</Nazev>
                 <Adresa>
                     <Ulice>{{ registration.billing_info.street }}</Ulice>
