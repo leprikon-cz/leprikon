@@ -1,0 +1,14 @@
+<div class="required-optional-field">
+    <input type="hidden" class="required-optional-field-input" name="{{ widget.name }}" id="{{ widget.attrs.id }}" />
+    {% for subwidget in widget.subwidgets %}
+    {% if forloop.first %}
+        <div class="required-optional-field-choice">
+        {% include subwidget.template_name with widget=subwidget %}
+        </div>
+    {% else %}
+        <div class="required-optional-field-value">
+        {% include subwidget.template_name with widget=subwidget %}
+        </div>
+    {% endif %}
+    {% endfor %}
+</div>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-17 12:39+0100\n"
+"POT-Creation-Date: 2022-02-20 22:42+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -714,7 +714,7 @@ msgstr "naposledy upraveno"
 msgid "leader"
 msgstr "vedoucí"
 
-#: admin/user.py:35 views/generic.py:151
+#: admin/user.py:35 forms/fields.py:54 views/generic.py:151
 msgid "Yes"
 msgstr "Ano"
 
@@ -983,6 +983,10 @@ msgid "choice field"
 msgstr "výběr"
 
 #: conf/default_settings.py:64
+msgid "required field with an empty option"
+msgstr "poviné pole s možností neodpovědět"
+
+#: conf/default_settings.py:68
 msgid "date field"
 msgstr "datum"
 
@@ -990,13 +994,17 @@ msgstr "datum"
 msgid "Periods"
 msgstr "Období"
 
-#: forms/fields.py:14
+#: forms/fields.py:20
 msgid "agree"
 msgstr "souhlasím"
 
-#: forms/fields.py:15
+#: forms/fields.py:21
 msgid "disagree"
 msgstr "nesouhlasím"
+
+#: forms/fields.py:55
+msgid "No"
+msgstr "Ne"
 
 #: forms/journals.py:126
 #, python-brace-format

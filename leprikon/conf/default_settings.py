@@ -60,6 +60,10 @@ LEPRIKON_QUESTION_FIELDS = {
         "name": _("choice field"),
         "class": "django.forms.ChoiceField",
     },
+    "required_optional": {
+        "name": _("required field with an empty option"),
+        "class": "leprikon.forms.fields.RequiredOptionalField",
+    },
     "date": {
         "name": _("date field"),
         "class": "django.forms.DateField",
