@@ -1,4 +1,5 @@
 from collections import namedtuple
+from json import loads
 
 from cms.models import CMSPlugin
 from cms.models.fields import PageField
@@ -168,6 +169,7 @@ class Participant(models.Model):
     school_other = models.CharField(_("other school"), max_length=150, blank=True, default="")
     school_class = models.CharField(_("class"), max_length=30, blank=True, default="")
     health = models.TextField(_("health"), blank=True, default="")
+    answers = models.TextField(_("additional answers"), blank=True, default="{}", editable=False)
 
     class Meta:
         app_label = "leprikon"
@@ -180,6 +182,9 @@ class Participant(models.Model):
             last_name=self.last_name,
             birth_date=date_format(self.birth_date, "SHORT_DATE_FORMAT"),
         )
+
+    def get_answers(self):
+        return loads(self.answers)
 
     @cached_property
     def full_name(self):

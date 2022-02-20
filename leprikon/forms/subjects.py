@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
+from django.forms.widgets import Media
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -399,6 +400,13 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         )(**kwargs)
 
     @cached_property
+    def media(self):
+        media = Media()
+        for form in self.required_forms:
+            media = media + form.media
+        return media
+
+    @cached_property
     def required_forms(self):
         return [
             super(),
@@ -471,6 +479,9 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
             "health",
         ]:
             setattr(participant, attr, getattr(self.instance, attr))
+        participant_answers = participant.get_answers()
+        participant_answers.update(self.instance.get_answers())
+        participant.answers = dumps(participant_answers)
         participant.save()
 
         # save / update first parent
@@ -527,6 +538,13 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
             (FormMixin, forms.Form),
             dict((q.name, q.get_field()) for q in self.subject.all_questions),
         )(**kwargs)
+
+    @cached_property
+    def media(self):
+        media = Media()
+        for form in self.required_forms:
+            media = media + form.media
+        return media
 
     @cached_property
     def required_forms(self):
@@ -683,6 +701,13 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
         kwargs["prefix"] = "billing_info"
         self.billing_info_form = RegistrationBillingInfoForm(**kwargs)
+
+    @cached_property
+    def media(self):
+        media = Media()
+        for form in self.all_forms:
+            media = media + form.media
+        return media
 
     @cached_property
     def required_forms(self):
