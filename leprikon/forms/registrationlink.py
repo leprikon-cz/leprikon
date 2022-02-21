@@ -1,9 +1,7 @@
 from django import forms
 
-from .form import FormMixin
 
-
-class RegistrationLinkAdminForm(FormMixin, forms.ModelForm):
+class RegistrationLinkAdminForm(forms.ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
