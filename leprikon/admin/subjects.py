@@ -409,7 +409,7 @@ class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
 
     def get_formset(self, request, obj, **kwargs):
         questions = obj.all_questions if obj else request.subject.all_questions
-        fields = dict(("q_" + q.name, q.get_field()) for q in questions)
+        fields = dict(("q_" + q.slug, q.get_field()) for q in questions)
         fields["subject"] = request.subject
         fields["obj"] = obj
         kwargs["form"] = type(RegistrationParticipantAdminForm.__name__, (RegistrationParticipantAdminForm,), fields)
@@ -424,7 +424,7 @@ class SubjectRegistrationGroupInlineAdmin(admin.StackedInline):
 
     def get_formset(self, request, obj, **kwargs):
         questions = obj.all_questions if obj else request.subject.all_questions
-        fields = dict(("q_" + q.name, q.get_field()) for q in questions)
+        fields = dict(("q_" + q.slug, q.get_field()) for q in questions)
         fields["subject"] = request.subject
         fields["obj"] = obj
         kwargs["form"] = type(RegistrationGroupAdminForm.__name__, (RegistrationGroupAdminForm,), fields)

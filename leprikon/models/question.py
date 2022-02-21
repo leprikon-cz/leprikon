@@ -11,8 +11,9 @@ from ..utils import first_upper
 
 
 class Question(models.Model):
-    name = models.CharField(_("name"), max_length=50, unique=True)
-    question = models.CharField(_("question"), max_length=50)
+    name = models.CharField(_("name"), max_length=150)
+    slug = models.SlugField(_("unique identifier"), max_length=50, unique=True)
+    question = models.CharField(_("question"), max_length=150)
     help_text = models.TextField(
         _("help text"),
         blank=True,
@@ -34,11 +35,12 @@ class Question(models.Model):
 
     class Meta:
         app_label = "leprikon"
+        ordering = ("name",)
         verbose_name = _("additional question")
         verbose_name_plural = _("additional questions")
 
     def __str__(self):
-        return self.question
+        return self.name
 
     @cached_property
     def field_class(self):

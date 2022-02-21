@@ -8,3 +8,4 @@ from .filters import ActiveListFilter
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("name", "question", "field")
     list_filter = (ActiveListFilter,)
+    prepopulated_fields = {"slug": ("name",)}

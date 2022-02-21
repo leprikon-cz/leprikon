@@ -390,8 +390,8 @@ $(document).ready(function() {
             $('#id_{{ participant_form.prefix }}-school_class').val('');
             $('#id_{{ participant_form.prefix }}-health').val('');
             {% for question in participant_form.subject.all_questions %}
-            $('#id_{{ participant_form.prefix }}-questions-{{ question.name }}').val('');
-            $('#id_{{ participant_form.prefix }}-questions-{{ question.name }}').trigger('change');
+            $('#id_{{ participant_form.prefix }}-questions-{{ question.slug }}').val('');
+            $('#id_{{ participant_form.prefix }}-questions-{{ question.slug }}').trigger('change');
             {% endfor %}
         }{% for participant in participant_form.user_participants %} else if (this.value == {{ participant.id }}) {
             $('#id_{{ participant_form.prefix }}-first_name').val('{{ participant.first_name | escapejs }}');

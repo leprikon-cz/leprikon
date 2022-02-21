@@ -1235,7 +1235,7 @@ class QuestionsMixin:
         for q in self.registration.all_questions:
             yield {
                 "question": q.question,
-                "answer": answers.get(q.name, ""),
+                "answer": answers.get(q.slug, ""),
             }
 
 

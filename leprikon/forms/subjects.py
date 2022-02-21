@@ -396,7 +396,7 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         self.questions_form = type(
             str("QuestionsForm"),
             (FormMixin, forms.Form),
-            dict((q.name, q.get_field()) for q in self.subject.all_questions),
+            dict((q.slug, q.get_field()) for q in self.subject.all_questions),
         )(**kwargs)
 
     @cached_property
@@ -536,7 +536,7 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
         self.questions_form = type(
             str("QuestionsForm"),
             (FormMixin, forms.Form),
-            dict((q.name, q.get_field()) for q in self.subject.all_questions),
+            dict((q.slug, q.get_field()) for q in self.subject.all_questions),
         )(**kwargs)
 
     @cached_property
@@ -930,14 +930,14 @@ class RegistrationParticipantAdminForm(RegistrationParticipantFormMixin, SchoolA
         questions = self.obj.all_questions if self.obj else self.subject.all_questions
         answers = instance.get_answers() if instance else {}
         for q in questions:
-            self.fields["q_" + q.name].initial = answers.get(q.name)
+            self.fields["q_" + q.slug].initial = answers.get(q.slug)
 
         self._setup_required_fields()
 
     def save(self, commit=True):
         self.instance.answers = dumps(
             {
-                q.name: self.cleaned_data["q_" + q.name]
+                q.slug: self.cleaned_data["q_" + q.slug]
                 for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
             }
         )
@@ -957,12 +957,12 @@ class RegistrationGroupAdminForm(SchoolAdminMixin, forms.ModelForm):
         questions = self.obj.all_questions if self.obj else self.subject.all_questions
         answers = instance.get_answers() if instance else {}
         for q in questions:
-            self.fields["q_" + q.name].initial = answers.get(q.name)
+            self.fields["q_" + q.slug].initial = answers.get(q.slug)
 
     def save(self, commit=True):
         self.instance.answers = dumps(
             {
-                q.name: self.cleaned_data["q_" + q.name]
+                q.slug: self.cleaned_data["q_" + q.slug]
                 for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
             }
         )
