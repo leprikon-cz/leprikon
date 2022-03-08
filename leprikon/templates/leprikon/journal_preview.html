@@ -31,6 +31,7 @@
         </p>
         {% endif %}
 
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
             <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:journal' object.id %}">
                 {% trans 'journal' %}
@@ -40,5 +41,6 @@
                 {% trans 'add journal entry' %}
             </a>
         </div>
+        {% endif %}
     </div>
 </div>
