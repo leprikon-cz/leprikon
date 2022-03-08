@@ -3,6 +3,7 @@
 <div class="box">
     <div class="box-header">
         <strong>{{ object }}</strong>
+        {% if request.user.is_staff or request.leader in object.all_leaders %}
         <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:journal_update' object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}
@@ -12,6 +13,7 @@
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
             {% trans 'delete' %}
         </a>
+        {% endif %}
         {% endif %}
     </div>
 
