@@ -1,5 +1,6 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from datetime import timedelta
+from functools import lru_cache
 
 from django.db.models import Sum
 from django.template.response import TemplateResponse
@@ -117,9 +118,11 @@ class ReportCourseStatsView(FormView):
             )
         return cache[id]
 
+    @lru_cache
     def get_journal_delta(self, journal_id):
         return self.get_delta(self._journal_deltas, JournalTime, journal_id=journal_id)
 
+    @lru_cache
     def get_subject_delta(self, subject_id):
         return self.get_delta(self._subject_deltas, SubjectTime, subject_id=subject_id)
 
@@ -131,46 +134,65 @@ class ReportCourseStatsView(FormView):
     def form_valid(self, form):
         d = form.cleaned_data["date"]
         paid_only = form.cleaned_data["paid_only"]
+        paid_later = form.cleaned_data["paid_later"]
+        approved_later = form.cleaned_data["approved_later"]
         unique_participants = form.cleaned_data["unique_participants"]
+        max_weekly_hours = form.cleaned_data["max_weekly_hours"]
         context = form.cleaned_data
         context["form"] = form
 
-        participants = (
-            SubjectRegistrationParticipant.objects.filter(
-                registration__subject__in=form.cleaned_data["courses"],
+        if approved_later:
+            # approved registrations created by the date
+            participants = SubjectRegistrationParticipant.objects.filter(
+                registration__created__date__lte=d,
+                registration__approved__isnull=False,
+            )
+        else:
+            # registrations approved by the date
+            participants = SubjectRegistrationParticipant.objects.filter(
                 registration__approved__date__lte=d,
+            )
+        participants = (
+            participants.filter(
+                registration__subject__in=form.cleaned_data["courses"],
             )
             .exclude(registration__canceled__date__lte=d)
             .select_related("registration", "age_group")
         )
         if paid_only:
+            paid_date = None if paid_later else d
             participants = [
                 participant
                 for participant in participants
-                if participant.registration.courseregistration.get_payment_status(d).amount_due == 0
+                if participant.registration.courseregistration.get_payment_status(paid_date).amount_due == 0
             ]
         else:
             participants = list(participants)
 
         context["courses_count"] = len(set(participant.registration.subject_id for participant in participants))
+
+        weekly_delta_by_participant = defaultdict(timedelta)
+        for participant in participants:
+            weekly_delta_by_participant[participant.key] += sum(
+                (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
+                start=timedelta(0),
+            ) or self.get_subject_delta(participant.registration.subject_id)
+
         delta = sum(
-            (
-                sum(
-                    (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
-                    start=timedelta(0),
-                )
-                or self.get_subject_delta(participant.registration.subject_id)
-                for participant in participants
-            ),
+            weekly_delta_by_participant.values(),
             start=timedelta(0),
         )
         context["participant_hours_count"] = delta.days * 24 + delta.seconds / 3600
 
-        if unique_participants:
-            participants_by_name_and_birth_date = {
-                (p.first_name.lower(), p.last_name.lower(), p.birth_date): p for p in participants
-            }
-            participants = list(participants_by_name_and_birth_date.values())
+        if unique_participants or max_weekly_hours:
+            participants_by_key = {p.key: p for p in participants}
+            if max_weekly_hours:
+                max_weekly_delta = timedelta(hours=max_weekly_hours)
+                participants = list(
+                    p for p in participants_by_key.values() if weekly_delta_by_participant[p.key] <= max_weekly_delta
+                )
+            else:
+                participants = list(participants_by_key.values())
 
         citizenships = list(Citizenship.objects.all())
         context["citizenships"] = citizenships

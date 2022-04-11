@@ -64,13 +64,10 @@ class Course(Subject):
         new.evaluation = ""
         new.note = ""
         year_delta = school_year.year - old.school_year.year
-        new.school_year_division = (
-            SchoolYearDivision.objects.filter(
-                school_year=school_year,
-                name=old.school_year_division.name,
-            ).first()
-            or old.school_year_division.copy_to_school_year(school_year)
-        )
+        new.school_year_division = SchoolYearDivision.objects.filter(
+            school_year=school_year,
+            name=old.school_year_division.name,
+        ).first() or old.school_year_division.copy_to_school_year(school_year)
         new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
         new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
         new.save()

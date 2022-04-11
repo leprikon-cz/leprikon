@@ -21,7 +21,14 @@ class CourseStatsForm(FormMixin, forms.Form):
         label=_("Courses"),
     )
     paid_only = forms.BooleanField(label=_("Count only paid registrations"), required=False)
+    paid_later = forms.BooleanField(label=_("Count registrations paid later"), required=False)
+    approved_later = forms.BooleanField(label=_("Count registrations approved later"), required=False)
     unique_participants = forms.BooleanField(label=_("Count only unique participants"), required=False)
+    max_weekly_hours = forms.FloatField(
+        label=_("Maximal number of weekly hours"),
+        help_text=_("Count only participants attending at most this number of hours weekly."),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         school_year = kwargs.pop("school_year")

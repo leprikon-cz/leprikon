@@ -1,4 +1,5 @@
 from collections import namedtuple
+from functools import lru_cache
 
 from django.db.models import Sum
 from django.template.response import TemplateResponse
@@ -100,6 +101,11 @@ class ReportEventStatsView(FormView):
 
     ReportItem = namedtuple("ReportItem", ("age_group", "all", "boys", "girls", "citizenships"))
 
+    @lru_cache
+    def get_event_days(self, event_id):
+        event = Event.objects.get(id=event_id)
+        return (event.end_date - event.start_date).days + 1
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["school_year"] = self.request.school_year
@@ -108,34 +114,48 @@ class ReportEventStatsView(FormView):
     def form_valid(self, form):
         d = form.cleaned_data["date"]
         paid_only = form.cleaned_data["paid_only"]
+        paid_later = form.cleaned_data["paid_later"]
+        approved_later = form.cleaned_data["approved_later"]
         unique_participants = form.cleaned_data["unique_participants"]
+        min_days = form.cleaned_data["min_days"]
         context = form.cleaned_data
         context["form"] = form
 
-        participants = (
-            SubjectRegistrationParticipant.objects.filter(
-                registration__subject__in=form.cleaned_data["events"],
+        if approved_later:
+            # approved registrations created by the date
+            participants = SubjectRegistrationParticipant.objects.filter(
+                registration__created__date__lte=d,
+                registration__approved__isnull=False,
+            )
+        else:
+            # registrations approved by the date
+            participants = SubjectRegistrationParticipant.objects.filter(
                 registration__approved__date__lte=d,
+            )
+        participants = (
+            participants.filter(
+                registration__subject__in=form.cleaned_data["events"],
             )
             .exclude(registration__canceled__date__lte=d)
             .select_related("registration", "age_group")
         )
         if paid_only:
+            paid_date = None if paid_later else d
             participants = [
                 participant
                 for participant in participants
-                if participant.registration.eventregistration.get_payment_status(d).balance >= 0
+                if participant.registration.eventregistration.get_payment_status(paid_date).balance >= 0
             ]
         else:
             participants = list(participants)
 
+        if min_days:
+            participants = [p for p in participants if self.get_event_days(p.registration.subject_id) >= min_days]
+
         context["events_count"] = len(set(participant.registration.subject_id for participant in participants))
 
         if unique_participants:
-            participants_by_name_and_birth_date = {
-                (p.first_name.lower(), p.last_name.lower(), p.birth_date): p for p in participants
-            }
-            participants = list(participants_by_name_and_birth_date.values())
+            participants = list({p.key: p for p in participants}.values())
 
         citizenships = list(Citizenship.objects.all())
         context["citizenships"] = citizenships

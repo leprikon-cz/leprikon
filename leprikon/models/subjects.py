@@ -1327,6 +1327,10 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         )
 
     @cached_property
+    def key(self):
+        return (self.first_name.lower(), self.last_name.lower(), self.birth_date)
+
+    @cached_property
     def parents(self):
         return list(p for p in [self.parent1, self.parent2] if p is not None)
 
