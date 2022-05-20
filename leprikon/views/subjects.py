@@ -74,6 +74,15 @@ class SubjectListBaseView(FilteredListView):
     paginate_by = 10
 
     def get_title(self):
+        if self.subject_type.subject_type == SubjectType.EVENT:
+            if self.request.GET.get("past"):
+                return _("Past {subject_type} in school year {school_year}").format(
+                    subject_type=self.subject_type.plural,
+                    school_year=self.request.school_year,
+                )
+            return _("Oncoming {subject_type}").format(
+                subject_type=self.subject_type.plural,
+            )
         return _("{subject_type} in school year {school_year}").format(
             subject_type=self.subject_type.plural,
             school_year=self.request.school_year,

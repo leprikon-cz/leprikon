@@ -58,7 +58,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
     days_of_week = forms.MultipleChoiceField(
         label=_("Day of week"), choices=tuple(sorted(DAY_OF_WEEK.items())), required=False
     )
-    past = forms.BooleanField(label=_("Include past subjects"), required=False)
+    past = forms.BooleanField(label=_("Show past"), required=False)
     reg_active = forms.BooleanField(label=_("Available for registration"), required=False)
     invisible = forms.BooleanField(label=_("Show invisible"), required=False)
 
@@ -73,7 +73,9 @@ class SubjectFilterForm(FormMixin, forms.Form):
         self.subject_type_type = subject_type_type
 
         # pre filter subjects by initial params
-        qs = self._models[subject_type_type].objects.filter(school_year=school_year)
+        qs = self._models[subject_type_type].objects
+        if subject_type_type != SubjectType.EVENT or data.get("past"):
+            qs = qs.filter(school_year=school_year)
         if len(subject_types) == 1:
             qs = qs.filter(subject_type=subject_types[0])
         else:
@@ -166,8 +168,11 @@ class SubjectFilterForm(FormMixin, forms.Form):
             qs = qs.filter(target_groups__in=self.cleaned_data["target_groups"])
         if self.cleaned_data.get("days_of_week"):
             qs = qs.filter(times__day_of_week__in=self.cleaned_data["days_of_week"])
-        if self.subject_type_type == SubjectType.EVENT and not self.cleaned_data["past"]:
-            qs = qs.filter(end_date__gte=now())
+        if self.subject_type_type == SubjectType.EVENT:
+            if self.cleaned_data["past"]:
+                qs = qs.filter(end_date__lte=now()).order_by("-start_date", "-start_time")
+            else:
+                qs = qs.filter(end_date__gte=now())
         if self.cleaned_data["reg_active"]:
             qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now()).exclude(price=None)
         return qs.distinct()
