@@ -389,6 +389,7 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SUBJECT_PREFIX", "[Leprikón] ").strip() + " "
 EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "").lower() in ("y", "yes", "t", "true", "1", "on")
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # CMS configuration
 # http://djangocms.readthedocs.io/en/latest/reference/configuration/
