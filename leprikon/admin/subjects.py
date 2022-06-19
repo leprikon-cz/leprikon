@@ -41,7 +41,7 @@ from ..models.subjects import (
     SubjectVariant,
 )
 from ..models.utils import lazy_help_text_with_html_default
-from ..utils import amount_color, currency
+from ..utils import amount_color, attributes, currency
 from .bulkupdate import BulkUpdateMixin
 from .export import AdminExportMixin
 from .filters import (
@@ -258,6 +258,7 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         obj.school_year = request.school_year
         return obj
 
+    @attributes(allow_tags=True, short_description=_("journals"))
     def journals_link(self, obj):
         return format_html(
             '<a href="{url}">{journals}</a>',
@@ -271,12 +272,10 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
             icon=static("admin/img/icon-addlink.svg"),
         )
 
-    journals_link.short_description = _("journal")
-    journals_link.allow_tags = True
-
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_subjectregistrations__subject__in=queryset).distinct()
 
+    @attributes(allow_tags=True, short_description=_("registrations"))
     def get_registrations_link(self, obj):
         icon = False
         approved_registrations_count = obj.approved_registrations.count()
@@ -318,34 +317,24 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
             icon=static("admin/img/icon-addlink.svg"),
         )
 
-    get_registrations_link.short_description = _("registrations")
-    get_registrations_link.allow_tags = True
-
+    @attributes(short_description=_("registration allowed"))
     def registration_allowed_icon(self, obj):
         return _boolean_icon(obj.registration_allowed)
 
-    registration_allowed_icon.short_description = _("registration allowed")
-
+    @attributes(short_description=_("approved registrations count"))
     def get_approved_registrations_count(self, obj):
         return obj.registrations.filter(canceled=None).exclude(approved=None).count()
 
-    get_approved_registrations_count.short_description = _("approved registrations count")
-    get_approved_registrations_count.admin_order_field = "approved registrations_count"
-
+    @attributes(short_description=_("unapproved registrations count"))
     def get_unapproved_registrations_count(self, obj):
         return obj.registrations.filter(canceled=None, approved=None).count()
 
-    get_unapproved_registrations_count.short_description = _("unapproved registrations count")
-    get_unapproved_registrations_count.admin_order_field = "unapproved registrations_count"
-
+    @attributes(allow_tags=True, short_description=_("photo"))
     def icon(self, obj):
         try:
             return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
         except (AttributeError, KeyError):
             return ""
-
-    icon.allow_tags = True
-    icon.short_description = _("photo")
 
 
 class ChangeformRedirectMixin:
@@ -387,14 +376,12 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
     def has_add_permission(self, request):
         return False
 
+    @attributes(allow_tags=True, short_description=_("photo"))
     def icon(self, obj):
         try:
             return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
         except (AttributeError, KeyError):
             return ""
-
-    icon.allow_tags = True
-    icon.short_description = _("photo")
 
 
 class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
@@ -651,6 +638,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
             )
         )
 
+    @attributes(short_description=_("Approve selected registrations"))
     def approve(self, request, queryset):
         for registration in queryset.all():
             try:
@@ -663,8 +651,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     _("The registration {r} has been approved and the user has been notified.").format(r=registration),
                 )
 
-    approve.short_description = _("Approve selected registrations")
-
+    @attributes(short_description=_("Refuse selected registrations"))
     def refuse(self, request, queryset):
         for registration in queryset.all():
             try:
@@ -677,36 +664,31 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     _("The registration {r} has been refused and the user has been notified.").format(r=registration),
                 )
 
-    refuse.short_description = _("Refuse selected registrations")
-
+    @attributes(short_description=_("Request payment for selected registrations"))
     def request_payment(self, request, queryset):
         for registration in queryset.all():
             registration.request_payment(request.user)
         self.message_user(request, _("Payment was requested for selected registrations."))
 
-    request_payment.short_description = _("Request payment for selected registrations")
-
+    @attributes(short_description=_("Offer refund for selected registrations"))
     def offer_refund(self, request, queryset):
         for registration in queryset.all():
             registration.offer_refund(request.user)
         self.message_user(request, _("Refund was offered for selected registrations."))
 
-    offer_refund.short_description = _("Offer refund for selected registrations")
-
+    @attributes(short_description=_("Generate refund requests for selected registrations"))
     def generate_refund_request(self, request, queryset):
         for registration in queryset.filter(refund_request__bank_account=None):
             registration.generate_refund_request(request.user)
         self.message_user(request, _("Refund requests were generated for selected registrations."))
 
-    generate_refund_request.short_description = _("Generate refund requests for selected registrations")
-
+    @attributes(short_description=_("Export selected registrations as invoices in XML"))
     def export_invoices_xml(self, request, queryset):
         response = SimpleTemplateResponse("leprikon/invoices.xml", {"registrations": queryset}, content_type="text/xml")
         response["Content-Disposition"] = 'attachment; filename="invoices.xml"'
         return response
 
-    export_invoices_xml.short_description = _("Export selected registrations as invoices in XML")
-
+    @attributes(short_description=_("Cancel selected registrations"))
     def cancel(self, request, queryset):
         for registration in queryset.all():
             try:
@@ -719,13 +701,10 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     _("The registration {r} has been canceled and the user has been notified.").format(r=registration),
                 )
 
-    cancel.short_description = _("Cancel selected registrations")
-
+    @attributes(short_description=_("Cancel cancelation request for selected registrations"))
     def cancel_cancelation_request(self, request, queryset):
         queryset.update(cancelation_requested=None, cancelation_requested_by=None)
         self.message_user(request, _("The cancelation requests have been removed from selected registrations."))
-
-    cancel_cancelation_request.short_description = _("Cancel cancelation request for selected registrations")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -820,10 +799,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         ("reg-approved", _("approved registration")),
     )
 
+    @attributes(short_description=_("subject"))
     def subject_name(self, obj):
         return obj.subject.name
-
-    subject_name.short_description = _("subject")
 
     def _datetime_with_by(self, obj, attr):
         d = getattr(obj, attr)
@@ -848,12 +826,11 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_registrations__in=queryset).distinct()
 
+    @attributes(admin_order_field="random_number", short_description=_("random number"))
     def random_number(self, obj):
         return int(obj.random_number * 1000000000000)
 
-    random_number.admin_order_field = "random_number"
-    random_number.short_description = _("random number")
-
+    @attributes(allow_tags=True, short_description=_("received payments"))
     def received_payments(self, obj: SubjectRegistration):
         return format_html(
             '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
@@ -868,9 +845,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
             title_add=_("add received payment"),
         )
 
-    received_payments.allow_tags = True
-    received_payments.short_description = _("received payments")
-
+    @attributes(allow_tags=True, short_description=_("returned payments"))
     def returned_payments(self, obj: SubjectRegistration):
         return format_html(
             '<a href="{href_list}"><b>{amount}</b></a>'
@@ -883,13 +858,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
             title_add=_("add returned payment"),
         )
 
-    returned_payments.allow_tags = True
-    returned_payments.short_description = _("returned payments")
-
+    @attributes(short_description=_("total price"))
     def total_price(self, obj: SubjectRegistration):
         return currency(obj.payment_status.receivable)
-
-    total_price.short_description = _("total price")
 
 
 @admin.register(SubjectRegistration)
@@ -959,10 +930,9 @@ class SubjectDiscountBaseAdmin(TransactionAdminMixin, AdminExportMixin, admin.Mo
     raw_id_fields = ("registration",)
     closed_fields = ("accounted", "registration", "amount")
 
+    @attributes(short_description=_("subject"))
     def subject(self, obj):
         return obj.registration.subject
-
-    subject.short_description = _("subject")
 
     list_export = (
         "id",
@@ -1005,10 +975,9 @@ class SubjectPaymentAdminMixin:
         "note",
     )
 
+    @attributes(short_description=_("variable symbol"))
     def variable_symbol(self, obj):
         return obj.registration.variable_symbol
-
-    variable_symbol.short_description = _("variable symbol")
 
 
 @admin.register(SubjectReceivedPayment)
@@ -1058,13 +1027,10 @@ class SubjectReturnedPaymentAdmin(SubjectPaymentAdminMixin, TransactionBaseAdmin
         form.base_fields["source_registration"].required = True
         return form
 
+    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
             color=amount_color(-obj.amount),
             amount=currency(obj.amount),
         )
-
-    amount_html.short_description = _("amount")
-    amount_html.admin_order_field = "amount"
-    amount_html.allow_tags = True

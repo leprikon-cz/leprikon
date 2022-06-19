@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from ..utils import attributes
+
 
 def get_attr_value(obj, name):
     value = getattr(obj, name)
@@ -99,6 +101,7 @@ class AdminExportMixin:
                 values.append(value)
             yield values
 
+    @attributes(short_description=_("Export selected records as CSV"))
     def export_as_csv(self, request, queryset):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}.csv"'.format(self.model._meta.model_name)
@@ -107,12 +110,9 @@ class AdminExportMixin:
         csv.writer(response).writerows(data)
         return response
 
-    export_as_csv.short_description = _("Export selected records as CSV")
-
+    @attributes(short_description=_("Export selected records as XLSX"))
     def export_as_xlsx(self, request, queryset):
         data = self.get_export_data(request, queryset)
         response = django_excel.make_response(django_excel.pe.Sheet(data), "xlsx")
         response["Content-Disposition"] = 'attachment; filename="{}.xlsx"'.format(self.model._meta.model_name)
         return response
-
-    export_as_xlsx.short_description = _("Export selected records as XLSX")

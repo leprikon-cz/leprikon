@@ -7,6 +7,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
+from ..utils import attributes
 from .pdfmail import PdfExportAndMailMixin
 from .roles import Leader
 from .startend import StartEndMixin
@@ -178,14 +179,13 @@ class JournalEntry(StartEndMixin, models.Model):
         except TypeError:
             return None
 
+    @attributes(short_description=_("duration"))
     @cached_property
     def duration(self):
         try:
             return self.datetime_end - self.datetime_start
         except TypeError:
             return timedelta()
-
-    duration.short_description = _("duration")
 
     @cached_property
     def all_participants(self):
@@ -262,24 +262,20 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
     def __str__(self):
         return f"{self.journal_entry}"
 
+    @attributes(admin_order_field="journal_entry__date", short_description=_("date"))
     @cached_property
     def date(self):
         return self.journal_entry.date
 
-    date.short_description = _("date")
-    date.admin_order_field = "journal_entry__date"
-
+    @attributes(short_description=_("journal"))
     @cached_property
     def journal(self):
         return self.journal_entry.journal
 
-    journal.short_description = _("journal")
-
+    @attributes(short_description=_("subject"))
     @cached_property
     def subject(self):
         return self.journal_entry.journal.subject
-
-    subject.short_description = _("subject")
 
     @cached_property
     def datetime_start(self):
@@ -289,11 +285,10 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
     def datetime_end(self):
         return datetime.combine(self.date, self.end)
 
+    @attributes(short_description=_("duration"))
     @cached_property
     def duration(self):
         return self.datetime_end - self.datetime_start
-
-    duration.short_description = _("duration")
 
     @property
     def group(self):

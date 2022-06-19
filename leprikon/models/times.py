@@ -6,7 +6,7 @@ from django.utils.encoding import force_text
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ..utils import comma_separated
+from ..utils import attributes, comma_separated
 from .fields import DAY_OF_WEEK, DayOfWeekField
 from .startend import StartEndMixin
 
@@ -79,10 +79,9 @@ class TimesMixin:
     def all_times(self):
         return list(self.times.all())
 
+    @attributes(short_description=_("times"))
     def get_times_list(self):
         return comma_separated(self.all_times)
-
-    get_times_list.short_description = _("times")
 
     def get_next_time(self, now=None):
         try:

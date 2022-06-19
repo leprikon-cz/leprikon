@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..models.leprikonsite import LeprikonSite
 from ..models.refundrequest import RefundRequest
 from ..models.utils import BankAccount
-from ..utils import amount_color, ascii, currency
+from ..utils import amount_color, ascii, attributes, currency
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
 from .utils import datetime_with_by
@@ -57,26 +57,21 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     )
     raw_id_fields = ("registration",)
 
+    @attributes(short_description=_("IBAN"))
     def iban(self, obj):
         return obj.bank_account.compact
 
-    iban.short_description = _("IBAN")
-
+    @attributes(short_description=_("BIC (SWIFT)"))
     def bic(self, obj):
         return obj.bank_account.bic
 
-    bic.short_description = _("BIC (SWIFT)")
-
+    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
             color=amount_color(obj.amount),
             amount=currency(abs(obj.amount)),
         )
-
-    amount_html.short_description = _("amount")
-    amount_html.admin_order_field = "amount"
-    amount_html.allow_tags = True
 
     requested_with_by = datetime_with_by("requested", _("requested time"))
 
@@ -85,6 +80,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
             obj.requested_by = request.user
         super().save_model(request, obj, form, change)
 
+    @attributes(short_description=_("Export selected records as ABO"))
     def export_as_abo(self, request, queryset):
         class AccountForm(forms.Form):
             account = forms.ModelChoiceField(label=Account._meta.verbose_name, queryset=Account.objects.all())
@@ -175,5 +171,3 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         response.write("\r\n".join(lines).encode("ascii", errors="ignore"))
 
         return response
-
-    export_as_abo.short_description = _("Export selected records as ABO")

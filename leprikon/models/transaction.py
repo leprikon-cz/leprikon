@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_pays.models import Payment as PaysPayment
 
 from ..conf import settings
-from ..utils import currency
+from ..utils import attributes, currency
 from .fields import PriceField
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
@@ -241,11 +241,10 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
     def __str__(self):
         return f"{self.transaction_type_label} {currency(self.amount)}"
 
+    @attributes(short_description=_("payment type"))
     @cached_property
     def transaction_type_label(self):
         return self.TRANSACTION_TYPE_LABELS.get(self.transaction_type, "-")
-
-    transaction_type_label.short_description = _("payment type")
 
     def get_absolute_url(self):
         return reverse(f"leprikon:{self.object_name}_pdf", kwargs={"pk": self.pk, "slug": f"{self.slug}"})

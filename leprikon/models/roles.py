@@ -14,6 +14,7 @@ from filer.fields.image import FilerImageField
 
 from ..conf import settings
 from ..forms.leaders import LeaderFilterForm
+from ..utils import attributes
 from .agegroup import AgeGroup
 from .citizenship import Citizenship
 from .fields import BirthNumberField, EmailField, PostalCodeField
@@ -237,11 +238,10 @@ class BillingInfo(models.Model):
     def __str__(self):
         return self.name
 
+    @attributes(short_description=_("address"))
     @cached_property
     def address(self):
         return ", ".join(filter(bool, (self.street, self.city, self.postal_code)))
-
-    address.short_description = _("address")
 
 
 class LeaderPlugin(CMSPlugin):

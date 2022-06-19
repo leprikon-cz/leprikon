@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
-from ..utils import currency
+from ..utils import attributes, currency
 from .pdf import PdfExportAdminMixin
 from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
@@ -74,18 +74,17 @@ class EventAdmin(SubjectBaseAdmin):
         "copy_to_school_year",
     )
 
+    @attributes(short_description=_("Publish selected events"))
     def publish(self, request, queryset):
         Event.objects.filter(id__in=[reg["id"] for reg in queryset.values("id")]).update(public=True)
         self.message_user(request, _("Selected events were published."))
 
-    publish.short_description = _("Publish selected events")
-
+    @attributes(short_description=_("Unpublish selected events"))
     def unpublish(self, request, queryset):
         Event.objects.filter(id__in=[reg["id"] for reg in queryset.values("id")]).update(public=False)
         self.message_user(request, _("Selected events were unpublished."))
 
-    unpublish.short_description = _("Unpublish selected events")
-
+    @attributes(short_description=_("Copy selected events to another school year"))
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
             school_year = forms.ModelChoiceField(
@@ -128,8 +127,6 @@ class EventAdmin(SubjectBaseAdmin):
             ),
         )
 
-    copy_to_school_year.short_description = _("Copy selected events to another school year")
-
     def get_message_recipients(self, request, queryset):
         return (
             get_user_model()
@@ -145,6 +142,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.EVENT
     actions = ("add_discounts",)
 
+    @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):
         ABSOLUTE = "A"
         RELATIVE = "R"
@@ -203,8 +201,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             ),
         )
 
-    add_discounts.short_description = _("Add discounts to selected registrations")
-
+    @attributes(allow_tags=True, short_description=_("discounts"))
     def discounts(self, obj: EventRegistration):
         return format_html(
             '<a href="{href_list}"><b>{amount}</b></a>'
@@ -216,9 +213,6 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             icon_add=static("admin/img/icon-addlink.svg"),
             title_add=_("add discount"),
         )
-
-    discounts.allow_tags = True
-    discounts.short_description = _("discounts")
 
 
 @admin.register(EventDiscount)

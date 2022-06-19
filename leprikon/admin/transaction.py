@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.transaction import Transaction
-from ..utils import amount_color, currency
+from ..utils import amount_color, attributes, currency
 from .export import AdminExportMixin
 from .pdf import PdfExportAdminMixin
 from .sendmail import SendMailAdminMixin
@@ -92,16 +92,13 @@ class TransactionAdminMixin:
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
+    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
     def amount_html(self, obj):
         return format_html(
             '<b style="color: {color}">{amount}</b>',
             color=amount_color(obj.amount),
             amount=currency(abs(obj.amount)),
         )
-
-    amount_html.short_description = _("amount")
-    amount_html.admin_order_field = "amount"
-    amount_html.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         if change:

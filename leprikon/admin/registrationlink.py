@@ -16,6 +16,7 @@ from ..models.events import EventRegistration
 from ..models.orderables import OrderableRegistration
 from ..models.registrationlink import RegistrationLink
 from ..models.subjects import SubjectType
+from ..utils import attributes
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter, SubjectTypeListFilter
 
@@ -108,14 +109,12 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
                 except IntegrityError:
                     pass
 
+    @attributes(allow_tags=True, short_description=_("registration link"))
     def get_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{url}</a>'.format(
             url=obj.link,
             title=_("registration link"),
         )
-
-    get_link.short_description = _("registration link")
-    get_link.allow_tags = True
 
     def get_queryset(self, request):
         return (
@@ -125,6 +124,7 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
             .annotate(registrations_count=Count("registrations"))
         )
 
+    @attributes(allow_tags=True, short_description=_("registrations"))
     def get_registrations_link(self, obj):
         registration_model = self._registration_models[obj.subject_type.subject_type]
         return format_html(
@@ -138,6 +138,3 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
             + "?registration_link__id__exact={}".format(obj.id),
             count=obj.registrations_count,
         )
-
-    get_registrations_link.short_description = _("registrations")
-    get_registrations_link.allow_tags = True

@@ -9,6 +9,8 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from sentry_sdk import capture_exception
 
+from ..utils import attributes
+
 
 class BulkUpdateMixin:
     actions = ("bulk_update",)
@@ -38,6 +40,7 @@ class BulkUpdateMixin:
             },
         )
 
+    @attributes(short_description=_("Bulk update selected items"))
     def bulk_update(self, request, queryset):
         phase = request.POST.get("phase")
         hidden_fields = []
@@ -93,5 +96,3 @@ class BulkUpdateMixin:
                 "hidden_fields": hidden_fields,
             },
         )
-
-    bulk_update.short_description = _("Bulk update selected items")

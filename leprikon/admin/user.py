@@ -12,7 +12,7 @@ from sentry_sdk import capture_exception
 from user_unique_email.admin import UserAdmin as _UserAdmin
 
 from ..forms.user import PasswordResetForm, UserAdminChangeForm, UserAdminCreateForm
-from ..utils import merge_users
+from ..utils import attributes, merge_users
 from .export import AdminExportMixin
 from .messages import SendMessageAdminMixin
 
@@ -57,6 +57,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
     form = UserAdminChangeForm
     list_filter = _UserAdmin.list_filter + (IsLeaderListFilter,)
 
+    @attributes(short_description=_("Merge selected user accounts"))
     def merge(self, request, queryset):
         class MergeForm(forms.Form):
             target = forms.ModelChoiceField(
@@ -100,8 +101,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             },
         )
 
-    merge.short_description = _("Merge selected user accounts")
-
+    @attributes(short_description=_("Send instructions to reset password to selected users"))
     def reset_password(self, request, queryset):
         form = PasswordResetForm()
         for user in queryset.all():
@@ -112,8 +112,6 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             except Exception:
                 capture_exception()
                 self.message_user(request, _("Can not send instructions to user {}.").format(user), level=ERROR)
-
-    reset_password.short_description = _("Send instructions to reset password to selected users")
 
     def get_list_display(self, request):
         list_display = ["id"] + list(super().get_list_display(request))
@@ -152,6 +150,7 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         login(request, user)
         return HttpResponseRedirect(reverse("leprikon:summary"))
 
+    @attributes(allow_tags=True, short_description=_("login"))
     def login_as_link(self, obj):
         return (
             '<a href="{url}">{text}</a>'.format(
@@ -162,17 +161,12 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             else ""
         )
 
-    login_as_link.allow_tags = True
-    login_as_link.short_description = _("login")
-
+    @attributes(allow_tags=True, short_description=_("login"))
     def login_as_link_superuser(self, obj):
         return '<a href="{url}">{text}</a>'.format(
             url=reverse(f"admin:{User._meta.app_label}_{User._meta.model_name}_login_as", args=[obj.id]),
             text=_("login"),
         )
-
-    login_as_link_superuser.allow_tags = True
-    login_as_link_superuser.short_description = _("login")
 
     def get_message_recipients(self, request, queryset):
         return queryset.all()

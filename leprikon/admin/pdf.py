@@ -7,11 +7,14 @@ from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
+from ..utils import attributes
+
 
 class PdfExportAdminMixin:
     actions = ("export_pdf",)
     pdf_event = "pdf"
 
+    @attributes(short_description=_("Export selected items in single PDF"))
     def export_pdf(self, request, queryset):
         # create PDF
         writer = PdfFileWriter()
@@ -34,8 +37,6 @@ class PdfExportAdminMixin:
 
         return response
 
-    export_pdf.short_description = _("Export selected items in single PDF.")
-
     def get_urls(self):
         urls = super().get_urls()
         return [
@@ -56,6 +57,7 @@ class PdfExportAdminMixin:
         # write PDF to response
         return obj.write_pdf(self.pdf_event, response)
 
+    @attributes(allow_tags=True, short_description=_("download"))
     def download_tag(self, obj):
         return '<a href="{}">PDF</a>'.format(
             reverse(
@@ -63,6 +65,3 @@ class PdfExportAdminMixin:
                 args=(obj.id,),
             )
         )
-
-    download_tag.short_description = _("download")
-    download_tag.allow_tags = True

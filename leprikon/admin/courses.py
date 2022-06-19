@@ -13,7 +13,7 @@ from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
 from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
-from ..utils import currency
+from ..utils import attributes, currency
 from .pdf import PdfExportAdminMixin
 from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
@@ -81,18 +81,17 @@ class CourseAdmin(SubjectBaseAdmin):
             form.base_fields["school_year_division"].choices = school_year_division_choices
         return form
 
+    @attributes(short_description=_("Publish selected courses"))
     def publish(self, request, queryset):
         Course.objects.filter(id__in=[reg["id"] for reg in queryset.values("id")]).update(public=True)
         self.message_user(request, _("Selected courses were published."))
 
-    publish.short_description = _("Publish selected courses")
-
+    @attributes(short_description=_("Unpublish selected courses"))
     def unpublish(self, request, queryset):
         Course.objects.filter(id__in=[reg["id"] for reg in queryset.values("id")]).update(public=False)
         self.message_user(request, _("Selected courses were unpublished."))
 
-    unpublish.short_description = _("Unpublish selected courses")
-
+    @attributes(short_description=_("Copy selected courses to another school year"))
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
             school_year = forms.ModelChoiceField(
@@ -135,8 +134,6 @@ class CourseAdmin(SubjectBaseAdmin):
             ),
         )
 
-    copy_to_school_year.short_description = _("Copy selected courses to another school year")
-
     def get_message_recipients(self, request, queryset):
         return (
             get_user_model()
@@ -175,6 +172,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         )
 
+    @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):
         ABSOLUTE = "A"
         RELATIVE = "R"
@@ -273,8 +271,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             ),
         )
 
-    add_discounts.short_description = _("Add discounts to selected registrations")
-
+    @attributes(allow_tags=True, short_description=_("discounts"))
     def discounts(self, obj: CourseRegistration):
         html = []
         for status in obj.period_payment_statuses:
@@ -296,9 +293,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return "<br/>".join(html)
 
-    discounts.allow_tags = True
-    discounts.short_description = _("discounts")
-
+    @attributes(allow_tags=True, short_description=_("total price"))
     def total_price(self, obj: CourseRegistration):
         html = []
         for status in obj.period_payment_statuses:
@@ -311,9 +306,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return "<br/>".join(html)
 
-    total_price.allow_tags = True
-    total_price.short_description = _("total price")
-
+    @attributes(allow_tags=True, short_description=_("received payments"))
     def received_payments(self, obj: CourseRegistration):
         html = []
         for period in obj.period_payment_statuses:
@@ -335,9 +328,6 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                 )
             )
         return "<br/>".join(html)
-
-    received_payments.allow_tags = True
-    received_payments.short_description = _("received payments")
 
 
 @admin.register(CourseDiscount)

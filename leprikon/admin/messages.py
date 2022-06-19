@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.messages import MessageAdminForm
 from ..models.messages import Message, MessageAttachment, MessageRecipient
+from ..utils import attributes
 
 
 def messagerecipient_send_mails(request, message, recipients, media):
@@ -32,13 +33,13 @@ class SendMessageAdminMixin(object):
     def get_message_recipients(self, request, queryset):
         raise NotImplementedError("{} must implement method get_message_recipients".format(self.__class__.__name__))
 
+    @attributes(short_description=_("Send message"))
     def send_message(self, request, queryset):
         request.method = "GET"
         request.leprikon_message_recipients = [r.id for r in self.get_message_recipients(request, queryset)]
         return admin.site._registry[Message].changeform_view(request, form_url=reverse("admin:leprikon_message_add"))
 
-    send_message.short_description = _("Send message")
-
+    @attributes(short_description=_("Add recipients to existing message"))
     def add_to_message(self, request, queryset):
         class MessageForm(forms.Form):
             message = forms.ModelChoiceField(
@@ -70,8 +71,6 @@ class SendMessageAdminMixin(object):
             },
         )
 
-    add_to_message.short_description = _("Add recipients to existing message")
-
 
 class MessageAttachmentInlineAdmin(admin.TabularInline):
     model = MessageAttachment
@@ -93,6 +92,7 @@ class MessageAdmin(admin.ModelAdmin):
             pass
         return initial
 
+    @attributes(allow_tags=True, short_description=_("recipients"))
     def recipients(self, obj):
         return (
             '<a href="{recipients_url}">'
@@ -110,9 +110,7 @@ class MessageAdmin(admin.ModelAdmin):
             viewed_count=obj.recipients.exclude(viewed=None).count(),
         )
 
-    recipients.allow_tags = True
-    recipients.short_description = _("recipients")
-
+    @attributes(allow_tags=True, short_description=_("actions"))
     def action_links(self, obj):
         return (
             '<a href="{recipients_url}" class="button" title="{recipients_title}">{recipients}</a> '
@@ -129,9 +127,6 @@ class MessageAdmin(admin.ModelAdmin):
             send_mails_new_title=_("send mails to new recipients only"),
             send_mails_new_url=reverse("admin:leprikon_message_send_mails") + "?message={}&new=1".format(obj.id),
         )
-
-    action_links.allow_tags = True
-    action_links.short_description = _("actions")
 
     def get_urls(self):
         return [
@@ -165,6 +160,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    @attributes(short_description=_("Send email to selected recipients"))
     def send_mails(self, request, queryset):
         return messagerecipient_send_mails(
             request,
@@ -172,8 +168,6 @@ class MessageRecipientAdmin(admin.ModelAdmin):
             recipients=queryset,
             media=self.media,
         )
-
-    send_mails.short_description = _("Send email to selected recipients")
 
     def changelist_view(self, request, extra_context=None):
         message = get_object_or_404(Message, id=request.GET.get("message", 0))

@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
+from ..utils import attributes
 from .export import AdminExportMixin
 from .filters import LeaderListFilter
 from .journals import JournalLeaderEntryInlineAdmin
@@ -53,22 +54,17 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
             return False
         return super().has_delete_permission(request, obj)
 
+    @attributes(admin_order_field="description", allow_tags=True, short_description=_("description"))
     def description_html(self, obj):
         return obj.description
 
-    description_html.short_description = _("description")
-    description_html.admin_order_field = "description"
-    description_html.allow_tags = True
-
+    @attributes(allow_tags=True, short_description="")
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
             url=reverse("admin:leprikon_timesheetentry_change", args=[obj.id]),
             title=_("update entry"),
             edit=_("edit"),
         )
-
-    edit_link.short_description = ""
-    edit_link.allow_tags = True
 
 
 @admin.register(Timesheet)
@@ -98,6 +94,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
+    @attributes(allow_tags=True, short_description=_("group durations"))
     def group_durations(self, obj):
         return "<br/>".join(
             "<b>{name}</b>: {duration}".format(
@@ -107,20 +104,15 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
             for group in obj.groups
         )
 
-    group_durations.allow_tags = True
-    group_durations.short_description = _("group durations")
-
+    @attributes(short_description=_("Mark selected timesheets as paid"))
     def set_paid(self, request, queryset):
         queryset.update(submitted=True, paid=True)
         self.message_user(request, _("Selected timesheets where marked as paid."))
 
-    set_paid.short_description = _("Mark selected timesheets as paid")
-
+    @attributes(short_description=_("Submit selected timesheets"))
     def submit(self, request, queryset):
         queryset.update(submitted=True)
         self.message_user(request, _("Selected timesheets where submitted."))
-
-    submit.short_description = _("Submit selected timesheets")
 
 
 @admin.register(TimesheetEntryType)

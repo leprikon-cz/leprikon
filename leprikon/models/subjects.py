@@ -32,7 +32,7 @@ from filer.fields.image import FilerImageField
 from multiselectfield import MultiSelectField
 
 from ..conf import settings
-from ..utils import FEMALE, MALE, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
+from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
 from .citizenship import Citizenship
@@ -592,25 +592,21 @@ class Subject(TimesMixin, models.Model):
     def get_edit_url(self):
         return reverse("admin:leprikon_{}_change".format(self.subject._meta.model_name), args=(self.id,))
 
+    @attributes(short_description=_("age groups list"))
     def get_age_groups_list(self):
         return comma_separated(self.all_age_groups)
 
-    get_age_groups_list.short_description = _("age groups list")
-
+    @attributes(short_description=_("groups list"))
     def get_groups_list(self):
         return comma_separated(self.all_groups)
 
-    get_groups_list.short_description = _("groups list")
-
+    @attributes(short_description=_("leaders list"))
     def get_leaders_list(self):
         return comma_separated(self.all_leaders)
 
-    get_leaders_list.short_description = _("leaders list")
-
+    @attributes(short_description=_("target groups list"))
     def get_target_groups_list(self):
         return comma_separated(self.all_target_groups)
-
-    get_target_groups_list.short_description = _("target groups list")
 
     def get_print_setup(self, event):
         return PrintSetup()
@@ -835,31 +831,27 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def all_participants(self):
         return list(self.participants.all())
 
+    @attributes(short_description=_("participants"))
     def participants_list(self):
         return "\n".join(map(str, self.all_participants))
 
-    participants_list.short_description = _("participants")
-
+    @attributes(short_description=_("participants"))
     def participants_list_html(self):
         if self.all_participants:
             return mark_safe("<br/>".join(map(str, self.all_participants)))
         return self.group_members_list_html()
 
-    participants_list_html.short_description = _("participants")
-
     @cached_property
     def all_group_members(self):
         return list(self.group_members.all())
 
+    @attributes(short_description=_("group members"))
     def group_members_list(self):
         return "\n".join(map(str, self.all_group_members))
 
-    group_members_list.short_description = _("group members")
-
+    @attributes(short_description=_("group members"))
     def group_members_list_html(self):
         return mark_safe("<br/>".join(map(str, self.all_group_members)))
-
-    group_members_list_html.short_description = _("group members")
 
     @cached_property
     def all_questions(self):
@@ -873,6 +865,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def all_agreement_options(self):
         return list(self.agreement_options.all())
 
+    @attributes(short_description=_("agreement options"))
     def agreement_options_list(self):
         lines = []
         for agreement in self.all_agreements:
@@ -885,8 +878,6 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     )
                 )
         return "\n".join(lines)
-
-    agreement_options_list.short_description = _("agreement options")
 
     @cached_property
     def all_attachments(self):
@@ -1334,6 +1325,7 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
     def parents(self):
         return list(p for p in [self.parent1, self.parent2] if p is not None)
 
+    @attributes(short_description=_("first parent"))
     @cached_property
     def parent1(self):
         if self.has_parent1:
@@ -1341,16 +1333,13 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
         else:
             return None
 
-    parent1.short_description = _("first parent")
-
+    @attributes(short_description=_("second parent"))
     @cached_property
     def parent2(self):
         if self.has_parent2:
             return self.Parent(self, "parent2")
         else:
             return None
-
-    parent2.short_description = _("second parent")
 
     @cached_property
     def all_recipients(self):
@@ -1500,11 +1489,10 @@ class SubjectRegistrationBillingInfo(models.Model):
     def __str__(self):
         return self.name
 
+    @attributes(short_description=_("address"))
     @cached_property
     def address(self):
         return ", ".join(filter(bool, (self.street, self.city, self.postal_code)))
-
-    address.short_description = _("address")
 
 
 class SubjectDiscount(AbstractTransaction):
@@ -1605,11 +1593,10 @@ class SubjectReceivedPayment(SubjectPaymentMixin, Transaction):
     def real_amount(self):
         return self.amount
 
+    @attributes(short_description=_("target registration"))
     @cached_property
     def registration(self):
         return self.target_registration
-
-    registration.short_description = _("target registration")
 
 
 class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
@@ -1625,11 +1612,10 @@ class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
     def real_amount(self):
         return -self.amount
 
+    @attributes(short_description=_("source registration"))
     @cached_property
     def registration(self):
         return self.source_registration
-
-    registration.short_description = _("source registration")
 
 
 @receiver(models.signals.post_save, sender=PaysPayment)

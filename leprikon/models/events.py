@@ -8,6 +8,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
+from ..utils import attributes
 from .agegroup import AgeGroup
 from .department import Department
 from .roles import Leader
@@ -36,6 +37,7 @@ class Event(Subject):
     def inactive_registrations(self):
         return self.registrations.filter(canceled__isnull=False)
 
+    @attributes(short_description=_("times"))
     def event_date(self):
         return "{start}{separator}{end}".format(
             start=(
@@ -54,8 +56,6 @@ class Event(Subject):
                 )
             ),
         )
-
-    event_date.short_description = _("times")
 
     def get_next_time(self, now=None):
         if not now:

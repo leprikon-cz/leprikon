@@ -38,6 +38,15 @@ def _get_localeconv():
 localeconv = _get_localeconv()
 
 
+def attributes(**kwargs):
+    def _attributes(obj):
+        for attr, value in kwargs.items():
+            setattr(obj, attr, value)
+        return obj
+
+    return _attributes
+
+
 # This function is inspired by python's standard locale.currency().
 def currency(val, international=False):
     """Formats val according to the currency settings for current language."""

@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from ..utils import currency
+from ..utils import attributes, currency
 from .fields import BankAccountField
 from .subjects import SubjectRegistration
 
@@ -42,8 +42,7 @@ class RefundRequest(models.Model):
         if not self.amount:
             raise ValidationError({"registration": [_("Refund may only be requested for overpaid registrations.")]})
 
+    @attributes(short_description=_("amount"))
     @cached_property
     def amount(self):
         return self.registration and self.registration.payment_status.overpaid
-
-    amount.short_description = _("amount")

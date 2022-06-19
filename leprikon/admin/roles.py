@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..models.roles import Contact, Leader
 from ..models.schoolyear import SchoolYear
 from ..models.subjects import SubjectType
+from ..utils import attributes
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
@@ -50,6 +51,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     list_filter = (("school_years", SchoolYearListFilter),)
     raw_id_fields = ("user",)
 
+    @attributes(short_description=_("Add selected leaders to another school year"))
     def add_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
             school_year = forms.ModelChoiceField(
@@ -92,39 +94,28 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             ),
         )
 
-    add_school_year.short_description = _("Add selected leaders to another school year")
-
+    @attributes(admin_order_field="user__first_name", short_description=_("first name"))
     def first_name(self, obj):
         return obj.user.first_name
 
-    first_name.short_description = _("first name")
-    first_name.admin_order_field = "user__first_name"
-
+    @attributes(admin_order_field="user__last_name", short_description=_("last name"))
     def last_name(self, obj):
         return obj.user.last_name
 
-    last_name.short_description = _("last name")
-    last_name.admin_order_field = "user__last_name"
-
+    @attributes(admin_order_field="user__email", short_description=_("email"))
     def email(self, obj):
         return obj.user.email
 
-    email.short_description = _("email")
-    email.admin_order_field = "user__email"
-
+    @attributes(short_description=_("contacts"))
     def contacts(self, obj):
         return ", ".join(c.contact for c in obj.all_contacts)
 
-    contacts.short_description = _("contacts")
-
+    @attributes(allow_tags=True, short_description=_("user"))
     def user_link(self, obj):
         return '<a href="{url}">{user}</a>'.format(
             url=reverse(f"admin:{obj.user._meta.app_label}_{obj.user._meta.model_name}_change", args=(obj.user.id,)),
             user=obj.user,
         )
-
-    user_link.allow_tags = True
-    user_link.short_description = _("user")
 
     @cached_property
     def courses_url(self):
@@ -138,6 +129,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def orderables_url(self):
         return reverse("admin:leprikon_orderable_changelist")
 
+    @attributes(allow_tags=True, short_description=_("courses"))
     def courses_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url=self.courses_url,
@@ -145,9 +137,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             count=obj.subjects.filter(subject_type__subject_type=SubjectType.COURSE).count(),
         )
 
-    courses_link.allow_tags = True
-    courses_link.short_description = _("courses")
-
+    @attributes(allow_tags=True, short_description=_("events"))
     def events_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url=self.events_url,
@@ -155,9 +145,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
         )
 
-    events_link.allow_tags = True
-    events_link.short_description = _("events")
-
+    @attributes(allow_tags=True, short_description=_("orderable events"))
     def orderables_link(self, obj):
         return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
             url=self.orderables_url,
@@ -165,17 +153,12 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
         )
 
-    orderables_link.allow_tags = True
-    orderables_link.short_description = _("orderable events")
-
+    @attributes(allow_tags=True, short_description=_("photo"))
     def icon(self, obj):
         try:
             return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
         except (AttributeError, KeyError):
             return ""
-
-    icon.allow_tags = True
-    icon.short_description = _("photo")
 
     def get_message_recipients(self, request, queryset):
         return (

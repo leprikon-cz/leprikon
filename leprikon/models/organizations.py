@@ -3,6 +3,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.models import BICField, IBANField
 
+from ..utils import attributes
 from .fields import EmailField, PostalCodeField
 from .printsetup import PrintSetup
 from .utils import BankAccount
@@ -36,14 +37,12 @@ class Organization(models.Model):
     def __str__(self):
         return f"{self.name} ({self.bank_account})"
 
+    @attributes(short_description=_("address"))
     @cached_property
     def address(self):
         return ", ".join(filter(bool, (self.street, self.city, self.postal_code)))
 
-    address.short_description = _("address")
-
+    @attributes(short_description=_("bank account"))
     @cached_property
     def bank_account(self):
         return self.iban and BankAccount(self.iban)
-
-    bank_account.short_description = _("bank account")

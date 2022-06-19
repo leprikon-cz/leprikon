@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
+from ..utils import attributes
 from .roles import Leader
 from .startend import StartEndMixin
 
@@ -166,11 +167,10 @@ class TimesheetEntry(StartEndMixin, models.Model):
     def datetime_end(self):
         return datetime.combine(self.date, self.end)
 
+    @attributes(short_description=_("duration"))
     @cached_property
     def duration(self):
         return self.datetime_end - self.datetime_start
-
-    duration.short_description = _("duration")
 
     @property
     def group(self):

@@ -8,6 +8,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
+from ..utils import attributes
 from .agegroup import AgeGroup
 from .department import Department
 from .roles import Leader
@@ -40,10 +41,9 @@ class Orderable(Subject):
     def inactive_registrations(self):
         return self.registrations.filter(canceled__isnull=False)
 
+    @attributes(short_description=_("duration"))
     def get_times_list(self):
         return self.duration
-
-    get_times_list.short_description = _("duration")
 
     def copy_to_school_year(old, school_year):
         new = Orderable.objects.get(id=old.id)
@@ -119,6 +119,7 @@ class OrderableRegistration(SubjectRegistration):
         if self.start_time:
             return (datetime.combine(self.start_date, self.start_time) + self.subject.orderable.duration).time()
 
+    @attributes(admin_order_field="start_date", short_description=_("event date"))
     def event_date(self):
         return "{start}{separator}{end}".format(
             start=(
@@ -137,9 +138,6 @@ class OrderableRegistration(SubjectRegistration):
                 )
             ),
         )
-
-    event_date.admin_order_field = "start_date"
-    event_date.short_description = _("event date")
 
 
 class OrderableDiscount(SubjectDiscount):

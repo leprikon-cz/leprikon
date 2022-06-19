@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
+from ..utils import attributes
 from .filters import SchoolYearListFilter
 
 
@@ -40,6 +41,7 @@ class SchoolYearDivisionAdmin(admin.ModelAdmin):
     list_display = ("name",)
     list_filter = (("school_year", SchoolYearListFilter),)
 
+    @attributes(short_description=_("Copy selected school year divisions to another school year"))
     def copy_to_school_year(self, request, queryset):
         class SchoolYearForm(forms.Form):
             school_year = forms.ModelChoiceField(
@@ -88,8 +90,6 @@ class SchoolYearDivisionAdmin(admin.ModelAdmin):
                 selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
             ),
         )
-
-    copy_to_school_year.short_description = _("Copy selected school year divisions to another school year")
 
     def get_readonly_fields(self, request, obj=None):
         return ("school_year",) if obj else ()

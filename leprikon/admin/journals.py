@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..forms.journals import JournalAdminForm, JournalEntryAdminForm, JournalLeaderEntryAdminForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.subjects import Subject
+from ..utils import attributes
 from .export import AdminExportMixin
 from .filters import JournalListFilter, LeaderListFilter, SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
 
@@ -107,6 +108,7 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
         # write PDF to response
         return journal.write_pdf("journal_pdf", response)
 
+    @attributes(allow_tags=True, short_description=_("journal"))
     def journal_links(self, obj):
         return "<br/>".join(
             (
@@ -124,9 +126,6 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
                 ),
             )
         )
-
-    journal_links.short_description = _("journal")
-    journal_links.allow_tags = True
 
 
 @admin.register(JournalLeaderEntry)
@@ -178,15 +177,13 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
                 return False
         return super().has_delete_permission(request, obj)
 
+    @attributes(allow_tags=True, short_description="")
     def edit_link(self, obj):
         return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
             url=reverse("admin:leprikon_journalleaderentry_change", args=[obj.id]),
             title=_("update entry"),
             edit=_("edit"),
         )
-
-    edit_link.short_description = ""
-    edit_link.allow_tags = True
 
 
 @admin.register(JournalEntry)
@@ -230,15 +227,10 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
+    @attributes(admin_order_field="journal", short_description=_("journal"))
     def journal_name(self, obj):
-        return obj.journal
+        return str(obj.journal)
 
-    journal_name.short_description = _("journal")
-    journal_name.admin_order_field = "journal"
-
+    @attributes(admin_order_field="agenda", allow_tags=True, short_description=_("agenda"))
     def agenda_html(self, obj):
         return obj.agenda
-
-    agenda_html.short_description = _("agenda")
-    agenda_html.admin_order_field = "agenda"
-    agenda_html.allow_tags = True
