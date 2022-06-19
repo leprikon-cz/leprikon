@@ -89,6 +89,7 @@ social-auth-app-django = "^4.0.0"
 sqlparse = "^0.4.1"
 trml2pdf = "^0.6"
 Whoosh = "^2.7.4"
+importlib-resources = "^5.8.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
