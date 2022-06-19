@@ -146,6 +146,14 @@ class SubjectType(models.Model):
         related_name="+",
         verbose_name=_("registration print setup"),
     )
+    decision_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("decision print setup"),
+    )
     pr_print_setup = models.ForeignKey(
         PrintSetup,
         blank=True,
@@ -429,6 +437,15 @@ class Subject(TimesMixin, models.Model):
         help_text=_("Add additional legal agreements specific for this subject."),
     )
     reg_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("registration print setup"),
+        help_text=_("Only use to set value specific for this subject."),
+    )
+    decision_print_setup = models.ForeignKey(
         PrintSetup,
         blank=True,
         null=True,
@@ -1035,7 +1052,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def get_pdf_filename(self, event):
         if event == "payment_request":
             return basename(self.get_payment_request_url())
-        return self.slug + ".pdf"
+        if event == "pdf":
+            return f"{self.slug}.pdf"
+        return f"{self.slug}-{event}.pdf"
 
     def get_discounted(self, d=None):
         return sum(p.amount for p in self.get_discounts(d))
@@ -1183,6 +1202,13 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 self.subject.pr_print_setup
                 or self.subject.subject_type.pr_print_setup
                 or LeprikonSite.objects.get_current().pr_print_setup
+                or PrintSetup()
+            )
+        if event == "decision":
+            return (
+                self.subject.decision_print_setup
+                or self.subject.subject_type.decision_print_setup
+                or LeprikonSite.objects.get_current().decision_print_setup
                 or PrintSetup()
             )
         return (

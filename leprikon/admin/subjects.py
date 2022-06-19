@@ -11,10 +11,7 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.urls import reverse
-from django.utils.formats import date_format
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.utils.timezone import localtime
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.subjects import (
@@ -451,6 +448,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     list_display = (
         "variable_symbol",
         "download_tag",
+        "decision",
         "subject_name",
         "participants_list_html",
         "price",
@@ -803,13 +801,16 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     def subject_name(self, obj):
         return obj.subject.name
 
-    def _datetime_with_by(self, obj, attr):
-        d = getattr(obj, attr)
-        if d:
-            d_formated = date_format(localtime(d), "SHORT_DATETIME_FORMAT")
-            by = getattr(obj, attr + "_by")
-            return mark_safe(f'<span title="{by}">{d_formated}</span>') if by else d_formated
-        return "-"
+    @attributes(allow_tags=True, short_description=_("decision"))
+    def decision(self, obj):
+        if obj.approved or obj.canceled:
+            return '<a href="{}">{}</a>'.format(
+                reverse(
+                    "admin:{}_{}_event_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+                    args=(obj.id, "decision"),
+                ),
+                _("admission decision") if obj.approved else _("refusal decision"),
+            )
 
     created_with_by = datetime_with_by("created", _("time of registration"))
 

@@ -41,21 +41,26 @@ class PdfExportAdminMixin:
         urls = super().get_urls()
         return [
             urls_url(
-                r"(?P<obj_id>\d+).pdf$",
+                r"(?P<obj_id>\d+)-(?P<event>.+)\.pdf$",
+                self.admin_site.admin_view(self.pdf),
+                name="{}_{}_event_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+            ),
+            urls_url(
+                r"(?P<obj_id>\d+)\.pdf$",
                 self.admin_site.admin_view(self.pdf),
                 name="{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
-            )
+            ),
         ] + urls
 
-    def pdf(self, request, obj_id):
+    def pdf(self, request, obj_id, event=pdf_event):
         obj = self.get_object(request, obj_id)
 
         # create PDF response object
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(self.pdf_event))
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(event))
 
         # write PDF to response
-        return obj.write_pdf(self.pdf_event, response)
+        return obj.write_pdf(event, response)
 
     @attributes(allow_tags=True, short_description=_("download"))
     def download_tag(self, obj):

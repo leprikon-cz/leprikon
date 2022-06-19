@@ -56,6 +56,14 @@ class LeprikonSite(Site):
         related_name="+",
         verbose_name=_("default registration print setup"),
     )
+    decision_print_setup = models.ForeignKey(
+        PrintSetup,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("default decision print setup"),
+    )
     pr_print_setup = models.ForeignKey(
         PrintSetup,
         blank=True,
