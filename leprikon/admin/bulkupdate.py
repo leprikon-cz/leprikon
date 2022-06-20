@@ -68,12 +68,12 @@ class BulkUpdateMixin:
                                 capture_exception()
                                 self.message_user(
                                     request,
-                                    _(f"Failed to update item {instance}."),
+                                    _("Failed to update item {}.").format(instance),
                                     messages.ERROR,
                                 )
                             else:
                                 num_updated += 1
-                        self.message_user(request, _(f"{num_updated} items were updated."))
+                        self.message_user(request, _("{} items were updated.").format(num_updated))
                         return
                 else:
                     form = BulkUpdateForm()

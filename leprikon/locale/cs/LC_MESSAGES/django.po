@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-20 02:12+0200\n"
+"POT-Creation-Date: 2022-06-20 02:19+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -28,14 +28,12 @@ msgid "Bulk update selected items"
 msgstr "Hromadně upravit vybrané položky"
 
 #: admin/bulkupdate.py:71
-#, python-brace-format
-msgid "Failed to update item {instance}."
-msgstr "Nepodařilo se upravit položku {instance}."
+msgid "Failed to update item {}."
+msgstr "Nepodařilo se upravit položku {}."
 
 #: admin/bulkupdate.py:76
-#, python-brace-format
-msgid "{num_updated} items were updated."
-msgstr "{num_updated} položek bylo upraveno."
+msgid "{} items were updated."
+msgstr "{} položek bylo upraveno."
 
 #: admin/bulkupdate.py:89
 msgid "Bulk update"
