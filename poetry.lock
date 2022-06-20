@@ -747,7 +747,7 @@ tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "html2rml"
-version = "0.3.1"
+version = "0.3.2"
 description = "Simple HTML to RML converter"
 category = "main"
 optional = false
@@ -2016,7 +2016,7 @@ gunicorn = [
     {file = "gunicorn-20.1.0.tar.gz", hash = "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"},
 ]
 html2rml = [
-    {file = "html2rml-0.3.1.tar.gz", hash = "sha256:f5a58ddc4c2f4f3538f2761525f17137456299dde37772ac537875d73e8e45db"},
+    {file = "html2rml-0.3.2.tar.gz", hash = "sha256:5bf99d4ccaecdb8e8bc4446f3d279ebe7a6d3a37ef8e1b72d9e83dd0e6349164"},
 ]
 html5lib = [
     {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
