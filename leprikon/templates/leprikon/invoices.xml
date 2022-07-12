@@ -4,7 +4,7 @@
         {% for registration in registrations %}
         {% if registration.payment_requested %}
         <FaktVyd>
-            <Doklad>{{ registration.variable_symbol }}</Doklad>
+            <CisRada>0</CisRada>
             <Popis>{{ registration|stringformat:"s"|slice:"0:50" }}</Popis>
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
             <DatUcPr>{{ registration.payment_requested|date:"Y-m-d" }}</DatUcPr>
