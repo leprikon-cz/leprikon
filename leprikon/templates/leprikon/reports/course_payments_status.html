@@ -28,7 +28,7 @@
     <tr id="report-{{ report.course.id }}">
     {% endif %}
         <th>{{ report.course.name }}</th>
-        <td class="right">{{ report.course.price | currency }}</td>
+        <td class="right">{{ report.course.price_text }}</td>
         <td class="right">{{ report.registration_statuses | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
         <td class="right">{{ report.status.receivable | currency }}</td>

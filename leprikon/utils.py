@@ -5,6 +5,8 @@ import string
 import unicodedata
 import zlib
 from datetime import date
+from decimal import Decimal
+from typing import Iterable, Union
 from urllib.parse import parse_qs, urlencode
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,8 +49,14 @@ def attributes(**kwargs):
     return _attributes
 
 
+def first(*values):
+    for value in values:
+        if value is not None:
+            return value
+
+
 # This function is inspired by python's standard locale.currency().
-def currency(val, international=False):
+def currency(val: Union[int, float, Decimal], international=False) -> str:
     """Formats val according to the currency settings for current language."""
     digits = settings.PRICE_DECIMAL_PLACES
 
@@ -115,7 +123,7 @@ def ascii(value):
     return unicodedata.normalize("NFKD", value).encode("ascii", errors="ignore").decode("ascii")
 
 
-def comma_separated(lst):
+def comma_separated(lst: Iterable) -> str:
     lst = list(map(smart_text, lst))
     if len(lst) > 2:
         return _(", and ").join([", ".join(lst[:-1]), lst[-1]])

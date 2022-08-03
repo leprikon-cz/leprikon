@@ -116,9 +116,16 @@ class SubjectTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectVariantInlineAdmin(admin.TabularInline):
+class SubjectVariantInlineAdmin(admin.StackedInline):
     model = SubjectVariant
     extra = 0
+
+    def get_exclude(self, request, obj=None):
+        if request.registration_type == Subject.PARTICIPANTS:
+            return ["target_groups"]
+        elif request.registration_type == Subject.GROUPS:
+            return ["age_groups"]
+        return []
 
 
 class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
@@ -162,9 +169,9 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
 
     def get_exclude(self, request, obj=None):
         if request.registration_type == Subject.PARTICIPANTS:
-            exclude = ["target_groups", "min_group_members_count", "max_group_members_count"]
+            exclude = ["target_groups"]
         elif request.registration_type == Subject.GROUPS:
-            exclude = ["age_groups", "min_participants_count", "max_participants_count"]
+            exclude = ["age_groups"]
         else:
             exclude = []
         if obj and obj.registrations.exists():
@@ -391,7 +398,7 @@ class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
     def get_max_num(self, request, obj=None, **kwargs):
         return request.subject.max_participants_count
 
-    def get_formset(self, request, obj, **kwargs):
+    def get_formset(self, request, obj=None, **kwargs):
         questions = obj.all_questions if obj else request.subject.all_questions
         fields = dict(("q_" + q.slug, q.get_field()) for q in questions)
         fields["subject"] = request.subject
@@ -406,7 +413,7 @@ class SubjectRegistrationGroupInlineAdmin(admin.StackedInline):
     min_num = 1
     max_num = 1
 
-    def get_formset(self, request, obj, **kwargs):
+    def get_formset(self, request, obj=None, **kwargs):
         questions = obj.all_questions if obj else request.subject.all_questions
         fields = dict(("q_" + q.slug, q.get_field()) for q in questions)
         fields["subject"] = request.subject
@@ -420,10 +427,10 @@ class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
     extra = 0
 
     def get_min_num(self, request, obj=None, **kwargs):
-        return request.subject.min_group_members_count
+        return request.subject.min_participants_count
 
     def get_max_num(self, request, obj=None, **kwargs):
-        return request.subject.max_group_members_count
+        return request.subject.max_participants_count
 
 
 class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
@@ -773,8 +780,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
     def save_model(self, request, obj, form, change):
         if not change:
-            # set price
-            obj.price = obj.subject_variant.get_price() if obj.subject_variant else obj.subject.price
+            # set price  (TODO)
+            obj.price = obj.subject_variant.get_price() if obj.subject_variant else obj.subject.get_price()
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 

@@ -173,10 +173,13 @@ class ReportCourseStatsView(FormView):
 
         weekly_delta_by_participant = defaultdict(timedelta)
         for participant in participants:
-            weekly_delta_by_participant[participant.key] += sum(
-                (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
-                start=timedelta(0),
-            ) or self.get_subject_delta(participant.registration.subject_id)
+            weekly_delta_by_participant[participant.key] += (
+                sum(
+                    (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
+                    start=timedelta(0),
+                )
+                or self.get_subject_delta(participant.registration.subject_id)
+            )
 
         delta = sum(
             weekly_delta_by_participant.values(),

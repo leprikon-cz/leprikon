@@ -8,8 +8,8 @@ if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]]; then
     done
 fi
 
-# ensure ownership of likely mounted directory
-chown www-data:www-data data htdocs/media run &
+# ensure ownership of likely mounted directories
+chown ${GUNICORN_UID:-www-data}:${GUNICORN_GID:-www-data} data htdocs/media run &
 
 # run uwsgi server
 exec gunicorn \

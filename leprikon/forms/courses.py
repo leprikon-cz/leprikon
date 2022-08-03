@@ -18,7 +18,7 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.available_periods = self.subject.course.school_year_division.periods.all()
+        self.available_periods = self.instance.school_year_division.periods.all()
         self.fields["periods"].widget.choices.queryset = self.available_periods
         if self.instance:
             self.fields["periods"].initial = self.available_periods.filter(
