@@ -3,7 +3,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.translation import ugettext_lazy as _
 
 from ..models.courses import CourseDiscount, CourseRegistrationPeriod
-from ..models.schoolyear import SchoolYearPeriod
+from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
 from .subjects import RegistrationAdminForm
 
 
@@ -18,12 +18,18 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.available_periods = self.subject.course.school_year_division.periods.all()
+        try:
+            self.school_year_division = SchoolYearDivision.objects.get(pk=int(self.data["school_year_division"]))
+        except (KeyError, TypeError, ValueError, SchoolYearDivision.DoesNotExist):
+            try:
+                self.school_year_division = self.instance.school_year_division
+            except SchoolYearDivision.DoesNotExist:
+                self.school_year_division = self.subject.course.school_year_division
+        self.available_periods = self.school_year_division.periods.all()
         self.fields["periods"].widget.choices.queryset = self.available_periods
-        if self.instance:
-            self.fields["periods"].initial = self.available_periods.filter(
-                course_registration_periods__registration=self.instance,
-            )
+        self.fields["periods"].initial = self.available_periods.filter(
+            course_registration_periods__registration=self.instance,
+        )
 
     def _save_m2m(self):
         super()._save_m2m()

@@ -1,10 +1,11 @@
 from typing import Any, Dict
 from urllib.parse import urlencode
+
 from bankreader.models import Transaction as BankreaderTransaction
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponseBadRequest, JsonResponse, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone

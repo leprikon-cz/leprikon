@@ -10,18 +10,45 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
-from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory
+from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory, CourseVariant
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import attributes, currency
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
+from .subjects import (
+    SubjectAttachmentInlineAdmin,
+    SubjectBaseAdmin,
+    SubjectDiscountBaseAdmin,
+    SubjectRegistrationBaseAdmin,
+    SubjectTimeInlineAdmin,
+    SubjectVariantInlineAdmin,
+)
+
+
+class CourseVariantInlineAdmin(SubjectVariantInlineAdmin):
+    model = CourseVariant
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if "school_year_division" in formset.form.base_fields:
+            # school year division choices
+            school_year_division_choices = formset.form.base_fields["school_year_division"].widget.widget.choices
+            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
+                school_year=obj.school_year if obj else request.school_year,
+            )
+            formset.form.base_fields["school_year_division"].choices = school_year_division_choices
+        return formset
 
 
 @admin.register(Course)
 class CourseAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.COURSE
     registration_model = CourseRegistration
+    inlines = (
+        CourseVariantInlineAdmin,
+        SubjectTimeInlineAdmin,
+        SubjectAttachmentInlineAdmin,
+    )
     list_display = (
         "id",
         "code",
@@ -53,11 +80,10 @@ class CourseAdmin(SubjectBaseAdmin):
         "get_times_list",
         "place",
         "public",
-        "price",
+        "registration_price",
+        "participant_price",
         "min_participants_count",
         "max_participants_count",
-        "min_group_members_count",
-        "max_group_members_count",
         "min_registrations_count",
         "max_registrations_count",
         "get_approved_registrations_count",
@@ -162,6 +188,17 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     subject_type_type = SubjectType.COURSE
     actions = ("add_discounts",)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if "school_year_division" in form.base_fields:
+            # school year division choices
+            school_year_division_choices = form.base_fields["school_year_division"].widget.widget.choices
+            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
+                school_year=obj.subject.school_year if obj else request.school_year,
+            )
+            form.base_fields["school_year_division"].choices = school_year_division_choices
+        return form
 
     def get_queryset(self, request):
         return (

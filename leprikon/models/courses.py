@@ -15,7 +15,7 @@ from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
+from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects
 
@@ -87,7 +87,29 @@ class Course(Subject):
         return new
 
 
+class CourseVariant(SubjectVariant):
+    school_year_division = models.ForeignKey(
+        SchoolYearDivision,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="course_variants",
+        verbose_name=_("school year division"),
+    )
+    allow_period_selection = models.BooleanField(
+        _("allow period selection"),
+        default=False,
+        help_text=_("allow user to choose school year periods on registration form"),
+    )
+
+
 class CourseRegistration(SubjectRegistration):
+    school_year_division = models.ForeignKey(
+        SchoolYearDivision,
+        on_delete=models.PROTECT,
+        related_name="course_registrations",
+        verbose_name=_("school year division"),
+    )
     subject_type = SubjectType.COURSE
 
     class Meta:
@@ -194,6 +216,7 @@ class CourseRegistrationPeriod(models.Model):
     def get_payment_status(self, received, returned, last_period, d=None) -> PeriodPaymentStatus:
         if d is None:
             d = date.today()
+        period_price = self.registration.price * self.period.price_units_count
         discount = sum(discount.amount for discount in self.all_discounts if discount.accounted.date() <= d)
         explanation = ",\n".join(
             discount.explanation.strip()
@@ -204,10 +227,10 @@ class CourseRegistrationPeriod(models.Model):
             period=self.period,
             registration_period=self,
             status=PaymentStatus(
-                price=self.registration.price,
+                price=period_price,
                 discount=discount,
                 explanation=explanation,
-                received=min(self.registration.price - discount + returned, received) if not last_period else received,
+                received=min(period_price - discount + returned, received) if not last_period else received,
                 returned=returned,
                 current_date=d,
                 due_from=self.registration.payment_requested

@@ -2,13 +2,14 @@ import colorsys
 import logging
 from collections import OrderedDict, namedtuple
 from datetime import datetime, time
+from decimal import Decimal
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
 from json import loads
 from os.path import basename
 from tempfile import NamedTemporaryFile
-from typing import List
+from typing import List, Optional, Set
 from urllib.parse import urlencode
 
 import qrcode
@@ -25,7 +26,7 @@ from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _, ngettext
+from django.utils.translation import ngettext, ugettext_lazy as _
 from django_pays import payment_url as pays_payment_url
 from django_pays.models import Payment as PaysPayment
 from djangocms_text_ckeditor.fields import HTMLField
@@ -34,7 +35,17 @@ from filer.fields.image import FilerImageField
 from multiselectfield import MultiSelectField
 
 from ..conf import settings
-from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
+from ..utils import (
+    FEMALE,
+    MALE,
+    attributes,
+    comma_separated,
+    currency,
+    first,
+    lazy_paragraph as paragraph,
+    localeconv,
+    spayd,
+)
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
 from .citizenship import Citizenship
@@ -48,7 +59,7 @@ from .printsetup import PrintSetup
 from .question import Question
 from .roles import Leader
 from .school import School
-from .schoolyear import SchoolYear
+from .schoolyear import SchoolYear, SchoolYearDivision
 from .targetgroup import TargetGroup
 from .times import AbstractTime, TimesMixin
 from .transaction import AbstractTransaction, Transaction
@@ -377,7 +388,15 @@ class Subject(TimesMixin, models.Model):
     subject_type = models.ForeignKey(
         SubjectType, on_delete=models.PROTECT, related_name="subjects", verbose_name=_("subject type")
     )
-    registration_type = models.CharField(_("registration type"), choices=REGISTRATION_TYPE_CHOICES, max_length=1)
+    registration_type = models.CharField(
+        _("registration type"),
+        choices=REGISTRATION_TYPE_CHOICES,
+        max_length=1,
+        help_text=_(
+            "Participant details include birth number (birth day), age group, contacts, parent, etc. "
+            "Group member details only include name and note."
+        ),
+    )
     code = models.PositiveSmallIntegerField(_("accounting code"), blank=True, default=0)
     name = models.CharField(_("name"), max_length=150)
     description = HTMLField(_("description"), blank=True, default="")
@@ -396,29 +415,18 @@ class Subject(TimesMixin, models.Model):
     age_groups = models.ManyToManyField(AgeGroup, related_name="subjects", verbose_name=_("age groups"))
     target_groups = models.ManyToManyField(TargetGroup, related_name="subjects", verbose_name=_("target groups"))
     leaders = models.ManyToManyField(Leader, blank=True, related_name="subjects", verbose_name=_("leaders"))
-    price = PriceField(_("price"), blank=True, null=True)
+    registration_price = PriceField(_("price per registration"), blank=True, null=True)
+    participant_price = PriceField(_("price per participant"), blank=True, null=True)
     public = models.BooleanField(_("public"), default=False)
     reg_from = models.DateTimeField(_("registration active from"), blank=True, null=True)
     reg_to = models.DateTimeField(_("registration active to"), blank=True, null=True)
     photo = FilerImageField(verbose_name=_("photo"), blank=True, null=True, related_name="+", on_delete=models.SET_NULL)
     page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
     min_participants_count = models.PositiveIntegerField(
-        _("minimal participants count per registration"),
-        default=1,
-        help_text=_("Participant details include birth number (birth day), age group, contacts, parent, etc."),
+        _("minimal participants / group members count per registration"), default=1
     )
     max_participants_count = models.PositiveIntegerField(
-        _("maximal participants count per registration"),
-        default=1,
-        help_text=_("Participant details include birth number (birth day), age group, contacts, parent, etc."),
-    )
-    min_group_members_count = models.PositiveIntegerField(
-        _("minimal group members count per registration"),
-        help_text=_("Group member details only include name and note."),
-    )
-    max_group_members_count = models.PositiveIntegerField(
-        _("maximal group members count per registration"),
-        help_text=_("Group member details only include name and note."),
+        _("maximal participants / group members count per registration"), default=1
     )
     min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
@@ -503,16 +511,29 @@ class Subject(TimesMixin, models.Model):
         return "{} {}".format(self.school_year, self.display_name)
 
     def save(self, *args, **kwargs):
-        if self.registration_type_participants:
-            self.min_group_members_count = 0
-            self.max_group_members_count = 0
-        elif self.registration_type_groups:
-            self.min_participants_count = 0
-            self.max_participants_count = 0
         # For some reason django doesn't set the default value for code,
         # which leads to database error.
         self.code = self.code or 0
         super().save(*args, **kwargs)
+
+    @cached_property
+    def price_text(self) -> str:
+        if self.all_variants:
+            return " | ".join(v.price_text for v in self.all_variants)
+        price = currency(self.get_price())
+        school_year_division: Optional[SchoolYearDivision] = SchoolYearDivision.objects.filter(
+            courses__id=self.id
+        ).first()
+        if school_year_division:
+            return f"{price} / {school_year_division.price_unit_name}"
+        return price
+
+    def get_price(self, participants_count=None) -> Decimal:
+        if participants_count is None:
+            participants_count = self.min_participants_count
+        registration_price = self.registration_price or 0
+        participant_price = self.participant_price or 0
+        return registration_price + participants_count * participant_price
 
     @cached_property
     def registration_type_participants(self):
@@ -532,36 +553,36 @@ class Subject(TimesMixin, models.Model):
     @cached_property
     def display_name(self):
         if settings.LEPRIKON_SHOW_SUBJECT_CODE and self.code:
-            return "{} – {}".format(self.code, self.name)
+            return f"{self.code} – {self.name}"
         else:
             return self.name
 
     @cached_property
-    def all_variants(self):
+    def all_variants(self) -> List["SubjectVariant"]:
         return list(self.variants.all())
 
     @cached_property
-    def all_groups(self):
+    def all_groups(self) -> List["SubjectGroup"]:
         return list(self.groups.all())
 
     @cached_property
-    def all_age_groups(self):
+    def all_age_groups(self) -> List["AgeGroup"]:
         return list(self.age_groups.all())
 
     @cached_property
-    def all_target_groups(self):
+    def all_target_groups(self) -> List["TargetGroup"]:
         return list(self.target_groups.all())
 
     @cached_property
-    def all_leaders(self):
+    def all_leaders(self) -> List[Leader]:
         return list(self.leaders.all())
 
     @cached_property
-    def all_questions(self):
+    def all_questions(self) -> Set["Question"]:
         return set(self.subject_type.all_questions + list(self.questions.all()))
 
     @cached_property
-    def all_attachments(self):
+    def all_attachments(self) -> List["SubjectAttachment"]:
         return list(self.attachments.all())
 
     @cached_property
@@ -571,15 +592,14 @@ class Subject(TimesMixin, models.Model):
         ]
 
     @cached_property
-    def all_registrations(self):
+    def all_registrations(self) -> List["SubjectRegistration"]:
         return list(self.registrations.all())
 
     @property
     def registration_allowed(self):
         now = timezone.now()
         return (
-            self.price is not None
-            and (self.reg_from or self.reg_to)
+            (self.reg_from or self.reg_to)
             and (self.reg_from is None or self.reg_from <= now)
             and (self.reg_to is None or self.reg_to > now)
         )
@@ -587,12 +607,10 @@ class Subject(TimesMixin, models.Model):
     @property
     def registration_not_allowed_message(self):
         now = timezone.now()
-        if self.price is not None:
-            if self.reg_from > now:
-                return _("Registering will start on {}.").format(self.reg_from)
-            if self.reg_to < now:
-                return _("Registering ended on {}").format(self.reg_to)
-        return _("Registering is currently not allowed.")
+        if self.reg_from > now:
+            return _("Registering will start on {}.").format(self.reg_from)
+        if self.reg_to < now:
+            return _("Registering ended on {}").format(self.reg_to)
 
     @property
     def full(self):
@@ -707,7 +725,19 @@ class SubjectVariant(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="variants", verbose_name=_("subject"))
     name = models.CharField(_("variant name"), max_length=150)
     description = HTMLField(_("variant description"), blank=True, default="")
-    price = PriceField(_("price"), blank=True, null=True)
+    available = models.BooleanField(_("available for registration"), default=True)
+    age_groups = models.ManyToManyField(AgeGroup, related_name="subject_variants", verbose_name=_("age groups"))
+    target_groups = models.ManyToManyField(
+        TargetGroup, related_name="subject_variants", verbose_name=_("target groups")
+    )
+    min_participants_count = models.PositiveIntegerField(
+        _("minimal participants / group members count per registration"), blank=True, null=True
+    )
+    max_participants_count = models.PositiveIntegerField(
+        _("maximal participants / group members count per registration"), blank=True, null=True
+    )
+    registration_price = PriceField(_("price per registration"), blank=True, null=True)
+    participant_price = PriceField(_("price per participant"), blank=True, null=True)
     order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
@@ -719,8 +749,23 @@ class SubjectVariant(models.Model):
     def __str__(self):
         return self.name
 
-    def get_price(self):
-        return self.price if self.price is not None else self.subject.price
+    @cached_property
+    def price_text(self) -> str:
+        price = currency(self.get_price())
+        school_year_division: Optional[SchoolYearDivision] = (
+            SchoolYearDivision.objects.filter(course_variants__id=self.id).first()
+            or SchoolYearDivision.objects.filter(courses__id=self.subject_id).first()
+        )
+        if school_year_division:
+            return f"{price} / {school_year_division.price_unit_name}"
+        return price
+
+    def get_price(self, participants_count=None) -> Decimal:
+        if participants_count is None:
+            participants_count = self.min_participants_count or self.subject.min_participants_count
+        registration_price = first(self.registration_price, self.subject.registration_price, 0)
+        participant_price = first(self.participant_price, self.subject.participant_price, 0)
+        return registration_price + participants_count * participant_price
 
 
 class SubjectAttachment(BaseAttachment):

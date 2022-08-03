@@ -56,7 +56,12 @@ class SchoolYearDivision(models.Model):
         SchoolYear, on_delete=models.CASCADE, related_name="divisions", verbose_name=_("school year")
     )
     name = models.CharField(_("division name"), max_length=150)
-    period_name = models.CharField(_("period name"), max_length=150)
+    price_unit_name = models.CharField(
+        _("price unit name"),
+        max_length=150,
+        help_text=_("Unit name the price applies to. For example semester, month, or 5 lessons."),
+        # "Název jednotky, za kterou je udávána cena, například pololetí, měsíc, 5 lekcí, apod."
+    )
 
     class Meta:
         app_label = "leprikon"
@@ -102,8 +107,9 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
         SchoolYearDivision, on_delete=models.CASCADE, related_name="periods", verbose_name=_("school year division")
     )
     name = models.CharField(_("name"), max_length=150)
-    start = models.DateField(_("start date"))
-    end = models.DateField(_("end date"))
+    start = models.DateField(_("start date"), blank=True, null=True)
+    end = models.DateField(_("end date"), blank=True, null=True)
+    price_units_count = models.DecimalField(_("number of price units"), default=1, decimal_places=2, max_digits=10)
     due_from = models.DateField(_("due from"))
     due_date = models.DateField(_("due date"))
 
@@ -114,11 +120,7 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
         verbose_name_plural = _("school year periods")
 
     def __str__(self):
-        return _("{name}, {start:%m/%d %y} - {end:%m/%d %y}").format(
-            name=self.name,
-            start=self.start,
-            end=self.end,
-        )
+        return self.name
 
 
 class SchoolYearBlockPlugin(CMSPlugin):

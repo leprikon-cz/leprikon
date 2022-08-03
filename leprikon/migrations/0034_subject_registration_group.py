@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='registration_type',
-            field=models.CharField(choices=[('P', 'participants'), ('G', 'groups')], default='P', max_length=1, verbose_name='registration type'),
+            field=models.CharField(choices=[('P', 'participants'), ('G', 'groups')], default='P', max_length=1, help_text='Participant details include birth number (birth day), age group, contacts, parent, etc. Group member details only include name and note.', verbose_name='registration type'),
             preserve_default=False,
         ),
         migrations.RunPython(set_subject_registration_type),

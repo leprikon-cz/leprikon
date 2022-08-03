@@ -174,7 +174,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
             else:
                 qs = qs.filter(end_date__gte=now())
         if self.cleaned_data["reg_active"]:
-            qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now()).exclude(price=None)
+            qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now())
         return qs.distinct()
 
 
@@ -592,7 +592,9 @@ class RegistrationBillingInfoForm(FormMixin, forms.ModelForm):
 
 
 class RegistrationForm(FormMixin, forms.ModelForm):
-    def __init__(self, subject, user, **kwargs):
+    instance: SubjectRegistration
+
+    def __init__(self, subject: Subject, user, **kwargs):
         super().__init__(**kwargs)
         self.user = user
         self.instance.subject = subject
@@ -659,9 +661,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 form=RegistrationGroupMemberForm,
                 fk_name="registration",
                 exclude=[],
-                extra=subject.max_group_members_count,
-                min_num=subject.min_group_members_count,
-                max_num=subject.max_group_members_count,
+                extra=subject.max_participants_count,
+                min_num=subject.min_participants_count,
+                max_num=subject.max_participants_count,
                 validate_min=True,
                 validate_max=True,
             )(kwargs.get("data"), instance=self.instance)
@@ -766,9 +768,16 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         self.instance.created_by = self.user
         self.instance.user = self.user
 
+        if self.instance.subject.registration_type_participants:
+            participants_count = self.participants_formset.total_form_count()
+        elif self.instance.subject.registration_type_groups:
+            participants_count = self.group_members_formset.total_form_count()
+
         # set price
         self.instance.price = (
-            self.instance.subject_variant.get_price() if self.instance.subject_variant else self.instance.subject.price
+            self.instance.subject_variant.get_price(participants_count)
+            if self.instance.subject_variant
+            else self.instance.subject.get_price(participants_count)
         )
 
         # create
@@ -849,10 +858,26 @@ class CourseRegistrationForm(RegistrationForm):
 
     class Meta:
         model = CourseRegistration
-        exclude = ("subject", "user", "cancelation_requested", "cancelation_requested_by", "canceled", "canceled_by")
+        exclude = (
+            "subject",
+            "user",
+            "school_year_division",
+            "cancelation_requested",
+            "cancelation_requested_by",
+            "canceled",
+            "canceled_by",
+        )
 
     @transaction.atomic
     def save(self, commit=True):
+        subject_variant = self.cleaned_data.get("subject_variant")
+        if subject_variant:
+            self.instance.school_year_division_id = (
+                subject_variant.coursevariant.school_year_division_id
+                or self.instance.subject.course.school_year_division_id
+            )
+        else:
+            self.instance.school_year_division_id = self.instance.subject.course.school_year_division_id
         super().save()
         CourseRegistrationPeriod.objects.bulk_create(
             CourseRegistrationPeriod(

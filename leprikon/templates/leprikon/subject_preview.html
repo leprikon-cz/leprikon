@@ -8,9 +8,7 @@
             {{ group.name }}
         </small>
         {% endfor %}
-        {% if object.price %}
-        <small>{{ object.price | currency }}{% if object.school_year_division.period_name %} / {{ object.school_year_division.period_name }}{% endif %}</small>
-        {% endif %}
+        {% if object.price_text %}<small>{{ object.price_text }}</small>{% endif %}
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' object.subject_type.slug object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>

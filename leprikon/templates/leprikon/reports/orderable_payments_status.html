@@ -28,7 +28,7 @@
     <tr id="report-{{ report.orderable.id }}">
     {% endif %}
         <th>{{ report.orderable.name }}</th>
-        <td class="right">{{ report.orderable.price | currency }}</td>
+        <td class="right">{{ report.orderable.price_text }}</td>
         <td class="right">{{ report.registration_statuses | length }}</td>
         <td class="right">{{ report.status.discount | currency }}</td>
         <td class="right">{{ report.status.receivable | currency }}</td>

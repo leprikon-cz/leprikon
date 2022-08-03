@@ -55,8 +55,6 @@ class OrderableAdmin(SubjectBaseAdmin):
         "price",
         "min_participants_count",
         "max_participants_count",
-        "min_group_members_count",
-        "max_group_members_count",
         "min_registrations_count",
         "max_registrations_count",
         "get_approved_registrations_count",

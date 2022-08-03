@@ -14,7 +14,6 @@ from django_pays.models import Payment as PaysPayment
 
 from ..conf import settings
 from ..utils import attributes, currency
-from .fields import PriceField
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
 from .pdfmail import PdfExportAndMailMixin
