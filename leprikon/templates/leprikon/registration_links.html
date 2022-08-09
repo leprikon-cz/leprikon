@@ -9,7 +9,6 @@
     {% trans 'fill in the registration form' %}
 </a>
 <span id="subject-{{ subject.id }}-registration-message">{{ registration_message }}</span>
-{% if subject.full %}{% trans 'The capacity is full.' %}{% endif %}
 
 {% if registration_start_in or registration_end_in %}
 <script defer="defer" async="async" type="text/javascript">
