@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-20 02:20+0200\n"
+"POT-Creation-Date: 2022-08-28 11:34+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -845,7 +845,7 @@ msgstr ""
 msgid "Participants"
 msgstr ""
 
-#: cms_menus.py:114 templates/leprikon/subject_registration_form.html:221
+#: cms_menus.py:114 templates/leprikon/subject_registration_form.html:215
 #: views/billing_info.py:19
 msgid "Billing information"
 msgstr ""
@@ -1125,7 +1125,7 @@ msgstr ""
 #: templates/leprikon/registration_mail_details.txt:2
 #: templates/leprikon/registration_pdf/subject.rml:99
 #: templates/leprikon/registration_preview.html:62
-#: templates/leprikon/subject_registration_form.html:92
+#: templates/leprikon/subject_registration_form.html:86
 #: templates/leprikon/summary.html:42
 msgid "Participant"
 msgstr ""
@@ -1137,7 +1137,7 @@ msgstr ""
 #: templates/leprikon/registration_mail_details.txt:3
 #: templates/leprikon/registration_pdf/subject.rml:235
 #: templates/leprikon/registration_preview.html:86
-#: templates/leprikon/subject_registration_form.html:186
+#: templates/leprikon/subject_registration_form.html:180
 #: templates/leprikon/summary.html:45
 msgid "Contact person"
 msgstr ""
@@ -1252,7 +1252,7 @@ msgid "Department"
 msgstr ""
 
 #: forms/subjects.py:53 templates/leprikon/registration_pdf/subject.rml:211
-#: templates/leprikon/subject_registration_form.html:173
+#: templates/leprikon/subject_registration_form.html:167
 msgid "Group"
 msgstr ""
 
@@ -3239,7 +3239,7 @@ msgstr ""
 
 #: templates/leprikon/form.html:15 templates/leprikon/login.html:19
 #: templates/leprikon/login.html:46
-#: templates/leprikon/subject_registration_form.html:15
+#: templates/leprikon/subject_registration_form.html:9
 msgid "Please correct the highlighted errors below."
 msgstr ""
 
@@ -3419,7 +3419,7 @@ msgstr ""
 #: templates/leprikon/participants.html:7
 #: templates/leprikon/registration_pdf/subject.rml:181
 #: templates/leprikon/registration_preview.html:69
-#: templates/leprikon/subject_registration_form.html:131
+#: templates/leprikon/subject_registration_form.html:125
 msgid "Parents"
 msgstr ""
 
@@ -3598,7 +3598,7 @@ msgstr ""
 #: templates/leprikon/registration_pdf/subject.rml:69
 #: templates/leprikon/registration_pdf/subject.rml:74
 #: templates/leprikon/registration_preview.html:29
-#: templates/leprikon/subject_registration_form.html:25
+#: templates/leprikon/subject_registration_form.html:19
 msgid "Event date"
 msgstr ""
 
@@ -3646,10 +3646,6 @@ msgstr ""
 
 #: templates/leprikon/registration_links.html:9
 msgid "fill in the registration form"
-msgstr ""
-
-#: templates/leprikon/registration_links.html:12
-msgid "The capacity is full."
 msgstr ""
 
 #: templates/leprikon/registration_mail_footer.html:3
@@ -3756,8 +3752,8 @@ msgstr ""
 #: templates/leprikon/reports/course_payments_status.html:15
 #: templates/leprikon/reports/event_payments_status.html:15
 #: templates/leprikon/reports/orderable_payments_status.html:15
-#: templates/leprikon/subject_registration_form.html:30
-#: templates/leprikon/subject_registration_form.html:66
+#: templates/leprikon/subject_registration_form.html:24
+#: templates/leprikon/subject_registration_form.html:60
 msgid "Price"
 msgstr ""
 
@@ -3845,7 +3841,7 @@ msgid "Last name"
 msgstr ""
 
 #: templates/leprikon/registration_pdf/subject.rml:272
-#: templates/leprikon/subject_registration_form.html:239
+#: templates/leprikon/subject_registration_form.html:233
 msgid "Note"
 msgstr ""
 
@@ -4137,24 +4133,16 @@ msgstr ""
 msgid "Target groups"
 msgstr ""
 
-#: templates/leprikon/subject_registration_form.html:10
-#, python-format
-msgid ""
-"The capacity of this %(subject_type)s has already been filled. You may "
-"register anyway, but the registration may not be approved. We will inform "
-"You."
-msgstr ""
-
-#: templates/leprikon/subject_registration_form.html:199
+#: templates/leprikon/subject_registration_form.html:193
 msgid "Participants list"
 msgstr ""
 
-#: templates/leprikon/subject_registration_form.html:311
+#: templates/leprikon/subject_registration_form.html:305
 #, python-brace-format
 msgid "Minimal age for this age group is ${ageGroup.min_age}."
 msgstr ""
 
-#: templates/leprikon/subject_registration_form.html:318
+#: templates/leprikon/subject_registration_form.html:312
 #, python-brace-format
 msgid "Maximal age for this age group is ${ageGroup.max_age}."
 msgstr ""
