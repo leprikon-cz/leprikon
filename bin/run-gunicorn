@@ -16,5 +16,6 @@ exec gunicorn \
     --user=${GUNICORN_UID:-www-data} --group=${GUNICORN_GID:-www-data} \
     -b ${GUNICORN_SOCKET:-unix:///app/run/socket} \
     --timeout=${GUNICORN_TIMEOUT:-300} \
+    --workers=${GUNICORN_WORKERS:-5} \
     ${GUNICORN_OPTIONS} \
     ${GUNICORN_MODULE:-leprikon.site.wsgi:application}
