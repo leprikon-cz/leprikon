@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 PRICE_DECIMAL_PLACES = 2
 PRICE_MAX_DIGITS = 10

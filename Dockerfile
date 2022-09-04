@@ -2,7 +2,7 @@
 # base #
 ########
 
-FROM ubuntu:focal AS base
+FROM ubuntu:22.04 AS base
 
 WORKDIR /app
 
@@ -16,9 +16,16 @@ ENV TZ=Europe/Prague
 RUN apt-get update \
   && apt-get -y upgrade \
   && apt-get -y --no-install-recommends install \
-  git \
+  libmysqlclient21 \
+  libpython3.10 \
   locales \
+  mariadb-client \
+  nginx \
+  patch \
+  postgresql-client \
   python3-pip \
+  sqlite3 \
+  supervisor \
   tzdata \
   && pip3 install --no-cache-dir --upgrade pip \
   && ln -s /usr/bin/python3 /usr/local/bin/python \
@@ -35,12 +42,12 @@ FROM base AS build
 RUN apt-get -y --no-install-recommends install \
   build-essential \
   gcc \
+  git \
   libicu-dev \
   libmysqlclient-dev \
   libssl-dev \
   pkg-config \
-  python3-dev \
-  libpython3.7
+  python3-dev
 RUN pip install poetry wheel
 COPY poetry.lock pyproject.toml ./
 RUN poetry export -o requirements.txt --without-hashes \
@@ -59,27 +66,18 @@ FROM base AS final
 LABEL name="Leprikón"
 LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
 
-RUN apt-get -y --no-install-recommends install \
-  libmysqlclient21 \
-  libpython3.8 \
-  mariadb-client \
-  nginx \
-  patch \
-  postgresql-client \
-  sqlite3 \
-  supervisor
-
 COPY --from=build /app/dist /app/dist
 
 RUN pip install --no-deps /app/dist/*
 
+COPY bin /app/bin
+COPY conf /app/conf
 COPY patch /app/patch
-COPY . /src
+COPY startup /app/startup
+COPY translations /app/translations
 
-RUN cp -a /src/translations/* /usr/local/lib/python3.8/dist-packages/ \
-  && patch /usr/local/lib/python3.8/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
-  && cp -a /src/conf /src/bin /src/startup ./ \
-  && rm -r /src \
+RUN cp -a /app/translations/* /usr/local/lib/python3.10/dist-packages/ \
+  && patch /usr/local/lib/python3.10/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
   && mkdir -p data/ipython htdocs/media htdocs/static run \
   && leprikon collectstatic --no-input \
   && rm data/db.sqlite3 \

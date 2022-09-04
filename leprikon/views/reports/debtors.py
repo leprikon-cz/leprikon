@@ -4,7 +4,7 @@ from itertools import chain
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy as reverse
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.debtors import DebtorsForm
 from ...models.courses import CourseRegistration

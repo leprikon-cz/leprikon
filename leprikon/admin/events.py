@@ -2,11 +2,12 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminRadioSelect
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.schoolyear import SchoolYear
@@ -199,17 +200,19 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
             ),
         )
 
-    @attributes(allow_tags=True, short_description=_("discounts"))
+    @attributes(short_description=_("discounts"))
     def discounts(self, obj: EventRegistration):
-        return format_html(
-            '<a href="{href_list}"><b>{amount}</b></a>'
-            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
-            '<img src="{icon_add}" alt="+"/></a>',
-            href_list=reverse("admin:leprikon_eventdiscount_changelist") + f"?registration={obj.id}",
-            amount=currency(obj.payment_status.discount),
-            href_add=reverse("admin:leprikon_eventdiscount_add") + f"?registration={obj.id}",
-            icon_add=static("admin/img/icon-addlink.svg"),
-            title_add=_("add discount"),
+        return mark_safe(
+            format_html(
+                '<a href="{href_list}"><b>{amount}</b></a>'
+                ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+                '<img src="{icon_add}" alt="+"/></a>',
+                href_list=reverse("admin:leprikon_eventdiscount_changelist") + f"?registration={obj.id}",
+                amount=currency(obj.payment_status.discount),
+                href_add=reverse("admin:leprikon_eventdiscount_add") + f"?registration={obj.id}",
+                icon_add=static("admin/img/icon-addlink.svg"),
+                title_add=_("add discount"),
+            )
         )
 
 

@@ -1,11 +1,11 @@
 from django import forms
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import path, reverse
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.journals import JournalAdminForm, JournalEntryAdminForm, JournalLeaderEntryAdminForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
@@ -74,13 +74,13 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
 
     def get_urls(self):
         return [
-            urls_url(
-                r"(?P<journal_id>\d+)/journal/$",
+            path(
+                "<int:journal_id>/journal/",
                 self.admin_site.admin_view(self.journal),
                 name="leprikon_journal_journal",
             ),
-            urls_url(
-                r"(?P<journal_id>\d+)/journal-pdf/$",
+            path(
+                "<int:journal_id>/journal-pdf/",
                 self.admin_site.admin_view(self.journal_pdf),
                 name="leprikon_journal_journal_pdf",
             ),
@@ -108,22 +108,24 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
         # write PDF to response
         return journal.write_pdf("journal_pdf", response)
 
-    @attributes(allow_tags=True, short_description=_("journal"))
+    @attributes(short_description=_("journal"))
     def journal_links(self, obj):
-        return "<br/>".join(
-            (
-                format_html(
-                    '<a href="{url}" title="{title}" target="_blank">{journal}</a>',
-                    url=reverse("admin:leprikon_journal_journal", args=[obj.id]),
-                    title=_("printable journal"),
-                    journal=_("journal"),
-                ),
-                format_html(
-                    '<a href="{url}" title="{title}" target="_blank">{participants}</a>',
-                    url=reverse("admin:leprikon_journal_journal_pdf", args=[obj.id]),
-                    title=_("printable list of participants"),
-                    participants=_("participants"),
-                ),
+        return mark_safe(
+            "<br/>".join(
+                (
+                    format_html(
+                        '<a href="{url}" title="{title}" target="_blank">{journal}</a>',
+                        url=reverse("admin:leprikon_journal_journal", args=[obj.id]),
+                        title=_("printable journal"),
+                        journal=_("journal"),
+                    ),
+                    format_html(
+                        '<a href="{url}" title="{title}" target="_blank">{participants}</a>',
+                        url=reverse("admin:leprikon_journal_journal_pdf", args=[obj.id]),
+                        title=_("printable list of participants"),
+                        participants=_("participants"),
+                    ),
+                )
             )
         )
 
@@ -177,12 +179,14 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
                 return False
         return super().has_delete_permission(request, obj)
 
-    @attributes(allow_tags=True, short_description="")
+    @attributes(short_description="")
     def edit_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url=reverse("admin:leprikon_journalleaderentry_change", args=[obj.id]),
-            title=_("update entry"),
-            edit=_("edit"),
+        return mark_safe(
+            '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
+                url=reverse("admin:leprikon_journalleaderentry_change", args=[obj.id]),
+                title=_("update entry"),
+                edit=_("edit"),
+            )
         )
 
 
@@ -231,6 +235,6 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     def journal_name(self, obj):
         return str(obj.journal)
 
-    @attributes(admin_order_field="agenda", allow_tags=True, short_description=_("agenda"))
+    @attributes(admin_order_field="agenda", short_description=_("agenda"))
     def agenda_html(self, obj):
-        return obj.agenda
+        return mark_safe(obj.agenda)

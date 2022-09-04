@@ -4,10 +4,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse_lazy as reverse
-from django.utils.encoding import force_text
 from django.utils.functional import cached_property
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.file import FilerFileField
 
@@ -121,4 +120,4 @@ class MessageAttachment(models.Model):
         verbose_name_plural = _("attachments")
 
     def __str__(self):
-        return force_text(self.file)
+        return str(self.file)

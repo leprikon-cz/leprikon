@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from django.urls import reverse_lazy as reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.courses import CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm
 from ...forms.reports.debtors import DebtorsForm

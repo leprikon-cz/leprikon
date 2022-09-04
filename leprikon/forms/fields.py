@@ -3,7 +3,7 @@ from collections import namedtuple
 from django import forms
 from django.forms.fields import MultiValueField
 from django.utils.module_loading import import_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 from .widgets import RadioSelectBootstrap, RequiredOptionalWidget

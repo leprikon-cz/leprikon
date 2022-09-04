@@ -2,16 +2,15 @@ from typing import Any, Dict
 from urllib.parse import urlencode
 
 from bankreader.models import Transaction as BankreaderTransaction
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import path, reverse
 from django.utils import timezone
-from django.utils.encoding import force_text
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..models.transaction import Transaction
 from ..utils import amount_color, attributes, currency
@@ -36,7 +35,7 @@ class TransactionTypeListFilter(admin.ChoicesFieldListFilter):
             if self.field.model.transaction_types and lookup not in self.field.model.transaction_types:
                 continue
             yield {
-                "selected": force_text(lookup) == self.lookup_val,
+                "selected": str(lookup) == self.lookup_val,
                 "query_string": changelist.get_query_string({self.lookup_kwarg: lookup}, [self.lookup_kwarg_isnull]),
                 "display": title,
             }
@@ -96,12 +95,14 @@ class TransactionAdminMixin:
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
-    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
+    @attributes(admin_order_field="amount", short_description=_("amount"))
     def amount_html(self, obj):
-        return format_html(
-            '<b style="color: {color}">{amount}</b>',
-            color=amount_color(obj.amount),
-            amount=currency(abs(obj.amount)),
+        return mark_safe(
+            format_html(
+                '<b style="color: {color}">{amount}</b>',
+                color=amount_color(obj.amount),
+                amount=currency(abs(obj.amount)),
+            )
         )
 
     def save_model(self, request, obj, form, change):
@@ -136,9 +137,7 @@ class TransactionBaseAdmin(
         populate_view = self.admin_site.admin_view(
             permission_required(f"{self.model._meta.app_label}.add_{self.model._meta.model_name}")(self.populate)
         )
-        return [
-            urls_url(r"populate.json$", populate_view, name="leprikon_subjectpayment_populate")
-        ] + super().get_urls()
+        return [path("populate.json", populate_view, name="leprikon_subjectpayment_populate")] + super().get_urls()
 
     def populate(self, request):
         try:

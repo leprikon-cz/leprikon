@@ -1,7 +1,7 @@
 from cms.menu_bases import CMSAttachMenu
 from django.db.models.signals import post_delete, post_save
 from django.urls import NoReverseMatch, reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from menus.base import Menu, Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 from social_django.context_processors import backends

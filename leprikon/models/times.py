@@ -2,9 +2,8 @@ from collections import namedtuple
 from datetime import date, datetime, time, timedelta
 
 from django.db import models
-from django.utils.encoding import force_text
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes, comma_separated
 from .fields import DAY_OF_WEEK, DayOfWeekField
@@ -44,7 +43,7 @@ class AbstractTime(StartEndMixin, models.Model):
                 start=self.start,
             )
         else:
-            return force_text(self.day)
+            return str(self.day)
 
     @cached_property
     def day(self):

@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.billing_info import BillingInfoForm
 from ..models.roles import BillingInfo

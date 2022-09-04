@@ -1,10 +1,10 @@
 from io import BytesIO
 
-from django.conf.urls import url as urls_url
 from django.http import HttpResponse
-from django.urls import reverse
+from django.urls import path, reverse
+from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from ..utils import attributes
@@ -40,13 +40,13 @@ class PdfExportAdminMixin:
     def get_urls(self):
         urls = super().get_urls()
         return [
-            urls_url(
-                r"(?P<obj_id>\d+)-(?P<event>.+)\.pdf$",
+            path(
+                "<int:obj_id>-<event>.pdf",
                 self.admin_site.admin_view(self.pdf),
                 name="{}_{}_event_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
             ),
-            urls_url(
-                r"(?P<obj_id>\d+)\.pdf$",
+            path(
+                "<int:obj_id>.pdf",
                 self.admin_site.admin_view(self.pdf),
                 name="{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
             ),
@@ -62,11 +62,13 @@ class PdfExportAdminMixin:
         # write PDF to response
         return obj.write_pdf(event, response)
 
-    @attributes(allow_tags=True, short_description=_("download"))
+    @attributes(short_description=_("download"))
     def download_tag(self, obj):
-        return '<a href="{}">PDF</a>'.format(
-            reverse(
-                "admin:{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
-                args=(obj.id,),
+        return mark_safe(
+            '<a href="{}">PDF</a>'.format(
+                reverse(
+                    "admin:{}_{}_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+                    args=(obj.id,),
+                )
             )
         )

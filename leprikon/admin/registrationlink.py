@@ -8,7 +8,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.registrationlink import RegistrationLinkAdminForm
 from ..models.courses import CourseRegistration
@@ -109,11 +110,13 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
                 except IntegrityError:
                     pass
 
-    @attributes(allow_tags=True, short_description=_("registration link"))
+    @attributes(short_description=_("registration link"))
     def get_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{url}</a>'.format(
-            url=obj.link,
-            title=_("registration link"),
+        return mark_safe(
+            '<a href="{url}" title="{title}" target="_blank">{url}</a>'.format(
+                url=obj.link,
+                title=_("registration link"),
+            )
         )
 
     def get_queryset(self, request):
@@ -124,17 +127,19 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
             .annotate(registrations_count=Count("registrations"))
         )
 
-    @attributes(allow_tags=True, short_description=_("registrations"))
+    @attributes(short_description=_("registrations"))
     def get_registrations_link(self, obj):
         registration_model = self._registration_models[obj.subject_type.subject_type]
-        return format_html(
-            '<a href="{url}">{count}</a>',
-            url=reverse(
-                "admin:{}_{}_changelist".format(
-                    registration_model._meta.app_label,
-                    registration_model._meta.model_name,
+        return mark_safe(
+            format_html(
+                '<a href="{url}">{count}</a>',
+                url=reverse(
+                    "admin:{}_{}_changelist".format(
+                        registration_model._meta.app_label,
+                        registration_model._meta.model_name,
+                    )
                 )
+                + "?registration_link__id__exact={}".format(obj.id),
+                count=obj.registrations_count,
             )
-            + "?registration_link__id__exact={}".format(obj.id),
-            count=obj.registrations_count,
         )

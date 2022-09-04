@@ -10,7 +10,7 @@ from django.forms.models import inlineformset_factory
 from django.forms.widgets import Media
 from django.utils.functional import cached_property
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_message
 
 from ..models.agegroup import AgeGroup
@@ -363,7 +363,7 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         super().__init__(**kwargs)
 
         # choices for age group
-        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups
+        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups.all()
         if self.subject.age_groups.count() == 1:
             self.fields["age_group"].initial = self.subject.age_groups.first()
 
@@ -953,7 +953,7 @@ class RegistrationParticipantAdminForm(RegistrationParticipantFormMixin, SchoolA
         super().__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
 
-        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups
+        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups.all()
         if self.subject.age_groups.count() == 1:
             self.fields["age_group"].initial = self.subject.age_groups.first()
 

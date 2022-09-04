@@ -1,8 +1,8 @@
 from cms.app_base import CMSApp
 from cms.apphook_pool import apphook_pool
-from django.conf.urls import url
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+from django.urls import path
+from django.utils.translation import gettext_lazy as _
 
 from . import views
 from .urls import LEPRIKON_URL
@@ -24,10 +24,10 @@ class LeprikonSubjectTypeApp(CMSApp):
 
     def get_urls(self, page=None, language=None, **kwargs):
         return [
-            url(r"^$", views.subject_list, name="subject_list"),
-            url(r"^(?P<pk>[0-9]+)/$", views.subject_detail, name="subject_detail"),
-            url(
-                r"^(?P<pk>[0-9]+)/{registration}/$".format(**LEPRIKON_URL),
+            path("", views.subject_list, name="subject_list"),
+            path("<int:pk>/", views.subject_detail, name="subject_detail"),
+            path(
+                "<int:pk>/{registration}/".format(**LEPRIKON_URL),
                 transaction.atomic(views.subject_registration_form),
                 name="subject_registration_form",
             ),

@@ -3,7 +3,6 @@ import csv
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase
-from django.utils.encoding import force_text
 
 User = get_user_model()
 

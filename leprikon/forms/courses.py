@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..models.courses import CourseDiscount, CourseRegistrationPeriod
 from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
