@@ -8,6 +8,8 @@ from itertools import chain
 from json import loads
 from os.path import basename
 from tempfile import NamedTemporaryFile
+from typing import List
+from urllib.parse import urlencode
 
 import qrcode
 from bankreader.models import Transaction as BankreaderTransaction
@@ -23,7 +25,7 @@ from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ngettext
 from django_pays import payment_url as pays_payment_url
 from django_pays.models import Payment as PaysPayment
 from djangocms_text_ckeditor.fields import HTMLField
@@ -845,7 +847,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         raise NotImplementedError()
 
     @cached_property
-    def all_participants(self):
+    def all_participants(self) -> List["SubjectRegistrationParticipant"]:
         return list(self.participants.all())
 
     @attributes(short_description=_("participants"))
@@ -855,7 +857,26 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     @attributes(short_description=_("participants"))
     def participants_list_html(self):
         if self.all_participants:
-            return mark_safe("<br/>".join(map(str, self.all_participants)))
+            participant_links = []
+            for participant in self.all_participants:
+                if participant.birth_num:
+                    query = dict(participants__birth_num=participant.birth_num)
+                else:
+                    query = dict(
+                        participants__birth_date=participant.birth_date,
+                        participants__first_name=participant.first_name,
+                        participants__last_name=participant.last_name,
+                    )
+                url = "?" + urlencode(query)
+                count = (
+                    type(self).objects.filter(subject__school_year_id=self.subject.school_year_id, **query).count() - 1
+                )
+                if count:
+                    title = ngettext("%d other registration", "%d other registrations", count) % count
+                else:
+                    title = _("no other registration")
+                participant_links.append(f"""<a href="{url}" title="{title}">{participant}""")
+            return mark_safe("<br/>".join(participant_links))
         return self.group_members_list_html()
 
     @cached_property

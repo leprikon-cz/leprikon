@@ -591,6 +591,18 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         else:
             return False
 
+    def lookup_allowed(self, lookup: str, value: str) -> bool:
+        return (
+            lookup
+            in (
+                "participants__birth_date",
+                "participants__birth_num",
+                "participants__first_name",
+                "participants__last_name",
+            )
+            or super().lookup_allowed(lookup, value)
+        )
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         if "delete_selected" in actions:
@@ -899,6 +911,18 @@ class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, Changefo
         "group_members__first_name",
         "group_members__last_name",
     )
+
+    def lookup_allowed(self, lookup: str, value: str) -> bool:
+        return (
+            lookup
+            in (
+                "participants__birth_date",
+                "participants__birth_num",
+                "participants__first_name",
+                "participants__last_name",
+            )
+            or super().lookup_allowed(lookup, value)
+        )
 
     def get_model_perms(self, request):
         return {}
