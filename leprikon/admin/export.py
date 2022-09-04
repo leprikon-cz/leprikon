@@ -6,8 +6,7 @@ import django_excel
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import F
 from django.http import HttpResponse
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes
 
@@ -19,11 +18,11 @@ def get_attr_value(obj, name):
     return value
 
 
-def get_verbose_name(field):
+def get_verbose_name(field) -> str:
     try:
-        return force_text(field.verbose_name)
+        return str(field.verbose_name)
     except AttributeError:
-        return force_text(field.related_model._meta.verbose_name)
+        return str(field.related_model._meta.verbose_name)
 
 
 class AdminExportMixin:
@@ -82,7 +81,7 @@ class AdminExportMixin:
 
     def get_export_data(self, request, queryset):
         fields = self.get_export_fields(request)
-        yield [force_text(f["verbose_name"]) for f in fields]
+        yield [str(f["verbose_name"]) for f in fields]
         annotations = {field["annotate"]: F(field["annotate"]) for field in fields if field.get("annotate")}
         for obj in queryset.annotate(**annotations):
             values = []
@@ -97,7 +96,7 @@ class AdminExportMixin:
                     try:
                         float(value)
                     except (TypeError, ValueError):
-                        value = force_text(value)
+                        value = str(value)
                 values.append(value)
             yield values
 

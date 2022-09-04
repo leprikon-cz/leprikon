@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from lxml.html import fromstring, tostring
 
 from ..conf import settings
@@ -102,7 +102,7 @@ def registration_links(context, subject):
     now = timezone.now()
     context = context.__copy__()
     context["subject"] = subject
-    if context["request"].user.is_authenticated():
+    if context["request"].user.is_authenticated:
         context["registrations"] = subject.registrations.filter(user=context["request"].user, canceled=None)
     else:
         context["registrations"] = []

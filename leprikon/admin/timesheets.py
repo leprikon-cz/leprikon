@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.timesheets import TimesheetEntryAdminForm
 from ..models.timesheets import Timesheet, TimesheetEntry, TimesheetEntryType
@@ -54,16 +55,18 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
             return False
         return super().has_delete_permission(request, obj)
 
-    @attributes(admin_order_field="description", allow_tags=True, short_description=_("description"))
+    @attributes(admin_order_field="description", short_description=_("description"))
     def description_html(self, obj):
-        return obj.description
+        return mark_safe(obj.description)
 
-    @attributes(allow_tags=True, short_description="")
+    @attributes(short_description="")
     def edit_link(self, obj):
-        return '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
-            url=reverse("admin:leprikon_timesheetentry_change", args=[obj.id]),
-            title=_("update entry"),
-            edit=_("edit"),
+        return mark_safe(
+            '<a href="{url}" title="{title}" target="_blank">{edit}</a>'.format(
+                url=reverse("admin:leprikon_timesheetentry_change", args=[obj.id]),
+                title=_("update entry"),
+                edit=_("edit"),
+            )
         )
 
 
@@ -94,14 +97,16 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
             actions["delete_selected"] = (delete_selected, *actions["delete_selected"][1:])
         return actions
 
-    @attributes(allow_tags=True, short_description=_("group durations"))
+    @attributes(short_description=_("group durations"))
     def group_durations(self, obj):
-        return "<br/>".join(
-            "<b>{name}</b>: {duration}".format(
-                name=group.name,
-                duration=group.duration,
+        return mark_safe(
+            "<br/>".join(
+                "<b>{name}</b>: {duration}".format(
+                    name=group.name,
+                    duration=group.duration,
+                )
+                for group in obj.groups
             )
-            for group in obj.groups
         )
 
     @attributes(short_description=_("Mark selected timesheets as paid"))

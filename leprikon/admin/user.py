@@ -1,13 +1,13 @@
 from django import forms
-from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import permission_required
 from django.contrib.messages import ERROR
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.urls import path, reverse
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_exception
 from user_unique_email.admin import UserAdmin as _UserAdmin
 
@@ -134,8 +134,8 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         urls = super().get_urls()
         login_as_view = self.admin_site.admin_view(permission_required("auth.change_user")(self.login_as))
         return [
-            urls_url(
-                r"(?P<user_id>\d+)/login-as/$",
+            path(
+                "<int:user_id>/login-as/",
                 login_as_view,
                 name=f"{User._meta.app_label}_{User._meta.model_name}_login_as",
             )
@@ -150,9 +150,9 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
         login(request, user)
         return HttpResponseRedirect(reverse("leprikon:summary"))
 
-    @attributes(allow_tags=True, short_description=_("login"))
+    @attributes(short_description=_("login"))
     def login_as_link(self, obj):
-        return (
+        return mark_safe(
             '<a href="{url}">{text}</a>'.format(
                 url=reverse(f"admin:{User._meta.app_label}_{User._meta.model_name}_login_as", args=[obj.id]),
                 text=_("login"),
@@ -161,11 +161,13 @@ class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
             else ""
         )
 
-    @attributes(allow_tags=True, short_description=_("login"))
+    @attributes(short_description=_("login"))
     def login_as_link_superuser(self, obj):
-        return '<a href="{url}">{text}</a>'.format(
-            url=reverse(f"admin:{User._meta.app_label}_{User._meta.model_name}_login_as", args=[obj.id]),
-            text=_("login"),
+        return mark_safe(
+            '<a href="{url}">{text}</a>'.format(
+                url=reverse(f"admin:{User._meta.app_label}_{User._meta.model_name}_login_as", args=[obj.id]),
+                text=_("login"),
+            )
         )
 
     def get_message_recipients(self, request, queryset):

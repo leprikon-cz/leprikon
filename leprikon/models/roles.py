@@ -5,10 +5,9 @@ from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.encoding import smart_text
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
@@ -196,18 +195,18 @@ class Participant(models.Model):
         return "{}, {}, {}".format(self.street, self.city, self.postal_code)
 
     @cached_property
-    def contact(self):
+    def contact(self) -> str:
         if self.email and self.phone:
             return "{}, {}".format(self.phone, self.email)
         else:
             return self.email or self.phone or ""
 
     @cached_property
-    def school_name(self):
-        return self.school and smart_text(self.school) or self.school_other
+    def school_name(self) -> str:
+        return self.school and str(self.school) or self.school_other
 
     @cached_property
-    def school_and_class(self):
+    def school_and_class(self) -> str:
         if self.school_name and self.school_class:
             return "{}, {}".format(self.school_name, self.school_class)
         else:

@@ -1,4 +1,4 @@
-{% load leprikon_tags sekizai_tags staticfiles %}
+{% load leprikon_tags sekizai_tags static %}
 <form action="{% url 'leprikon:school_year' %}" method="post" class="form-horizontal" id="id_school_year_form">
     {% csrf_token %}
     <input type="hidden" name="{% param_back %}" value="{% current_url %}"/>

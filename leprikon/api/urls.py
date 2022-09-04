@@ -1,12 +1,12 @@
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 
-def l_url(pattern, name):
-    return url(pattern, getattr(views, name), name=name)
+def l_path(pattern, name):
+    return path(pattern, getattr(views, name), name=name)
 
 
 urlpatterns = [
-    l_url(r"^participants/(?P<journal_id>[0-9]+)/$", "participants"),
+    l_path("participants/<int:journal_id>/", "participants"),
 ]

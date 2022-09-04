@@ -3,7 +3,7 @@ from datetime import date
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
-from django.utils.translation import ugettext_lazy as _, ungettext_lazy as ungettext
+from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettext
 
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
@@ -361,7 +361,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                     self.deleted_entries.append(entry)
 
             if leaders_with_submitted_timesheets["leaders"]:
-                errors["leaders"] = ungettext(
+                errors["leaders"] = ngettext(
                     "Leader {leaders} has already submitted timesheet for {period}.",
                     "Leaders {leaders} have already submitted timesheet for {period}.",
                     len(leaders_with_submitted_timesheets["leaders"]),
@@ -370,7 +370,7 @@ class JournalEntryForm(FormMixin, JournalEntryAdminForm):
                     period=period.name,
                 )
             if leaders_with_submitted_timesheets["alternates"]:
-                errors["alternates"] = ungettext(
+                errors["alternates"] = ngettext(
                     "Alternate {leaders} has already submitted timesheet for {period}.",
                     "Alternates {leaders} have already submitted timesheet for {period}.",
                     len(leaders_with_submitted_timesheets["alternates"]),

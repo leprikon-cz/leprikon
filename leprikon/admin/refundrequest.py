@@ -7,7 +7,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..models.leprikonsite import LeprikonSite
 from ..models.refundrequest import RefundRequest
@@ -65,12 +66,14 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     def bic(self, obj):
         return obj.bank_account.bic
 
-    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
+    @attributes(admin_order_field="amount", short_description=_("amount"))
     def amount_html(self, obj):
-        return format_html(
-            '<b style="color: {color}">{amount}</b>',
-            color=amount_color(obj.amount),
-            amount=currency(abs(obj.amount)),
+        return mark_safe(
+            format_html(
+                '<b style="color: {color}">{amount}</b>',
+                color=amount_color(obj.amount),
+                amount=currency(abs(obj.amount)),
+            )
         )
 
     requested_with_by = datetime_with_by("requested", _("requested time"))

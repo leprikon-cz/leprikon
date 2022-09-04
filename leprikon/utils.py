@@ -12,10 +12,10 @@ from urllib.parse import parse_qs, urlencode
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, transaction
 from django.urls import reverse_lazy as reverse
-from django.utils.encoding import iri_to_uri, smart_text
+from django.utils.encoding import iri_to_uri
 from django.utils.functional import lazy
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .conf import settings
 
@@ -71,16 +71,16 @@ def currency(val: Union[int, float, Decimal], international=False) -> str:
     if s:
         groups.append(s)
     groups.reverse()
-    s = smart_text(localeconv["mon_thousands_sep"]).join(groups)
+    s = localeconv["mon_thousands_sep"].join(groups)
 
     # display fraction for non integer values
     if digits and not isinstance(val, int):
-        s += smart_text(localeconv["mon_decimal_point"]) + "{{:.{}f}}".format(digits).format(val).split(".")[1]
+        s += localeconv["mon_decimal_point"] + "{{:.{}f}}".format(digits).format(val).split(".")[1]
 
     # '<' and '>' are markers if the sign must be inserted between symbol and value
     s = "<" + s + ">"
 
-    smb = smart_text(localeconv[international and "int_curr_symbol" or "currency_symbol"])
+    smb = localeconv[international and "int_curr_symbol" or "currency_symbol"]
     precedes = localeconv[val < 0 and "n_cs_precedes" or "p_cs_precedes"]
     separated = localeconv[val < 0 and "n_sep_by_space" or "p_sep_by_space"]
 
@@ -124,7 +124,7 @@ def ascii(value):
 
 
 def comma_separated(lst: Iterable) -> str:
-    lst = list(map(smart_text, lst))
+    lst = list(map(str, lst))
     if len(lst) > 2:
         return _(", and ").join([", ".join(lst[:-1]), lst[-1]])
     else:

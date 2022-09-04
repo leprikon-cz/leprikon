@@ -3,16 +3,16 @@ from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.contrib.admin.utils import unquote
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, F, Func
-from django.db.models.expressions import Random
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Random
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.subjects import (
     RegistrationAdminForm,
@@ -262,24 +262,27 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         obj.school_year = request.school_year
         return obj
 
-    @attributes(allow_tags=True, short_description=_("journals"))
+    @attributes(short_description=_("journals"))
     def journals_link(self, obj):
-        return format_html(
-            '<a href="{url}">{journals}</a>',
-            url=reverse("admin:leprikon_journal_changelist")
-            + f"?subject__subject_type__id__exact={obj.subject_type_id}&subject__id__exact={obj.id}",
-            journals=_("journals"),
-        ) + format_html(
-            '<a href="{url}" style="background-position: 0 0" title="{title}">' '<img src="{icon}" alt="+"/></a>',
-            url=reverse("admin:leprikon_journal_add") + "?subject={}".format(obj.id),
-            title=_("add journal"),
-            icon=static("admin/img/icon-addlink.svg"),
+        return mark_safe(
+            format_html(
+                '<a href="{url}">{journals}</a>',
+                url=reverse("admin:leprikon_journal_changelist")
+                + f"?subject__subject_type__id__exact={obj.subject_type_id}&subject__id__exact={obj.id}",
+                journals=_("journals"),
+            )
+            + format_html(
+                '<a href="{url}" style="background-position: 0 0" title="{title}">' '<img src="{icon}" alt="+"/></a>',
+                url=reverse("admin:leprikon_journal_add") + "?subject={}".format(obj.id),
+                title=_("add journal"),
+                icon=static("admin/img/icon-addlink.svg"),
+            )
         )
 
     def get_message_recipients(self, request, queryset):
         return get_user_model().objects.filter(leprikon_subjectregistrations__subject__in=queryset).distinct()
 
-    @attributes(allow_tags=True, short_description=_("registrations"))
+    @attributes(short_description=_("registrations"))
     def get_registrations_link(self, obj):
         icon = False
         approved_registrations_count = obj.approved_registrations.count()
@@ -294,31 +297,34 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         else:
             icon = True
             title = ""
-        return format_html(
-            '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>',
-            url=reverse(
-                "admin:{}_{}_changelist".format(
-                    self.registration_model._meta.app_label,
-                    self.registration_model._meta.model_name,
+        return mark_safe(
+            format_html(
+                '<a href="{url}" title="{title}">{icon} {approved}{unapproved}</a>',
+                url=reverse(
+                    "admin:{}_{}_changelist".format(
+                        self.registration_model._meta.app_label,
+                        self.registration_model._meta.model_name,
+                    )
                 )
+                + "?subject__id__exact={}".format(obj.id),
+                title=title,
+                icon=_boolean_icon(icon),
+                approved=approved_registrations_count,
+                unapproved=" + {}".format(unapproved_registrations_count) if unapproved_registrations_count else "",
             )
-            + "?subject__id__exact={}".format(obj.id),
-            title=title,
-            icon=_boolean_icon(icon),
-            approved=approved_registrations_count,
-            unapproved=" + {}".format(unapproved_registrations_count) if unapproved_registrations_count else "",
-        ) + format_html(
-            '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
-            '<img src="{icon}" alt="+"/></a>',
-            url=reverse(
-                "admin:{}_{}_add".format(
-                    self.registration_model._meta.app_label,
-                    self.registration_model._meta.model_name,
+            + format_html(
+                '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
+                '<img src="{icon}" alt="+"/></a>',
+                url=reverse(
+                    "admin:{}_{}_add".format(
+                        self.registration_model._meta.app_label,
+                        self.registration_model._meta.model_name,
+                    )
                 )
+                + "?subject={}".format(obj.id),
+                title=_("add registration"),
+                icon=static("admin/img/icon-addlink.svg"),
             )
-            + "?subject={}".format(obj.id),
-            title=_("add registration"),
-            icon=static("admin/img/icon-addlink.svg"),
         )
 
     @attributes(short_description=_("registration allowed"))
@@ -333,10 +339,10 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
     def get_unapproved_registrations_count(self, obj):
         return obj.registrations.filter(canceled=None, approved=None).count()
 
-    @attributes(allow_tags=True, short_description=_("photo"))
+    @attributes(short_description=_("photo"))
     def icon(self, obj):
         try:
-            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
+            return mark_safe('<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label))
         except (AttributeError, KeyError):
             return ""
 
@@ -380,10 +386,10 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
     def has_add_permission(self, request):
         return False
 
-    @attributes(allow_tags=True, short_description=_("photo"))
+    @attributes(short_description=_("photo"))
     def icon(self, obj):
         try:
-            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
+            return mark_safe('<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label))
         except (AttributeError, KeyError):
             return ""
 
@@ -823,15 +829,17 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     def subject_name(self, obj):
         return obj.subject.name
 
-    @attributes(allow_tags=True, short_description=_("decision"))
+    @attributes(short_description=_("decision"))
     def decision(self, obj):
         if obj.approved or obj.canceled:
-            return '<a href="{}">{}</a>'.format(
-                reverse(
-                    "admin:{}_{}_event_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
-                    args=(obj.id, "decision"),
-                ),
-                _("admission decision") if obj.approved else _("refusal decision"),
+            return mark_safe(
+                '<a href="{}">{}</a>'.format(
+                    reverse(
+                        "admin:{}_{}_event_pdf".format(self.model._meta.app_label, self.model._meta.model_name),
+                        args=(obj.id, "decision"),
+                    ),
+                    _("admission decision") if obj.approved else _("refusal decision"),
+                )
             )
 
     created_with_by = datetime_with_by("created", _("time of registration"))
@@ -853,32 +861,38 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     def random_number(self, obj):
         return int(obj.random_number * 1000000000000)
 
-    @attributes(allow_tags=True, short_description=_("received payments"))
+    @attributes(short_description=_("received payments"))
     def received_payments(self, obj: SubjectRegistration):
-        return format_html(
-            '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
-            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
-            '<img src="{icon_add}" alt="+"/></a>',
-            amount=currency(obj.payment_status.received),
-            color=obj.payment_status.color,
-            href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + f"?target_registration={obj.id}",
-            href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist") + f"?target_registration={obj.id}",
-            icon_add=static("admin/img/icon-addlink.svg"),
-            title=obj.payment_status.title,
-            title_add=_("add received payment"),
+        return mark_safe(
+            format_html(
+                '<a style="color: {color}" href="{href_list}" title="{title}"><b>{amount}</b></a>'
+                ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+                '<img src="{icon_add}" alt="+"/></a>',
+                amount=currency(obj.payment_status.received),
+                color=obj.payment_status.color,
+                href_add=reverse("admin:leprikon_subjectreceivedpayment_add") + f"?target_registration={obj.id}",
+                href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist")
+                + f"?target_registration={obj.id}",
+                icon_add=static("admin/img/icon-addlink.svg"),
+                title=obj.payment_status.title,
+                title_add=_("add received payment"),
+            )
         )
 
-    @attributes(allow_tags=True, short_description=_("returned payments"))
+    @attributes(short_description=_("returned payments"))
     def returned_payments(self, obj: SubjectRegistration):
-        return format_html(
-            '<a href="{href_list}"><b>{amount}</b></a>'
-            ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
-            '<img src="{icon_add}" alt="+"/></a>',
-            amount=currency(obj.payment_status.returned),
-            href_add=reverse("admin:leprikon_subjectreturnedpayment_add") + f"?source_registration={obj.id}",
-            href_list=reverse("admin:leprikon_subjectreturnedpayment_changelist") + f"?source_registration={obj.id}",
-            icon_add=static("admin/img/icon-addlink.svg"),
-            title_add=_("add returned payment"),
+        return mark_safe(
+            format_html(
+                '<a href="{href_list}"><b>{amount}</b></a>'
+                ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
+                '<img src="{icon_add}" alt="+"/></a>',
+                amount=currency(obj.payment_status.returned),
+                href_add=reverse("admin:leprikon_subjectreturnedpayment_add") + f"?source_registration={obj.id}",
+                href_list=reverse("admin:leprikon_subjectreturnedpayment_changelist")
+                + f"?source_registration={obj.id}",
+                icon_add=static("admin/img/icon-addlink.svg"),
+                title_add=_("add returned payment"),
+            )
         )
 
     @attributes(short_description=_("total price"))
@@ -1058,10 +1072,12 @@ class SubjectReturnedPaymentAdmin(SubjectPaymentAdminMixin, TransactionBaseAdmin
         form.base_fields["source_registration"].required = True
         return form
 
-    @attributes(admin_order_field="amount", allow_tags=True, short_description=_("amount"))
+    @attributes(admin_order_field="amount", short_description=_("amount"))
     def amount_html(self, obj):
-        return format_html(
-            '<b style="color: {color}">{amount}</b>',
-            color=amount_color(-obj.amount),
-            amount=currency(obj.amount),
+        return mark_safe(
+            format_html(
+                '<b style="color: {color}">{amount}</b>',
+                color=amount_color(-obj.amount),
+                amount=currency(obj.amount),
+            )
         )

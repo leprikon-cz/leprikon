@@ -1,5 +1,5 @@
 from cms.plugin_pool import plugin_pool
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from ..models.roles import FilteredLeaderListPlugin, LeaderListPlugin, LeaderPlugin
 from .base import LeprikonPluginBase

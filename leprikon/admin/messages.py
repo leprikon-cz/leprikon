@@ -1,11 +1,11 @@
 from django import forms
-from django.conf.urls import url
 from django.contrib import admin
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.urls import path, reverse
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.messages import MessageAdminForm
 from ..models.messages import Message, MessageAttachment, MessageRecipient
@@ -92,45 +92,49 @@ class MessageAdmin(admin.ModelAdmin):
             pass
         return initial
 
-    @attributes(allow_tags=True, short_description=_("recipients"))
+    @attributes(short_description=_("recipients"))
     def recipients(self, obj):
-        return (
-            '<a href="{recipients_url}">'
-            '    <span title="{all_title}">{all_count}</span>'
-            '  / <span title="{mails_title}">{mails_count}</span>'
-            '  / <span title="{viewed_title}">{viewed_count}</span>'
-            "</a> "
-        ).format(
-            recipients_url=reverse("admin:leprikon_messagerecipient_changelist") + "?message={}".format(obj.id),
-            all_title=_("recipients count"),
-            mails_title=_("sent mail"),
-            viewed_title=_("viewed on site"),
-            all_count=obj.recipients.count(),
-            mails_count=obj.recipients.exclude(sent_mail=None).count(),
-            viewed_count=obj.recipients.exclude(viewed=None).count(),
+        return mark_safe(
+            (
+                '<a href="{recipients_url}">'
+                '    <span title="{all_title}">{all_count}</span>'
+                '  / <span title="{mails_title}">{mails_count}</span>'
+                '  / <span title="{viewed_title}">{viewed_count}</span>'
+                "</a> "
+            ).format(
+                recipients_url=reverse("admin:leprikon_messagerecipient_changelist") + "?message={}".format(obj.id),
+                all_title=_("recipients count"),
+                mails_title=_("sent mail"),
+                viewed_title=_("viewed on site"),
+                all_count=obj.recipients.count(),
+                mails_count=obj.recipients.exclude(sent_mail=None).count(),
+                viewed_count=obj.recipients.exclude(viewed=None).count(),
+            )
         )
 
-    @attributes(allow_tags=True, short_description=_("actions"))
+    @attributes(short_description=_("actions"))
     def action_links(self, obj):
-        return (
-            '<a href="{recipients_url}" class="button" title="{recipients_title}">{recipients}</a> '
-            '<a href="{send_mails_all_url}" class="button" title="{send_mails_all_title}">{send_mails_all}</a> '
-            '<a href="{send_mails_new_url}" class="button" title="{send_mails_new_title}">{send_mails_new}</a> '
-        ).format(
-            recipients=_("recipients"),
-            recipients_title=_("show recipients details"),
-            recipients_url=(reverse("admin:leprikon_messagerecipient_changelist") + "?message={}".format(obj.id)),
-            send_mails_all=_("send mails"),
-            send_mails_all_title=_("send mail to all recipients"),
-            send_mails_all_url=reverse("admin:leprikon_message_send_mails") + "?message={}".format(obj.id),
-            send_mails_new=_("send unsent"),
-            send_mails_new_title=_("send mails to new recipients only"),
-            send_mails_new_url=reverse("admin:leprikon_message_send_mails") + "?message={}&new=1".format(obj.id),
+        return mark_safe(
+            (
+                '<a href="{recipients_url}" class="button" title="{recipients_title}">{recipients}</a> '
+                '<a href="{send_mails_all_url}" class="button" title="{send_mails_all_title}">{send_mails_all}</a> '
+                '<a href="{send_mails_new_url}" class="button" title="{send_mails_new_title}">{send_mails_new}</a> '
+            ).format(
+                recipients=_("recipients"),
+                recipients_title=_("show recipients details"),
+                recipients_url=(reverse("admin:leprikon_messagerecipient_changelist") + "?message={}".format(obj.id)),
+                send_mails_all=_("send mails"),
+                send_mails_all_title=_("send mail to all recipients"),
+                send_mails_all_url=reverse("admin:leprikon_message_send_mails") + "?message={}".format(obj.id),
+                send_mails_new=_("send unsent"),
+                send_mails_new_title=_("send mails to new recipients only"),
+                send_mails_new_url=reverse("admin:leprikon_message_send_mails") + "?message={}&new=1".format(obj.id),
+            )
         )
 
     def get_urls(self):
         return [
-            url(r"^send-mails/$", self.admin_site.admin_view(self.send_mails), name="leprikon_message_send_mails"),
+            path("send-mails/", self.admin_site.admin_view(self.send_mails), name="leprikon_message_send_mails"),
         ] + super().get_urls()
 
     def send_mails(self, request):
@@ -184,8 +188,8 @@ class MessageRecipientAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         return [
-            url(
-                r"^send-mail/$",
+            path(
+                "send-mail/",
                 self.admin_site.admin_view(self.send_mail),
                 name="leprikon_messagerecipient_send_mail",
             )

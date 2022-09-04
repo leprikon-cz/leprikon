@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model, login as auth_login, views as auth_views
 from django.urls import reverse_lazy
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 from ..forms.user import (

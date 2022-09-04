@@ -4,7 +4,8 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..models.roles import Contact, Leader
 from ..models.schoolyear import SchoolYear
@@ -110,11 +111,15 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def contacts(self, obj):
         return ", ".join(c.contact for c in obj.all_contacts)
 
-    @attributes(allow_tags=True, short_description=_("user"))
+    @attributes(short_description=_("user"))
     def user_link(self, obj):
-        return '<a href="{url}">{user}</a>'.format(
-            url=reverse(f"admin:{obj.user._meta.app_label}_{obj.user._meta.model_name}_change", args=(obj.user.id,)),
-            user=obj.user,
+        return mark_safe(
+            '<a href="{url}">{user}</a>'.format(
+                url=reverse(
+                    f"admin:{obj.user._meta.app_label}_{obj.user._meta.model_name}_change", args=(obj.user.id,)
+                ),
+                user=obj.user,
+            )
         )
 
     @cached_property
@@ -129,34 +134,40 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
     def orderables_url(self):
         return reverse("admin:leprikon_orderable_changelist")
 
-    @attributes(allow_tags=True, short_description=_("courses"))
+    @attributes(short_description=_("courses"))
     def courses_link(self, obj):
-        return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
-            url=self.courses_url,
-            leader=obj.id,
-            count=obj.subjects.filter(subject_type__subject_type=SubjectType.COURSE).count(),
+        return mark_safe(
+            '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
+                url=self.courses_url,
+                leader=obj.id,
+                count=obj.subjects.filter(subject_type__subject_type=SubjectType.COURSE).count(),
+            )
         )
 
-    @attributes(allow_tags=True, short_description=_("events"))
+    @attributes(short_description=_("events"))
     def events_link(self, obj):
-        return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
-            url=self.events_url,
-            leader=obj.id,
-            count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+        return mark_safe(
+            '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
+                url=self.events_url,
+                leader=obj.id,
+                count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+            )
         )
 
-    @attributes(allow_tags=True, short_description=_("orderable events"))
+    @attributes(short_description=_("orderable events"))
     def orderables_link(self, obj):
-        return '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
-            url=self.orderables_url,
-            leader=obj.id,
-            count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+        return mark_safe(
+            '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
+                url=self.orderables_url,
+                leader=obj.id,
+                count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+            )
         )
 
-    @attributes(allow_tags=True, short_description=_("photo"))
+    @attributes(short_description=_("photo"))
     def icon(self, obj):
         try:
-            return '<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label)
+            return mark_safe('<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label))
         except (AttributeError, KeyError):
             return ""
 

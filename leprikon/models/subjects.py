@@ -12,7 +12,7 @@ from tempfile import NamedTemporaryFile
 from typing import List, Optional, Set
 from urllib.parse import urlencode
 
-import qrcode
+import segno
 from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
 from cms.models.pagemodel import Page
@@ -22,11 +22,10 @@ from django.db import models, transaction
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_text, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import ngettext, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 from django_pays import payment_url as pays_payment_url
 from django_pays.models import Payment as PaysPayment
 from djangocms_text_ckeditor.fields import HTMLField
@@ -325,7 +324,7 @@ class BaseAttachment(models.Model):
         verbose_name_plural = _("attachments")
 
     def __str__(self):
-        return force_text(self.file)
+        return str(self.file)
 
 
 class SubjectTypeAttachment(BaseAttachment):
@@ -1138,7 +1137,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return output.read()
 
     def write_qr_code(self, output):
-        qrcode.make(self.spayd, border=1).save(output)
+        segno.make(self.spayd).save(output)
 
     def write_pdf(self, event, output):
         if event == "payment_request":
@@ -1341,11 +1340,11 @@ class PersonMixin:
 
 class SchoolMixin:
     @cached_property
-    def school_name(self):
-        return self.school and smart_text(self.school) or self.school_other
+    def school_name(self) -> str:
+        return self.school and str(self.school) or self.school_other
 
     @cached_property
-    def school_and_class(self):
+    def school_and_class(self) -> str:
         return "{}, {}".format(self.school_name, self.school_class)
 
 

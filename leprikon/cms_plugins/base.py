@@ -1,5 +1,5 @@
 from cms.plugin_base import CMSPluginBase
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class LeprikonPluginBase(CMSPluginBase):

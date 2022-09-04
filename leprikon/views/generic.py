@@ -1,8 +1,7 @@
 from django.contrib import messages
 from django.urls import reverse_lazy as reverse
 from django.utils.functional import cached_property
-from django.utils.http import is_safe_url
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView as _CreateView,
     DeleteView as _DeleteView,
@@ -95,7 +94,7 @@ class BackViewMixin(object):
         url = self.request.POST.get(
             settings.LEPRIKON_PARAM_BACK, self.request.GET.get(settings.LEPRIKON_PARAM_BACK, "")
         )
-        if is_safe_url(url=url, host=self.request.get_host()):
+        if url.startswith("/"):
             return url
         else:
             return self.back_url

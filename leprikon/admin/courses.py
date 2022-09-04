@@ -2,12 +2,13 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminRadioSelect, FilteredSelectMultiple
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import F
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
 from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory, CourseVariant
@@ -308,7 +309,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             ),
         )
 
-    @attributes(allow_tags=True, short_description=_("discounts"))
+    @attributes(short_description=_("discounts"))
     def discounts(self, obj: CourseRegistration):
         html = []
         for status in obj.period_payment_statuses:
@@ -328,9 +329,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     icon=static("admin/img/icon-addlink.svg"),
                 )
             )
-        return "<br/>".join(html)
+        return mark_safe("<br/>".join(html))
 
-    @attributes(allow_tags=True, short_description=_("total price"))
+    @attributes(short_description=_("total price"))
     def total_price(self, obj: CourseRegistration):
         html = []
         for status in obj.period_payment_statuses:
@@ -341,9 +342,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     amount=currency(status.status.receivable),
                 )
             )
-        return "<br/>".join(html)
+        return mark_safe("<br/>".join(html))
 
-    @attributes(allow_tags=True, short_description=_("received payments"))
+    @attributes(short_description=_("received payments"))
     def received_payments(self, obj: CourseRegistration):
         html = []
         for period in obj.period_payment_statuses:
@@ -364,7 +365,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     icon=static("admin/img/icon-addlink.svg"),
                 )
             )
-        return "<br/>".join(html)
+        return mark_safe("<br/>".join(html))
 
 
 @admin.register(CourseDiscount)

@@ -3,7 +3,7 @@ from cms.toolbar.items import SubMenu
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 @toolbar_pool.register

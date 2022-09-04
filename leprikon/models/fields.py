@@ -6,7 +6,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
@@ -132,7 +132,7 @@ class BankAccountField(models.CharField):
         kwargs.setdefault("form_class", BankAccountFormField)
         return super().formfield(**kwargs)
 
-    def from_db_value(self, value: Optional[str], expression, connection, context):
+    def from_db_value(self, value: Optional[str], expression, connection):
         if value is None:
             return value
         return BankAccount(value)

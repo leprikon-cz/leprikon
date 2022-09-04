@@ -9,7 +9,7 @@ from django.contrib.auth.forms import (
     UserCreationForm as _UserCreationForm,
 )
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from verified_email_field.auth import EmailAuthenticationForm as _EmailAuthenticationForm
 from verified_email_field.forms import VerifiedEmailField
 

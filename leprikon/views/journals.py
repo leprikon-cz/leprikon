@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls.base import reverse_lazy as reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..forms.journals import JournalEntryForm, JournalForm, JournalLeaderEntryForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, Subject
