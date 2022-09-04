@@ -113,7 +113,12 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
 
     # basic fields
     transaction_type = models.CharField(_("payment type"), max_length=30, choices=TRANSACTION_TYPE_LABELS.items())
-    amount = PriceField(_("amount"), validators=[MinValueValidator(Decimal("0.01"))])
+    amount = models.DecimalField(
+        _("amount"),
+        decimal_places=2,
+        max_digits=10,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
     note = models.CharField(_("note"), max_length=300, blank=True, default="")
 
     # not editable

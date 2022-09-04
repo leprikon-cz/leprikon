@@ -1,9 +1,12 @@
+from typing import Any, Dict
+from urllib.parse import urlencode
 from bankreader.models import Transaction as BankreaderTransaction
 from django.conf.urls import url as urls_url
 from django.contrib import admin
 from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.html import format_html
@@ -151,15 +154,35 @@ class TransactionBaseAdmin(
 
 
 @admin.register(Transaction)
-class TrancactionAdmin(TransactionBaseAdmin):
+class TransactionAdmin(TransactionBaseAdmin):
     def get_model_perms(self, request):
         return {}
-
-    def has_add_permission(self, request):
-        return False
 
     def has_delete_permission(self, request, obj=None):
         return False
 
     def get_actions(self, request):
         return {}
+
+    def add_view(self, request: HttpRequest, form_url="", extra_context: Dict[str, Any] = None) -> HttpResponse:
+        try:
+            transaction = get_object_or_404(
+                BankreaderTransaction,
+                id=int(request.GET["bankreader_transaction"]),
+            )
+        except (KeyError, ValueError):
+            return HttpResponseBadRequest()
+        if transaction.amount > 0:
+            url = reverse("admin:leprikon_subjectreceivedpayment_add")
+            transaction_type = Transaction.PAYMENT_BANK
+        else:
+            url = reverse("admin:leprikon_subjectreturnedpayment_add")
+            transaction_type = Transaction.RETURN_BANK
+        query = urlencode(
+            dict(
+                bankreader_transaction=transaction.id,
+                amount=abs(transaction.amount),
+                transaction_type=transaction_type,
+            )
+        )
+        return HttpResponseRedirect(f"{url}?{query}")
