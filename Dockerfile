@@ -43,8 +43,8 @@ RUN apt-get -y --no-install-recommends install \
   libpython3.7
 RUN pip install poetry wheel
 COPY poetry.lock pyproject.toml ./
-RUN poetry export -f requirements.txt --without-hashes \
-  | pip wheel --wheel-dir=/app/dist -r /dev/stdin
+RUN poetry export -o requirements.txt --without-hashes \
+  && pip wheel --wheel-dir=/app/dist -r requirements.txt
 COPY README.rst /app/README.rst
 COPY leprikon /app/leprikon
 RUN poetry build --format wheel
