@@ -130,6 +130,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         message = ascii(message)
         site_name = ascii(LeprikonSite.objects.get_current().name)
         sum_amount = sum(rr.amount for rr in refund_requests if rr.amount)
+        amount_cents = round(sum_amount * 100)
 
         response = HttpResponse(content_type="text/abo; charset=ascii")
         response[
@@ -143,7 +144,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         # header, date, customer name, customer number, batch number range, unused
         lines.append(f"UHL1{today}{site_name[:20].ljust(20)}0000000000001999000000000000")
         lines.append(f"1 1501 {batch_id:03}000 {bank_account.bank_code}")
-        lines.append(f"2 {bank_account.account_code} {sum_amount}00 {today}")
+        lines.append(f"2 {bank_account.account_code} {amount_cents} {today}")
 
         # write records
 
