@@ -154,7 +154,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                     " ".join(
                         [
                             refund_request.bank_account.account_code,
-                            str(refund_request.amount * 100),
+                            str(round(refund_request.amount * 100)),
                             str(refund_request.registration.variable_symbol),
                             f"{refund_request.bank_account.bank_code}{constant_symbol:04}",
                             "0",  # specific symbol
