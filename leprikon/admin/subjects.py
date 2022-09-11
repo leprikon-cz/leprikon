@@ -776,7 +776,10 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
     def save_model(self, request, obj, form, change):
         if not change:
-            participants_count = int(form.data["participants-TOTAL_FORMS"])
+            if obj.subject.registration_type_participants:
+                participants_count = int(form.data["participants-TOTAL_FORMS"])
+            elif obj.subject.registration_type_groups:
+                participants_count = int(form.data["group_members-TOTAL_FORMS"])
             obj.price = (
                 obj.subject_variant.get_price(participants_count)
                 if obj.subject_variant
