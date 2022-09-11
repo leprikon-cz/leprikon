@@ -203,7 +203,7 @@ class Migration(migrations.Migration):
                 "INSERT INTO leprikon_coursevariant (subjectvariant_ptr_id, allow_period_selection, school_year_division_id) "
                 "SELECT sv.id, c.allow_period_selection, c.school_year_division_id "
                 "FROM leprikon_subjectvariant sv "
-                "LEFT JOIN leprikon_course c ON c.subject_ptr_id = sv.subject_id;"
+                "JOIN leprikon_course c ON c.subject_ptr_id = sv.subject_id;"
             ),
             reverse_sql="DELETE FROM leprikon_coursevariant;",
         ),
