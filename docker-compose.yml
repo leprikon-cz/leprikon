@@ -18,7 +18,7 @@ services:
       EMAIL_HOST_USER: leprikon
       EMAIL_HOST_PASSWORD: EMAIL_HOST_PASSWORD
       EMAIL_SUBJECT_PREFIX: '[Leprikón]'
-      LEPRIKON_DOMAIN: example.leprikon.cz
+      #LEPRIKON_DOMAIN: your.domain.local
       CACHE_LOCATION: unix:///var/run/redis/redis.sock
       SECRET_KEY: SECRET_KEY
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'

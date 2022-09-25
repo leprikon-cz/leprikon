@@ -16,6 +16,10 @@ mkdir leprikon && cd leprikon
 # download docker-compose configuration
 wget https://raw.githubusercontent.com/leprikon-cz/leprikon/master/docker-compose.yml
 
+# if your instance is exposed to the internet and dns record pointed to your IP you can uncomment line LEPRIKON_DOMAIN and change to your desired domain.
+# then Lets Encrypt certificate will be automatically generated for your domain
+# if you want to use reverse proxy or only for testing then leave as is
+
 # start the application containers
 # (you need docker-compose installed and docker service running)
 sudo docker-compose up -d
