@@ -57,7 +57,7 @@ class PdfExportAdminMixin:
 
         # create PDF response object
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(obj.get_pdf_filename(event))
+        response["Content-Disposition"] = 'filename="{}"'.format(obj.get_pdf_filename(event))
 
         # write PDF to response
         return obj.write_pdf(event, response)
