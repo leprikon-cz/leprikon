@@ -154,7 +154,7 @@ class SubjectJournalsView(SubjectTypeMixin, DetailView):
     def get_title(self):
         return _("Journals of {subject_type} {subject}").format(
             subject_type=self.subject_type.name_genitiv,
-            subject=self.object,
+            subject=self.object.display_name,
         )
 
 
