@@ -197,6 +197,7 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display = ("id", "journal_name", "date", "start", "end", "duration", "agenda_html")
     list_filter = (
         ("journal__subject__school_year", SchoolYearListFilter),
+        ("journal__leaders", LeaderListFilter),
         ("journal", JournalListFilter),
     )
     filter_horizontal = ("participants", "participants_instructed")
