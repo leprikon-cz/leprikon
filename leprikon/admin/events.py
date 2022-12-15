@@ -130,6 +130,7 @@ class EventAdmin(SubjectBaseAdmin):
         return (
             get_user_model()
             .objects.filter(
+                leprikon_registrations__canceled=None,
                 leprikon_registrations__subject__in=queryset,
             )
             .distinct()
