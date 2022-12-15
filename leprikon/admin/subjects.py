@@ -277,7 +277,13 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         )
 
     def get_message_recipients(self, request, queryset):
-        return get_user_model().objects.filter(leprikon_subjectregistrations__subject__in=queryset).distinct()
+        return (
+            get_user_model()
+            .objects.filter(
+                leprikon_registrations__canceled=None,
+                leprikon_registrations__subject__in=queryset,
+            ).distinct()
+        )
 
     @attributes(allow_tags=True, short_description=_("registrations"))
     def get_registrations_link(self, obj):
