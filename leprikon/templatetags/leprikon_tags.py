@@ -186,7 +186,8 @@ def upstream(url, xpath, *replacements):
                 print_exc()
             else:
                 content = re.sub(pattern, repl, content)
-        return mark_safe(b"".join(tostring(node) for node in fromstring(content).xpath(xpath)))
+        result_bytes = b"".join(tostring(node) for node in fromstring(content).xpath(xpath))
+        return mark_safe(result_bytes.decode())
     except Exception:
         print_exc()
         return ""
