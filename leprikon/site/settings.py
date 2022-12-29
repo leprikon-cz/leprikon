@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "menus",
     "multiselectfield",
     "sekizai",
+    "template_admin",
     "treebeard",
     "filer",
     "easy_thumbnails",
@@ -112,9 +113,19 @@ CRON_SEND_PAYMENT_REQUEST_TIME = os.environ.get("CRON_SEND_PAYMENT_REQUEST_TIME"
 
 ROOT_URLCONF = os.environ.get("ROOT_URLCONF", "leprikon.site.urls")
 
-TEMPLATE_LOADERS = [
+BASE_TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader",
+]
+TEMPLATE_LOADERS = [
+    (
+        "template_admin.loader.Loader",
+        BASE_TEMPLATE_LOADERS
+        if DEBUG_TEMPLATE
+        else [
+            ("django.template.loaders.cached.Loader", BASE_TEMPLATE_LOADERS),
+        ],
+    ),
 ]
 
 TEMPLATES = [
@@ -138,14 +149,7 @@ TEMPLATES = [
                 "social_django.context_processors.login_redirect",
             ],
             "debug": DEBUG_TEMPLATE,
-            "loaders": TEMPLATE_LOADERS
-            if DEBUG_TEMPLATE
-            else [
-                (
-                    "django.template.loaders.cached.Loader",
-                    TEMPLATE_LOADERS,
-                ),
-            ],
+            "loaders": TEMPLATE_LOADERS,
         },
     },
 ]
