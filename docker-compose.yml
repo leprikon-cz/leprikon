@@ -50,7 +50,7 @@ services:
       - ./mysql:/var/lib/mysql
 
   smtp:
-    image: catatnight/postfix
+    image: panmourovaty/postfix
     environment:
       maildomain: leprikon.cz
       smtp_user: leprikon:EMAIL_HOST_PASSWORD
