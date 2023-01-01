@@ -149,11 +149,8 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
     search_fields = ("name", "description")
     save_as = True
 
-    @property
-    def media(self):
-        m = super().media
-        m.add_js(["leprikon/js/Popup.js"])
-        return m
+    class Media:
+        js = ["leprikon/js/Popup.js"]
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and len(request.POST) == 4:
@@ -285,7 +282,8 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
             .objects.filter(
                 leprikon_registrations__canceled=None,
                 leprikon_registrations__subject__in=queryset,
-            ).distinct()
+            )
+            .distinct()
         )
 
     @attributes(short_description=_("registrations"))
@@ -597,12 +595,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         "user",
     )
 
-    @property
-    def media(self):
-        m = super().media
-        m.add_js(["leprikon/js/Popup.js"])
-        m.add_css({"all": ["leprikon/css/registrations.changelist.css"]})
-        return m
+    class Media:
+        css = {"all": ["leprikon/css/registrations.changelist.css"]}
+        js = ["leprikon/js/Popup.js"]
 
     def has_delete_permission(self, request, obj=None):
         if obj and obj.approved is None and obj.received_payments.count() == 0 and obj.returned_payments.count() == 0:

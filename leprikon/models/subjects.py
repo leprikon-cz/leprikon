@@ -1027,7 +1027,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     @cached_property
     def price_text(self) -> str:
         price = currency(self.price)
-        school_year_division: Optional[SchoolYearDivision] = SchoolYearDivision.objects.filter(course_registrations__id=self.id).first()
+        school_year_division: Optional[SchoolYearDivision] = SchoolYearDivision.objects.filter(
+            course_registrations__id=self.id
+        ).first()
         if school_year_division:
             return f"{price} / {school_year_division.price_unit_name}"
         return price
