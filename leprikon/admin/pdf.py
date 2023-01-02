@@ -24,7 +24,7 @@ class PdfExportAdminMixin:
             pdf_data.seek(0)
             pdf = PdfReader(pdf_data)
             for i in range(len(pdf.pages)):
-                writer.add_page(pdf.page[i])
+                writer.add_page(pdf.pages[i])
 
         # create PDF response object
         response = HttpResponse(content_type="application/pdf")
