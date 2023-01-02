@@ -188,7 +188,7 @@ class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     form = CourseRegistrationAdminForm
     subject_type_type = SubjectType.COURSE
-    actions = ("add_discounts",)
+    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
 
     def get_form(self, request, obj=None, **kwargs):

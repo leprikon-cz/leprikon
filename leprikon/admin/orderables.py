@@ -138,7 +138,7 @@ class OrderableAdmin(SubjectBaseAdmin):
 @admin.register(OrderableRegistration)
 class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.ORDERABLE
-    actions = ("add_discounts",)
+    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
     list_display = (
         SubjectRegistrationBaseAdmin.list_display[:3] + ("event_date",) + SubjectRegistrationBaseAdmin.list_display[3:]
     )

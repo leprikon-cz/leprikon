@@ -140,7 +140,7 @@ class EventAdmin(SubjectBaseAdmin):
 @admin.register(EventRegistration)
 class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     subject_type_type = SubjectType.EVENT
-    actions = ("add_discounts",)
+    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
 
     @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):
