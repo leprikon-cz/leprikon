@@ -28,7 +28,7 @@ class TimesheetEntryAdmin(AdminExportMixin, admin.ModelAdmin):
             return ("timesheet", "entry_type", "date", "start", "end")
         return ()
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -47,7 +47,7 @@ class TimesheetEntryInlineAdmin(admin.TabularInline):
     ordering = ("date", "start")
     readonly_fields = ("date", "start", "end", "entry_type", "description_html", "edit_link")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -79,7 +79,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
 
     # do not allow to add timesheets in admin
     # timesheets are created automatically
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     # do not allow to delete submitted timesheets

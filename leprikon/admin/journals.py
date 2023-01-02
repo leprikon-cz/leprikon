@@ -140,7 +140,7 @@ class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     )
     ordering = ("-journal_entry__date", "-start")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -164,7 +164,7 @@ class JournalLeaderEntryInlineAdmin(admin.TabularInline):
     ordering = ("journal_entry__date", "start")
     readonly_fields = ("date", "start", "end", "edit_link")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -208,7 +208,7 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
         "date",
     )
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):

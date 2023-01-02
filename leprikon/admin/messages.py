@@ -158,7 +158,7 @@ class MessageRecipientAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
         return {}
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
