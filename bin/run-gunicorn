@@ -1,11 +1,18 @@
 #!/bin/bash
 
+
+# run leprikon collectstatic on first boot (unless AUTO_COLLECTSTATIC=0|n|no|f|false)
+if [[ ! "${AUTO_COLLECTSTATIC,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .collected ]; then
+    leprikon collectstatic --no-input && touch .collected
+fi
+
 # run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
-if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]]; then
+if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
     while ! su -s /bin/bash -c 'exec leprikon migrate --no-input' www-data; do
         echo "Waiting for DB to start ..."
         sleep 5
     done
+    touch .migrated
 fi
 
 # ensure ownership of likely mounted directories
