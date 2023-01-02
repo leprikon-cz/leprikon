@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from filer.fields.file import FilerFileField
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.units import mm
 
@@ -28,13 +28,13 @@ class PrintSetup(models.Model):
 
     @cached_property
     def background_pdf(self):
-        return PdfFileReader(self.background.file) if self.background else None
+        return PdfReader(self.background.file) if self.background else None
 
     @cached_property
     def page_size(self):
         if self.background:
-            mediaBox = self.background_pdf.getPage(0).mediaBox
-            return [int(mediaBox[2]), int(mediaBox[3])]
+            mediabox = self.background_pdf.pages[0].mediabox
+            return [int(mediabox[2]), int(mediabox[3])]
         else:
             return portrait(A4)
 

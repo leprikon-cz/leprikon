@@ -7,7 +7,7 @@ from django.template.loader import select_template
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfWriter
 
 from ..conf import settings
 from .leprikonsite import LeprikonSite
@@ -102,17 +102,17 @@ class PdfExportAndMailMixin(object):
 
         # merge with background
         if print_setup.background:
-            template_pdf = PdfFileReader(print_setup.background.file)
-            registration_pdf = PdfFileReader(BytesIO(pdf_content))
-            writer = PdfFileWriter()
+            template_pdf = PdfReader(print_setup.background.file)
+            registration_pdf = PdfReader(BytesIO(pdf_content))
+            writer = PdfWriter()
             # merge pages from both template and registration
-            for i in range(registration_pdf.getNumPages()):
-                if i < template_pdf.getNumPages():
-                    page = template_pdf.getPage(i)
-                    page.mergePage(registration_pdf.getPage(i))
+            for i in range(len(registration_pdf.pages)):
+                if i < len(template_pdf.pages):
+                    page = template_pdf.pages[i]
+                    page.merge_page(registration_pdf.pages[i])
                 else:
-                    page = registration_pdf.getPage(i)
-                writer.addPage(page)
+                    page = registration_pdf.pages[i]
+                writer.add_page(page)
             # write result to output
             writer.write(output)
         else:

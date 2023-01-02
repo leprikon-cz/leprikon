@@ -5,7 +5,7 @@ from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfWriter
 
 from ..utils import attributes
 
@@ -17,14 +17,14 @@ class PdfExportAdminMixin:
     @attributes(short_description=_("Export selected items in single PDF"))
     def export_pdf(self, request, queryset):
         # create PDF
-        writer = PdfFileWriter()
+        writer = PdfWriter()
         for obj in queryset.iterator():
             pdf_data = BytesIO()
             obj.write_pdf(self.pdf_event, pdf_data)
             pdf_data.seek(0)
-            pdf = PdfFileReader(pdf_data)
-            for i in range(pdf.getNumPages()):
-                writer.addPage(pdf.getPage(i))
+            pdf = PdfReader(pdf_data)
+            for i in range(len(pdf.pages)):
+                writer.add_page(pdf.page[i])
 
         # create PDF response object
         response = HttpResponse(content_type="application/pdf")
