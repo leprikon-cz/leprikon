@@ -145,7 +145,9 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ("age_groups", "target_groups", "groups", "leaders", "questions", "registration_agreements")
-    actions = ("set_registration_dates",)
+    actions = (
+        SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions + ("set_registration_dates",)
+    )
     search_fields = ("name", "description")
     save_as = True
 
@@ -451,14 +453,19 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
 
 class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdminMixin, admin.ModelAdmin):
     actions = (
-        "approve",
-        "refuse",
-        "request_payment",
-        "offer_refund",
-        "generate_refund_request",
-        "export_invoices_xml",
-        "cancel",
-        "cancel_cancelation_request",
+        SendMessageAdminMixin.actions
+        + SendMailAdminMixin.actions
+        + AdminExportMixin.actions
+        + (
+            "approve",
+            "refuse",
+            "request_payment",
+            "offer_refund",
+            "generate_refund_request",
+            "export_invoices_xml",
+            "cancel",
+            "cancel_cancelation_request",
+        )
     )
     form = RegistrationAdminForm
     inlines = (RegistrationBillingInfoInlineAdmin,)

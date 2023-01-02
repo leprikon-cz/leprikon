@@ -75,7 +75,7 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
     list_display = ("leader", "period", "group_durations", "submitted", "paid")
     list_filter = (("leader", LeaderListFilter), "period")
     inlines = (TimesheetEntryInlineAdmin, JournalLeaderEntryInlineAdmin)
-    actions = ("submit", "set_paid")
+    actions = AdminExportMixin.actions + ("submit", "set_paid")
 
     # do not allow to add timesheets in admin
     # timesheets are created automatically

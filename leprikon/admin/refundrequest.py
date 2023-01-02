@@ -21,7 +21,7 @@ from .utils import datetime_with_by
 
 @admin.register(RefundRequest)
 class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
-    actions = ("export_as_abo",)
+    actions = AdminExportMixin.actions + ("export_as_abo",)
     date_hierarchy = "requested"
     ordering = ("-requested",)
     list_display = (

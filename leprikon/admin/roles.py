@@ -48,7 +48,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         "contacts__public",
     )
     ordering = ("user__first_name", "user__last_name")
-    actions = ("add_school_year",)
+    actions = SendMessageAdminMixin.actions + AdminExportMixin.actions + ("add_school_year",)
     list_filter = (("school_years", SchoolYearListFilter),)
     raw_id_fields = ("user",)
 

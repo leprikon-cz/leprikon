@@ -67,7 +67,7 @@ class EventAdmin(SubjectBaseAdmin):
         "note",
     )
     date_hierarchy = "start_date"
-    actions = (
+    actions = SubjectBaseAdmin.actions + (
         "publish",
         "unpublish",
         "copy_to_school_year",

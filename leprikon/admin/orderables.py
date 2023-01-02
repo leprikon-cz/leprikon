@@ -62,7 +62,7 @@ class OrderableAdmin(SubjectBaseAdmin):
         "get_unapproved_registrations_count",
         "note",
     )
-    actions = (
+    actions = SubjectBaseAdmin.actions + (
         "publish",
         "unpublish",
         "copy_to_school_year",

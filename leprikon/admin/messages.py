@@ -27,7 +27,7 @@ def messagerecipient_send_mails(request, message, recipients, media):
     )
 
 
-class SendMessageAdminMixin(object):
+class SendMessageAdminMixin:
     actions = ("send_message", "add_to_message")
 
     def get_message_recipients(self, request, queryset):

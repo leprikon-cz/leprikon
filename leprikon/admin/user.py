@@ -43,7 +43,9 @@ class IsLeaderListFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(AdminExportMixin, SendMessageAdminMixin, _UserAdmin):
-    actions = ("merge", "reset_password")
+    actions = (
+        _UserAdmin.actions + SendMessageAdminMixin.actions + AdminExportMixin.actions + ("merge", "reset_password")
+    )
     add_form = UserAdminCreateForm
     add_fieldsets = (
         (
