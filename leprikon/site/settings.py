@@ -280,6 +280,8 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     "staticfiles_downloader.DownloaderFinder",
 ]
+if not DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")] if os.path.exists(os.path.join(BASE_DIR, "locale")) else []
 

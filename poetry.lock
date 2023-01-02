@@ -869,18 +869,18 @@ django-classy-tags = ">=3.0"
 
 [[package]]
 name = "django-staticfiles-downloader"
-version = "1.0.0"
+version = "1.1.0"
 description = "Django staticfiles extension to download third-party static files"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4"
+python-versions = "*"
 files = [
-    {file = "django-staticfiles-downloader-1.0.0.tar.gz", hash = "sha256:18a97eac1728b26ee8f3ed703b586884b525276cc8abeb68a44d9f51aea4910c"},
-    {file = "django_staticfiles_downloader-1.0.0-py3-none-any.whl", hash = "sha256:fa008814f2d2b4de03d96a0addb656938563efa1d298aa9b6ca8302833a9f914"},
+    {file = "django-staticfiles-downloader-1.1.0.tar.gz", hash = "sha256:94ea9adc0e0b502ec838e721821dff2f076e442fae71249af47e76b86c232f71"},
 ]
 
 [package.dependencies]
-Django = ">=3.0,<4"
+Django = ">=2"
+pytz = "*"
 
 [[package]]
 name = "django-template-admin"
@@ -2779,4 +2779,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b739bffc157ee65a3b70a4eacaec7058514c4e1b17e06e7a317f7e534c41117c"
+content-hash = "f9c1f4ec8647aa4c4ac800f26d36555e2b68e2402d5b29e21cb4be7d5d0b25a9"
