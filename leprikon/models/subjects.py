@@ -1147,7 +1147,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return output.read()
 
     def write_qr_code(self, output):
-        segno.make(self.spayd).save(output)
+        segno.make(self.spayd).save(output, kind="PNG")
 
     def write_pdf(self, event, output):
         if event == "payment_request":
