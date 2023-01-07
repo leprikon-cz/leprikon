@@ -169,7 +169,7 @@ class BankAccount(IBAN):
     def __init__(self, bank_account: str):
         match = self.czech_bban_regex.match(bank_account)
         if match:
-            x, prefix, account, bank_code = match.groups()
+            _, prefix, account, bank_code = match.groups()
             self._validate_czech(prefix or "")
             self._validate_czech(account)
             account_code = (prefix or "").zfill(6) + account.zfill(10)
@@ -178,11 +178,11 @@ class BankAccount(IBAN):
 
     @cached_property
     def account_prefix(self):
-        return self.account_code[:6].lstrip("0")
+        return self.branch_code.lstrip("0")
 
     @cached_property
     def account_number(self):
-        return self.account_code[6:].lstrip("0")
+        return self.account_code.lstrip("0")
 
     def __str__(self):
         if self.country_code == "CZ":
