@@ -57,7 +57,6 @@ class EventAdmin(SubjectBaseAdmin):
         "end_time",
         "place",
         "public",
-        "price",
         "min_participants_count",
         "max_participants_count",
         "min_registrations_count",
