@@ -112,10 +112,11 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
     price_units_count = models.DecimalField(_("number of price units"), default=1, decimal_places=2, max_digits=10)
     due_from = models.DateField(_("due from"))
     due_date = models.DateField(_("due date"))
+    order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("start",)
+        ordering = ("order",)
         verbose_name = _("school year period")
         verbose_name_plural = _("school year periods")
 
