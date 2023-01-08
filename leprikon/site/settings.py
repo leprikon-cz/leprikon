@@ -281,7 +281,7 @@ STATICFILES_FINDERS = [
     "staticfiles_downloader.DownloaderFinder",
 ]
 if not DEBUG:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+    STATICFILES_STORAGE = "leprikon.staticfiles.NotStrictManifestStaticFilesStorage"
 
 LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")] if os.path.exists(os.path.join(BASE_DIR, "locale")) else []
 
