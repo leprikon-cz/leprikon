@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import datetime, timedelta
+from typing import Optional
 
 from django.db import models
 from django.urls import reverse_lazy as reverse
@@ -17,9 +18,9 @@ from .times import AbstractTime, TimesMixin
 
 
 class JournalPeriod:
-    def __init__(self, journal, period=None):
-        self.journal = journal
-        self.period = period
+    def __init__(self, journal: "Journal", period: SchoolYearPeriod = None):
+        self.journal: Journal = journal
+        self.period: Optional[SchoolYearPeriod] = period
 
     @property
     def all_journal_entries(self):
@@ -112,10 +113,9 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
 
     @cached_property
     def all_journal_periods(self):
-        try:
-            return [JournalPeriod(self, period) for period in self.subject.course.all_periods]
-        except AttributeError:
-            return [JournalPeriod(self)]
+        if self.school_year_division:
+            return [JournalPeriod(self, period) for period in self.school_year_division.all_periods]
+        return [JournalPeriod(self)]
 
     @cached_property
     def all_leaders(self):
