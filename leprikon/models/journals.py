@@ -10,6 +10,7 @@ from djangocms_text_ckeditor.fields import HTMLField
 from ..utils import attributes
 from .pdfmail import PdfExportAndMailMixin
 from .roles import Leader
+from .schoolyear import SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
 from .subjects import Subject, SubjectRegistrationParticipant
 from .times import AbstractTime, TimesMixin
@@ -22,13 +23,7 @@ class JournalPeriod:
 
     @property
     def all_journal_entries(self):
-        qs = self.journal.journal_entries.all()
-        if self.period:
-            if self.period != self.journal.subject.course.all_periods[0]:
-                qs = qs.filter(date__gte=self.period.start)
-            if self.period != self.journal.subject.course.all_periods[-1]:
-                qs = qs.filter(date__lte=self.period.end)
-        return list(qs)
+        return list(self.journal.journal_entries.filter(period=self.period))
 
     @cached_property
     def all_participants(self):
@@ -37,8 +32,12 @@ class JournalPeriod:
                 participant
                 for participant in self.journal.all_participants
                 if (
-                    participant.approved.date() <= self.period.end
-                    and (participant.canceled is None or participant.canceled.date() >= self.period.start)
+                    (self.period.end is None or participant.approved.date() <= self.period.end)
+                    and (
+                        participant.canceled is None
+                        or self.period.start is None
+                        or participant.canceled.date() >= self.period.start
+                    )
                 )
             ]
         else:  # event
@@ -83,6 +82,13 @@ class JournalPeriod:
 class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
     object_name = "journal"
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="journals", verbose_name=_("subject"))
+    school_year_division = models.ForeignKey(
+        SchoolYearDivision,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="journals",
+        verbose_name=_("school year division"),
+    )
     name = models.CharField(_("journal name"), blank=True, default="", max_length=150)
     leaders = models.ManyToManyField(Leader, blank=True, related_name="journals", verbose_name=_("leaders"))
     participants = models.ManyToManyField(
@@ -141,6 +147,13 @@ class JournalTime(AbstractTime):
 class JournalEntry(StartEndMixin, models.Model):
     journal = models.ForeignKey(
         Journal, editable=False, on_delete=models.PROTECT, related_name="journal_entries", verbose_name=_("journal")
+    )
+    period = models.ForeignKey(
+        SchoolYearPeriod,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="journal_entries",
+        verbose_name=_("school year period"),
     )
     date = models.DateField(_("date"))
     start = models.TimeField(_("start time"), blank=True, null=True)

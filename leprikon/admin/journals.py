@@ -33,6 +33,10 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
     )
     raw_id_fields = ("subject",)
 
+    # do not allow to add journals in admin
+    def has_add_permission(self, request, obj=None):
+        return False
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and len(request.POST) == 3:
             return HttpResponseRedirect(f"{request.path}?subject=" + request.POST.get("subject", ""))

@@ -7,7 +7,8 @@ from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettex
 
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
-from ..models.subjects import SubjectRegistrationParticipant
+from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
+from ..models.subjects import SubjectRegistrationParticipant, SubjectType
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated, first_upper
 from .fields import ReadonlyField
@@ -18,7 +19,7 @@ from .widgets import CheckboxSelectMultipleBootstrap
 class JournalAdminForm(forms.ModelForm):
     class Meta:
         model = Journal
-        exclude = []
+        exclude = ["subject", "school_year_division"]
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
@@ -27,32 +28,55 @@ class JournalAdminForm(forms.ModelForm):
         leaders_choices = self.fields["leaders"].widget.choices
         leaders_choices.queryset = leaders_choices.queryset.filter(subjects=self.subject)
 
-        participant_ids = set(
-            SubjectRegistrationParticipant.objects.filter(
-                registration__approved__isnull=False,
-                registration__subject_id=self.subject.id,
-            ).values_list("id", flat=True)
-        )
-        if self.instance.id:
-            participant_ids |= set(self.instance.participants.values_list("id", flat=True))
-            participant_ids |= set(
-                SubjectRegistrationParticipant.objects.filter(
-                    journal_entries__journal=self.instance,
-                ).values_list("id", flat=True),
+        # limit choices of participants
+        participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject=self.subject)
+
+        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+            participants_qs = participants_qs.filter(
+                registration__courseregistration__school_year_division=self.instance.school_year_division
             )
+
+        participant_ids = set(participants_qs.values_list("id", flat=True))
+        participant_ids |= set(self.instance.participants.values_list("id", flat=True))
+        participant_ids |= set(
+            SubjectRegistrationParticipant.objects.filter(
+                journal_entries__journal=self.instance,
+            ).values_list("id", flat=True),
+        )
         self.fields["participants"].widget.choices.queryset = SubjectRegistrationParticipant.objects.filter(
             id__in=participant_ids
         )
 
 
-class JournalForm(FormMixin, forms.ModelForm):
+class JournalCreateForm(FormMixin, forms.ModelForm):
+    class Meta:
+        model = Journal
+        fields = ["name", "school_year_division"]
+
+    def __init__(self, *args, **kwargs):
+        self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
+        super().__init__(*args, **kwargs)
+        self.instance.subject = self.subject
+        self.readonly_fields = [
+            ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
+        ]
+
+        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+            self.fields["school_year_division"].widget.choices.queryset = SchoolYearDivision.objects.filter(
+                course_registrations__subject=self.subject
+            ).distinct()
+        else:
+            del self.fields["school_year_division"]
+
+
+class JournalUpdateForm(FormMixin, forms.ModelForm):
     JournalTimeFormset = inlineformset_factory(
         Journal, JournalTime, fields=["day_of_week", "start", "end"], can_delete=True, extra=1
     )
 
     class Meta:
         model = Journal
-        exclude = ["subject"]
+        exclude = ["subject", "school_year_division"]
         widgets = {
             "leaders": CheckboxSelectMultipleBootstrap(),
             "participants": CheckboxSelectMultipleBootstrap(),
@@ -65,25 +89,31 @@ class JournalForm(FormMixin, forms.ModelForm):
         self.readonly_fields = [
             ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
         ]
-        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
 
-        participant_ids = set(
-            SubjectRegistrationParticipant.objects.filter(
-                registration__approved__isnull=False,
-                registration__subject_id=self.subject.id,
-            ).values_list("id", flat=True)
-        )
-        if self.instance.id:
-            participant_ids |= set(self.instance.participants.values_list("id", flat=True))
-            participant_ids |= set(
-                SubjectRegistrationParticipant.objects.filter(
-                    journal_entries__journal=self.instance,
-                ).values_list("id", flat=True),
+        participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject_id=self.subject.id)
+
+        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+            self.readonly_fields.append(
+                ReadonlyField(label=_("school year division"), value=self.instance.school_year_division),
             )
+            participants_qs = participants_qs.filter(
+                registration__courseregistration__school_year_division=self.instance.school_year_division
+            )
+
+        participant_ids = set(participants_qs.values_list("id", flat=True))
+        participant_ids |= set(self.instance.participants.values_list("id", flat=True))
+        participant_ids |= set(
+            SubjectRegistrationParticipant.objects.filter(
+                journal_entries__journal=self.instance,
+            ).values_list("id", flat=True),
+        )
         self.fields["participants"].widget.choices = tuple(
             (participant.id, participant)
             for participant in SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
         )
+
+        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
+
         self.inline_formsets = [self.JournalTimeFormset(data=kwargs.get("data"), instance=kwargs.get("instance"))]
 
     def is_valid(self) -> bool:
@@ -154,7 +184,7 @@ class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
 class JournalEntryAdminForm(forms.ModelForm):
     class Meta:
         model = JournalEntry
-        fields = ["date", "start", "end", "agenda", "participants", "participants_instructed"]
+        fields = ["period", "date", "start", "end", "agenda", "participants", "participants_instructed"]
 
     def __init__(self, *args, **kwargs):
         self.journal = kwargs.pop("journal", None) or kwargs["instance"].journal
@@ -174,6 +204,7 @@ class JournalEntryAdminForm(forms.ModelForm):
             last = self.instance.journal.journal_entries.last()
             if last:
                 last_end = last.datetime_end or last.date
+                self.initial["period"] = last.period
             else:
                 last_end = None
             next_time = self.instance.journal.get_next_time(last_end)
@@ -187,6 +218,14 @@ class JournalEntryAdminForm(forms.ModelForm):
                 d = self.fields["date"].clean(kwargs["data"]["date"])
             except (KeyError, TypeError, ValidationError):
                 d = self.initial["date"]
+
+        if self.instance.journal.subject.subject_type.subject_type == SubjectType.COURSE:
+            self.fields["period"].widget.choices.queryset = SchoolYearPeriod.objects.filter(
+                school_year_division=self.instance.journal.subject.course.school_year_division
+            )
+        else:
+            del self.fields["period"]
+
         self.fields["participants"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
         self.fields["participants"].help_text = None
 

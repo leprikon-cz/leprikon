@@ -3,8 +3,9 @@ from django.shortcuts import get_object_or_404
 from django.urls.base import reverse_lazy as reverse
 from django.utils.translation import gettext_lazy as _
 
-from ..forms.journals import JournalEntryForm, JournalForm, JournalLeaderEntryForm
+from ..forms.journals import JournalCreateForm, JournalEntryForm, JournalLeaderEntryForm, JournalUpdateForm
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, Subject
+from ..utils import reverse_with_back
 from .generic import CreateView, DeleteView, DetailView, TemplateView, UpdateView
 
 
@@ -35,7 +36,7 @@ class JournalView(JournalQuerySetMixin, DetailView):
 
 class JournalCreateView(CreateView):
     model = Journal
-    form_class = JournalForm
+    form_class = JournalCreateForm
     template_name = "leprikon/journal_form.html"
     title = _("New journal")
 
@@ -44,7 +45,6 @@ class JournalCreateView(CreateView):
         if not self.request.user.is_staff:
             kwargs["leaders"] = self.request.leader
         self.subject = get_object_or_404(Subject, **kwargs)
-        self.success_url = reverse("leprikon:subject_journals", args=(self.subject.subject_type.slug, self.subject.id))
         return super().dispatch(request)
 
     def get_form_kwargs(self):
@@ -55,10 +55,13 @@ class JournalCreateView(CreateView):
     def get_message(self):
         return _("New journal {} has been created.").format(self.object)
 
+    def get_success_url(self):
+        return reverse_with_back(self.request, "leprikon:journal_update", args=(self.object.id,))
+
 
 class JournalUpdateView(JournalQuerySetMixin, UpdateView):
     model = Journal
-    form_class = JournalForm
+    form_class = JournalUpdateForm
     success_url = reverse("leprikon:summary")
     template_name = "leprikon/journal_form.html"
     title = _("Change journal")
