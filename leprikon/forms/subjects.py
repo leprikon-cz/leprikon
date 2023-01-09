@@ -601,7 +601,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
         # choices for subject_variant
         if self.instance.subject.all_variants:
-            self.fields["subject_variant"].widget.choices.queryset = self.instance.subject.variants
+            self.fields["subject_variant"].widget.choices.queryset = self.instance.subject.variants.all()
         else:
             del self.fields["subject_variant"]
 
@@ -906,7 +906,7 @@ class RegistrationAdminForm(forms.ModelForm):
         super().__init__(data, *args, **kwargs)
 
         if "subject_variant" in self.fields:
-            self.fields["subject_variant"].widget.choices.queryset = self.subject.variants
+            self.fields["subject_variant"].widget.choices.queryset = self.subject.variants.all()
 
         # choices for agreement options
         instance = kwargs.get("instance")
