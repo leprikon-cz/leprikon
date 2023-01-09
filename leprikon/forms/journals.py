@@ -94,7 +94,7 @@ class JournalUpdateForm(FormMixin, forms.ModelForm):
 
         if self.subject.subject_type.subject_type == SubjectType.COURSE:
             self.readonly_fields.append(
-                ReadonlyField(label=_("school year division"), value=self.instance.school_year_division),
+                ReadonlyField(label=first_upper(_("school year division")), value=self.instance.school_year_division),
             )
             participants_qs = participants_qs.filter(
                 registration__courseregistration__school_year_division=self.instance.school_year_division
