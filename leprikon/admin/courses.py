@@ -275,9 +275,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                         ),
                         explanation=form.cleaned_data["explanation"],
                     )
-                    for registration in queryset.annotate(
-                        school_year_division_id=F("subject__course__school_year_division_id")
-                    )
+                    for registration in queryset.all()
                     for registration_period in registration.course_registration_periods.filter(
                         period__in=form.cleaned_data[f"periods_{registration.school_year_division_id}"]
                     )
