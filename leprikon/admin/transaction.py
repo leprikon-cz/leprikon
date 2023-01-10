@@ -118,6 +118,7 @@ class TransactionAdminMixin:
 class TransactionBaseAdmin(
     TransactionAdminMixin, PdfExportAdminMixin, SendMailAdminMixin, AdminExportMixin, admin.ModelAdmin
 ):
+    actions = AdminExportMixin.actions + SendMailAdminMixin.actions + PdfExportAdminMixin.actions
     list_display = ("id", "accounted_with_by", "transaction_type", "amount", "last_updated_with_by", "note")
     closed_fields = ("accounted", "amount", "target_registration", "source_registration", "donor", "organization")
     list_editable = ("note",)

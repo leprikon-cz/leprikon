@@ -238,5 +238,6 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
 
 @admin.register(OrderableDiscount)
 class OrderableDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
+    actions = SubjectDiscountBaseAdmin.actions + PdfExportAdminMixin.actions
     list_display = ("accounted", "registration", "subject", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "amount", "explanation")

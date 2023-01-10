@@ -2,7 +2,6 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminRadioSelect, FilteredSelectMultiple
 from django.contrib.auth import get_user_model
-from django.db.models import F
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -369,6 +368,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
 @admin.register(CourseDiscount)
 class CourseDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
+    actions = SubjectDiscountBaseAdmin.actions + PdfExportAdminMixin.actions
     form = CourseDiscountAdminForm
     list_display = ("accounted", "registration", "subject", "period", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "period", "amount", "explanation")

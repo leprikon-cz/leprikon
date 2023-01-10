@@ -130,6 +130,9 @@ class SubjectVariantInlineAdmin(admin.StackedInline):
 
 class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
     registration_model = None
+    actions = (
+        SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions + ("set_registration_dates",)
+    )
     list_editable = ("public", "note")
     list_filter = (
         ("school_year", SchoolYearListFilter),
@@ -145,9 +148,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         SubjectAttachmentInlineAdmin,
     )
     filter_horizontal = ("age_groups", "target_groups", "groups", "leaders", "questions", "registration_agreements")
-    actions = (
-        SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions + ("set_registration_dates",)
-    )
     search_fields = ("name", "description")
     save_as = True
 
@@ -366,6 +366,7 @@ class ChangeformRedirectMixin:
 class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """Hidden admin used for raw id fields"""
 
+    actions = SendMessageAdminMixin.actions + AdminExportMixin.actions
     list_display = (
         "id",
         "code",
@@ -912,6 +913,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 class SubjectRegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMixin, admin.ModelAdmin):
     """Hidden admin used for raw id fields"""
 
+    actions = SendMessageAdminMixin.actions + AdminExportMixin.actions
     list_display = (
         "id",
         "variable_symbol",

@@ -23,6 +23,7 @@ class ContactInlineAdmin(admin.TabularInline):
 
 @admin.register(Leader)
 class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    actions = SendMessageAdminMixin.actions + AdminExportMixin.actions + ("add_school_year",)
     filter_horizontal = ("school_years",)
     inlines = (ContactInlineAdmin,)
     search_fields = ("user__first_name", "user__last_name", "contacts__contact")
@@ -48,7 +49,6 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
         "contacts__public",
     )
     ordering = ("user__first_name", "user__last_name")
-    actions = SendMessageAdminMixin.actions + AdminExportMixin.actions + ("add_school_year",)
     list_filter = (("school_years", SchoolYearListFilter),)
     raw_id_fields = ("user",)
 
