@@ -147,7 +147,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         # header, date, customer name, customer number, batch number range, unused
         lines.append(f"UHL1{today}{site_name[:20].ljust(20)}0000000000001999000000000000")
         lines.append(f"1 1501 {batch_id:03}000 {bank_account.bank_code}")
-        lines.append(f"2 {bank_account.account_code} {amount_cents} {today}")
+        lines.append(f"2 {str(bank_account).split('/')[0]} {amount_cents} {today}")
 
         # write records
 
@@ -156,7 +156,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                 lines.append(
                     " ".join(
                         [
-                            refund_request.bank_account.account_code,
+                            str(refund_request.bank_account).split("/")[0],
                             str(round(refund_request.amount * 100)),
                             str(refund_request.registration.variable_symbol),
                             f"{refund_request.bank_account.bank_code}{constant_symbol:04}",
