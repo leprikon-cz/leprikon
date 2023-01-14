@@ -76,7 +76,7 @@ class Timesheet(models.Model):
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("-period__start",)
+        ordering = ("-period__start", "leader")
         unique_together = (("period", "leader"),)
         verbose_name = _("timesheet")
         verbose_name_plural = _("timesheets")
