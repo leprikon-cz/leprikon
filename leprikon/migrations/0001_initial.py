@@ -593,7 +593,7 @@ class Migration(migrations.Migration):
                 ('leader', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, related_name='timesheets', to='leprikon.Leader', verbose_name='leader')),
             ],
             options={
-                'ordering': ('-period__start',),
+                'ordering': ('-period__start', 'leader'),
                 'verbose_name': 'timesheet',
                 'verbose_name_plural': 'timesheets',
             },

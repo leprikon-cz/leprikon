@@ -46,11 +46,6 @@ class Migration(migrations.Migration):
             field=models.SlugField(null=True, verbose_name="unique identifier"),
         ),
         migrations.RunPython(set_question_slug),
-        migrations.AlterField(
-            model_name="question",
-            name="slug",
-            field=models.SlugField(unique=True, verbose_name="unique identifier"),
-        ),
         migrations.AlterModelOptions(
             name="question",
             options={

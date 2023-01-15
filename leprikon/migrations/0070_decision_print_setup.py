@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name="question",
+            name="slug",
+            field=models.SlugField(unique=True, verbose_name="unique identifier"),
+        ),
         migrations.AddField(
             model_name="leprikonsite",
             name="decision_print_setup",

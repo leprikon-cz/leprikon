@@ -77,6 +77,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="journals",
                 to="leprikon.schoolyeardivision",
+                verbose_name="school year division",
             ),
         ),
         migrations.RunPython(set_journal_school_year_division),
