@@ -221,7 +221,7 @@ class JournalEntryAdminForm(forms.ModelForm):
 
         if self.instance.journal.subject.subject_type.subject_type == SubjectType.COURSE:
             self.fields["period"].widget.choices.queryset = SchoolYearPeriod.objects.filter(
-                school_year_division=self.instance.journal.subject.course.school_year_division
+                school_year_division=self.instance.journal.school_year_division
             )
         else:
             del self.fields["period"]
