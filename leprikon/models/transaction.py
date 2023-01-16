@@ -173,7 +173,6 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
         PaysPayment,
         blank=True,
         editable=False,
-        limit_choices_to={"status": PaysPayment.REALIZED},
         null=True,
         on_delete=models.PROTECT,
         verbose_name=_("online payment"),
