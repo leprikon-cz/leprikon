@@ -210,7 +210,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                 {
                     "fields": [
                         "subject_type",
-                        "registration_type",
                         "name",
                         "description",
                     ]
