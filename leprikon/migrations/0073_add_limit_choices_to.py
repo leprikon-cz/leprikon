@@ -92,17 +92,4 @@ class Migration(migrations.Migration):
                 verbose_name="event types",
             ),
         ),
-        migrations.AlterField(
-            model_name="transaction",
-            name="pays_payment",
-            field=models.OneToOneField(
-                blank=True,
-                editable=False,
-                limit_choices_to={"status": 3},
-                null=True,
-                on_delete=django.db.models.deletion.PROTECT,
-                to="django_pays.payment",
-                verbose_name="online payment",
-            ),
-        ),
     ]
