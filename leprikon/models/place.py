@@ -1,10 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from djangocms_text_ckeditor.fields import HTMLField
 
 
 class Place(models.Model):
     name = models.CharField(_("name"), max_length=50)
     place = models.CharField(_("place"), max_length=50, blank=True, default="")
+    description = HTMLField(_("description"), blank=True, default="")
 
     class Meta:
         app_label = "leprikon"
