@@ -22,6 +22,7 @@ from ..forms.subjects import (
 )
 from ..models.courses import Course
 from ..models.events import Event
+from ..models.orderables import Orderable
 from ..models.subjects import (
     DEFAULT_TEXTS,
     Subject,
@@ -39,7 +40,6 @@ from ..models.subjects import (
     SubjectTypeAttachment,
     SubjectVariant,
 )
-from ..models.orderables import Orderable
 from ..models.utils import lazy_help_text_with_html_default
 from ..utils import amount_color, attributes, currency
 from .bulkupdate import BulkUpdateMixin
