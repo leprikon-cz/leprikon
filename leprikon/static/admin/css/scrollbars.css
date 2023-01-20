@@ -3,7 +3,7 @@
     -ms-transform:rotateX(180deg); /* IE 9 */
     -webkit-transform:rotateX(180deg); /* Safari and Chrome */
 }
-
+.change-list #changelist #has-filters~.paginator, .change-list #changelist #toolbartable .paginator, .change-list #changelist .results+.paginator,
 .change-list #changelist.filtered #toolbartable .paginator, .change-list #changelist.filtered .paginator, .change-list #changelist.filtered .results, .change-list #changelist.filtered .results+.paginator {
     position: relative !important;
 }

@@ -20,6 +20,8 @@ from ..forms.subjects import (
     RegistrationParticipantAdminForm,
     SubjectAdminForm,
 )
+from ..models.courses import Course
+from ..models.events import Event
 from ..models.subjects import (
     DEFAULT_TEXTS,
     Subject,
@@ -37,6 +39,7 @@ from ..models.subjects import (
     SubjectTypeAttachment,
     SubjectVariant,
 )
+from ..models.orderables import Orderable
 from ..models.utils import lazy_help_text_with_html_default
 from ..utils import amount_color, attributes, currency
 from .bulkupdate import BulkUpdateMixin
@@ -176,6 +179,96 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         if obj and obj.registrations.exists():
             exclude.append("registration_type")
         return exclude
+
+    def get_fieldsets(self, request, obj: Subject = None):
+        # get registration type
+        if obj:
+            registration_type = obj.registration_type
+        else:
+            registration_type = request.GET.get("registration_type")
+
+        if registration_type not in (Subject.PARTICIPANTS, Subject.GROUPS):
+            return [
+                (
+                    None,
+                    {
+                        "fields": [
+                            "subject_type",
+                            "registration_type",
+                        ]
+                    },
+                ),
+            ]
+        specific_fields = {
+            Course: ["school_year_division", "allow_period_selection"],
+            Event: ["start_date", "end_date", "start_time", "end_time", "due_from", "due_date"],
+            Orderable: ["duration", "due_from_days", "due_date_days"],
+        }
+        return [
+            (
+                None,
+                {
+                    "fields": [
+                        "subject_type",
+                        "registration_type",
+                        "name",
+                        "description",
+                    ]
+                    + specific_fields[self.model]
+                    + [
+                        "age_groups" if registration_type == Subject.PARTICIPANTS else "target_groups",
+                        "registration_price",
+                        "participant_price",
+                        "reg_from",
+                        "reg_to",
+                        "public",
+                    ]
+                },
+            ),
+            (
+                _("advanced settings"),
+                {
+                    "fields": [
+                        "code",
+                        "department",
+                        "groups",
+                        "place",
+                        "leaders",
+                        "photo",
+                        "page",
+                        "min_participants_count",
+                        "max_participants_count",
+                        "min_registrations_count",
+                        "max_registrations_count",
+                        "min_due_date_days",
+                        "note",
+                        "questions",
+                        "registration_agreements",
+                        "reg_print_setup",
+                        "decision_print_setup",
+                        "pr_print_setup",
+                        "bill_print_setup",
+                        "organization",
+                    ]
+                },
+            ),
+            (
+                _("texts"),
+                {
+                    "fields": [
+                        "text_registration_received",
+                        "text_registration_approved",
+                        "text_registration_refused",
+                        "text_registration_payment_request",
+                        "text_registration_refund_offer",
+                        "text_registration_canceled",
+                        "text_discount_granted",
+                        "text_payment_received",
+                        "text_payment_returned",
+                    ]
+                },
+            ),
+        ]
 
     def get_form(self, request, obj, **kwargs):
         # set school year

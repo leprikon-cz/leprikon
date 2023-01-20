@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponseRedirect, HttpRequest
+from django.shortcuts import redirect
 
 from ..models.leprikonsite import LeprikonSite
 
@@ -7,6 +10,9 @@ from ..models.leprikonsite import LeprikonSite
 class LeprikonSiteAdmin(admin.ModelAdmin):
     list_display = ("name",)
     filter_horizontal = ("registration_agreements",)
+
+    def changelist_view(self, request: HttpRequest, extra_context=None) -> HttpResponseRedirect:
+        return redirect("admin:leprikon_leprikonsite_change", object_id=settings.SITE_ID)
 
     def has_add_permission(self, request, obj=None):
         return False

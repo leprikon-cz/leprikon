@@ -21,6 +21,11 @@ from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistr
 class EventAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.EVENT
     registration_model = EventRegistration
+    actions = SubjectBaseAdmin.actions + (
+        "publish",
+        "unpublish",
+        "copy_to_school_year",
+    )
     list_display = (
         "id",
         "code",
@@ -66,11 +71,6 @@ class EventAdmin(SubjectBaseAdmin):
         "note",
     )
     date_hierarchy = "start_date"
-    actions = SubjectBaseAdmin.actions + (
-        "publish",
-        "unpublish",
-        "copy_to_school_year",
-    )
 
     @attributes(short_description=_("Publish selected events"))
     def publish(self, request, queryset):
