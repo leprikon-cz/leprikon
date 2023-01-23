@@ -160,7 +160,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
                 url=self.orderables_url,
                 leader=obj.id,
-                count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+                count=obj.subjects.filter(subject_type__subject_type=SubjectType.ORDERABLE).count(),
             )
         )
 
