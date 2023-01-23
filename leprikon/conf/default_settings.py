@@ -10,6 +10,7 @@ LEPRIKON_COUNTRY = "CZ"
 LEPRIKON_CONTACT_TYPES = (
     ("email", _("email")),
     ("phone", _("phone")),
+    ("address", _("address")),
     ("url", _("url")),
 )
 

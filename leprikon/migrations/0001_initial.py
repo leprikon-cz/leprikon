@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             name='Contact',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('contact_type', models.CharField(choices=[('email', 'email'), ('phone', 'phone'), ('url', 'url')], max_length=30, verbose_name='contact type')),
+                ('contact_type', models.CharField(choices=settings.LEPRIKON_CONTACT_TYPES, max_length=30, verbose_name='contact type')),
                 ('contact', models.CharField(max_length=250, verbose_name='contact')),
                 ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
                 ('public', models.BooleanField(default=False, verbose_name='public')),
