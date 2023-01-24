@@ -20,9 +20,6 @@ from ..forms.subjects import (
     RegistrationParticipantAdminForm,
     SubjectAdminForm,
 )
-from ..models.courses import Course
-from ..models.events import Event
-from ..models.orderables import Orderable
 from ..models.subjects import (
     DEFAULT_TEXTS,
     Subject,
@@ -181,93 +178,88 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         return exclude
 
     def get_fieldsets(self, request, obj: Subject = None):
-        # get registration type
-        if obj:
-            registration_type = obj.registration_type
-        else:
-            registration_type = request.GET.get("registration_type")
-
-        if registration_type not in (Subject.PARTICIPANTS, Subject.GROUPS):
-            return [
-                (
-                    None,
-                    {
-                        "fields": [
-                            "subject_type",
-                            "registration_type",
-                        ]
-                    },
-                ),
-            ]
-        specific_fields = {
-            Course: ["school_year_division", "allow_period_selection"],
-            Event: ["start_date", "end_date", "start_time", "end_time", "due_from", "due_date"],
-            Orderable: ["duration", "due_from_days", "due_date_days"],
-        }
-        return [
+        available_fields = self.get_fields(request, obj)
+        used_fields = []
+        fieldsets = []
+        for label, all_fields in [
             (
                 None,
-                {
-                    "fields": [
-                        "subject_type",
-                        "name",
-                        "description",
-                    ]
-                    + specific_fields[self.model]
-                    + [
-                        "age_groups" if registration_type == Subject.PARTICIPANTS else "target_groups",
-                        "registration_price",
-                        "participant_price",
-                        "reg_from",
-                        "reg_to",
-                        "public",
-                    ]
-                },
+                [
+                    "subject_type",
+                    "registration_type",
+                    "name",
+                    "description",
+                    # course specific
+                    "school_year_division",
+                    "allow_period_selection",
+                    # event specific
+                    "start_date",
+                    "end_date",
+                    "start_time",
+                    "end_time",
+                    "due_from",
+                    "due_date",
+                    # orderable specific
+                    "duration",
+                    "due_from_days",
+                    "due_date_days",
+                    "age_groups",
+                    "target_groups",
+                    "registration_price",
+                    "participant_price",
+                    "reg_from",
+                    "reg_to",
+                    "public",
+                ],
             ),
             (
                 _("advanced settings"),
-                {
-                    "fields": [
-                        "code",
-                        "department",
-                        "groups",
-                        "place",
-                        "leaders",
-                        "photo",
-                        "page",
-                        "min_participants_count",
-                        "max_participants_count",
-                        "min_registrations_count",
-                        "max_registrations_count",
-                        "min_due_date_days",
-                        "note",
-                        "questions",
-                        "registration_agreements",
-                        "reg_print_setup",
-                        "decision_print_setup",
-                        "pr_print_setup",
-                        "bill_print_setup",
-                        "organization",
-                    ]
-                },
+                [
+                    "code",
+                    "department",
+                    "groups",
+                    "place",
+                    "leaders",
+                    "photo",
+                    "page",
+                    "min_participants_count",
+                    "max_participants_count",
+                    "min_registrations_count",
+                    "max_registrations_count",
+                    "min_due_date_days",
+                    "note",
+                    "questions",
+                    "registration_agreements",
+                    "reg_print_setup",
+                    "decision_print_setup",
+                    "pr_print_setup",
+                    "bill_print_setup",
+                    "organization",
+                ],
             ),
             (
                 _("texts"),
-                {
-                    "fields": [
-                        "text_registration_received",
-                        "text_registration_approved",
-                        "text_registration_refused",
-                        "text_registration_payment_request",
-                        "text_registration_refund_offer",
-                        "text_registration_canceled",
-                        "text_discount_granted",
-                        "text_payment_received",
-                        "text_payment_returned",
-                    ]
-                },
+                [
+                    "text_registration_received",
+                    "text_registration_approved",
+                    "text_registration_refused",
+                    "text_registration_payment_request",
+                    "text_registration_refund_offer",
+                    "text_registration_canceled",
+                    "text_discount_granted",
+                    "text_payment_received",
+                    "text_payment_returned",
+                ],
             ),
-        ]
+        ]:
+            fields = [f for f in all_fields if f in available_fields]
+            if fields:
+                fieldsets.append((label, {"fields": fields}))
+                used_fields += fields
+        unused_fields = [f for f in available_fields if f not in used_fields]
+        if unused_fields:
+            fieldsets.append((None, {"fields": unused_fields}))
+        return fieldsets
 
     def get_form(self, request, obj, **kwargs):
         # set school year
