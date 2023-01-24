@@ -33,7 +33,7 @@ class JournalPeriod:
                 participant
                 for participant in self.journal.all_participants
                 if (
-                    (self.period.end is None or participant.approved.date() <= self.period.end)
+                    (self.period.end is None or participant.created.date() <= self.period.end)
                     and (
                         participant.canceled is None
                         or self.period.start is None
@@ -125,6 +125,7 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
     def all_participants(self):
         return list(
             self.participants.annotate(
+                created=models.F("registration__created"),
                 approved=models.F("registration__approved"),
                 canceled=models.F("registration__canceled"),
             )
