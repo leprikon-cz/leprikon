@@ -530,7 +530,7 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
         super().__init__(**kwargs)
 
         # choices for target group
-        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups
+        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups.all()
         if self.subject.target_groups.count() == 1:
             self.fields["target_group"].initial = self.subject.target_groups.first()
 
@@ -982,7 +982,7 @@ class RegistrationGroupAdminForm(SchoolAdminMixin, forms.ModelForm):
         super().__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
 
-        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups
+        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups.all()
 
         questions = self.obj.all_questions if self.obj else self.subject.all_questions
         answers = instance.get_answers() if instance else {}
