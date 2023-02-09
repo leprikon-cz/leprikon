@@ -235,6 +235,18 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
             )
         )
 
+    @attributes(short_description=_("discounts"))
+    def discounts_export(self, obj: OrderableRegistration):
+        return currency(obj.payment_status.discount)
+
+    @attributes(short_description=_("total price"))
+    def total_price_export(self, obj: OrderableRegistration):
+        return currency(obj.payment_status.receivable)
+
+    @attributes(short_description=_("received payments"))
+    def received_payments_export(self, obj: OrderableRegistration):
+        return currency(obj.payment_status.received)
+
 
 @admin.register(OrderableDiscount)
 class OrderableDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):

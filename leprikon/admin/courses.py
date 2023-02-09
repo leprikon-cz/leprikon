@@ -365,6 +365,27 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return mark_safe("<br/>".join(html))
 
+    @attributes(short_description=_("discounts"))
+    def discounts_export(self, obj: CourseRegistration):
+        return "\n".join(
+            f"{status.registration_period.period.name}: {currency(status.status.discount)}"
+            for status in obj.period_payment_statuses
+        )
+
+    @attributes(short_description=_("total price"))
+    def total_price_export(self, obj: CourseRegistration):
+        return "\n".join(
+            f"{status.registration_period.period.name}: {currency(status.status.receivable)}"
+            for status in obj.period_payment_statuses
+        )
+
+    @attributes(short_description=_("received payments"))
+    def received_payments_export(self, obj: CourseRegistration):
+        return "\n".join(
+            f"{status.registration_period.period.name}: {currency(status.status.received)}"
+            for status in obj.period_payment_statuses
+        )
+
 
 @admin.register(CourseDiscount)
 class CourseDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
