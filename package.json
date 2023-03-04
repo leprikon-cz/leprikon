@@ -26,7 +26,10 @@
     "generate": "stencil generate"
   },
   "dependencies": {
-    "@stencil/core": "^3.0.0"
+    "@ionic/core": "^6.6.0",
+    "@openapitools/openapi-generator-cli": "^2.5.2",
+    "@stencil/core": "^3.0.0",
+    "@stencil/store": "^2.0.4"
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",

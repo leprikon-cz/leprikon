@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
@@ -53,6 +54,7 @@ class SchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
             return SchoolYear.objects.all()
         return SchoolYear.objects.filter(active=True)
 
+    @csrf_exempt
     @extend_schema(request=None, responses={200: SchoolYearSerializer}, methods=["get"])
     @extend_schema(request=SetSchoolYearSerializer, responses={204: None}, methods=["post"])
     @action(detail=False, methods=["get", "post"])

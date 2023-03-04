@@ -6,56 +6,58 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
+    interface LpSchoolYear {
+    }
+    interface LpSchoolYearSelect {
+    }
+    interface LpSchoolYearSelectModal {
     }
 }
 declare global {
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLLpSchoolYearElement extends Components.LpSchoolYear, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    var HTMLLpSchoolYearElement: {
+        prototype: HTMLLpSchoolYearElement;
+        new (): HTMLLpSchoolYearElement;
+    };
+    interface HTMLLpSchoolYearSelectElement extends Components.LpSchoolYearSelect, HTMLStencilElement {
+    }
+    var HTMLLpSchoolYearSelectElement: {
+        prototype: HTMLLpSchoolYearSelectElement;
+        new (): HTMLLpSchoolYearSelectElement;
+    };
+    interface HTMLLpSchoolYearSelectModalElement extends Components.LpSchoolYearSelectModal, HTMLStencilElement {
+    }
+    var HTMLLpSchoolYearSelectModalElement: {
+        prototype: HTMLLpSchoolYearSelectModalElement;
+        new (): HTMLLpSchoolYearSelectModalElement;
     };
     interface HTMLElementTagNameMap {
-        "my-component": HTMLMyComponentElement;
+        "lp-school-year": HTMLLpSchoolYearElement;
+        "lp-school-year-select": HTMLLpSchoolYearSelectElement;
+        "lp-school-year-select-modal": HTMLLpSchoolYearSelectModalElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface LpSchoolYear {
+    }
+    interface LpSchoolYearSelect {
+    }
+    interface LpSchoolYearSelectModal {
     }
     interface IntrinsicElements {
-        "my-component": MyComponent;
+        "lp-school-year": LpSchoolYear;
+        "lp-school-year-select": LpSchoolYearSelect;
+        "lp-school-year-select-modal": LpSchoolYearSelectModal;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "lp-school-year": LocalJSX.LpSchoolYear & JSXBase.HTMLAttributes<HTMLLpSchoolYearElement>;
+            "lp-school-year-select": LocalJSX.LpSchoolYearSelect & JSXBase.HTMLAttributes<HTMLLpSchoolYearSelectElement>;
+            "lp-school-year-select-modal": LocalJSX.LpSchoolYearSelectModal & JSXBase.HTMLAttributes<HTMLLpSchoolYearSelectModalElement>;
         }
     }
 }
