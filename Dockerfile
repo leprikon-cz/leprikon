@@ -33,10 +33,22 @@ RUN apt-get update \
   && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 ENV LC_ALL cs_CZ.UTF-8
 
+############
+# build UI #
+############
 
-#########
-# build #
-#########
+FROM node:alpine as stencil
+ENV PATH=/app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+WORKDIR /app
+COPY package.json yarn.lock /app/
+RUN yarn install
+COPY src /app/src
+COPY stencil.config.ts tsconfig.json /app/
+RUN stencil build
+
+#################
+# build backend #
+#################
 
 FROM base AS build
 
@@ -54,6 +66,7 @@ RUN poetry export -o requirements.txt --without-hashes \
   && pip wheel --wheel-dir=/app/dist -r requirements.txt
 COPY README.rst /app/README.rst
 COPY leprikon /app/leprikon
+RUN mkdir -p www/build
 RUN poetry build --format wheel
 
 
@@ -70,6 +83,7 @@ COPY --from=build /app/dist /app/dist
 
 RUN pip install --no-deps /app/dist/*
 
+COPY --from=stencil /app/www /app/www
 COPY bin /app/bin
 COPY conf /app/conf
 COPY patch /app/patch

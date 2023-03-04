@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: Leprikon API
+  version: v1
+paths:
+  /api/schoolyear:
+    get:
+      operationId: schoolyearList
+      tags:
+      - leprikon
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SchoolYear'
+          description: ''
+  /api/schoolyear/{id}:
+    get:
+      operationId: schoolyearRetrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this školní rok.
+        required: true
+      tags:
+      - leprikon
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolYear'
+          description: ''
+  /api/schoolyear/current:
+    get:
+      operationId: schoolyearCurrentRetrieve
+      tags:
+      - leprikon
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolYear'
+          description: ''
+    post:
+      operationId: schoolyearCurrentCreate
+      tags:
+      - leprikon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetSchoolYear'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/user/login:
+    post:
+      operationId: userLogin
+      tags:
+      - leprikon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/logout:
+    post:
+      operationId: userLogout
+      tags:
+      - leprikon
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/user/me:
+    get:
+      operationId: userMeRetrieve
+      tags:
+      - leprikon
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+components:
+  schemas:
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+      - password
+      - username
+    SchoolYear:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        year:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          title: Rok
+          description: Pouze první ze dvou roků.
+        active:
+          type: boolean
+          title: Aktivní
+      required:
+      - id
+      - name
+      - year
+    SetSchoolYear:
+      type: object
+      properties:
+        id:
+          type: integer
+      required:
+      - id
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          title: Uživatelské jméno
+          description: Požadováno. 150 znaků nebo méně. Pouze písmena, číslice a znaky
+            @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        firstName:
+          type: string
+          title: Jméno
+          maxLength: 150
+        lastName:
+          type: string
+          title: Příjmení
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: E-mail
+          maxLength: 254
+      required:
+      - email
+      - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+servers:
+- url: http://localhost:8000/
+  description: local
