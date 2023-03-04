@@ -103,5 +103,4 @@ urlpatterns = [
     d_path("{reports}/{orderables}/{stats}/", "report_orderable_stats"),
     d_path("{reports}/{debtors}/", "report_debtors"),
     d_path("{terms_conditions}/", "terms_conditions"),
-    path("api/", include("leprikon.api.urls")),
 ]

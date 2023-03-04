@@ -85,6 +85,9 @@ INSTALLED_APPS = [
     "qr_code",
     "social_django",
     "verified_email_field",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -444,3 +447,42 @@ if "LEPRIKON_VARIABLE_SYMBOL_EXPRESSION" in os.environ:
 LEPRIKON_SHOW_SUBJECT_CODE = os.environ.get("LEPRIKON_SHOW_SUBJECT_CODE", "").lower() in ("1", "y", "yes", "t", "true")
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+
+#
+# Rest Framework
+#
+REST_FRAMEWORK = {
+    "DEFAULT_PARSER_CLASSES": [
+        "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
+        "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "leprikon.api.openapi.Schema",
+}
+
+SPECTACULAR_SETTINGS = {
+    # header
+    "TITLE": "Leprikon API",
+    "DESCRIPTION": "",
+    "CONTACT": None,
+    "LICENSE": None,
+    "TOS": None,
+    "VERSION": "v1",
+    "SERVERS": [
+        {"url": "http://localhost:8000/", "description": "local"},
+    ],
+    # options
+    "CAMELIZE_NAMES": True,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
+        "drf_spectacular.hooks.postprocess_schema_enums",
+    ],
+    "REDOC_DIST": "SIDECAR",
+    "SCHEMA_PATH_PREFIX": "/api",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+}
