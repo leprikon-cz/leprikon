@@ -8,7 +8,7 @@ from leprikon.models.subjects import SubjectRegistrationParticipant
 class SubjectRegistrationParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubjectRegistrationParticipant
-        fields = "__all__"
+        fields = ["id", "label"]
 
 
 class SchoolYearSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,7 +27,6 @@ class CredentialsSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = get_user_model()
         fields = ["username", "first_name", "last_name", "email"]

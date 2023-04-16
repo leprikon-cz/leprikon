@@ -35,7 +35,6 @@ class UserFormMixin(FormMixin):
 
 
 class UserAdminCreateForm(UserFormMixin, forms.ModelForm):
-
     # create user with random password
     # users without password may not reset the password themselves
     def save(self, commit=True):

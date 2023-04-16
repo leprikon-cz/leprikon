@@ -38,7 +38,6 @@ class PdfExportAndMailMixin(object):
         }
 
     def get_mail_subject(self, event):
-
         return self.mail_subject_patterns[event].format(
             subject_type=self.subject.subject_type.name_akuzativ,
             subject=self.subject.name,

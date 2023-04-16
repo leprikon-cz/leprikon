@@ -1,9 +1,5 @@
-from datetime import date, datetime
+from datetime import date
 
-import pytz
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.utils.timezone import localdate
 from django.contrib.auth import authenticate, login, logout
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
@@ -23,26 +19,6 @@ from .serializers import (
     SubjectRegistrationParticipantSerializer,
     UserSerializer,
 )
-from ..views import leader_or_staff_required
-
-
-@leader_or_staff_required
-def participants(request, journal_id):
-    qs = Journal.objects.all()
-    if not request.user.is_staff:
-        qs = qs.filter(leaders=request.leader)
-    journal = get_object_or_404(qs, id=journal_id)
-
-    try:
-        d = localdate(datetime.utcfromtimestamp(int(request.GET["date"])).replace(tzinfo=pytz.utc))
-    except (KeyError, ValueError):
-        d = date.today()
-
-    return JsonResponse(
-        {
-            "participants": list({"value": p.id, "label": str(p)} for p in journal.get_valid_participants(d)),
-        }
-    )
 
 
 class JournalViewSet(viewsets.GenericViewSet):
@@ -54,7 +30,7 @@ class JournalViewSet(viewsets.GenericViewSet):
     @extend_schema(
         responses={200: SubjectRegistrationParticipantSerializer(many=True)},
         methods=["get"],
-        parameters=[OpenApiParameter(name="date", type=OpenApiTypes.DATE)]
+        parameters=[OpenApiParameter(name="date", type=OpenApiTypes.DATE)],
     )
     @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
     def participants(self, request, pk: str):
@@ -66,7 +42,7 @@ class JournalViewSet(viewsets.GenericViewSet):
 
         participants = journal.get_valid_participants(d)
 
-        return Response(SubjectRegistrationParticipantSerializer(participants, many=True))
+        return Response(SubjectRegistrationParticipantSerializer(participants, many=True).data)
 
 
 class SchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
@@ -77,16 +53,8 @@ class SchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
             return SchoolYear.objects.all()
         return SchoolYear.objects.filter(active=True)
 
-    @extend_schema(
-        request=None,
-        responses={200: SchoolYearSerializer},
-        methods=["get"]
-    )
-    @extend_schema(
-        request=SetSchoolYearSerializer,
-        responses={204: None},
-        methods=["post"]
-    )
+    @extend_schema(request=None, responses={200: SchoolYearSerializer}, methods=["get"])
+    @extend_schema(request=SetSchoolYearSerializer, responses={204: None}, methods=["post"])
     @action(detail=False, methods=["get", "post"])
     def current(self, request):
         if request.method == "GET":
@@ -103,12 +71,8 @@ class SchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class UserViewSet(viewsets.ViewSet):
-    @extend_schema(
-        operation_id="user_login",
-        request=CredentialsSerializer,
-        responses={200: UserSerializer}
-    )
-    @action(detail=False, methods=['post'])
+    @extend_schema(operation_id="user_login", request=CredentialsSerializer, responses={200: UserSerializer})
+    @action(detail=False, methods=["post"])
     def login(self, request):
         serializer = CredentialsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

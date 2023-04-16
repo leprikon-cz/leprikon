@@ -57,9 +57,9 @@ $(document).ready(function() {
     });
 
     $('#id_date').on('dp.change', function(e) {
-        $.getJSON('{% url 'leprikon:api:participants' form.instance.journal.id %}?date='+(e.date/1000), function(result) {
-            $('#id_participants').multiselect('dataprovider', result['participants']);
-            $('#id_participants_instructed').multiselect('dataprovider', result['participants']);
+        $.getJSON('{% url 'api:journal-participants' form.instance.journal.id %}?date='+(e.date/1000), function(result) {
+            $('#id_participants').multiselect('dataprovider', result);
+            $('#id_participants_instructed').multiselect('dataprovider', result);
         });
     });
 

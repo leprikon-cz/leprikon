@@ -26,7 +26,7 @@ try:
         path("pays/", include("django_pays.urls")),
         path("social/", include("social_django.urls")),
         path("verified-email-field/", include("verified_email_field.urls")),
-        path("", include("leprikon.api.urls")),
+        path("", include("leprikon.api.urls", namespace="api")),
         path("", include("cms.urls")),
         # this won't work for displaying pages,
         # but allows reverse resolving before leprikon apphook is attached to any page

@@ -9,7 +9,6 @@ class LeprikonConfig(AppConfig):
     verbose_name = _("Leprikon")
 
     def ready(self):
-
         # ensure that current LeprikonSite exists
         from .models.leprikonsite import LeprikonSite
 

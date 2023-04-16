@@ -808,7 +808,6 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                     self.instance.agreement_options.add(agreement_form.options[option_id])
 
         if self.billing_info_select_form.cleaned_data["billing_info"] != "none":
-
             # save registration billing info
             registration_billing_info = self.billing_info_form.save(commit=False)
             registration_billing_info.registration = self.instance

@@ -1418,6 +1418,8 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
             birth_year=self.birth_date.year,
         )
 
+    label = cached_property(__str__)
+
     @cached_property
     def key(self):
         return (self.first_name.lower(), self.last_name.lower(), self.birth_date)
