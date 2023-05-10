@@ -102,6 +102,11 @@ class CourseVariant(SubjectVariant):
         help_text=_("allow user to choose school year periods on registration form"),
     )
 
+    class Meta:
+        app_label = "leprikon"
+        verbose_name = _("variant")
+        verbose_name_plural = _("variants")
+
 
 class CourseRegistration(SubjectRegistration):
     school_year_division = models.ForeignKey(
