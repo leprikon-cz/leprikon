@@ -50,11 +50,12 @@ RUN apt-get -y --no-install-recommends install \
   python3-dev
 RUN pip install poetry wheel
 COPY poetry.lock pyproject.toml ./
-RUN poetry export -o requirements.txt --without-hashes \
-  && pip wheel --wheel-dir=/app/dist -r requirements.txt
+RUN virtualenv /venv
+ENV VIRTUAL_ENV=/venv
+RUN poetry install --only main --no-root
 COPY README.rst /app/README.rst
 COPY leprikon /app/leprikon
-RUN poetry build --format wheel
+RUN poetry install --only-root
 
 
 #########
@@ -66,9 +67,10 @@ FROM base AS final
 LABEL name="Leprikón"
 LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
 
-COPY --from=build /app/dist /app/dist
-
-RUN pip install --no-deps /app/dist/*
+COPY --from=build /venv /venv
+COPY --from=build /app/leprikon /app/leprikon
+ENV VIRTUAL_ENV=/venv
+ENV PATH=/venv/bin:$PATH
 
 COPY bin /app/bin
 COPY conf /app/conf
@@ -76,8 +78,8 @@ COPY patch /app/patch
 COPY startup /app/startup
 COPY translations /app/translations
 
-RUN cp -a /app/translations/* /usr/local/lib/python3.10/dist-packages/ \
-  && patch /usr/local/lib/python3.10/dist-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
+RUN echo $PYTHONPATH && cp -a /app/translations/* /venv/lib/python3.10/site-packages/ \
+  && patch /venv/lib/python3.10/site-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
   && mkdir -p data/ipython htdocs/media htdocs/static run \
   && leprikon collectstatic --no-input \
   && rm data/db.sqlite3 \
