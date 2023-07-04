@@ -8,7 +8,7 @@ fi
 
 # run leprikon migrate on first boot (unless AUTO_MIGRATE=0|n|no|f|false)
 if [[ ! "${AUTO_MIGRATE,,}" =~ ^(0|n|no|f|false)$ ]] && [ ! -e .migrated ]; then
-    while ! su -s /bin/bash -c 'exec leprikon migrate --no-input' www-data; do
+    while ! su -s /bin/bash -c 'exec /venv/bin/leprikon migrate --no-input' www-data; do
         echo "Waiting for DB to start ..."
         sleep 5
     done
