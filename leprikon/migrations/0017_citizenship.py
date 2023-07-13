@@ -20,9 +20,9 @@ def create_default_citizenships(apps, schema_editor):
     Citizenship = apps.get_model('leprikon', 'Citizenship')
     translation.activate(settings.LEPRIKON_COUNTRY)
     Citizenship.objects.bulk_create((
-        Citizenship(order=0, name=COUNTRIES[settings.LEPRIKON_COUNTRY]),
-        Citizenship(order=1, name=_('other country in EU')),
-        Citizenship(order=2, name=_('country outside EU')),
+        Citizenship(order=0, name=COUNTRIES[settings.LEPRIKON_COUNTRY], require_birth_num=True),
+        Citizenship(order=1, name=_('other country in EU'), require_birth_num=False),
+        Citizenship(order=2, name=_('country outside EU'), require_birth_num=False),
     ))
 
 
