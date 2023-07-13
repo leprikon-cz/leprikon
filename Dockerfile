@@ -78,7 +78,7 @@ COPY patch /app/patch
 COPY startup /app/startup
 COPY translations /app/translations
 
-RUN echo $PYTHONPATH && cp -a /app/translations/* /venv/lib/python3.10/site-packages/ \
+RUN cp -a /app/translations/* /venv/lib/python3.10/site-packages/ \
   && patch /venv/lib/python3.10/site-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
   && mkdir -p data/ipython htdocs/media htdocs/static run \
   && leprikon collectstatic --no-input \
