@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
@@ -121,6 +122,5 @@ class TimesheetAdmin(AdminExportMixin, admin.ModelAdmin):
 
 
 @admin.register(TimesheetEntryType)
-class TimesheetEntryTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "order")
-    list_editable = ("order",)
+class TimesheetEntryTypeAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("name",)

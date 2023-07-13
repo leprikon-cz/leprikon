@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin
 from django.db import IntegrityError
@@ -28,7 +29,7 @@ class SchoolYearAdmin(admin.ModelAdmin):
         return actions
 
 
-class SchoolYearPeriodInlineAdmin(admin.TabularInline):
+class SchoolYearPeriodInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
     model = SchoolYearPeriod
     extra = 0
     min_num = 1

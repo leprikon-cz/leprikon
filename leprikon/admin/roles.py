@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -16,7 +17,7 @@ from .filters import SchoolYearListFilter
 from .messages import SendMessageAdminMixin
 
 
-class ContactInlineAdmin(admin.TabularInline):
+class ContactInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
     model = Contact
     extra = 0
 

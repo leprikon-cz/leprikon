@@ -1,20 +1,20 @@
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django.contrib import admin
 
 from ..models.agreements import Agreement, AgreementOption
 from .filters import ActiveListFilter
 
 
-class AgreementOptionInlineAdmin(admin.TabularInline):
+class AgreementOptionInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
     model = AgreementOption
     extra = 0
     min_num = 1
 
 
 @admin.register(Agreement)
-class AgreementAdmin(admin.ModelAdmin):
+class AgreementAdmin(SortableAdminMixin, admin.ModelAdmin):
     inlines = (AgreementOptionInlineAdmin,)
-    list_display = ("name", "order")
-    list_editable = ("order",)
+    list_display = ("name",)
     list_filter = (ActiveListFilter,)
 
     def has_delete_permission(self, request, obj=None):

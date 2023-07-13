@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "user_unique_email",
     "leprikon.site",
     "leprikon",
+    "adminsortable2",
     "bankreader",
     "djangocms_admin_style",
     "django.contrib.admin",

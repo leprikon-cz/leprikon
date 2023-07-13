@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
@@ -63,13 +64,13 @@ class IsNull(Func):
     template = "%(expressions)s IS NULL"
 
 
-class SubjectTypeAttachmentInlineAdmin(admin.TabularInline):
+class SubjectTypeAttachmentInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
     model = SubjectTypeAttachment
     extra = 0
 
 
 @admin.register(SubjectType)
-class SubjectTypeAdmin(BulkUpdateMixin, admin.ModelAdmin):
+class SubjectTypeAdmin(BulkUpdateMixin, SortableAdminMixin, admin.ModelAdmin):
     bulk_update_exclude = (
         "subject_type",
         "slug",
@@ -79,9 +80,7 @@ class SubjectTypeAdmin(BulkUpdateMixin, admin.ModelAdmin):
         "name_genitiv",
         "name_akuzativ",
     )
-    list_display = ("plural", "order")
-    list_editable = ("order",)
-    exclude = ("order",)
+    list_display = ("plural",)
     filter_horizontal = ("questions", "registration_agreements")
     prepopulated_fields = {"slug": ("plural",)}
     inlines = (SubjectTypeAttachmentInlineAdmin,)
@@ -100,13 +99,13 @@ class SubjectTypeAdmin(BulkUpdateMixin, admin.ModelAdmin):
 
 
 @admin.register(SubjectGroup)
-class SubjectGroupAdmin(admin.ModelAdmin):
-    list_display = ("name", "color", "order")
-    list_editable = ("color", "order")
+class SubjectGroupAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("name", "color")
+    list_editable = ("color",)
     filter_horizontal = ("subject_types",)
 
 
-class SubjectAttachmentInlineAdmin(admin.TabularInline):
+class SubjectAttachmentInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
     model = SubjectAttachment
     extra = 0
 
@@ -116,7 +115,7 @@ class SubjectTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectVariantInlineAdmin(admin.StackedInline):
+class SubjectVariantInlineAdmin(SortableInlineAdminMixin, admin.StackedInline):
     model = SubjectVariant
     extra = 0
 
