@@ -15,7 +15,7 @@ from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
+from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects
 

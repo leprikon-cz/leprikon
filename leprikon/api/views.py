@@ -1,8 +1,8 @@
 from datetime import date
 
 from django.contrib.auth import authenticate, login, logout
-from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, NotFound
@@ -14,8 +14,8 @@ from ..models.journals import Journal
 from ..models.schoolyear import SchoolYear
 from .serializers import (
     CredentialsSerializer,
-    SetSchoolYearSerializer,
     SchoolYearSerializer,
+    SetSchoolYearSerializer,
     SubjectRegistrationParticipantSerializer,
     UserSerializer,
 )

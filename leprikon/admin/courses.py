@@ -15,11 +15,7 @@ from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import attributes, currency
 from .pdf import PdfExportAdminMixin
-from .subjects import (
-    SubjectBaseAdmin,
-    SubjectDiscountBaseAdmin,
-    SubjectRegistrationBaseAdmin,
-)
+from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 @admin.register(Course)

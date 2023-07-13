@@ -1,22 +1,21 @@
+[tool.autoflake]
+exclude = "migrations*"
+ignore-init-module-imports = true
+in-place = true
+recursive = true
+remove-all-unused-imports = true
+remove-unused-variables = true
+
 [tool.black]
 line-length = 120
 exclude = "migrations*"
 
-[tool.flake8]
-exclude = "leprikon/tests,leprikon/migrations,leprikon/migrations_0_1"
-max-line-length = 120
-
 [tool.isort]
 combine_as_imports = true
-ensure_newline_before_comments = true
-force_grid_wrap = 0
-include_trailing_comma = true
 known_first_party = "leprikon"
 line_length = 120
-multi_line_output = 3
 profile = "black"
 skip_glob = "*migrations*"
-use_parentheses = true
 
 [tool.poetry]
 name = "leprikon"
@@ -97,9 +96,9 @@ trml2pdf = "*"
 Whoosh = "*"
 importlib-resources = "*"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+autoflake = "*"
 black = "*"
-flake8 = "*"
 isort = "*"
 python-dotenv = "*"
 pytest = "*"

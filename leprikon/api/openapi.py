@@ -1,4 +1,5 @@
 from typing import List
+
 from drf_spectacular.openapi import AutoSchema
 
 

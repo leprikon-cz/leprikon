@@ -1,4 +1,4 @@
-from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
+from adminsortable2.admin import SortableAdminMixin
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
