@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from filer.fields.file import FilerFileField
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 from reportlab.lib.pagesizes import A4, portrait
 from reportlab.lib.units import mm
 

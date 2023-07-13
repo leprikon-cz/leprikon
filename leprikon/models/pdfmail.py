@@ -7,7 +7,7 @@ from django.template.loader import select_template
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 
 from ..conf import settings
 from .leprikonsite import LeprikonSite
