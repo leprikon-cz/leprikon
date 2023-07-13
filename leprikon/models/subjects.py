@@ -737,6 +737,19 @@ class SubjectVariant(models.Model):
     )
     registration_price = PriceField(_("price per registration"), blank=True, null=True)
     participant_price = PriceField(_("price per participant"), blank=True, null=True)
+    school_year_division = models.ForeignKey(
+        SchoolYearDivision,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="variants",
+        verbose_name=_("school year division"),
+    )
+    allow_period_selection = models.BooleanField(
+        _("allow period selection"),
+        default=False,
+        help_text=_("allow user to choose school year periods on registration form"),
+    )
     order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
@@ -752,7 +765,7 @@ class SubjectVariant(models.Model):
     def price_text(self) -> str:
         price = currency(self.get_price())
         school_year_division: Optional[SchoolYearDivision] = (
-            SchoolYearDivision.objects.filter(course_variants__id=self.id).first()
+            SchoolYearDivision.objects.filter(variants__id=self.id).first()
             or SchoolYearDivision.objects.filter(courses__id=self.subject_id).first()
         )
         if school_year_division:

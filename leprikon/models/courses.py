@@ -87,27 +87,6 @@ class Course(Subject):
         return new
 
 
-class CourseVariant(SubjectVariant):
-    school_year_division = models.ForeignKey(
-        SchoolYearDivision,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="course_variants",
-        verbose_name=_("school year division"),
-    )
-    allow_period_selection = models.BooleanField(
-        _("allow period selection"),
-        default=False,
-        help_text=_("allow user to choose school year periods on registration form"),
-    )
-
-    class Meta:
-        app_label = "leprikon"
-        verbose_name = _("variant")
-        verbose_name_plural = _("variants")
-
-
 class CourseRegistration(SubjectRegistration):
     school_year_division = models.ForeignKey(
         SchoolYearDivision,

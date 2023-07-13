@@ -872,8 +872,7 @@ class CourseRegistrationForm(RegistrationForm):
         subject_variant = self.cleaned_data.get("subject_variant")
         if subject_variant:
             self.instance.school_year_division_id = (
-                subject_variant.coursevariant.school_year_division_id
-                or self.instance.subject.course.school_year_division_id
+                subject_variant.school_year_division_id or self.instance.subject.course.school_year_division_id
             )
         else:
             self.instance.school_year_division_id = self.instance.subject.course.school_year_division_id

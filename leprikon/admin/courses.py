@@ -10,45 +10,22 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
-from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory, CourseVariant
+from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import attributes, currency
 from .pdf import PdfExportAdminMixin
 from .subjects import (
-    SubjectAttachmentInlineAdmin,
     SubjectBaseAdmin,
     SubjectDiscountBaseAdmin,
     SubjectRegistrationBaseAdmin,
-    SubjectTimeInlineAdmin,
-    SubjectVariantInlineAdmin,
 )
-
-
-class CourseVariantInlineAdmin(SubjectVariantInlineAdmin):
-    model = CourseVariant
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        if "school_year_division" in formset.form.base_fields:
-            # school year division choices
-            school_year_division_choices = formset.form.base_fields["school_year_division"].widget.widget.choices
-            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
-                school_year=obj.school_year if obj else request.school_year,
-            )
-            formset.form.base_fields["school_year_division"].choices = school_year_division_choices
-        return formset
 
 
 @admin.register(Course)
 class CourseAdmin(SubjectBaseAdmin):
     subject_type_type = SubjectType.COURSE
     registration_model = CourseRegistration
-    inlines = (
-        CourseVariantInlineAdmin,
-        SubjectTimeInlineAdmin,
-        SubjectAttachmentInlineAdmin,
-    )
     list_display = (
         "id",
         "code",
