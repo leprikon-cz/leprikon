@@ -19,9 +19,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 try:
     urlpatterns = [
+        path("favicon.ico", RedirectView.as_view(url="/static/favicon.ico")),
         path("admin/", admin.site.urls),
         path("pays/", include("django_pays.urls")),
         path("social/", include("social_django.urls")),
