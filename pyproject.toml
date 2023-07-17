@@ -46,7 +46,6 @@ python = "^3.10"
 Django = "<4"
 certbot-nginx = "*"
 certbot = "*"
-cmsplugin-filer = {git = "https://github.com/pawelmarkowski/cmsplugin-filer.git", rev = "2.0.2"}
 django-bankreader = "*"
 djangocms-audio = "*"
 djangocms-file = "*"

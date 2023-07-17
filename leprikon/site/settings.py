@@ -76,13 +76,6 @@ INSTALLED_APPS = [
     "treebeard",
     "filer",
     "easy_thumbnails",
-    "cmsplugin_filer_file",
-    "cmsplugin_filer_folder",
-    "cmsplugin_filer_image",
-    "cmsplugin_filer_link",
-    "cmsplugin_filer_teaser",
-    "cmsplugin_filer_utils",
-    "cmsplugin_filer_video",
     "djangocms_link",
     "djangocms_text_ckeditor",
     "ganalytics",
@@ -94,6 +87,31 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "rest_framework",
 ]
+
+CMSPLUGIN_FILER_MIGRATED = os.environ.get("CMSPLUGIN_FILER_MIGRATED", "no").lower() in ("yes", "true")
+if not CMSPLUGIN_FILER_MIGRATED:
+    print(
+        """
+        Please migrate all content using plugins from cmsplugin_filer
+        to corresponding djangocms_* plugins.
+        When done, run commands:
+
+        for app in cmsplugin_filer_{folder,file,image,link,teaser,video}; do
+            leprikon migrate $app zero
+        done
+
+        and set CMSPLUGIN_FILER_MIGRATED environment variable to "yes".
+        """
+    )
+    INSTALLED_APPS += [
+        "cmsplugin_filer_file",
+        "cmsplugin_filer_folder",
+        "cmsplugin_filer_image",
+        "cmsplugin_filer_link",
+        "cmsplugin_filer_teaser",
+        "cmsplugin_filer_utils",
+        "cmsplugin_filer_video",
+    ]
 
 MIDDLEWARE = [
     "cms.middleware.utils.ApphookReloadMiddleware",

@@ -428,30 +428,6 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
-name = "cmsplugin-filer"
-version = "2.0.2"
-description = "django-cms plugins for django-filer"
-optional = false
-python-versions = "*"
-files = []
-develop = false
-
-[package.dependencies]
-Django = ">=1.11"
-django-appconf = "*"
-django-cms = ">=3.4"
-django-filer = ">=1.2.0"
-django-sekizai = ">=0.4.2"
-djangocms-attributes-field = ">=0.1.1"
-easy_thumbnails = ">=1.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/pawelmarkowski/cmsplugin-filer.git"
-reference = "2.0.2"
-resolved_reference = "09c85f56197f906996a6cf49f39861533cdddcef"
-
-[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -621,20 +597,6 @@ files = [
 
 [package.dependencies]
 Django = ">=2.2,<4.1"
-
-[[package]]
-name = "django-appconf"
-version = "1.0.5"
-description = "A helper class for handling configuration defaults of packaged apps gracefully."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "django-appconf-1.0.5.tar.gz", hash = "sha256:be3db0be6c81fa84742000b89a81c016d70ae66a7ccb620cdef592b1f1a6aaa4"},
-    {file = "django_appconf-1.0.5-py3-none-any.whl", hash = "sha256:ae9f864ee1958c815a965ed63b3fba4874eec13de10236ba063a788f9a17389d"},
-]
-
-[package.dependencies]
-django = "*"
 
 [[package]]
 name = "django-bankreader"
@@ -3044,4 +3006,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "8d50628eb9205899daa2245eda5f87f2341ae7ed9bbf40cd242628d40c6b07d1"
+content-hash = "b1d71f77cb08654e3b67b56df57d896e16450d0bb9896310b621a97630e2300b"

@@ -53,6 +53,8 @@ COPY poetry.lock pyproject.toml ./
 RUN virtualenv /venv
 ENV VIRTUAL_ENV=/venv
 RUN poetry install --only main --no-root
+# TODO: remove following line
+RUN /venv/bin/pip install git+https://github.com/pawelmarkowski/cmsplugin-filer.git@2.0.2
 COPY README.rst /app/README.rst
 COPY leprikon /app/leprikon
 RUN poetry install --only-root
