@@ -57,7 +57,10 @@ $(document).ready(function() {
     });
 
     $('#id_date').on('dp.change', function(e) {
-        $.getJSON('{% url 'api:journal-participants' form.instance.journal.id %}?date='+(e.date/1000), function(result) {
+        d = e.date.toDate();
+        date = `${d.getFullYear()}-${(d.getMonth()+101).toString().slice(1)}-${(d.getDate()+100).toString().slice(1)}`;
+        $.getJSON(`{% url 'api:journal-participants' form.instance.journal.id %}?date=${date}`, function(result) {
+            result = result.map(function (item) { return {value: item.id, label: item.label} });
             $('#id_participants').multiselect('dataprovider', result);
             $('#id_participants_instructed').multiselect('dataprovider', result);
         });

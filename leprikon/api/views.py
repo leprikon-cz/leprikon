@@ -34,7 +34,7 @@ class JournalViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
     def participants(self, request, pk: str):
-        journal = self.get_object()
+        journal: Journal = self.get_object()
         try:
             d = date.fromisoformat(request.GET["date"])
         except (KeyError, ValueError):
