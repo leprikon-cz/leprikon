@@ -61,10 +61,9 @@ class JournalCreateForm(FormMixin, forms.ModelForm):
             ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
         ]
 
-        if self.subject.subject_type.subject_type == SubjectType.COURSE:
-            self.fields["school_year_division"].widget.choices.queryset = SchoolYearDivision.objects.filter(
-                course_registrations__subject=self.subject
-            ).distinct()
+        school_year_divisions = SchoolYearDivision.objects.filter(variants__subject=self.subject).distinct()
+        if school_year_divisions.exists():
+            self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
         else:
             del self.fields["school_year_division"]
 
@@ -92,12 +91,12 @@ class JournalUpdateForm(FormMixin, forms.ModelForm):
 
         participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject_id=self.subject.id)
 
-        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+        if self.instance.school_year_division:
             self.readonly_fields.append(
                 ReadonlyField(label=first_upper(_("school year division")), value=self.instance.school_year_division),
             )
             participants_qs = participants_qs.filter(
-                registration__courseregistration__school_year_division=self.instance.school_year_division
+                registration__subject_variant__school_year_division=self.instance.school_year_division
             )
 
         participant_ids = set(participants_qs.values_list("id", flat=True))

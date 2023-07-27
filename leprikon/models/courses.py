@@ -15,34 +15,17 @@ from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType
+from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects
 
 
 class Course(Subject):
-    school_year_division = models.ForeignKey(
-        SchoolYearDivision, on_delete=models.PROTECT, related_name="courses", verbose_name=_("school year division")
-    )
-    allow_period_selection = models.BooleanField(
-        _("allow period selection"),
-        default=False,
-        help_text=_("allow user to choose school year periods on registration form"),
-    )
-
     class Meta:
         app_label = "leprikon"
         ordering = ("code", "name")
         verbose_name = _("course")
         verbose_name_plural = _("courses")
-
-    @cached_property
-    def all_periods(self):
-        return list(self.school_year_division.periods.all())
-
-    @cached_property
-    def all_journal_entries(self):
-        return list(self.journal_entries.all())
 
     @property
     def registrations_history_registrations(self):
@@ -56,20 +39,13 @@ class Course(Subject):
             .distinct()
         )
 
-    def copy_to_school_year(old, school_year):
+    def copy_to_school_year(old, school_year: SchoolYear):
         new = Course.objects.get(id=old.id)
         new.id, new.pk = None, None
         new.school_year = school_year
         new.public = False
-        new.evaluation = ""
         new.note = ""
         year_delta = school_year.year - old.school_year.year
-        new.school_year_division = SchoolYearDivision.objects.filter(
-            school_year=school_year,
-            name=old.school_year_division.name,
-        ).first() or old.school_year_division.copy_to_school_year(school_year)
-        new.reg_from = new.reg_from and change_year(new.reg_from, year_delta)
-        new.reg_to = new.reg_to and change_year(new.reg_to, year_delta)
         new.save()
         new.groups.set(old.groups.all())
         new.age_groups.set(old.age_groups.all())
@@ -78,22 +54,29 @@ class Course(Subject):
             school_year.leaders.add(leader)
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
+        for old_variant in old.all_variants:
+            new_variant = SubjectVariant.objects.get(id=old_variant.id)
+            new_variant.id, new_variant.pk = None, None
+            new_variant.subject = new
+            if old_variant.school_year_division:
+                new_variant.school_year_division = SchoolYearDivision.objects.filter(
+                    school_year=school_year,
+                    name=old_variant.school_year_division.name,
+                ).first() or old_variant.school_year_division.copy_to_school_year(school_year)
+            new_variant.reg_from = change_year(new_variant.reg_from, year_delta)
+            new_variant.reg_to = change_year(new_variant.reg_to, year_delta)
+            new_variant.save()
+            new_variant.age_groups.set(old_variant.age_groups.all())
+            new_variant.target_groups.set(old_variant.target_groups.all())
         copy_related_objects(
             new,
             attachments=old.attachments,
             times=old.times,
-            variants=old.variants,
         )
         return new
 
 
 class CourseRegistration(SubjectRegistration):
-    school_year_division = models.ForeignKey(
-        SchoolYearDivision,
-        on_delete=models.PROTECT,
-        related_name="course_registrations",
-        verbose_name=_("school year division"),
-    )
     subject_type = SubjectType.COURSE
 
     class Meta:

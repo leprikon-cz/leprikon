@@ -16,6 +16,7 @@ from lxml.html import fromstring, tostring
 
 from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
+from ..models.subjects import Subject
 from ..utils import (
     comma_separated as _comma_separated,
     currency as _currency,
@@ -98,7 +99,7 @@ def current_url(context):
 
 
 @register.inclusion_tag("leprikon/registration_links.html", takes_context=True)
-def registration_links(context, subject):
+def registration_links(context, subject: Subject):
     now = timezone.now()
     context = context.__copy__()
     context["subject"] = subject

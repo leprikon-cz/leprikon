@@ -85,6 +85,7 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="journals", verbose_name=_("subject"))
     school_year_division = models.ForeignKey(
         SchoolYearDivision,
+        blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="journals",

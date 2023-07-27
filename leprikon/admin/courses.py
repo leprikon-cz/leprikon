@@ -53,10 +53,6 @@ class CourseAdmin(SubjectBaseAdmin):
         "get_times_list",
         "place",
         "public",
-        "registration_price",
-        "participant_price",
-        "min_participants_count",
-        "max_participants_count",
         "min_registrations_count",
         "max_registrations_count",
         "get_approved_registrations_count",
@@ -68,17 +64,6 @@ class CourseAdmin(SubjectBaseAdmin):
         "unpublish",
         "copy_to_school_year",
     )
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if "school_year_division" in form.base_fields:
-            # school year division choices
-            school_year_division_choices = form.base_fields["school_year_division"].widget.widget.choices
-            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
-                school_year=obj.school_year if obj else request.school_year,
-            )
-            form.base_fields["school_year_division"].choices = school_year_division_choices
-        return form
 
     @attributes(short_description=_("Publish selected courses"))
     def publish(self, request, queryset):
@@ -163,17 +148,6 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
     actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
     inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
 
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if "school_year_division" in form.base_fields:
-            # school year division choices
-            school_year_division_choices = form.base_fields["school_year_division"].widget.widget.choices
-            school_year_division_choices.queryset = SchoolYearDivision.objects.filter(
-                school_year=obj.subject.school_year if obj else request.school_year,
-            )
-            form.base_fields["school_year_division"].choices = school_year_division_choices
-        return form
-
     def get_queryset(self, request):
         return (
             super()
@@ -200,7 +174,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         school_year_divisions = {
             school_year_division.id: school_year_division
             for school_year_division in SchoolYearDivision.objects.filter(
-                courses__registrations__in=queryset,
+                variants__subject__registrations__in=queryset,
             ).distinct()
         }
 
@@ -214,6 +188,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                         school_year_division=school_year_division.name,
                     ),
                     queryset=school_year_division.periods.all(),
+                    required=False,
                     widget=FilteredSelectMultiple(
                         verbose_name=label.format(
                             school_year_division=school_year_division.name,
@@ -249,7 +224,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     )
                     for registration in queryset.all()
                     for registration_period in registration.course_registration_periods.filter(
-                        period__in=form.cleaned_data[f"periods_{registration.school_year_division_id}"]
+                        period__in=form.cleaned_data[f"periods_{registration.subject_variant.school_year_division_id}"]
                     )
                 )
                 self.message_user(request, _("The discounts have been created for selected registrations."))

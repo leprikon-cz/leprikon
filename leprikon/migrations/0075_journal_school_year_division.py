@@ -63,7 +63,6 @@ def set_journal_school_year_division(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("leprikon", "0074_schoolyear_period_order"),
     ]
@@ -73,6 +72,7 @@ class Migration(migrations.Migration):
             model_name="journal",
             name="school_year_division",
             field=models.ForeignKey(
+                blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="journals",

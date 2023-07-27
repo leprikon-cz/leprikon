@@ -53,8 +53,6 @@ class OrderableAdmin(SubjectBaseAdmin):
         "get_times_list",
         "place",
         "public",
-        "min_participants_count",
-        "max_participants_count",
         "min_registrations_count",
         "max_registrations_count",
         "get_approved_registrations_count",

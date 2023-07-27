@@ -43,7 +43,7 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
         "subject_type__subject_type",
         ("subject_type", SubjectTypeListFilter),
     )
-    filter_horizontal = ("subjects",)
+    filter_horizontal = ("subject_variants",)
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and len(request.POST) == 3:

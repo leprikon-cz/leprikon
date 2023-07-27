@@ -256,6 +256,8 @@ lazy_help_text_with_default = lazy(help_text_with_default, str)
 
 
 def change_year(d, year_delta):
+    if d is None:
+        return None
     if isinstance(d, date):
         try:
             return date(d.year + year_delta, d.month, d.day)

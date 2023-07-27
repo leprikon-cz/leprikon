@@ -16,7 +16,7 @@ class RegistrationLinkMixin(SubjectTypeMixin):
         return super().get_placeholder() + ":" + self.subject_type.slug
 
     def get_queryset(self):
-        return super().get_queryset().filter(registration_links=self.registration_link)
+        return super().get_queryset().filter(id__in=self.registration_link.subject_variants.values("subject_id"))
 
     def get_template_names(self):
         return [

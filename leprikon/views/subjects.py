@@ -1,6 +1,9 @@
+from typing import List, Optional
+
 from cms.views import details as cms_view_details
 from django.core.exceptions import PermissionDenied
 from django.db.models import F, Q
+from django.forms import Form
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy as reverse
@@ -17,6 +20,7 @@ from ..forms.subjects import (
 from ..models.courses import Course
 from ..models.events import Event
 from ..models.orderables import Orderable
+from ..models.registrationlink import RegistrationLink
 from ..models.subjects import (
     Subject,
     SubjectPayment,
@@ -24,6 +28,7 @@ from ..models.subjects import (
     SubjectRegistration,
     SubjectReturnedPayment,
     SubjectType,
+    SubjectVariant,
 )
 from ..utils import reverse_with_back
 from .generic import ConfirmUpdateView, CreateView, DetailView, FilteredListView, ListView, UpdateView
@@ -203,6 +208,11 @@ class SubjectMixin:
 
 
 class SubjectRegistrationFormBaseView(CreateView):
+    subject: Subject
+    subject_variant: Optional[SubjectVariant]
+    registration_link: Optional[RegistrationLink] = None
+    available_variants: List[SubjectVariant]
+
     back_url = reverse("leprikon:registration_list")
     submit_label = _("Submit registration")
     message = _("The registration has been saved. We will inform you about its further processing.")
@@ -213,6 +223,22 @@ class SubjectRegistrationFormBaseView(CreateView):
         SubjectType.ORDERABLE: OrderableRegistrationForm,
     }
 
+    def dispatch(self, request, **kwargs):
+        subject_variant_pk: Optional[int] = kwargs.pop("variant_pk", None)
+        if self.registration_link:
+            self.available_variants = list(self.registration_link.subject_variants.filter(subject=self.subject))
+        else:
+            self.available_variants = self.subject.all_available_variants
+        try:
+            self.subject_variant = (
+                subject_variant_pk and [v for v in self.available_variants if v.pk == int(subject_variant_pk)][0]
+            )
+        except (IndexError, ValueError):
+            self.subject_variant = None
+        if self.subject_variant is None and len(self.available_variants) == 1:
+            self.subject_variant = self.available_variants[0]
+        return super().dispatch(request, **kwargs)
+
     def get_title(self):
         return _("Registration for {subject_type} {subject}").format(
             subject_type=self.subject_type.name_akuzativ,
@@ -220,13 +246,17 @@ class SubjectRegistrationFormBaseView(CreateView):
         )
 
     def get_form_class(self):
-        return self._form_classes[self.subject_type.subject_type]
+        return self._form_classes[self.subject_type.subject_type] if self.subject_variant else Form
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["subject"] = self.subject
-        kwargs["user"] = self.request.user
-        return kwargs
+        if self.subject_variant:
+            kwargs = super().get_form_kwargs()
+            kwargs["subject"] = self.subject
+            kwargs["subject_variant"] = self.subject_variant
+            kwargs["user"] = self.request.user
+            return kwargs
+        else:
+            return {}
 
 
 class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegistrationFormBaseView):

@@ -62,8 +62,6 @@ class EventAdmin(SubjectBaseAdmin):
         "end_time",
         "place",
         "public",
-        "min_participants_count",
-        "max_participants_count",
         "min_registrations_count",
         "max_registrations_count",
         "get_approved_registrations_count",

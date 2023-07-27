@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .leprikonsite import LeprikonSite
 from .schoolyear import SchoolYear
-from .subjects import Subject, SubjectType
+from .subjects import SubjectType, SubjectVariant
 
 
 class RegistrationLink(models.Model):
@@ -24,8 +24,8 @@ class RegistrationLink(models.Model):
     name = models.CharField(_("name"), max_length=50)
     reg_from = models.DateTimeField(_("registration active from"))
     reg_to = models.DateTimeField(_("registration active to"))
-    subjects = models.ManyToManyField(
-        Subject, blank=False, related_name="registration_links", verbose_name=_("subjects")
+    subject_variants = models.ManyToManyField(
+        SubjectVariant, blank=False, related_name="registration_links", verbose_name=_("subjects")
     )
 
     class Meta:

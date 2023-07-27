@@ -5,6 +5,8 @@
 
 <h1>{% block title %}{{ title }}{% endblock %}</h1>
 
+{% if view.subject_variant %}
+
 {% if form.errors %}
     <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
     <!-- {{ form.errors }} -->
@@ -21,59 +23,7 @@
         {% include 'leprikon/form_item.html' with item=form.start_time %}
     {% endif %}
 
-    <h3>{% trans 'Price' %}</h3>
-    {% if form.subject_variant %}
-    <div class="form-group {{ form.subject_variant.css_classes }}">
-        <label class="control-label col-md-3">
-            {{ form.subject_variant.label }}
-        </label>
-        <div class="col-md-9{% if form.subject_variant.errors %} alert alert-danger{% endif %}">
-            {% for variant in form.instance.subject.all_variants %}
-                <div class="row select">
-                    <div class="col-md-1 right">
-                        <input class="form-control" data-type="ChoiceField"
-                               {% if variant.id == form.subject_variant.value|add:0 %}checked="checked"{% endif %}
-                               id="{{ form.subject_variant.id_for_label }}_{{ variant.id }}"
-                               name="{{ form.subject_variant.html_name }}" value="{{ variant.id }}" type="radio">
-                    </div>
-                    <div class="col-md-11">
-                        <label class="form-control" style="font-weight:normal" for="{{ form.subject_variant.id_for_label }}_{{ variant.id }}">
-                            <strong>{{ variant.name }}</strong><br/>
-                        </label>
-                        {{ variant.description | safe }}
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% for error in form.subject_variant.errors %}
-                <div>{{ error }}</div>
-            {% endfor %}
-
-            {% if form.subject_variant.help_text %}
-                <span class="help-block">{{ form.subject_variant.help_text | safe }}</span>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="form-group">
-        <label class="control-label col-md-3">{% trans 'Price' %}</label>
-        <div class="col-md-9">
-            <label class="form-control" style="font-weight:normal">
-                <span id="price">
-                {% if form.subject_variant.value %}
-                    {% for variant in form.instance.subject.all_variants %}
-                        {% if variant.id == form.subject_variant.value|add:0 %}{{ variant.price_text }}{% endif %}
-                    {% endfor %}
-                {% else %}
-                    {{ form.instance.subject.price_text }}
-                {% endif %}
-                </span>
-            </label>
-        </div>
-    </div>
-
-    {% if form.instance.subject.course.allow_period_selection %}
+    {% if form.instance.subject_variant.allow_period_selection %}
     {% include 'leprikon/form_item.html' with item=form.periods %}
     {% endif %}
 
@@ -560,4 +510,22 @@ $(document).ready(function() {
 {% endaddtoblock %}
 
 {% include 'leprikon/static/bootstrap-datetimepicker.html' %}
+{% else %}
+
+<h3>{% trans 'Select variant' %}</h3>
+
+{% for variant in view.available_variants %}
+<div class="row">
+    <div class="box" class="col-md-6">
+        <div class="box-header">
+            {{ variant.name }} | {{ variant.price_text }}
+        </div>
+        <div class="box-content">
+            {{ variant.description | safe }}
+            <a href="{% if view.registration_link %}{% url_with_back 'leprikon:registration_link_form' view.registration_link.slug variant.subject_id variant.id %}{% else %}{{ variant.get_registration_url }}{% endif %}" class="btn btn-primary">{% trans "Choose this variant" %}</a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 {% endblock %}

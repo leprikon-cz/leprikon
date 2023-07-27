@@ -1,3 +1,5 @@
+from typing import Optional
+
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin, messages
@@ -204,8 +206,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                     "due_date_days",
                     "age_groups",
                     "target_groups",
-                    "registration_price",
-                    "participant_price",
                     "reg_from",
                     "reg_to",
                     "public",
@@ -221,8 +221,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                     "leaders",
                     "photo",
                     "page",
-                    "min_participants_count",
-                    "max_participants_count",
                     "min_registrations_count",
                     "max_registrations_count",
                     "min_due_date_days",
@@ -489,10 +487,10 @@ class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):
     extra = 0
 
     def get_min_num(self, request, obj=None, **kwargs):
-        return request.subject.min_participants_count
+        return request.subject_variant.min_participants_count
 
     def get_max_num(self, request, obj=None, **kwargs):
-        return request.subject.max_participants_count
+        return request.subject_variant.max_participants_count
 
     def get_formset(self, request, obj=None, **kwargs):
         questions = obj.all_questions if obj else request.subject.all_questions
@@ -523,10 +521,10 @@ class SubjectRegistrationGroupMemberInlineAdmin(admin.StackedInline):
     extra = 0
 
     def get_min_num(self, request, obj=None, **kwargs):
-        return request.subject.min_participants_count
+        return request.subject_variant.min_participants_count
 
     def get_max_num(self, request, obj=None, **kwargs):
-        return request.subject.max_participants_count
+        return request.subject_variant.max_participants_count
 
 
 class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
@@ -830,14 +828,18 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and "user" not in request.POST:
-            return HttpResponseRedirect("{}?subject={}".format(request.path, request.POST.get("subject", "")))
+            return HttpResponseRedirect(
+                "{}?subject={}&subject_variant={}".format(
+                    request.path, request.POST.get("subject", ""), request.POST.get("subject_variant", "")
+                )
+            )
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_exclude(self, request, obj=None):
         return [] if not request.subject or request.subject.variants.exists() else ["subject_variant"]
 
-    def get_form(self, request, obj, **kwargs):
+    def get_form(self, request, obj: Optional[SubjectRegistration], **kwargs):
         try:
             # first try request.POST (user may want to change the subject)
             request.subject = Subject.objects.get(id=int(request.POST.get("subject")))
@@ -853,18 +855,45 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     request.subject = None
 
         if request.subject:
-            kwargs["form"] = type(
-                self.form.__name__,
-                (self.form,),
-                {"subject": request.subject},
-            )
+            try:
+                # first try request.POST (user may want to change the subject)
+                request.subject_variant = SubjectVariant.objects.get(
+                    id=int(request.POST.get("subject_variant")),
+                    subject=request.subject,
+                )
+            except (SubjectVariant.DoesNotExist, TypeError, ValueError):
+                if obj and obj.subject_variant.subject == request.subject:
+                    # use subject from object
+                    request.subject_variant = obj.subject_variant
+                else:
+                    # try to get subject from request.GET
+                    try:
+                        request.subject_variant = SubjectVariant.objects.get(
+                            id=int(request.GET.get("subject_variant")),
+                            subject=request.subject,
+                        )
+                    except (SubjectVariant.DoesNotExist, TypeError, ValueError):
+                        request.subject_variant = None
+
+        if request.subject:
+            if request.subject_variant:
+                kwargs["form"] = type(
+                    self.form.__name__,
+                    (self.form,),
+                    {"subject": request.subject, "subject_variant": request.subject_variant},
+                )
+            else:
+                kwargs["form"] = type(
+                    RegistrationAdminForm.__name__, (RegistrationAdminForm,), {"subject": request.subject}
+                )
+                kwargs["fields"] = ["subject", "subject_variant"]
         else:
             kwargs["form"] = forms.ModelForm
             kwargs["fields"] = ["subject"]
         return super().get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        if request.subject:
+        if request.subject and request.subject_variant:
             if request.subject.registration_type_participants:
                 inlines = (SubjectRegistrationParticipantInlineAdmin,)
             elif request.subject.registration_type_groups:
@@ -881,11 +910,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                 participants_count = int(form.data["participants-TOTAL_FORMS"])
             elif obj.subject.registration_type_groups:
                 participants_count = int(form.data["group_members-TOTAL_FORMS"])
-            obj.price = (
-                obj.subject_variant.get_price(participants_count)
-                if obj.subject_variant
-                else obj.subject.get_price(participants_count)
-            )
+            obj.price = obj.subject_variant.get_price(participants_count)
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 

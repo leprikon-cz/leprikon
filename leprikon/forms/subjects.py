@@ -34,6 +34,7 @@ from ..models.subjects import (
     SubjectRegistrationGroupMember,
     SubjectRegistrationParticipant,
     SubjectType,
+    SubjectVariant,
 )
 from ..models.targetgroup import TargetGroup
 from ..utils import get_age, get_birth_date, get_gender
@@ -174,7 +175,7 @@ class SubjectFilterForm(FormMixin, forms.Form):
             else:
                 qs = qs.filter(end_date__gte=now())
         if self.cleaned_data["reg_active"]:
-            qs = qs.filter(reg_from__lte=now()).exclude(reg_to__lte=now())
+            qs = qs.filter(variants__reg_from__lte=now()).exclude(variants__reg_to__lte=now())
         return qs.distinct()
 
 
@@ -594,16 +595,11 @@ class RegistrationBillingInfoForm(FormMixin, forms.ModelForm):
 class RegistrationForm(FormMixin, forms.ModelForm):
     instance: SubjectRegistration
 
-    def __init__(self, subject: Subject, user, **kwargs):
+    def __init__(self, subject: Subject, subject_variant: SubjectVariant, user, **kwargs):
         super().__init__(**kwargs)
         self.user = user
         self.instance.subject = subject
-
-        # choices for subject_variant
-        if self.instance.subject.all_variants:
-            self.fields["subject_variant"].widget.choices.queryset = self.instance.subject.variants.all()
-        else:
-            del self.fields["subject_variant"]
+        self.instance.subject_variant = subject_variant
 
         # sub forms
         if subject.registration_type_participants:
@@ -632,9 +628,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 form=participant_form,
                 fk_name="registration",
                 exclude=[],
-                extra=subject.max_participants_count,
-                min_num=subject.min_participants_count,
-                max_num=subject.max_participants_count,
+                extra=subject_variant.max_participants_count,
+                min_num=subject_variant.min_participants_count,
+                max_num=subject_variant.max_participants_count,
                 validate_min=True,
                 validate_max=True,
             )(kwargs.get("data"), instance=self.instance)
@@ -661,9 +657,9 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 form=RegistrationGroupMemberForm,
                 fk_name="registration",
                 exclude=[],
-                extra=subject.max_participants_count,
-                min_num=subject.min_participants_count,
-                max_num=subject.max_participants_count,
+                extra=subject_variant.max_participants_count,
+                min_num=subject_variant.min_participants_count,
+                max_num=subject_variant.max_participants_count,
                 validate_min=True,
                 validate_max=True,
             )(kwargs.get("data"), instance=self.instance)
@@ -774,11 +770,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             participants_count = self.group_members_formset.total_form_count()
 
         # set price
-        self.instance.price = (
-            self.instance.subject_variant.get_price(participants_count)
-            if self.instance.subject_variant
-            else self.instance.subject.get_price(participants_count)
-        )
+        self.instance.price = self.instance.subject_variant.get_price(participants_count)
 
         # create
         super().save(True)
@@ -847,10 +839,14 @@ class CourseRegistrationForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.available_periods = self.instance.subject.course.school_year_division.periods.exclude(
-            end__lt=date.today(),
-        )
-        if self.instance.subject.course.allow_period_selection:
+        if self.instance.subject_variant.school_year_division:
+            self.available_periods = self.instance.subject_variant.school_year_division.periods.exclude(
+                end__lt=date.today(),
+            )
+        else:
+            self.available_periods = []
+
+        if self.instance.subject_variant.school_year_division and self.instance.subject_variant.allow_period_selection:
             self.fields["periods"].widget.choices.queryset = self.available_periods
         else:
             del self.fields["periods"]
@@ -859,8 +855,8 @@ class CourseRegistrationForm(RegistrationForm):
         model = CourseRegistration
         exclude = (
             "subject",
+            "subject_variant",
             "user",
-            "school_year_division",
             "cancelation_requested",
             "cancelation_requested_by",
             "canceled",
@@ -869,13 +865,6 @@ class CourseRegistrationForm(RegistrationForm):
 
     @transaction.atomic
     def save(self, commit=True):
-        subject_variant = self.cleaned_data.get("subject_variant")
-        if subject_variant:
-            self.instance.school_year_division_id = (
-                subject_variant.school_year_division_id or self.instance.subject.course.school_year_division_id
-            )
-        else:
-            self.instance.school_year_division_id = self.instance.subject.course.school_year_division_id
         super().save()
         CourseRegistrationPeriod.objects.bulk_create(
             CourseRegistrationPeriod(
@@ -890,13 +879,29 @@ class CourseRegistrationForm(RegistrationForm):
 class EventRegistrationForm(RegistrationForm):
     class Meta:
         model = EventRegistration
-        exclude = ("subject", "user", "cancelation_requested", "cancelation_requested_by", "canceled", "canceled_by")
+        exclude = (
+            "subject",
+            "subject_variant",
+            "user",
+            "cancelation_requested",
+            "cancelation_requested_by",
+            "canceled",
+            "canceled_by",
+        )
 
 
 class OrderableRegistrationForm(RegistrationForm):
     class Meta:
         model = OrderableRegistration
-        exclude = ("subject", "user", "cancelation_requested", "cancelation_requested_by", "canceled", "canceled_by")
+        exclude = (
+            "subject",
+            "subject_variant",
+            "user",
+            "cancelation_requested",
+            "cancelation_requested_by",
+            "canceled",
+            "canceled_by",
+        )
 
 
 class RegistrationAdminForm(forms.ModelForm):
@@ -907,11 +912,12 @@ class RegistrationAdminForm(forms.ModelForm):
             self.fields["subject_variant"].widget.choices.queryset = self.subject.variants.all()
 
         # choices for agreement options
-        instance = kwargs.get("instance")
-        self.fields["agreement_options"].widget.choices = tuple(
-            (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
-            for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
-        )
+        if "agreement_options" in self.fields:
+            instance = kwargs.get("instance")
+            self.fields["agreement_options"].widget.choices = tuple(
+                (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
+                for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
+            )
 
 
 class SchoolAdminMixin:

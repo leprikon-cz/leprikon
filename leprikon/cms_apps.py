@@ -31,4 +31,9 @@ class LeprikonSubjectTypeApp(CMSApp):
                 transaction.atomic(views.subject_registration_form),
                 name="subject_registration_form",
             ),
+            path(
+                "<int:pk>/<int:variant_pk>/{registration}/".format(**LEPRIKON_URL),
+                transaction.atomic(views.subject_registration_form),
+                name="subject_registration_form",
+            ),
         ]

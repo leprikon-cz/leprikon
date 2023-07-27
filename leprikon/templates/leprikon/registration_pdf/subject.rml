@@ -59,7 +59,7 @@
                 <td>
                     <para style="para">
                         {{ object.price_text }}
-                        {% if object.subject_variant %}({{ object.subject_variant.name }}){% endif %}
+                        {% if object.subject_variant.name %}({{ object.subject_variant.name }}){% endif %}
                     </para>
                 </td>
             </tr>

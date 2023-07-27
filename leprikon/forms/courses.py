@@ -2,12 +2,15 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.translation import gettext_lazy as _
 
-from ..models.courses import CourseDiscount, CourseRegistrationPeriod
+from ..models.courses import CourseDiscount, CourseRegistration, CourseRegistrationPeriod
 from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
+from ..models.subjects import Subject
 from .subjects import RegistrationAdminForm
 
 
 class CourseRegistrationAdminForm(RegistrationAdminForm):
+    subject: Subject
+    instance: CourseRegistration
     periods = forms.ModelMultipleChoiceField(
         queryset=SchoolYearPeriod.objects.all(),
         widget=FilteredSelectMultiple(
@@ -21,10 +24,10 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
         try:
             self.school_year_division = SchoolYearDivision.objects.get(pk=int(self.data["school_year_division"]))
         except (KeyError, TypeError, ValueError, SchoolYearDivision.DoesNotExist):
-            try:
+            if self.instance.school_year_division_id:
                 self.school_year_division = self.instance.school_year_division
-            except SchoolYearDivision.DoesNotExist:
-                self.school_year_division = self.subject.course.school_year_division
+            else:
+                self.school_year_division = self.subject_variant.school_year_division
         self.available_periods = self.school_year_division.periods.all()
         self.fields["periods"].widget.choices.queryset = self.available_periods
         self.fields["periods"].initial = self.available_periods.filter(

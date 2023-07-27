@@ -66,6 +66,7 @@ urlpatterns = [
     d_path("{registrations}/<int:pk>/{cancel}/", "registration_cancel"),
     d_path("{registration_link}/<registration_link>/", "registration_link"),
     d_path("{registration_link}/<registration_link>/<int:pk>/", "registration_link_form"),
+    d_path("{registration_link}/<registration_link>/<int:pk>/<int:variant_pk>/", "registration_link_form"),
     d_path("{payments}/", "payment_list"),
     d_path("{received_payments}/<int:pk>/<slug>.pdf", "received_payment_pdf"),
     d_path("{returned_payments}/<int:pk>/<slug>.pdf", "returned_payment_pdf"),
