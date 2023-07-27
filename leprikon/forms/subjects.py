@@ -847,8 +847,8 @@ class CourseRegistrationForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.available_periods = self.instance.subject.course.school_year_division.periods.filter(
-            end__gte=date.today(),
+        self.available_periods = self.instance.subject.course.school_year_division.periods.exclude(
+            end__lt=date.today(),
         )
         if self.instance.subject.course.allow_period_selection:
             self.fields["periods"].widget.choices.queryset = self.available_periods
