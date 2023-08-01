@@ -111,10 +111,6 @@ class Migration(migrations.Migration):
             name="reg_to",
             field=models.DateTimeField(blank=True, null=True, verbose_name="registration active to"),
         ),
-        migrations.AlterModelOptions(
-            name="subjectvariant",
-            options={"ordering": ("subject", "order"), "verbose_name": "variant", "verbose_name_plural": "variants"},
-        ),
         migrations.RunPython(update_current_subject_variants),
         migrations.RunPython(create_default_subject_variants),
         migrations.AlterField(

@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ('order',),
-                'verbose_name': 'variant',
-                'verbose_name_plural': 'variants',
+                'verbose_name': 'price and registering variant',
+                'verbose_name_plural': 'price and registering variants',
             },
         ),
         migrations.AddField(

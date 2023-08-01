@@ -749,9 +749,9 @@ class SubjectVariant(models.Model):
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("subject", "order")
-        verbose_name = _("variant")
-        verbose_name_plural = _("variants")
+        ordering = ("order",)
+        verbose_name = _("price and registering variant")
+        verbose_name_plural = _("price and registering variants")
 
     def __str__(self):
         return f"{self.subject.display_name} / {self.name}" if self.name else self.subject.display_name
@@ -954,7 +954,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return list(self.questions.all())
 
     @cached_property
-    def all_agreements(self):
+    def all_agreements(self) -> List[Agreement]:
         return list(self.agreements.all())
 
     @cached_property

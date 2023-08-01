@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-30 17:17+0200\n"
+"POT-Creation-Date: 2023-08-01 22:14+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1022,7 +1022,7 @@ msgstr "poviné pole s možností neodpovědět"
 msgid "date field"
 msgstr "datum"
 
-#: forms/courses.py:17 templates/leprikon/registration_pdf/subject.rml:78
+#: forms/courses.py:16 templates/leprikon/registration_pdf/subject.rml:78
 msgid "Periods"
 msgstr "Období"
 
@@ -2646,13 +2646,17 @@ msgstr "povolit výběr odbobí"
 msgid "allow user to choose school year periods on registration form"
 msgstr "umožní uživateli při přihlašování vybrat konkrétní období"
 
-#: models/subjects.py:753 models/subjects.py:803
-msgid "variant"
-msgstr "varianta"
+#: models/subjects.py:753
+msgid "price and registering variant"
+msgstr "varianta ceny a přihlašování"
 
 #: models/subjects.py:754
-msgid "variants"
-msgstr "varianty"
+msgid "price and registering variants"
+msgstr "varianty ceny a přihlašování"
+
+#: models/subjects.py:803
+msgid "variant"
+msgstr "varianta"
 
 #: models/subjects.py:805
 msgid "price"

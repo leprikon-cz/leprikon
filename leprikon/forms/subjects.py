@@ -905,6 +905,10 @@ class OrderableRegistrationForm(RegistrationForm):
 
 
 class RegistrationAdminForm(forms.ModelForm):
+    instance: SubjectRegistration
+    subject: Subject
+    subject_variant: SubjectVariant
+
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
@@ -913,7 +917,7 @@ class RegistrationAdminForm(forms.ModelForm):
 
         # choices for agreement options
         if "agreement_options" in self.fields:
-            instance = kwargs.get("instance")
+            instance: SubjectRegistration = kwargs.get("instance")
             self.fields["agreement_options"].widget.choices = tuple(
                 (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
                 for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
