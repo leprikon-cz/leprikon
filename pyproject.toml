@@ -104,6 +104,7 @@ isort = "*"
 python-dotenv = "*"
 pytest = "*"
 mypy = "*"
+django-stubs = "*"
 
 [tool.poetry.scripts]
 leprikon = 'leprikon.__main__:main'
