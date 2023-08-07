@@ -227,7 +227,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
 
 @admin.register(EventDiscount)
-class EventDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
-    actions = SubjectDiscountBaseAdmin.actions + PdfExportAdminMixin.actions
+class EventDiscountAdmin(SubjectDiscountBaseAdmin):
+    actions = SubjectDiscountBaseAdmin.actions
     list_display = ("accounted", "registration", "subject", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "amount", "explanation")

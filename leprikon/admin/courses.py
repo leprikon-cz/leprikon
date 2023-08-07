@@ -336,8 +336,8 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
 
 @admin.register(CourseDiscount)
-class CourseDiscountAdmin(PdfExportAdminMixin, SubjectDiscountBaseAdmin):
-    actions = SubjectDiscountBaseAdmin.actions + PdfExportAdminMixin.actions
+class CourseDiscountAdmin(SubjectDiscountBaseAdmin):
+    actions = SubjectDiscountBaseAdmin.actions
     form = CourseDiscountAdminForm
     list_display = ("accounted", "registration", "subject", "period", "amount_html", "explanation")
     list_export = ("accounted", "registration", "subject", "period", "amount", "explanation")
