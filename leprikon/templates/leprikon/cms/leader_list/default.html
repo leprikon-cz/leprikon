@@ -6,9 +6,9 @@
 
     <h3 class="leader_name leader_name_{{ leader.id }}">
         {% if leader.page %}
-        <a href="{{ leader.page.get_absolute_url }}" alt="{{ leader.page.get_title }}">{{ leader.name }}</a>
+        <a href="{{ leader.page.get_absolute_url }}">{{ leader.full_name }}</a>
         {% else %}
-        {{ leader.name }}
+        {{ leader.full_name }}
         {% endif %}
     </h3>
 
