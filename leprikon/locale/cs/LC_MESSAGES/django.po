@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-01 22:14+0200\n"
+"POT-Creation-Date: 2023-08-09 13:31+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1022,7 +1022,7 @@ msgstr "poviné pole s možností neodpovědět"
 msgid "date field"
 msgstr "datum"
 
-#: forms/courses.py:16 templates/leprikon/registration_pdf/subject.rml:78
+#: forms/courses.py:15 templates/leprikon/registration_pdf/subject.rml:78
 msgid "Periods"
 msgstr "Období"
 
@@ -3550,7 +3550,7 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
 msgstr ""
-"Tento e-mail dostáváte, protože jste požádali o reset hasla k Vašemu "
+"Tento e-mail dostáváte, protože jste požádali o reset hesla k Vašemu "
 "uživatelskému účtu na webu %(site_name)s."
 
 #: templates/leprikon/password_reset_email.html:4
