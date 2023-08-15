@@ -24,7 +24,7 @@ from ..models.orderables import Orderable, OrderableRegistration
 from ..models.place import Place
 from ..models.roles import BillingInfo, Leader, Parent, Participant
 from ..models.school import School
-from ..models.schoolyear import SchoolYearPeriod
+from ..models.schoolyear import SchoolYear, SchoolYearPeriod
 from ..models.subjects import (
     Subject,
     SubjectGroup,
@@ -214,6 +214,21 @@ class SubjectAdminForm(forms.ModelForm):
             registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
                 id__in=instance.subject_type.registration_agreements.values("id")
             )
+
+
+class SubjectVariantForm(forms.ModelForm):
+    school_year: SchoolYear
+
+    class Meta:
+        model = SubjectVariant
+        fields = forms.ALL_FIELDS
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        school_year_divisions = self.fields["school_year_division"].widget.choices.queryset.filter(
+            school_year=self.school_year
+        )
+        self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
 
 
 class SchoolMixin:

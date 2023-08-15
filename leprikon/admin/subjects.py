@@ -22,6 +22,7 @@ from ..forms.subjects import (
     RegistrationGroupAdminForm,
     RegistrationParticipantAdminForm,
     SubjectAdminForm,
+    SubjectVariantForm,
 )
 from ..models.subjects import (
     DEFAULT_TEXTS,
@@ -127,6 +128,11 @@ class SubjectVariantInlineAdmin(SortableInlineAdminMixin, admin.StackedInline):
         elif request.registration_type == Subject.GROUPS:
             return ["age_groups"]
         return []
+
+    def get_formset(self, request, obj=None, **kwargs):
+        fields = {"school_year": request.school_year}
+        kwargs["form"] = type(SubjectVariantForm.__name__, (SubjectVariantForm,), fields)
+        return super().get_formset(request, obj, **kwargs)
 
 
 class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
