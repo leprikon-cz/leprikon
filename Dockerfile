@@ -52,11 +52,11 @@ RUN pip install poetry wheel
 RUN virtualenv /venv
 ENV VIRTUAL_ENV=/venv
 COPY requirements.txt ./
-RUN pip install -r requirements.txt
-COPY poetry.lock pyproject.toml ./
-RUN poetry install --only main --no-root
+RUN /venv/bin/pip install -r requirements.txt
 # TODO: remove following line
 RUN /venv/bin/pip install git+https://github.com/pawelmarkowski/cmsplugin-filer.git@2.0.2
+COPY poetry.lock pyproject.toml ./
+RUN poetry install --only main --no-root
 COPY README.rst /app/README.rst
 COPY leprikon /app/leprikon
 RUN poetry install --only-root
