@@ -183,7 +183,7 @@ class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
 class JournalEntryAdminForm(forms.ModelForm):
     class Meta:
         model = JournalEntry
-        fields = ["period", "date", "start", "end", "agenda", "participants", "participants_instructed"]
+        fields = ["date", "start", "end", "agenda", "participants", "participants_instructed"]
 
     def __init__(self, *args, **kwargs):
         self.journal = kwargs.pop("journal", None) or kwargs["instance"].journal
@@ -203,7 +203,6 @@ class JournalEntryAdminForm(forms.ModelForm):
             last = self.instance.journal.journal_entries.last()
             if last:
                 last_end = last.datetime_end or last.date
-                self.initial["period"] = last.period
             else:
                 last_end = None
             next_time = self.instance.journal.get_next_time(last_end)
@@ -217,13 +216,6 @@ class JournalEntryAdminForm(forms.ModelForm):
                 d = self.fields["date"].clean(kwargs["data"]["date"])
             except (KeyError, TypeError, ValidationError):
                 d = self.initial["date"]
-
-        if self.instance.journal.subject.subject_type.subject_type == SubjectType.COURSE:
-            self.fields["period"].widget.choices.queryset = SchoolYearPeriod.objects.filter(
-                school_year_division=self.instance.journal.school_year_division
-            )
-        else:
-            del self.fields["period"]
 
         self.fields["participants"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
         self.fields["participants"].help_text = None
