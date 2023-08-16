@@ -680,9 +680,9 @@ class Subject(TimesMixin, models.Model):
     def all_unapproved_registrations(self):
         return list(self.unapproved_registrations.all())
 
-    @cached_property
-    def inactive_registrations_count(self):
-        return self.inactive_registrations.count()
+    @property
+    def inactive_registrations(self):
+        return self.registrations.filter(canceled__isnull=False)
 
     @cached_property
     def all_inactive_registrations(self):

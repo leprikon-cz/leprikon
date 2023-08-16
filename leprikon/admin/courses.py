@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
-from ..models.courses import Course, CourseDiscount, CourseRegistration, CourseRegistrationHistory
+from ..models.courses import Course, CourseDiscount, CourseRegistration
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
 from ..models.subjects import SubjectType
 from ..utils import attributes, currency
@@ -129,24 +129,11 @@ class CourseAdmin(SubjectBaseAdmin):
         )
 
 
-class CourseRegistrationHistoryInlineAdmin(admin.TabularInline):
-    model = CourseRegistrationHistory
-    extra = 0
-    readonly_fields = ("course",)
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
 @admin.register(CourseRegistration)
 class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
     form = CourseRegistrationAdminForm
     subject_type_type = SubjectType.COURSE
     actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
-    inlines = SubjectRegistrationBaseAdmin.inlines + (CourseRegistrationHistoryInlineAdmin,)
 
     def get_queryset(self, request):
         return (

@@ -37,10 +37,6 @@ class Orderable(Subject):
         verbose_name = _("orderable event")
         verbose_name_plural = _("orderable events")
 
-    @property
-    def inactive_registrations(self):
-        return self.registrations.filter(canceled__isnull=False)
-
     @attributes(short_description=_("duration"))
     def get_times_list(self):
         return self.duration

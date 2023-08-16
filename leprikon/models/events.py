@@ -33,10 +33,6 @@ class Event(Subject):
         verbose_name = _("event")
         verbose_name_plural = _("events")
 
-    @property
-    def inactive_registrations(self):
-        return self.registrations.filter(canceled__isnull=False)
-
     @attributes(short_description=_("times"))
     def event_date(self):
         return "{start}{separator}{end}".format(

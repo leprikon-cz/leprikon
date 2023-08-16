@@ -27,18 +27,6 @@ class Course(Subject):
         verbose_name = _("course")
         verbose_name_plural = _("courses")
 
-    @property
-    def registrations_history_registrations(self):
-        return CourseRegistration.objects.filter(course_history__course=self).distinct()
-
-    @property
-    def inactive_registrations(self):
-        return (
-            CourseRegistration.objects.filter(course_history__course=self)
-            .exclude(id__in=self.active_registrations.all())
-            .distinct()
-        )
-
     def copy_to_school_year(old, school_year: SchoolYear):
         new = Course.objects.get(id=old.id)
         new.id, new.pk = None, None
@@ -238,70 +226,6 @@ class CourseDiscount(SubjectDiscount):
         verbose_name = _("course discount")
         verbose_name_plural = _("course discounts")
         ordering = ("accounted",)
-
-
-class CourseRegistrationHistory(StartEndMixin, models.Model):
-    registration = models.ForeignKey(
-        CourseRegistration,
-        editable=False,
-        on_delete=models.PROTECT,
-        related_name="course_history",
-        verbose_name=_("course"),
-    )
-    course = models.ForeignKey(
-        Course, editable=False, on_delete=models.PROTECT, related_name="registrations_history", verbose_name=_("course")
-    )
-    start = models.DateField()
-    end = models.DateField(blank=True, null=True)
-
-    class Meta:
-        app_label = "leprikon"
-        ordering = ("start",)
-        verbose_name = _("course registration history")
-        verbose_name_plural = _("course registration history")
-
-    def __str__(self):
-        return "{course}, {start} - {end}".format(
-            course=self.course.name,
-            start=date_format(self.start, "SHORT_DATE_FORMAT"),
-            end=date_format(self.end, "SHORT_DATE_FORMAT") if self.end else _("now"),
-        )
-
-    def save(self, *args, **kwargs):
-        if self.id:
-            original = self.__class__.objects.get(id=self.id)
-            min_journal_date = original.journal_entries.aggregate(models.Min("date"))["date__min"]
-            max_journal_date = original.journal_entries.aggregate(models.Max("date"))["date__max"]
-            # if journal entry exists, start must be set and lower or equal to min journal date
-            if min_journal_date and self.start > min_journal_date:
-                self.start = min_journal_date
-            # end can not be lower than max journal date
-            if self.end and max_journal_date and self.end < max_journal_date:
-                self.end = max_journal_date
-        super().save(*args, **kwargs)
-
-
-@receiver(models.signals.post_save, sender=CourseRegistration)
-def update_course_registration_history(sender, instance, created, **kwargs):
-    if instance.approved:
-        d = date.today()
-        # if created or changed
-        if instance.course_history.count() == 0 or instance.course_history.filter(end=None).exclude(
-            course_id=instance.subject_id
-        ).update(end=d):
-            # reopen or create entry starting today
-            (
-                CourseRegistrationHistory.objects.filter(
-                    registration_id=instance.id,
-                    course_id=instance.subject_id,
-                    start=d,
-                ).update(end=None)
-                or CourseRegistrationHistory.objects.create(
-                    registration_id=instance.id,
-                    course_id=instance.subject_id,
-                    start=d,
-                )
-            )
 
 
 class CoursePlugin(CMSPlugin):
