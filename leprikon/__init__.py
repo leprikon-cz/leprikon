@@ -1,4 +1,4 @@
-__version__ = "3.5.8"
+__version__ = "3.5.9"
 default_app_config = "leprikon.apps.LeprikonConfig"
 
 staticfiles_urls = {
