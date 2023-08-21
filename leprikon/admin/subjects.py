@@ -862,7 +862,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
         if request.subject:
             try:
-                # first try request.POST (user may want to change the subject)
+                # first try request.POST (user may want to change the subject variant)
                 request.subject_variant = SubjectVariant.objects.get(
                     id=int(request.POST.get("subject_variant")),
                     subject=request.subject,
@@ -872,7 +872,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     # use subject from object
                     request.subject_variant = obj.subject_variant
                 else:
-                    # try to get subject from request.GET
+                    # try to get subject variant from request.GET
                     try:
                         request.subject_variant = SubjectVariant.objects.get(
                             id=int(request.GET.get("subject_variant")),
