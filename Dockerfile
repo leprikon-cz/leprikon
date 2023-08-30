@@ -54,7 +54,7 @@ ENV VIRTUAL_ENV=/venv
 COPY requirements.txt ./
 RUN /venv/bin/pip install -r requirements.txt
 # TODO: remove following line
-RUN /venv/bin/pip install git+https://github.com/pawelmarkowski/cmsplugin-filer.git@2.0.2
+RUN /venv/bin/pip install git+https://github.com/leprikon-cz/cmsplugin-filer.git@leprikon
 COPY poetry.lock pyproject.toml ./
 RUN poetry install --only main --no-root
 COPY README.rst /app/README.rst
@@ -83,7 +83,6 @@ COPY startup /app/startup
 COPY translations /app/translations
 
 RUN cp -a /app/translations/* /venv/lib/python3.10/site-packages/ \
-  && patch /venv/lib/python3.10/site-packages/cmsplugin_filer_folder/cms_plugins.py patch/cmsplugin_filer_folder-cms_plugins.patch \
   && mkdir -p data/ipython htdocs/media htdocs/static run \
   && leprikon collectstatic --no-input \
   && rm data/db.sqlite3 \
