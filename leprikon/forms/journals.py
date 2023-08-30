@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettex
 
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
-from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
+from ..models.schoolyear import SchoolYearDivision
 from ..models.subjects import SubjectRegistrationParticipant, SubjectType
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated, first_upper

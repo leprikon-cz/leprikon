@@ -4,8 +4,6 @@ from typing import List
 
 from cms.models import CMSPlugin
 from django.db import models, transaction
-from django.dispatch import receiver
-from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
@@ -14,7 +12,6 @@ from .agegroup import AgeGroup
 from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
-from .startend import StartEndMixin
 from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects

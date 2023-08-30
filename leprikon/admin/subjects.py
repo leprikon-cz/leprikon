@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, F, Func
 from django.db.models.functions import Coalesce, Random
 from django.http import HttpResponseRedirect
+from django.http.request import HttpRequest
 from django.template.response import SimpleTemplateResponse
 from django.templatetags.static import static
 from django.urls import reverse
@@ -118,29 +119,12 @@ class SubjectTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectVariantInlineAdmin(SortableInlineAdminMixin, admin.StackedInline):
-    model = SubjectVariant
-    extra = 0
-
-    def get_exclude(self, request, obj=None):
-        if request.registration_type == Subject.PARTICIPANTS:
-            return ["target_groups"]
-        elif request.registration_type == Subject.GROUPS:
-            return ["age_groups"]
-        return []
-
-    def get_formset(self, request, obj=None, **kwargs):
-        fields = {"school_year": request.school_year}
-        kwargs["form"] = type(SubjectVariantForm.__name__, (SubjectVariantForm,), fields)
-        return super().get_formset(request, obj, **kwargs)
-
-
 class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
     registration_model = None
     actions = (
         SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions + ("set_registration_dates",)
     )
-    list_editable = ("public", "note")
+    list_editable = ("note",)
     list_filter = (
         ("school_year", SchoolYearListFilter),
         "department",
@@ -150,7 +134,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
         "place",
     )
     inlines = (
-        SubjectVariantInlineAdmin,
         SubjectTimeInlineAdmin,
         SubjectAttachmentInlineAdmin,
     )
@@ -375,6 +358,22 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
             .distinct()
         )
 
+    @attributes(short_description=_("registering"))
+    def get_registering_link(self, obj):
+        return mark_safe(
+            format_html(
+                '<a href="{url}">{subject_variants}</a>',
+                url=reverse("admin:leprikon_subjectvariant_changelist") + f"?subject__exact={obj.id}",
+                subject_variants=_("price and registering variants"),
+            )
+            + format_html(
+                '<a href="{url}" style="background-position: 0 0" title="{title}">' '<img src="{icon}" alt="+"/></a>',
+                url=reverse("admin:leprikon_subjectvariant_add") + "?subject={}".format(obj.id),
+                title=_("add price and registering variant"),
+                icon=static("admin/img/icon-addlink.svg"),
+            )
+        )
+
     @attributes(short_description=_("registrations"))
     def get_registrations_link(self, obj):
         icon = False
@@ -419,10 +418,6 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                 icon=static("admin/img/icon-addlink.svg"),
             )
         )
-
-    @attributes(short_description=_("registration allowed"))
-    def registration_allowed_icon(self, obj):
-        return _boolean_icon(obj.registration_allowed)
 
     @attributes(short_description=_("approved registrations count"))
     def get_approved_registrations_count(self, obj):
@@ -486,6 +481,98 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
             return mark_safe('<img src="{}" alt="{}"/>'.format(obj.photo.icons["48"], obj.photo.label))
         except (AttributeError, KeyError):
             return ""
+
+
+@admin.register(SubjectVariant)
+class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    list_display = (
+        "subject",
+        "name",
+        "reg_from",
+        "reg_to",
+        "registration_price",
+        "participant_price",
+        "school_year_division",
+        "get_registrations_link",
+        "order",
+    )
+    list_editable = ("order",)
+    list_filter = (
+        ("subject__school_year", SchoolYearListFilter),
+        "subject__department",
+        "subject__subject_type__subject_type",
+        ("subject__subject_type", SubjectTypeListFilter),
+        ("subject", SubjectListFilter),
+    )
+    raw_id_fields = ("subject",)
+    search_fields = ("name", "description")
+    filter_horizontal = ("age_groups", "target_groups")
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if not object_id and request.method == "POST" and "subject" in request.POST:
+            return HttpResponseRedirect(f"{request.path}?subject={request.POST['subject']}")
+        else:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def get_form(self, request: HttpRequest, obj: SubjectVariant | None, **kwargs):
+        if obj:
+            request.school_year = obj.subject.school_year
+            request.subject = obj.subject
+        else:
+            # try to get subject from request.GET
+            try:
+                request.subject = Subject.objects.get(
+                    school_year=request.school_year,
+                    id=int(request.GET.get("subject")),
+                )
+            except (Subject.DoesNotExist, TypeError, ValueError):
+                request.subject = None
+
+        if request.subject:
+            kwargs["form"] = type(SubjectVariantForm.__name__, (SubjectVariantForm,), {"subject": request.subject})
+        else:
+            kwargs["fields"] = ["subject"]
+
+        return super().get_form(request, obj, **kwargs)
+
+    def get_exclude(self, request: HttpRequest, obj: SubjectVariant | None) -> Any:
+        exclude = ["subject", "order"]
+        if request.subject:
+            if request.subject.registration_type_participants:
+                exclude.append("target_groups")
+            if request.subject.registration_type_groups:
+                exclude.append("age_groups")
+            if request.subject.subject_type.subject_type != SubjectType.COURSE:
+                exclude.append("school_year_division")
+        return exclude
+
+    @attributes(short_description=_("registrations"))
+    def get_registrations_link(self, obj):
+        approved_registrations_count = obj.approved_registrations.count()
+        unapproved_registrations_count = obj.unapproved_registrations.count()
+        registration_model = {
+            SubjectType.COURSE: "courseregistration",
+            SubjectType.EVENT: "eventregistration",
+            SubjectType.ORDERABLE: "orderableregistration",
+        }[obj.subject.subject_type.subject_type]
+
+        return mark_safe(
+            format_html(
+                '<a href="{url}">{approved}{unapproved}</a>',
+                url=reverse(f"admin:leprikon_{registration_model}_changelist")
+                + "?subject__id__exact={}&subject_variant__id__exact={}".format(obj.subject_id, obj.id),
+                approved=approved_registrations_count,
+                unapproved=" + {}".format(unapproved_registrations_count) if unapproved_registrations_count else "",
+            )
+            + format_html(
+                '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
+                '<img src="{icon}" alt="+"/></a>',
+                url=reverse(f"admin:leprikon_{registration_model}_add")
+                + "?subject={}&subject_variant={}".format(obj.subject_id, obj.id),
+                title=_("add registration"),
+                icon=static("admin/img/icon-addlink.svg"),
+            )
+        )
 
 
 class SubjectRegistrationParticipantInlineAdmin(admin.StackedInline):

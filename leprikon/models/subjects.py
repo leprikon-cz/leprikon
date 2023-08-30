@@ -265,6 +265,10 @@ class SubjectType(models.Model):
         change_list = reverse(f"admin:leprikon_{self.subject_type}_changelist")
         return f"{change_list}?subject_type__id__exact={self.id}"
 
+    def get_subject_variants_url(self):
+        change_list = reverse("admin:leprikon_subjectvariant_changelist")
+        return f"{change_list}?subject__subject_type__id__exact={self.id}"
+
     def get_registrations_url(self):
         change_list = reverse(f"admin:leprikon_{self.subject_type}registration_changelist")
         return f"{change_list}?subject__subject_type__id__exact={self.id}"
@@ -734,7 +738,6 @@ class SubjectVariant(models.Model):
     participant_price = PriceField(_("price per participant"), default=0)
     school_year_division = models.ForeignKey(
         SchoolYearDivision,
-        blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="variants",
@@ -749,7 +752,7 @@ class SubjectVariant(models.Model):
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("order",)
+        ordering = ("subject", "order")
         verbose_name = _("price and registering variant")
         verbose_name_plural = _("price and registering variants")
 
@@ -779,6 +782,18 @@ class SubjectVariant(models.Model):
             and (self.reg_from is None or self.reg_from <= now)
             and (self.reg_to is None or self.reg_to > now)
         )
+
+    @property
+    def active_registrations(self):
+        return self.registrations.filter(canceled=None)
+
+    @property
+    def approved_registrations(self):
+        return self.active_registrations.exclude(approved=None)
+
+    @property
+    def unapproved_registrations(self):
+        return self.active_registrations.filter(approved=None)
 
 
 class SubjectAttachment(BaseAttachment):

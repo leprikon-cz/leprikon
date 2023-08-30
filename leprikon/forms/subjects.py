@@ -24,7 +24,7 @@ from ..models.orderables import Orderable, OrderableRegistration
 from ..models.place import Place
 from ..models.roles import BillingInfo, Leader, Parent, Participant
 from ..models.school import School
-from ..models.schoolyear import SchoolYear, SchoolYearPeriod
+from ..models.schoolyear import SchoolYearPeriod
 from ..models.subjects import (
     Subject,
     SubjectGroup,
@@ -126,11 +126,11 @@ class SubjectFilterForm(FormMixin, forms.Form):
             del self.fields["places"]
 
         self.fields["age_groups"].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
-        if self.fields["age_groups"].queryset.count() <= 1:
+        if self.fields["age_groups"].queryset.count() == 0:
             del self.fields["age_groups"]
 
         self.fields["target_groups"].queryset = TargetGroup.objects.filter(subjects__id__in=subject_ids).distinct()
-        if self.fields["target_groups"].queryset.count() <= 1:
+        if self.fields["target_groups"].queryset.count() == 0:
             del self.fields["target_groups"]
 
         if subject_type_type != SubjectType.COURSE:
@@ -217,18 +217,26 @@ class SubjectAdminForm(forms.ModelForm):
 
 
 class SubjectVariantForm(forms.ModelForm):
-    school_year: SchoolYear
+    subject: Subject
 
     class Meta:
         model = SubjectVariant
-        fields = forms.ALL_FIELDS
+        exclude = ("subject", "order")
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        school_year_divisions = self.fields["school_year_division"].widget.choices.queryset.filter(
-            school_year=self.school_year
-        )
-        self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.subject = self.subject
+        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+            school_year_divisions = self.fields["school_year_division"].widget.choices.queryset.filter(
+                school_year=self.subject.school_year
+            )
+            self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
+        if self.subject.registration_type_participants:
+            self.fields["age_groups"].widget.choices.queryset = self.subject.age_groups.all()
+        if self.subject.registration_type_groups:
+            self.fields["target_groups"].widget.choices.queryset = self.subject.target_groups.all()
+        if SubjectVariant.objects.filter(subject=self.subject).exclude(id=self.instance.id).count():
+            self.fields["name"].required = True
 
 
 class SchoolMixin:

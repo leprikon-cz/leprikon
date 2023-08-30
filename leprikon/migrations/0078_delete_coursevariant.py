@@ -42,7 +42,6 @@ class Migration(migrations.Migration):
             model_name="subjectvariant",
             name="school_year_division",
             field=models.ForeignKey(
-                blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="variants",

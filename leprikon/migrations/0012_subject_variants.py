@@ -7,31 +7,54 @@ import leprikon.models.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('leprikon', '0011_subjectregistration_payment_requested'),
+        ("leprikon", "0011_subjectregistration_payment_requested"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SubjectVariant',
+            name="SubjectVariant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150, verbose_name='variant name')),
-                ('description', djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='variant description')),
-                ('price', leprikon.models.fields.PriceField(blank=True, decimal_places=0, max_digits=10, null=True, verbose_name='price')),
-                ('order', models.IntegerField(blank=True, default=0, verbose_name='order')),
-                ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='variants', to='leprikon.Subject', verbose_name='subject')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=150, verbose_name="variant name")),
+                (
+                    "description",
+                    djangocms_text_ckeditor.fields.HTMLField(
+                        blank=True, default="", verbose_name="variant description"
+                    ),
+                ),
+                (
+                    "price",
+                    leprikon.models.fields.PriceField(
+                        blank=True, decimal_places=0, max_digits=10, null=True, verbose_name="price"
+                    ),
+                ),
+                ("order", models.IntegerField(blank=True, default=0, verbose_name="order")),
+                (
+                    "subject",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="variants",
+                        to="leprikon.Subject",
+                        verbose_name="subject",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('order',),
-                'verbose_name': 'price and registering variant',
-                'verbose_name_plural': 'price and registering variants',
+                "ordering": ("subject", "order"),
+                "verbose_name": "price and registering variant",
+                "verbose_name_plural": "price and registering variants",
             },
         ),
         migrations.AddField(
-            model_name='subjectregistration',
-            name='subject_variant',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='registrations', to='leprikon.SubjectVariant', verbose_name='variant'),
+            model_name="subjectregistration",
+            name="subject_variant",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="registrations",
+                to="leprikon.SubjectVariant",
+                verbose_name="variant",
+            ),
         ),
     ]
