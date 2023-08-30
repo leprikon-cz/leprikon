@@ -78,7 +78,6 @@ ENV PATH=/venv/bin:$PATH
 
 COPY bin /app/bin
 COPY conf /app/conf
-COPY patch /app/patch
 COPY startup /app/startup
 COPY translations /app/translations
 
