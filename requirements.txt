@@ -289,9 +289,9 @@ django-verified-email-field==1.9.0 ; python_version >= "3.10" and python_version
 django==3.2.20 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:a477ab326ae7d8807dc25c186b951ab8c7648a3a23f9497763c37307a2b5ef87 \
     --hash=sha256:dec2a116787b8e14962014bf78e120bba454135108e1af9e9b91ade7b2964c40
-djangocms-admin-style==3.2.5 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:abbe89d369c0779f7e5f839887a77bdb21660b547e83605d6a4a6df958ace7a5 \
-    --hash=sha256:fc51677f12dbec6996590c430c90c9fe8efa32ceadfee383a576ed092be07526
+djangocms-admin-style==3.2.4 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:0d981ccedf4252113acfd812a48d3284eb38d6b610d83c92e85f6bb681bd8bca \
+    --hash=sha256:f540d32026108c22f4b9f69347780fe04c63b9d699902f41d763f44780bb9cbb
 djangocms-attributes-field==3.0.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:21a0e1642ffc3d9fbc9284b07024c4ca29f7fe9ffbd2c0aecd22585ff5275a86 \
     --hash=sha256:70cbcb8e826b5a6bceba348119ddc01fa5910af4cb4002eb9895d311950b0d9a
