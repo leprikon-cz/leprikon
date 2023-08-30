@@ -33,7 +33,7 @@ class JournalAdminForm(forms.ModelForm):
 
         if self.subject.subject_type.subject_type == SubjectType.COURSE:
             participants_qs = participants_qs.filter(
-                registration__courseregistration__school_year_division=self.instance.school_year_division
+                registration__subject_variant__school_year_division=self.instance.school_year_division
             )
 
         participant_ids = set(participants_qs.values_list("id", flat=True))
