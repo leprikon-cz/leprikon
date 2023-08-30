@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
@@ -9,8 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, F, Func
 from django.db.models.functions import Coalesce, Random
-from django.http import HttpResponseRedirect
-from django.http.request import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.templatetags.static import static
 from django.urls import reverse
@@ -485,6 +484,8 @@ class SubjectAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedirectMi
 
 @admin.register(SubjectVariant)
 class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    actions = SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions
+    bulk_update_exclude = ("subject", "order")
     list_display = (
         "subject",
         "name",
@@ -535,6 +536,16 @@ class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMix
 
         return super().get_form(request, obj, **kwargs)
 
+    def get_bulk_update_form(self, request: HttpRequest, fields: List[str]):
+        form = super().get_bulk_update_form(request, fields)
+        if "school_year_division" in form.base_fields:
+            form = type(
+                form.__name__,
+                (form,),
+                {"school_year_division": forms.ModelChoiceField(request.school_year.divisions.all())},
+            )
+        return form
+
     def get_exclude(self, request: HttpRequest, obj: SubjectVariant | None) -> Any:
         exclude = ["subject", "order"]
         if request.subject:
@@ -545,6 +556,16 @@ class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMix
             if request.subject.subject_type.subject_type != SubjectType.COURSE:
                 exclude.append("school_year_division")
         return exclude
+
+    def get_message_recipients(self, request, queryset):
+        return (
+            get_user_model()
+            .objects.filter(
+                leprikon_registrations__canceled=None,
+                leprikon_registrations__subject_variant__in=queryset,
+            )
+            .distinct()
+        )
 
     @attributes(short_description=_("registrations"))
     def get_registrations_link(self, obj):

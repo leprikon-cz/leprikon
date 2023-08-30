@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminRadioSelect, FilteredSelectMultiple
-from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -115,16 +114,6 @@ class CourseAdmin(SubjectBaseAdmin):
                 select_across=request.POST["select_across"],
                 selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
             ),
-        )
-
-    def get_message_recipients(self, request, queryset):
-        return (
-            get_user_model()
-            .objects.filter(
-                leprikon_registrations__canceled=None,
-                leprikon_registrations__subject__in=queryset,
-            )
-            .distinct()
         )
 
 

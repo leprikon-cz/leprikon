@@ -1,9 +1,11 @@
 from functools import partial
+from typing import List, Type
 
 from django import forms
 from django.contrib import admin, messages
 from django.forms.models import modelform_factory
 from django.forms.widgets import CheckboxSelectMultiple
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +19,14 @@ class BulkUpdateMixin:
 
     bulk_update_fields = None
     bulk_update_exclude = None
-    bulk_update_form = None
+
+    def get_bulk_update_form(self, request: HttpRequest, fields: List[str]) -> Type[forms.ModelForm]:
+        return modelform_factory(
+            self.model,
+            form=self.form,
+            fields=fields,
+            formfield_callback=partial(self.formfield_for_dbfield, request=request),
+        )
 
     @cached_property
     def BulkUpdateFieldsForm(self):
@@ -25,7 +34,7 @@ class BulkUpdateMixin:
             "BulkUpdateFieldsForm",
             (forms.Form,),
             {
-                "fields": forms.MultipleChoiceField(
+                "bulk_update_fields": forms.MultipleChoiceField(
                     label=_("Fields to update"),
                     choices=[
                         (field_name, field.label)
@@ -48,13 +57,8 @@ class BulkUpdateMixin:
         if phase is not None:
             form = self.BulkUpdateFieldsForm(request.POST)
             if form.is_valid():
-                hidden_fields = [("fields", field) for field in form.cleaned_data["fields"]]
-                BulkUpdateForm = modelform_factory(
-                    self.model,
-                    form=self.bulk_update_form or self.form,
-                    fields=form.cleaned_data["fields"],
-                    formfield_callback=partial(self.formfield_for_dbfield, request=request),
-                )
+                hidden_fields = [("bulk_update_fields", field) for field in form.cleaned_data["bulk_update_fields"]]
+                BulkUpdateForm = self.get_bulk_update_form(request, form.cleaned_data["bulk_update_fields"])
                 if phase == "update":
                     form = BulkUpdateForm(request.POST)
                     if form.is_valid():
