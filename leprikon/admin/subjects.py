@@ -547,6 +547,8 @@ class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMix
         return form
 
     def get_exclude(self, request: HttpRequest, obj: SubjectVariant | None) -> Any:
+        if not request.subject:
+            return []
         exclude = ["subject", "order"]
         if request.subject:
             if request.subject.registration_type_participants:
