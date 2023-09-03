@@ -79,7 +79,7 @@ class LeprikonMenu(CMSAttachMenu):
             )
             nodes.append(
                 NavigationNode(
-                    _("Registrations"),
+                    _("My registrations"),
                     reverse("leprikon:registration_list"),
                     len(nodes),
                     attr={"visible_for_anonymous": False},

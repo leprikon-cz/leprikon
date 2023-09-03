@@ -45,6 +45,11 @@ from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap
 User = get_user_model()
 
 
+class RegistrationsFilterForm(FormMixin, forms.Form):
+    q = forms.CharField(label=_("Search term"), required=False)
+    not_paid = forms.BooleanField(label=_("Not paid"), required=False)
+
+
 class SubjectFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_("Search term"), required=False)
     course_types = forms.ModelMultipleChoiceField(queryset=None, label=_("Course type"), required=False)

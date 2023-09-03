@@ -1,27 +1,30 @@
-from ..models.courses import CourseRegistration
-from ..models.events import EventRegistration
-from ..models.leprikonsite import LeprikonSite
-from ..models.orderables import OrderableRegistration
-from .generic import TemplateView
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+
+from ..forms.subjects import RegistrationsFilterForm
+from ..models.subjects import SubjectRegistration
+from .generic import FilteredListView
 
 
-class RegistrationsListView(TemplateView):
-    registrations = True
-    template_name = "leprikon/registrations.html"
+class RegistrationsListView(FilteredListView):
+    form_class = RegistrationsFilterForm
+    message_empty = _("You don't have any registrations yet.")
+    paginate_by = 10
+    preview_template = "leprikon/registration_preview_object.html"
+    title = _("My registrations")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["site"] = LeprikonSite.objects.get_current()
-        context["courseregistrations"] = CourseRegistration.objects.filter(
-            subject__school_year=self.request.school_year,
+    def get_queryset(self):
+        qs = SubjectRegistration.objects.filter(
             user=self.request.user,
-        )
-        context["eventregistrations"] = EventRegistration.objects.filter(
-            subject__school_year=self.request.school_year,
-            user=self.request.user,
-        )
-        context["orderableregistrations"] = OrderableRegistration.objects.filter(
-            subject__school_year=self.request.school_year,
-            user=self.request.user,
-        )
-        return context
+        ).order_by("-created")
+        if not self.form.is_valid():
+            return qs
+        if self.form.cleaned_data.get("subject_types"):
+            qs = qs.filter(subject__subject_type__in=self.form.cleaned_data["subject_types"])
+        if self.form.cleaned_data.get("q"):
+            for word in self.form.cleaned_data["q"].split():
+                qs = qs.filter(Q(subject__name__icontains=word) | Q(subject__description__icontains=word))
+        qs = qs.distinct()
+        if self.form.cleaned_data.get("not_paid"):
+            qs = [reg for reg in qs if reg.payment_status.amount_due]
+        return qs
