@@ -6,8 +6,8 @@ class RegistrationLinkAdminForm(forms.ModelForm):
         super().__init__(data, *args, **kwargs)
 
         # limit choices of subjects
-        subjects_choices = self.fields["subjects"].widget.choices
+        subjects_choices = self.fields["subject_variants"].widget.choices
         subjects_choices.queryset = subjects_choices.queryset.filter(
-            school_year=self.school_year,
-            subject_type=self.subject_type,
+            subject__school_year=self.school_year,
+            subject__subject_type=self.subject_type,
         )
