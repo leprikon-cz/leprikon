@@ -26,6 +26,7 @@ class Event(Subject):
     end_time = models.TimeField(_("end time"), blank=True, null=True)
     due_from = models.DateField(_("due from"))
     due_date = models.DateField(_("due date"))
+    min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=3)
 
     class Meta:
         app_label = "leprikon"
@@ -137,7 +138,7 @@ class EventRegistration(SubjectRegistration):
             due_date=self.payment_requested
             and max(
                 self.subject.event.due_date,
-                self.payment_requested.date() + timedelta(days=self.subject.min_due_date_days),
+                self.payment_requested.date() + timedelta(days=self.subject.event.min_due_date_days),
             ),
         )
 

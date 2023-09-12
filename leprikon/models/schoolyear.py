@@ -112,6 +112,7 @@ class SchoolYearPeriod(StartEndMixin, models.Model):
     price_units_count = models.DecimalField(_("number of price units"), default=1, decimal_places=2, max_digits=10)
     due_from = models.DateField(_("due from"))
     due_date = models.DateField(_("due date"))
+    min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=14)
     order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:

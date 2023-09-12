@@ -413,7 +413,6 @@ class Subject(TimesMixin, models.Model):
     page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
     min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
-    min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=3)
     note = models.CharField(_("note"), max_length=300, blank=True, default="")
     questions = models.ManyToManyField(
         Question,

@@ -193,8 +193,7 @@ class CourseRegistrationPeriod(models.Model):
                 due_date=self.registration.payment_requested
                 and max(
                     self.period.due_date,
-                    self.registration.payment_requested.date()
-                    + timedelta(days=self.registration.subject.min_due_date_days),
+                    self.registration.payment_requested.date() + timedelta(days=self.period.min_due_date_days),
                 ),
             ),
         )

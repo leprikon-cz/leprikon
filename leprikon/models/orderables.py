@@ -30,6 +30,7 @@ class Orderable(Subject):
         ),
     )
     due_date_days = models.IntegerField(_("number of days to due date before event date"), default=0)
+    min_due_date_days = models.PositiveIntegerField(_("minimal number of days to due date"), default=3)
 
     class Meta:
         app_label = "leprikon"
@@ -112,7 +113,7 @@ class OrderableRegistration(SubjectRegistration):
             due_date=self.payment_requested
             and max(
                 self.start_date - timedelta(days=self.subject.orderable.due_date_days),
-                self.payment_requested.date() + timedelta(days=self.subject.min_due_date_days),
+                self.payment_requested.date() + timedelta(days=self.subject.orderable.min_due_date_days),
             ),
         )
 

@@ -6,6 +6,7 @@ FROM ubuntu:22.04 AS base
 
 WORKDIR /app
 
+ENV BASE_DIR=/app
 ENV DEBIAN_FRONTEND=noninteractive
 ENV IPYTHONDIR=/app/data/ipython
 ENV PYTHONPATH=/app
