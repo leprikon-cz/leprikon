@@ -941,7 +941,14 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     )
                 url = "?" + urlencode(query)
                 count = (
-                    type(self).objects.filter(subject__school_year_id=self.subject.school_year_id, **query).count() - 1
+                    type(self)
+                    .objects.filter(
+                        subject__school_year_id=self.subject.school_year_id,
+                        canceled__isnull=not self.canceled,
+                        **query,
+                    )
+                    .count()
+                    - 1
                 )
                 if count:
                     title = ngettext("%d other registration", "%d other registrations", count) % count
