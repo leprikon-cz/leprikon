@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettex
 
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
-from ..models.schoolyear import SchoolYearDivision
+from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
 from ..models.subjects import SubjectRegistrationParticipant, SubjectType
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated, first_upper
@@ -183,10 +183,10 @@ class JournalLeaderEntryForm(FormMixin, JournalLeaderEntryAdminForm):
 class JournalEntryAdminForm(forms.ModelForm):
     class Meta:
         model = JournalEntry
-        fields = ["date", "start", "end", "agenda", "participants", "participants_instructed"]
+        fields = ["date", "start", "end", "period", "agenda", "participants", "participants_instructed"]
 
     def __init__(self, *args, **kwargs):
-        self.journal = kwargs.pop("journal", None) or kwargs["instance"].journal
+        self.journal: Journal = kwargs.pop("journal", None) or kwargs["instance"].journal
         super().__init__(*args, **kwargs)
         self.instance.journal = self.journal
 
@@ -216,6 +216,13 @@ class JournalEntryAdminForm(forms.ModelForm):
                 d = self.fields["date"].clean(kwargs["data"]["date"])
             except (KeyError, TypeError, ValidationError):
                 d = self.initial["date"]
+        if self.journal.school_year_division_id:
+            self.fields["period"].widget.choices.queryset = SchoolYearPeriod.objects.filter(
+                school_year_division_id=self.journal.school_year_division_id
+            )
+            self.fields["period"].required = True
+        else:
+            del self.fields["period"]
 
         self.fields["participants"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
         self.fields["participants"].help_text = None
