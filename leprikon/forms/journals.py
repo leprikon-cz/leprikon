@@ -51,7 +51,10 @@ class JournalAdminForm(forms.ModelForm):
 class JournalCreateForm(FormMixin, forms.ModelForm):
     class Meta:
         model = Journal
-        fields = ["name", "school_year_division"]
+        fields = ["name", "school_year_division", "leaders"]
+        widgets = {
+            "leaders": CheckboxSelectMultipleBootstrap(),
+        }
 
     def __init__(self, *args, **kwargs):
         self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
@@ -66,6 +69,8 @@ class JournalCreateForm(FormMixin, forms.ModelForm):
             self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
         else:
             del self.fields["school_year_division"]
+
+        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
 
 
 class JournalUpdateForm(FormMixin, forms.ModelForm):

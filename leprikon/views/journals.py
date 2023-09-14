@@ -50,13 +50,16 @@ class JournalCreateView(CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["subject"] = self.subject
+        kwargs["initial"] = dict(leaders=[self.request.leader])
         return kwargs
 
     def get_message(self):
         return _("New journal {} has been created.").format(self.object)
 
     def get_success_url(self):
-        return reverse_with_back(self.request, "leprikon:journal_update", args=(self.object.id,))
+        if self.request.user.is_staff or self.request.leader in self.object.all_leaders:
+            return reverse_with_back(self.request, "leprikon:journal_update", args=(self.object.id,))
+        return self.get_back_url()
 
 
 class JournalUpdateView(JournalQuerySetMixin, UpdateView):
