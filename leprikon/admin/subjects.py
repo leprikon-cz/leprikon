@@ -828,7 +828,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         return actions
 
     def get_changelist(self, request, **kwargs):
-        class ChangeList(super().get_changelist(request, **kwargs)):
+        ChangeListBase = super().get_changelist(request, **kwargs)
+
+        class ChangeList(ChangeListBase):
             def get_ordering(self, request, queryset):
                 # Show registrations with cancelation request on the top
                 # if not showing canceled ones.
@@ -975,10 +977,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                 # first try request.POST (user may want to change the subject variant)
                 request.subject_variant = SubjectVariant.objects.get(
                     id=int(request.POST.get("subject_variant")),
-                    subject=request.subject,
                 )
             except (SubjectVariant.DoesNotExist, TypeError, ValueError):
-                if obj and obj.subject_variant.subject == request.subject:
+                if obj:
                     # use subject from object
                     request.subject_variant = obj.subject_variant
                 else:
@@ -986,7 +987,6 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                     try:
                         request.subject_variant = SubjectVariant.objects.get(
                             id=int(request.GET.get("subject_variant")),
-                            subject=request.subject,
                         )
                     except (SubjectVariant.DoesNotExist, TypeError, ValueError):
                         request.subject_variant = None

@@ -1,5 +1,6 @@
 from datetime import date
 from json import dumps
+from typing import Any
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -950,6 +951,21 @@ class RegistrationAdminForm(forms.ModelForm):
                 (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
                 for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
             )
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+        subject = cleaned_data.get("subject")
+        subject_variant = cleaned_data.get("subject_variant")
+        if subject and subject_variant and subject_variant.subject_id != subject.id:
+            raise ValidationError(
+                {
+                    "subject_variant": ValidationError(
+                        self.fields["subject_variant"].error_messages["invalid_choice"],
+                        code="invalid_choice",
+                    )
+                }
+            )
+        return cleaned_data
 
 
 class SchoolAdminMixin:
