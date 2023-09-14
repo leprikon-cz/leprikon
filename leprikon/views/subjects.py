@@ -264,6 +264,7 @@ class SubjectRegistrationFormView(CMSSubjectTypeMixin, SubjectMixin, SubjectRegi
 
 
 class UserRegistrationMixin:
+    allow_leader_or_staff = False
     _attrs = {
         SubjectType.COURSE: "courseregistration",
         SubjectType.EVENT: "eventregistration",
@@ -272,12 +273,15 @@ class UserRegistrationMixin:
 
     def get_object(self):
         subject_registration = super().get_object()
-        if subject_registration.user != self.request.user:
-            raise PermissionDenied()
-        return getattr(
-            subject_registration,
-            self._attrs[subject_registration.subject_type_type],
-        )
+        if self.request.user == subject_registration.user or (
+            self.allow_leader_or_staff
+            and (self.request.user.is_staff or self.request.leader in subject_registration.subject.all_leaders)
+        ):
+            return getattr(
+                subject_registration,
+                self._attrs[subject_registration.subject_type_type],
+            )
+        raise PermissionDenied()
 
     def get_queryset(self):
         return SubjectRegistration.objects.annotate(
@@ -315,6 +319,7 @@ class SubjectRegistrationPdfView(PDFMixin, UserRegistrationMixin, DetailView):
 
 
 class SubjectRegistrationPaymentRequestView(PDFMixin, UserRegistrationMixin, DetailView):
+    allow_leader_or_staff = True
     event = "payment_request"
 
 
