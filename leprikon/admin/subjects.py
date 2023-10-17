@@ -505,7 +505,7 @@ class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMix
         ("subject", SubjectListFilter),
     )
     raw_id_fields = ("subject",)
-    search_fields = ("name", "description")
+    search_fields = ("name", "description", "subject__name", "subject__description")
     filter_horizontal = ("age_groups", "target_groups")
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
