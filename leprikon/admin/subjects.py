@@ -411,8 +411,7 @@ class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin,
                         self.registration_model._meta.app_label,
                         self.registration_model._meta.model_name,
                     )
-                )
-                + "?subject={}".format(obj.id),
+                ),
                 title=_("add registration"),
                 icon=static("admin/img/icon-addlink.svg"),
             )
@@ -590,8 +589,7 @@ class SubjectVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMix
             + format_html(
                 '<a class="popup-link" href="{url}" style="background-position: 0 0" title="{title}">'
                 '<img src="{icon}" alt="+"/></a>',
-                url=reverse(f"admin:leprikon_{registration_model}_add")
-                + "?subject={}&subject_variant={}".format(obj.subject_id, obj.id),
+                url=reverse(f"admin:leprikon_{registration_model}_add") + f"?subject_variant={obj.id}",
                 title=_("add registration"),
                 icon=static("admin/img/icon-addlink.svg"),
             )
@@ -798,8 +796,9 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         "group_members__last_name",
     )
     ordering = ("-created",)
+    exclude = ["subject"]
     raw_id_fields = (
-        "subject",
+        "subject_variant",
         "user",
     )
 
@@ -938,8 +937,8 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.name == "subject":
-            limit_choices_to = {"subject_type__subject_type__exact": self.model.subject_type}
+        if db_field.name == "subject_variant":
+            limit_choices_to = {"subject__subject_type__subject_type__exact": self.model.subject_type}
             formfield.limit_choices_to = limit_choices_to
             formfield.widget.rel.limit_choices_to = limit_choices_to
         return formfield
@@ -947,69 +946,41 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and "user" not in request.POST:
             return HttpResponseRedirect(
-                "{}?subject={}&subject_variant={}".format(
-                    request.path, request.POST.get("subject", ""), request.POST.get("subject_variant", "")
-                )
+                "{}?subject_variant={}".format(request.path, request.POST.get("subject_variant", ""))
             )
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
-    def get_exclude(self, request, obj=None):
-        return [] if not request.subject or request.subject.variants.exists() else ["subject_variant"]
-
     def get_form(self, request, obj: Optional[SubjectRegistration], **kwargs):
         try:
-            # first try request.POST (user may want to change the subject)
-            request.subject = Subject.objects.get(id=int(request.POST.get("subject")))
+            # first try request.POST (user may want to change the subject variant)
+            request.subject_variant = SubjectVariant.objects.get(id=int(request.POST.get("subject_variant")))
         except (Subject.DoesNotExist, TypeError, ValueError):
             if obj:
                 # use subject from object
-                request.subject = obj.subject
+                request.subject_variant = obj.subject_variant
             else:
                 # try to get subject from request.GET
                 try:
-                    request.subject = Subject.objects.get(id=int(request.GET.get("subject")))
+                    request.subject_variant = SubjectVariant.objects.get(id=int(request.GET.get("subject_variant")))
                 except (Subject.DoesNotExist, TypeError, ValueError):
-                    request.subject = None
+                    request.subject_variant = None
 
-        if request.subject:
-            try:
-                # first try request.POST (user may want to change the subject variant)
-                request.subject_variant = SubjectVariant.objects.get(
-                    id=int(request.POST.get("subject_variant")),
-                )
-            except (SubjectVariant.DoesNotExist, TypeError, ValueError):
-                if obj:
-                    # use subject from object
-                    request.subject_variant = obj.subject_variant
-                else:
-                    # try to get subject variant from request.GET
-                    try:
-                        request.subject_variant = SubjectVariant.objects.get(
-                            id=int(request.GET.get("subject_variant")),
-                        )
-                    except (SubjectVariant.DoesNotExist, TypeError, ValueError):
-                        request.subject_variant = None
+        request.subject = request.subject_variant and request.subject_variant.subject
 
-        if request.subject:
-            if request.subject_variant:
-                kwargs["form"] = type(
-                    self.form.__name__,
-                    (self.form,),
-                    {"subject": request.subject, "subject_variant": request.subject_variant},
-                )
-            else:
-                kwargs["form"] = type(
-                    RegistrationAdminForm.__name__, (RegistrationAdminForm,), {"subject": request.subject}
-                )
-                kwargs["fields"] = ["subject", "subject_variant"]
+        if request.subject_variant:
+            kwargs["form"] = type(
+                self.form.__name__,
+                (self.form,),
+                {"subject": request.subject, "subject_variant": request.subject_variant},
+            )
         else:
             kwargs["form"] = forms.ModelForm
-            kwargs["fields"] = ["subject"]
+            kwargs["fields"] = ["subject_variant"]
         return super().get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        if request.subject and request.subject_variant:
+        if request.subject:
             if request.subject.registration_type_participants:
                 inlines = (SubjectRegistrationParticipantInlineAdmin,)
             elif request.subject.registration_type_groups:
@@ -1028,6 +999,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
                 participants_count = int(form.data["group_members-TOTAL_FORMS"])
             obj.price = obj.subject_variant.get_price(participants_count)
             obj.created_by = request.user
+        obj.subject_id = obj.subject_variant.subject_id
         super().save_model(request, obj, form, change)
 
     def save_related(self, request, form, formsets, change):

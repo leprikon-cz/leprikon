@@ -941,8 +941,7 @@ class RegistrationAdminForm(forms.ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
-        if "subject_variant" in self.fields:
-            self.fields["subject_variant"].widget.choices.queryset = self.subject.variants.all()
+        self.fields["subject_variant"].widget.choices.queryset = self.subject.variants.all()
 
         # choices for agreement options
         if "agreement_options" in self.fields:
