@@ -1,4 +1,5 @@
 from datetime import date
+from typing import List
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -14,6 +15,35 @@ from ..utils import comma_separated, first_upper
 from .fields import ReadonlyField
 from .form import FormMixin
 from .widgets import CheckboxSelectMultipleBootstrap
+
+
+def get_participant_choices(participants_qs):
+    participants: List[SubjectRegistrationParticipant] = list(participants_qs.select_related("registration"))
+    groups = (
+        (
+            _("Approved participants"),
+            tuple(
+                (participant.id, participant)
+                for participant in participants
+                if participant.registration.approved and not participant.registration.canceled
+            ),
+        ),
+        (
+            _("Canceled participants"),
+            tuple(
+                (participant.id, participant)
+                for participant in participants
+                if participant.registration.approved and participant.registration.canceled
+            ),
+        ),
+        (
+            _("Not approved participants"),
+            tuple(
+                (participant.id, participant) for participant in participants if not participant.registration.approved
+            ),
+        ),
+    )
+    return tuple(group for group in groups if group[1])
 
 
 class JournalAdminForm(forms.ModelForm):
@@ -111,9 +141,8 @@ class JournalUpdateForm(FormMixin, forms.ModelForm):
                 journal_entries__journal=self.instance,
             ).values_list("id", flat=True),
         )
-        self.fields["participants"].widget.choices = tuple(
-            (participant.id, participant)
-            for participant in SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
+        self.fields["participants"].widget.choices = get_participant_choices(
+            SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
         )
 
         self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
@@ -229,10 +258,12 @@ class JournalEntryAdminForm(forms.ModelForm):
         else:
             del self.fields["period"]
 
-        self.fields["participants"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
+        participants_choices = get_participant_choices(self.instance.journal.get_valid_participants(d))
+
+        self.fields["participants"].widget.choices = participants_choices
         self.fields["participants"].help_text = None
 
-        self.fields["participants_instructed"].widget.choices.queryset = self.instance.journal.get_valid_participants(d)
+        self.fields["participants_instructed"].widget.choices = participants_choices
         self.fields["participants_instructed"].help_text = None
 
     def clean(self):
