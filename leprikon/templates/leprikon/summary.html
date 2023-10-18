@@ -11,14 +11,14 @@
 
 <p>
     {% if payment_status.overdue %}
-    <strong style="color: {{ payment_status.color }}">
+    <a style="color: {{ payment_status.color }}" href="{% url 'leprikon:registration_list' %}?not_paid=on">
     {% blocktrans with overdue=payment_status.overdue|currency %}You have overdue of {{ overdue }}.{% endblocktrans %}
-    </strong><br/>
+    </a><br/>
     {% endif %}
     {% if payment_status.amount_due %}
-    <span style="color: {{ payment_status.color }}">
+    <a style="color: {{ payment_status.color }}" href="{% url 'leprikon:registration_list' %}?not_paid=on">
     {% blocktrans with amount_due=payment_status.amount_due|currency %}Your current amount due is {{ amount_due }}.{% endblocktrans %}
-    </span>
+    </a>
     {% else %}
     <i>{% trans 'All Your receivables have been paid.' %}</i>
     {% endif %}
