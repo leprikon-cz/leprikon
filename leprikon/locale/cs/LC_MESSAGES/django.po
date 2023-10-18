@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-18 21:34+0200\n"
+"POT-Creation-Date: 2023-10-18 21:49+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "tisknutelný seznam účastníků"
 #: models/subjects.py:929 models/subjects.py:1445
 #: templates/leprikon/registration_payment_request/subject.rml:125
 #: templates/leprikon/registration_payment_request/subject.rml:147
-#: templates/leprikon/registration_recipe.rml:10
+#: templates/leprikon/registration_recipe.rml:15
 msgid "participants"
 msgstr "účastníci"
 
@@ -2232,7 +2232,7 @@ msgstr "doplňující odpovědi"
 #: models/roles.py:176 models/subjects.py:1444
 #: templates/leprikon/registration_payment_request/subject.rml:125
 #: templates/leprikon/registration_payment_request/subject.rml:147
-#: templates/leprikon/registration_recipe.rml:12
+#: templates/leprikon/registration_recipe.rml:17
 msgid "participant"
 msgstr "účastník"
 
@@ -2245,7 +2245,7 @@ msgstr "{first_name} {last_name} ({birth_date})"
 #: templates/leprikon/registration_payment_request/subject.rml:83
 #: templates/leprikon/registration_payment_request/subject.rml:128
 #: templates/leprikon/registration_payment_request/subject.rml:150
-#: templates/leprikon/registration_recipe.rml:18
+#: templates/leprikon/registration_recipe.rml:23
 msgid "contact person"
 msgstr "kontaktní osoba"
 
@@ -2764,7 +2764,7 @@ msgstr "cílová skupina"
 #: models/subjects.py:1551
 #: templates/leprikon/registration_payment_request/subject.rml:129
 #: templates/leprikon/registration_payment_request/subject.rml:151
-#: templates/leprikon/registration_recipe.rml:21
+#: templates/leprikon/registration_recipe.rml:26
 msgid "group name"
 msgstr "název skupiny"
 
@@ -3973,6 +3973,10 @@ msgstr "Přihláška na %(subject_type)s %(subject)s"
 #, python-format
 msgid "name of %(subject_type)s"
 msgstr "název %(subject_type)s"
+
+#: templates/leprikon/registration_recipe.rml:20
+msgid "born"
+msgstr "nar."
 
 #: templates/leprikon/registration_refund_offer/subject.html:11
 #: templates/leprikon/registration_refund_offer/subject.txt:6

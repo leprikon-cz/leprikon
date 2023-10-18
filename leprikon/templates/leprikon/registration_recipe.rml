@@ -1,7 +1,12 @@
 {% load i18n leprikon_tags %}
 
 <para style="small">{% blocktrans with subject_type=registration.subject.subject_type.name_genitiv %}name of {{ subject_type }}{% endblocktrans %}:</para>
-<para style="left">{{ registration.subject.name }}</para>
+<para style="left">
+    {{ registration.subject.name }}
+    {% if registration.subject.all_groups %}
+    - {{ registration.subject.all_groups|comma_separated }}
+    {% endif %}
+</para>
 
 <spacer length="2mm"/>
 
@@ -12,7 +17,7 @@
     <para style="small">{% trans 'participant' %}:</para>
     {% endif %}
     {% for participant in registration.all_participants %}
-    <para style="left">{{ participant.full_name }}</para>
+    <para style="left">{{ participant.full_name }}, {% trans 'born' %} {{ participant.birth_date }}</para>
     {% endfor %}
 {% elif registration.subject.registration_type_groups %}
     <para style="small">{% trans 'contact person' %}:</para>
