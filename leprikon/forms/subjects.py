@@ -181,7 +181,10 @@ class SubjectFilterForm(FormMixin, forms.Form):
             else:
                 qs = qs.filter(end_date__gte=now())
         if self.cleaned_data["reg_active"]:
-            qs = qs.filter(variants__reg_from__lte=now()).exclude(variants__reg_to__lte=now())
+            qs = qs.filter(
+                (Q(variants__reg_from=None) | Q(variants__reg_from__lte=now()))
+                & (Q(variants__reg_to=None) | Q(variants__reg_to__gte=now()))
+            )
         return qs.distinct()
 
 

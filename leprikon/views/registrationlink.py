@@ -31,6 +31,8 @@ class RegistrationLinkView(RegistrationLinkMixin, SubjectListBaseView):
 
 
 class SubjectMixin:
+    registration_link: RegistrationLink
+
     def dispatch(self, request, pk, **kwargs):
         lookup_kwargs = {"subject_type_id": self.registration_link.subject_type_id, "id": int(pk)}
         if not self.request.user.is_staff:
