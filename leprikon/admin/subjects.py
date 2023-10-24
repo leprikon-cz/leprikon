@@ -955,7 +955,7 @@ class SubjectRegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMes
         try:
             # first try request.POST (user may want to change the subject variant)
             request.subject_variant = SubjectVariant.objects.get(id=int(request.POST.get("subject_variant")))
-        except (Subject.DoesNotExist, TypeError, ValueError):
+        except (SubjectVariant.DoesNotExist, TypeError, ValueError):
             if obj:
                 # use subject from object
                 request.subject_variant = obj.subject_variant
