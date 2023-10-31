@@ -24,7 +24,7 @@
     {% for item in items %}
     <tr class="collapse out {{ user.id }}-collapsed">
         <th class="right">
-            {{ item.registration }}
+            <a href="{{ item.registration.get_changelist_url }}" target="_blank">{{ item.registration }}</a>
         </th>
         <td class="right">
             {{ item.status.amount_due | currency }}

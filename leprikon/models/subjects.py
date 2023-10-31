@@ -902,8 +902,15 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             else comma_separated([p.full_name for p in self.all_participants]),
         )
 
+    def get_changelist_url(self):
+        url = reverse(f"admin:leprikon_{self.subjectregistration._meta.model_name}_changelist")
+        query = {"id": self.id}
+        if self.canceled:
+            query["canceled"] = "yes"
+        return f"{url}?{urlencode(query)}"
+
     def get_edit_url(self):
-        return reverse("admin:leprikon_{}_change".format(self.subjectregistration._meta.model_name), args=(self.id,))
+        return reverse(f"admin:leprikon_{self.subjectregistration._meta.model_name}_change", args=(self.id,))
 
     def get_payment_request_url(self):
         return reverse("leprikon:registration_payment_request", args=(self.id, self.variable_symbol))

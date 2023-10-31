@@ -48,7 +48,7 @@
     {% for rs in report.registration_statuses %}
     <tr class="collapse out {{ report.orderable.id }}-collapsed">
         <th class="right" colspan="3">
-            <a href="{% url 'admin:leprikon_orderableregistration_changelist' %}?id={{ rs.registration.id }}">
+            <a href="{{ rs.registration.get_changelist_url }}">
                 {{ rs.registration }}
             </a>
         </th>
