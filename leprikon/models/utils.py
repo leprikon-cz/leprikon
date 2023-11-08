@@ -184,6 +184,11 @@ class BankAccount(IBAN):
     def account_number(self):
         return self.account_code.lstrip("0")
 
+    @property
+    def compact(self) -> str:
+        # prevent infinite recursion in __str__
+        return super().__str__()
+
     def __str__(self):
         if self.country_code == "CZ":
             return "%s%s%s/%s" % (
