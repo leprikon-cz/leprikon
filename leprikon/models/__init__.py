@@ -22,6 +22,7 @@ from . import (  # noqa
     school,
     schoolyear,
     startend,
+    statgroup,
     subjects,
     targetgroup,
     timesheets,

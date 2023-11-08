@@ -23,9 +23,9 @@
         <th>{{ citizenship }}</th>
         {% endfor %}
     </tr>
-    {% for counts in participants_counts_by_age_groups %}
+    {% for counts in participants_counts_by_stat_groups %}
     <tr>
-        <th>{{ counts.age_group.title }}</th>
+        <th>{{ counts.stat_group.title }}</th>
         <td class="right">{{ counts.all }}</td>
         <td class="right">{{ counts.boys }}</td>
         <td class="right">{{ counts.girls }}</td>
