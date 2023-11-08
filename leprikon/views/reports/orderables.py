@@ -8,10 +8,10 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.orderables import OrderablePaymentsForm, OrderablePaymentsStatusForm, OrderableStatsForm
-from ...models.agegroup import AgeGroup
 from ...models.citizenship import Citizenship
 from ...models.orderables import Orderable, OrderableRegistration
 from ...models.roles import Participant
+from ...models.statgroup import StatGroup
 from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectType
 from ...views.generic import FormView
 
@@ -100,7 +100,7 @@ class ReportOrderableStatsView(FormView):
     submit_label = _("Show")
     back_url = reverse("leprikon:report_list")
 
-    ReportItem = namedtuple("ReportItem", ("age_group", "all", "boys", "girls", "citizenships"))
+    ReportItem = namedtuple("ReportItem", ("stat_group", "all", "boys", "girls", "citizenships"))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -162,7 +162,7 @@ class ReportOrderableStatsView(FormView):
         context["citizenships"] = citizenships
 
         context["participants_counts"] = self.ReportItem(
-            age_group=None,
+            stat_group=None,
             all=len(participants),
             boys=len([p for p in participants if p.gender == Participant.MALE]),
             girls=len([p for p in participants if p.gender == Participant.FEMALE]),
@@ -170,12 +170,12 @@ class ReportOrderableStatsView(FormView):
                 len([p for p in participants if p.citizenship_id == citizenship.id]) for citizenship in citizenships
             ],
         )
-        context["participants_counts_by_age_groups"] = []
-        for age_group in AgeGroup.objects.all():
-            parts = [p for p in participants if p.age_group == age_group]
-            context["participants_counts_by_age_groups"].append(
+        context["participants_counts_by_stat_groups"] = []
+        for stat_group in StatGroup.objects.all():
+            parts = [p for p in participants if p.age_group.stat_group_id == stat_group]
+            context["participants_counts_by_stat_groups"].append(
                 self.ReportItem(
-                    age_group=age_group,
+                    stat_group=stat_group,
                     all=len(parts),
                     boys=len([p for p in parts if p.gender == Participant.MALE]),
                     girls=len([p for p in parts if p.gender == Participant.FEMALE]),

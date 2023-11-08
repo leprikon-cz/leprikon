@@ -6,5 +6,5 @@ from ..models.targetgroup import TargetGroup
 
 @admin.register(TargetGroup)
 class TargetGroupAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("name", "require_school")
-    list_editable = ("require_school",)
+    list_display = ("name", "stat_group", "require_school")
+    list_editable = ("require_school", "stat_group")
