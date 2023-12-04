@@ -176,7 +176,9 @@ class BankAccount:
                 _, branch_code, account_code, bank_code = match.groups()
                 self._validate_czech(branch_code or "")
                 self._validate_czech(account_code)
-                self.iban = IBAN.generate("CZ", bank_code=bank_code, account_code=account_code, branch_code=branch_code)
+                self.iban = IBAN.generate(
+                    "CZ", bank_code=bank_code, account_code=account_code, branch_code=branch_code or ""
+                )
             else:
                 self.iban = IBAN(bank_account)
 
