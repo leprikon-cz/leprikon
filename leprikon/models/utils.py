@@ -82,7 +82,7 @@ class PaymentStatusMixin:
             titles.append(_("payment not requested yet"))
         return ", ".join(map(str, titles))
 
-    def __xrepr__(self) -> str:
+    def __repr__(self) -> str:
         return (
             "{type_name}(price={price}, discount={discount}, received={received}, returned={returned}, "
             "balance={balance}, amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})".format(
@@ -155,7 +155,8 @@ class PaymentStatusSum(
     pass
 
 
-class BankAccount(IBAN):
+class BankAccount:
+    iban: IBAN
     czech_bban_regex = re.compile(r"(([0-9]{1,6})\s?-\s?)?([0-9]{1,10})\s?/\s?([0-9]{4})")
     czech_bban_weights = (1, 2, 4, 8, 5, 10, 9, 7, 3, 6)
 
@@ -166,46 +167,44 @@ class BankAccount(IBAN):
         if check % 11:
             raise InvalidAccountCode()
 
-    def __init__(self, bank_account: str):
-        match = self.czech_bban_regex.match(bank_account)
-        if match:
-            _, prefix, account, bank_code = match.groups()
-            self._validate_czech(prefix or "")
-            self._validate_czech(account)
-            account_code = (prefix or "").zfill(6) + account.zfill(10)
-            bank_account = f"CZ??{bank_code}{account_code}"
-        super().__init__(bank_account)
+    def __init__(self, bank_account: str | IBAN):
+        if isinstance(bank_account, IBAN):
+            self.iban = bank_account
+        else:
+            match = self.czech_bban_regex.match(bank_account)
+            if match:
+                _, branch_code, account_code, bank_code = match.groups()
+                self._validate_czech(branch_code or "")
+                self._validate_czech(account_code)
+                self.iban = IBAN.generate("CZ", bank_code=bank_code, account_code=account_code, branch_code=branch_code)
+            else:
+                self.iban = IBAN(bank_account)
 
     @cached_property
     def account_prefix(self):
-        return self.branch_code.lstrip("0")
+        return self.iban.branch_code.lstrip("0")
 
     @cached_property
     def account_number(self):
-        return self.account_code.lstrip("0")
-
-    @property
-    def compact(self) -> str:
-        # prevent infinite recursion in __str__
-        return super().__str__()
+        return self.iban.account_code.lstrip("0")
 
     def __str__(self):
-        if self.country_code == "CZ":
+        if self.iban.country_code == "CZ":
             return "%s%s%s/%s" % (
                 self.account_prefix,
                 self.account_prefix and "-",
                 self.account_number,
-                self.bank_code,
+                self.iban.bank_code,
             )
         else:
-            return self.formatted
+            return self.iban.formatted
 
 
 def parse_bank_account(bank_account: Any) -> BankAccount:
     if isinstance(bank_account, BankAccount):
         return bank_account
     if isinstance(bank_account, IBAN):
-        return BankAccount(bank_account.compact)
+        return BankAccount(bank_account)
     if not isinstance(bank_account, str):
         bank_account = str(bank_account)
     try:

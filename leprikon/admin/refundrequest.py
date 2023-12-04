@@ -59,12 +59,12 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     raw_id_fields = ("registration",)
 
     @attributes(short_description=_("IBAN"))
-    def iban(self, obj):
-        return obj.bank_account.compact
+    def iban(self, obj: RefundRequest):
+        return obj.bank_account.iban.compact
 
     @attributes(short_description=_("BIC (SWIFT)"))
     def bic(self, obj):
-        return obj.bank_account.bic
+        return obj.bank_account.iban.bic
 
     @attributes(admin_order_field="amount", short_description=_("amount"))
     def amount_html(self, obj):
@@ -146,7 +146,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
 
         # header, date, customer name, customer number, batch number range, unused
         lines.append(f"UHL1{today}{site_name[:20].ljust(20)}0000000000001999000000000000")
-        lines.append(f"1 1501 {batch_id:03}000 {bank_account.bank_code}")
+        lines.append(f"1 1501 {batch_id:03}000 {bank_account.iban.bank_code}")
         lines.append(f"2 {str(bank_account).split('/')[0]} {amount_cents} {today}")
 
         # write records
@@ -159,7 +159,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                             str(refund_request.bank_account).split("/")[0],
                             str(round(refund_request.amount * 100)),
                             str(refund_request.registration.variable_symbol),
-                            f"{refund_request.bank_account.bank_code}{constant_symbol:04}",
+                            f"{refund_request.bank_account.iban.bank_code}{constant_symbol:04}",
                             "0",  # specific symbol
                             f"AV:{site_name[:35]}|{message[:35]}",
                         ]

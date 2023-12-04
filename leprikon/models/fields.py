@@ -138,7 +138,7 @@ class BankAccountField(models.CharField):
         return BankAccount(value)
 
     def get_prep_value(self, value: Optional[BankAccount]) -> Optional[str]:
-        return value and value.compact
+        return value and value.iban.compact
 
     def to_python(self, value: Any) -> Optional[BankAccount]:
         if value is None:

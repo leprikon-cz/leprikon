@@ -130,9 +130,9 @@
                 <WWW></WWW>
                 <ICO>{{ org.company_num }}</ICO>
                 <DIC>{{ org.vat_number }}</DIC>
-                <Banka>{{ org.bank_account.bank_short_name }}</Banka>
+                <Banka>{{ org.bank_account.iban.bank_short_name }}</Banka>
                 <Ucet>{% if org.bank_account.account_prefix %}{{ org.bank_account.account_prefix }}-{% endif %}{{ org.bank_account.account_number }}</Ucet>
-                <KodBanky>{{ org.bank_account.bank_code }}</KodBanky>
+                <KodBanky>{{ org.bank_account.iban.bank_code }}</KodBanky>
             </MojeFirma>
             {% endwith %}
         </FaktVyd>
