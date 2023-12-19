@@ -2,6 +2,7 @@ from bankreader.readers import register_reader
 from bankreader.readers.best import BestReader
 from bankreader.readers.csv import CsvReader
 from bankreader.readers.gpc import GpcReader
+from bankreader.readers.mt940 import MT940Reader
 
 
 @register_reader
@@ -35,3 +36,8 @@ class KbCsvReader(CsvReader):
     }
     date_format = "%d.%m.%Y"
     decimal_separator = ","
+
+
+@register_reader
+class UniCreditReader(MT940Reader):
+    label = "UniCredit Bank MT940 (.sta)"
