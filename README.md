@@ -29,3 +29,16 @@ sudo docker-compose logs -f leprikon
 # when finished stop the appliaction containers
 sudo docker-compose down
 ```
+
+Update requirements
+-------------------
+
+Since `pyproject.toml` is changed with each release bump, docker build cache gets
+invalidated and requirements would be downloaded and installed even if the actual
+requirements remain unchanged. To address this we use `requirements.txt`, which
+only changes when requirements are updated. Use following command to regenerate
+`requirements.txt` whenever poetry requirements are updated:
+
+```shell
+poetry export -f requirements.txt --output requirements.txt
+```
