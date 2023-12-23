@@ -1,34 +1,34 @@
-version: '3.4'
+version: "3.4"
 services:
-
   leprikon:
     image: leprikon/leprikon:latest
     build: .
+    command: leprikon runserver 0:80
     depends_on:
-      - mysql
+      - postgres
       - redis
-      - smtp
     environment:
-      DATABASE_ENGINE: django.db.backends.mysql
-      DATABASE_HOST: ''
+      # DEBUG: EMAIL,TEMPLATE,DB
+      DEBUG: EMAIL,TEMPLATE
+      DATABASE_ENGINE: django.db.backends.postgresql_psycopg2
+      DATABASE_HOST: /var/run/postgresql
       DATABASE_NAME: leprikon
       DATABASE_USER: leprikon
-      DATABASE_PASSWORD: DATABASE_PASSWORD
-      EMAIL_HOST: smtp
-      EMAIL_HOST_USER: leprikon
-      EMAIL_HOST_PASSWORD: EMAIL_HOST_PASSWORD
-      EMAIL_SUBJECT_PREFIX: '[Leprikón]'
-      LEPRIKON_DOMAIN: example.leprikon.cz
+      DATABASE_PASSWORD: POSTGRES_PASSWORD
+      EMAIL_SUBJECT_PREFIX: "[Leprikón]"
+      LEPRIKON_URL: http://leprikon.localhost
       CACHE_LOCATION: unix:///var/run/redis/redis.sock
       SECRET_KEY: SECRET_KEY
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
+      CMSPLUGIN_FILER_MIGRATED: yes
     ports:
       - 80:80
       - 443:443
     volumes:
       - ./data:/app/data
+      - ./leprikon:/app/leprikon
       - ./media:/app/htdocs/media
-      - mysql:/var/run/mysqld
+      - postgres:/var/run/postgresql
       - redis:/var/run/redis
 
   redis:
@@ -38,27 +38,18 @@ services:
       - ./redis:/data
       - redis:/var/run/redis
 
-  mysql:
-    image: mariadb
+  postgres:
+    image: postgres
     environment:
-      MYSQL_DATABASE: leprikon
-      MYSQL_USER: leprikon
-      MYSQL_PASSWORD: DATABASE_PASSWORD
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      POSTGRES_DB: leprikon
+      POSTGRES_USER: leprikon
+      POSTGRES_PASSWORD: POSTGRES_PASSWORD
     volumes:
-      - mysql:/var/run/mysqld
-      - ./mysql:/var/lib/mysql
-
-  smtp:
-    image: panmourovaty/postfix
-    environment:
-      maildomain: leprikon.cz
-      smtp_user: leprikon:EMAIL_HOST_PASSWORD
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./dkim:/etc/opendkim/domainkeys
+      - postgres:/var/run/postgresql
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5432:5432
 
 volumes:
-  mysql:
+  postgres:
   redis:
