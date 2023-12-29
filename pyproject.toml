@@ -106,6 +106,7 @@ python-dotenv = "*"
 pytest = "*"
 mypy = "*"
 django-stubs = "*"
+poetry-plugin-export = "*"
 
 [tool.poetry.scripts]
 leprikon = 'leprikon.__main__:main'
