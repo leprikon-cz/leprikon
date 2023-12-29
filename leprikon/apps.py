@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
-from . import bankreaders  # noqa
 
 
 class LeprikonConfig(AppConfig):
@@ -9,6 +8,9 @@ class LeprikonConfig(AppConfig):
     verbose_name = _("Leprikon")
 
     def ready(self):
+        # register bank statement readers
+        from . import bankreaders  # noqa
+
         # ensure that current LeprikonSite exists
         from .models.leprikonsite import LeprikonSite
 
