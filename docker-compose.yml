@@ -8,8 +8,8 @@ services:
       - postgres
       - redis
     environment:
-      # DEBUG: EMAIL,TEMPLATE,DB
-      DEBUG: EMAIL,TEMPLATE
+      # DEBUG: DEBUG,EMAIL,TEMPLATE,DB
+      DEBUG: DEBUG,EMAIL,TEMPLATE
       DATABASE_ENGINE: django.db.backends.postgresql_psycopg2
       DATABASE_HOST: /var/run/postgresql
       DATABASE_NAME: leprikon

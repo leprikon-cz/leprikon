@@ -35,10 +35,12 @@ if not SECRET_KEY:
     )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "") and True or False
-DBDEBUG = "DB" in os.environ.get("DEBUG", "").split(",")
-DEBUG_TEMPLATE = "TEMPLATE" in os.environ.get("DEBUG", "").split(",")
-DEBUG_LML = "LML" in os.environ.get("DEBUG", "").split(",")
+DEBUG_TOKENS = os.environ.get("DEBUG", "").split(",")
+DEBUG = "DEBUG" in DEBUG_TOKENS
+DEBUG_DB = "DB" in DEBUG_TOKENS
+DEBUG_TEMPLATE = "TEMPLATE" in DEBUG_TOKENS
+DEBUG_LML = "LML" in DEBUG_TOKENS
+DEBUG_LOG = "LOG" in DEBUG_TOKENS
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "*").split(",")]
 
@@ -337,11 +339,11 @@ LOGGING = {
     },
     "loggers": {
         "": {
-            "level": "DEBUG" if DEBUG else "WARNING",
+            "level": "DEBUG" if DEBUG_LOG else "WARNING",
             "handlers": ["console"],
         },
         "django.db.backends": {
-            "level": "DEBUG" if DBDEBUG else "ERROR",
+            "level": "DEBUG" if DEBUG_DB else "ERROR",
             "propagate": True,
         },
         "parso": {
