@@ -220,9 +220,9 @@ distro==1.9.0 ; python_version >= "3.10" and python_version < "4.0" \
 django-admin-sortable2==1.0.4 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:e22956889533b48a35a7f02859ae3a939753fa9a7d7d532cefc2835b41bdcebb \
     --hash=sha256:f96044003176c6684c5f969792ca833a505d654fa0f7b24232a0a610e4332a53
-django-bankreader==1.2.0 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:296effc15766a9abdd13ea7b6dbdca25c37537e8630b7685a81e6fbda9025708 \
-    --hash=sha256:db589de98181e94017d2d0527bf0d7c5d04525a2ff31166c645d0cb94047d452
+django-bankreader==1.2.2 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:52907cbd4d1313321cfd69e95bc7f91ce5b175ba440e3b234ac7c7f4212f70fa \
+    --hash=sha256:a005c891c91b4c028ad4023016d9c9791d4deb2c554d5fa5db7bfb03669dd536
 django-classy-tags==4.1.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:1c784cf1bac49c20a77b8f7d1541867c64076642a160a847ff449588d4e01e55 \
     --hash=sha256:c8d9d1aa2fa6e71c4d866df4dd11d23a69b8d25bbb750b2490a17b161774ee59
