@@ -704,28 +704,23 @@ django = ">=3.2"
 
 [[package]]
 name = "django-cms"
-version = "4.1.0"
+version = "3.11.5"
 description = "Lean enterprise content management powered by Django."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "django-cms-4.1.0.tar.gz", hash = "sha256:860a7e4045cde2ec22c0090d437f0110630ef8d9959b9a3b7cee2039c76687fb"},
-    {file = "django_cms-4.1.0-py2.py3-none-any.whl", hash = "sha256:a46a58d8a2388e6e6b3f2dd5c884d902d0de6621dbca3c5e8705a4c31200e665"},
+    {file = "django-cms-3.11.5.tar.gz", hash = "sha256:6bcddcd036860fcaff780525504a76f77d6b87b54b8c9157cf46c8c513158d74"},
+    {file = "django_cms-3.11.5-py2.py3-none-any.whl", hash = "sha256:3d8c974ff51036c60273c77fa7928c855ab34b24955079fc1e12bdee7274f8cf"},
 ]
 
 [package.dependencies]
-Django = ">=2.2"
+Django = ">=3.2"
 django-classy-tags = ">=0.7.2"
 django-formtools = ">=2.1"
 django-sekizai = ">=0.7"
-django-treebeard = ">=4.3"
+django-treebeard = ">=4.3,<4.5 || >4.5"
 djangocms-admin-style = ">=1.2"
 packaging = "*"
-setuptools = "*"
-
-[package.extras]
-argon2 = ["argon2-cffi (>=19.1.0)"]
-bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-countries"
@@ -3805,4 +3800,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "90d5748bc9a2df41fd2fa937cb7da229cab31c9e7e4bab2429328c23db0e400c"
+content-hash = "a1d57233382b31bb44c8b2a10d6f08f9c92bf56d47d1ba5b17760e8f6283aa89"
