@@ -19,7 +19,7 @@ skip_glob = "*migrations*"
 
 [tool.poetry]
 name = "leprikon"
-version = "3.9.8"
+version = "3.9.9"
 description = "Django CMS based IS for education"
 authors = ["Jakub Dorňák <jakub.dornak@misli.cz>"]
 license = "BSD-3-Clause"
