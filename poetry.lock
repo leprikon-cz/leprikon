@@ -674,13 +674,13 @@ Django = ">=2.2,<4.1"
 
 [[package]]
 name = "django-bankreader"
-version = "1.2.4"
+version = "1.3.0"
 description = "Pluggable django application for reading and processing various formats of bank account statements"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "django_bankreader-1.2.4-py3-none-any.whl", hash = "sha256:66fc50b7ec66fc26eb09f610a92bc73e760b3bf3e52bbadda99bb61187ffcd6b"},
-    {file = "django_bankreader-1.2.4.tar.gz", hash = "sha256:5b0dfdd4c4b924d3c7409d58c8330c9438c6d24b4c62bd3b3f733e6ee6850a3e"},
+    {file = "django_bankreader-1.3.0-py3-none-any.whl", hash = "sha256:8588d70a6d6e4570cb49a00bf8d3285cbd4b98aebff986273b3210ce81a73d9e"},
+    {file = "django_bankreader-1.3.0.tar.gz", hash = "sha256:73fe5f667bb104e740e999b65c036f170247f5b726a9f29d938572b9e3f0dfcb"},
 ]
 
 [package.dependencies]

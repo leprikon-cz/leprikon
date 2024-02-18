@@ -22,17 +22,17 @@ class KbCsvReader(CsvReader):
     encoding = "cp1250"
     delimiter = ";"
     column_mapping = {
-        "Datum splatnosti": "accounted_date",
-        "Datum odepsání z jiné banky": "entry_date",
-        "Protiúčet a kód banky": "remote_account_number",
-        "Název protiúčtu": "remote_account_name",
-        "Částka": "amount",
-        "VS": "variable_symbol",
-        "KS": "constant_symbol",
-        "SS": "specific_symbol",
-        "Identifikace transakce": "transaction_id",
-        "Popis příkazce": "sender_description",
-        "Popis pro příjemce": "recipient_description",
+        "accounted_date": "Datum splatnosti",
+        "entry_date": "Datum odepsání z jiné banky",
+        "remote_account_number": "Protiúčet a kód banky",
+        "remote_account_name": "Název protiúčtu",
+        "amount": "Částka",
+        "variable_symbol": "VS",
+        "constant_symbol": "KS",
+        "specific_symbol": "SS",
+        "transaction_id": "Identifikace transakce",
+        "sender_description": "Popis příkazce",
+        "recipient_description": "Popis pro příjemce",
     }
     date_format = "%d.%m.%Y"
     decimal_separator = ","
@@ -43,17 +43,17 @@ class CsCsvReader(CsvReader):
     label = "Česká spořitelna, CSV"
     encoding = "utf16"
     column_mapping = {
-        "Datum zaúčtování": "accounted_date",
-        # "": "entry_date",
-        "Protiúčet": "remote_account_number",
-        "Název protiúčtu": "remote_account_name",
-        "Částka": "amount",
-        "Variabilní symbol": "variable_symbol",
-        # "": "constant_symbol",
-        # "": "specific_symbol",
-        "ID transakce": "transaction_id",
-        "Zpráva pro mě": "sender_description",
-        "Zpráva pro příjemce": "recipient_description",
+        "accounted_date": "Datum zaúčtování",
+        "entry_date": "Datum zaúčtování",
+        "remote_account_number": "Protiúčet",
+        "remote_account_name": "Název protiúčtu",
+        "amount": "Částka",
+        "variable_symbol": "Variabilní symbol",
+        # "constant_symbol": "",
+        # "specific_symbol": "",
+        "transaction_id": "ID transakce",
+        "sender_description": "Zpráva pro mě",
+        "recipient_description": "Zpráva pro příjemce",
     }
     date_format = "%d.%m.%Y"
     decimal_separator = ","
