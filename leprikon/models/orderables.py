@@ -90,7 +90,7 @@ class OrderableRegistration(SubjectRegistration):
         verbose_name_plural = _("orderable event registrations")
 
     def get_payment_status(self, d=None):
-        return PaymentStatus(
+        payment_status = PaymentStatus(
             price=self.price,
             discount=self.get_discounted(d),
             explanation=",\n".join(
@@ -116,6 +116,10 @@ class OrderableRegistration(SubjectRegistration):
                 self.payment_requested.date() + timedelta(days=self.subject.orderable.min_due_date_days),
             ),
         )
+        if d is None and self.cached_balance != payment_status.balance:
+            self.cached_balance = payment_status.balance
+            self.save(update_fields=["cached_balance"])
+        return payment_status
 
     @cached_property
     def end_date(self):

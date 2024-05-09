@@ -9,7 +9,7 @@ from itertools import chain
 from json import loads
 from os.path import basename
 from tempfile import NamedTemporaryFile
-from typing import List, Set
+from typing import TYPE_CHECKING, List, Set, Union
 from urllib.parse import urlencode
 
 import segno
@@ -53,6 +53,11 @@ from .targetgroup import TargetGroup
 from .times import AbstractTime, TimesMixin
 from .transaction import AbstractTransaction, Transaction
 from .utils import BankAccount, PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default
+
+if TYPE_CHECKING:
+    from .courses import CourseRegistration
+    from .events import EventRegistration
+    from .orderables import OrderableRegistration
 
 logger = logging.getLogger(__name__)
 
@@ -889,6 +894,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         verbose_name=_("registration link"),
     )
 
+    cached_balance = PriceField(_("payments balance"), editable=False)
+
     class Meta:
         app_label = "leprikon"
         verbose_name = _("registration")
@@ -897,9 +904,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def __str__(self):
         return "{} - {}".format(
             self.subject,
-            self.group
-            if self.subject.registration_type_groups
-            else comma_separated([p.full_name for p in self.all_participants]),
+            (
+                self.group
+                if self.subject.registration_type_groups
+                else comma_separated([p.full_name for p in self.all_participants])
+            ),
         )
 
     def get_changelist_url(self):
@@ -916,7 +925,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return reverse("leprikon:registration_payment_request", args=(self.id, self.variable_symbol))
 
     @cached_property
-    def subjectregistration(self):
+    def subjectregistration(self) -> Union["CourseRegistration", "EventRegistration", "OrderableRegistration"]:
         if self.subject.subject_type.subject_type == self.subject.subject_type.COURSE:
             return self.courseregistration
         elif self.subject.subject_type.subject_type == self.subject.subject_type.EVENT:
@@ -1301,9 +1310,11 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             slugify(
                 "{}-{}".format(
                     self.subject.name[:100],
-                    self.group
-                    if self.subject.registration_type_groups
-                    else comma_separated([p.full_name for p in self.all_participants]),
+                    (
+                        self.group
+                        if self.subject.registration_type_groups
+                        else comma_separated([p.full_name for p in self.all_participants])
+                    ),
                 )
             )[:200],
             self.variable_symbol,

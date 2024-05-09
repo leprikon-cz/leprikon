@@ -265,7 +265,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
             )
         return mark_safe("<br/>".join(html))
 
-    @attributes(short_description=_("received payments"))
+    @attributes(short_description=_("received payments"), admin_order_field="cached_balance")
     def received_payments(self, obj: CourseRegistration):
         html = []
         for period in obj.period_payment_statuses:

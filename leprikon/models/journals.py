@@ -133,7 +133,7 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
         )
 
     def get_absolute_url(self):
-        return reverse(f"leprikon:journal", kwargs={"pk": self.pk})
+        return reverse("leprikon:journal", kwargs={"pk": self.pk})
 
     def get_valid_participants(self, d):
         return self.participants.exclude(registration__canceled__date__lt=d)

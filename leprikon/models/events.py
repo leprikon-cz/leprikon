@@ -119,7 +119,7 @@ class EventRegistration(SubjectRegistration):
         verbose_name_plural = _("event registrations")
 
     def get_payment_status(self, d=None):
-        return PaymentStatus(
+        payment_status = PaymentStatus(
             price=self.price,
             discount=self.get_discounted(d),
             explanation=",\n".join(
@@ -141,6 +141,10 @@ class EventRegistration(SubjectRegistration):
                 self.payment_requested.date() + timedelta(days=self.subject.event.min_due_date_days),
             ),
         )
+        if d is None and self.cached_balance != payment_status.balance:
+            self.cached_balance = payment_status.balance
+            self.save(update_fields=["cached_balance"])
+        return payment_status
 
 
 class EventDiscount(SubjectDiscount):

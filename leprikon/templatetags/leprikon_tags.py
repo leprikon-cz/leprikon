@@ -72,7 +72,7 @@ def lines(value):
 @register.filter
 def jsdate(d):
     try:
-        return f"new Date({d.year},{d.month-1},{d.day})"
+        return f"new Date({d.year},{d.month - 1},{d.day})"
     except AttributeError:
         return "undefined"
 

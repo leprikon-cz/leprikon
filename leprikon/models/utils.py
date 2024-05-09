@@ -126,7 +126,7 @@ class PaymentStatus(
 
     @property
     def amount_due(self) -> Price:
-        return max(self.receivable - self.paid, 0) if self.due_from and self.due_from <= self.current_date else 0
+        return max(-self.balance, 0) if self.due_from and self.due_from <= self.current_date else 0
 
     @property
     def overdue(self) -> Price:

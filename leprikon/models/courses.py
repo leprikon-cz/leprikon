@@ -111,7 +111,11 @@ class CourseRegistration(SubjectRegistration):
             )
 
     def get_payment_status(self, d=None):
-        return sum(pps.status for pps in self.get_period_payment_statuses(d))
+        payment_status = sum(pps.status for pps in self.get_period_payment_statuses(d))
+        if d is None and self.cached_balance != payment_status.balance:
+            self.cached_balance = payment_status.balance
+            self.save(update_fields=["cached_balance"])
+        return payment_status
 
     @cached_property
     def period_payment_statuses(self):

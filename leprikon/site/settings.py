@@ -148,11 +148,13 @@ BASE_TEMPLATE_LOADERS = [
 TEMPLATE_LOADERS = [
     (
         "template_admin.loader.Loader",
-        BASE_TEMPLATE_LOADERS
-        if DEBUG_TEMPLATE
-        else [
-            ("django.template.loaders.cached.Loader", BASE_TEMPLATE_LOADERS),
-        ],
+        (
+            BASE_TEMPLATE_LOADERS
+            if DEBUG_TEMPLATE
+            else [
+                ("django.template.loaders.cached.Loader", BASE_TEMPLATE_LOADERS),
+            ]
+        ),
     ),
 ]
 

@@ -136,9 +136,9 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         amount_cents = round(sum_amount * 100)
 
         response = HttpResponse(content_type="text/abo; charset=ascii")
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{ascii(str(self.model._meta.verbose_name))} {today} {batch_id}.abo"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{ascii(str(self.model._meta.verbose_name))} {today} {batch_id}.abo"'
+        )
 
         lines = []
 
