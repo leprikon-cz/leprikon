@@ -894,7 +894,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         verbose_name=_("registration link"),
     )
 
-    cached_balance = PriceField(_("payments balance"), editable=False)
+    cached_balance = PriceField(_("payments balance"), default=0, editable=False)
 
     class Meta:
         app_label = "leprikon"
