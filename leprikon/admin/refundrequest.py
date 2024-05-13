@@ -1,5 +1,6 @@
 from datetime import date
 from random import randrange
+from typing import List
 
 from bankreader.models import Account
 from django import forms
@@ -13,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from ..models.leprikonsite import LeprikonSite
 from ..models.refundrequest import RefundRequest
 from ..models.utils import BankAccount
-from ..utils import amount_color, ascii, attributes, currency
+from ..utils import amount_color, ascii, attributes, currency, localeconv
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
 from .utils import datetime_with_by
@@ -21,7 +22,7 @@ from .utils import datetime_with_by
 
 @admin.register(RefundRequest)
 class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
-    actions = AdminExportMixin.actions + ("export_as_abo",)
+    actions = AdminExportMixin.actions + ("export_payment_orders",)
     date_hierarchy = "requested"
     ordering = ("-requested",)
     list_display = (
@@ -83,16 +84,33 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
             obj.requested_by = request.user
         super().save_model(request, obj, form, change)
 
-    @attributes(short_description=_("Export selected records as ABO"))
-    def export_as_abo(self, request, queryset):
-        class AccountForm(forms.Form):
+    @admin.action(description=_("Export selected records as payment orders"))
+    def export_payment_orders(self, request, queryset):
+        class ExportForm(forms.Form):
             account = forms.ModelChoiceField(label=Account._meta.verbose_name, queryset=Account.objects.all())
-            constant_symbol = forms.IntegerField(label=_("Constant symbol"), max_value=9999, required=False)
+            format = forms.ChoiceField(
+                label=_("Format"),
+                choices=[
+                    ("abo", "ABO"),
+                    ("cfd", "CFD"),
+                ],
+                widget=forms.RadioSelect,
+            )
+            constant_symbol = forms.IntegerField(
+                label=_("Constant symbol"), initial=308, max_value=9999, required=False
+            )
             message = forms.CharField(label=_("Message for recipient"), max_length=35, required=False)
 
         if request.POST.get("post", "no") == "yes":
-            form = AccountForm(request.POST)
+            form = ExportForm(request.POST)
             if form.is_valid():
+                if form.cleaned_data["format"] == "cfd":
+                    return self._export_as_cfd(
+                        queryset,
+                        BankAccount(form.cleaned_data["account"].iban),
+                        form.cleaned_data["constant_symbol"] or 0,
+                        form.cleaned_data["message"] or "",
+                    )
                 return self._export_as_abo(
                     queryset,
                     BankAccount(form.cleaned_data["account"].iban),
@@ -100,7 +118,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                     form.cleaned_data["message"] or "",
                 )
         else:
-            form = AccountForm()
+            form = ExportForm()
 
         adminform = admin.helpers.AdminForm(
             form,
@@ -118,7 +136,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                 opts=self.model._meta,
                 adminform=adminform,
                 media=self.media + adminform.media,
-                action="export_as_abo",
+                action="export_payment_orders",
                 action_checkbox_name=admin.helpers.ACTION_CHECKBOX_NAME,
                 select_across=request.POST["select_across"],
                 selected=request.POST.getlist(admin.helpers.ACTION_CHECKBOX_NAME),
@@ -175,3 +193,53 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         response.write("\r\n".join(lines).encode("ascii", errors="ignore"))
 
         return response
+
+    def _export_as_cfd(self, queryset, bank_account: BankAccount, constant_symbol: int, message: str):
+        currency = localeconv["int_curr_symbol"].strip()
+        refund_requests: list[RefundRequest] = list(queryset)
+        today = f"{date.today():%y%m%d}"
+        site_name = ascii(LeprikonSite.objects.get_current().name)
+
+        response = HttpResponse(content_type="text/cfd; charset=ascii")
+        response["Content-Disposition"] = (
+            f'attachment; filename="{ascii(str(self.model._meta.verbose_name))} {today}.cfd"'
+        )
+
+        lines = []
+
+        for n, refund_request in enumerate(refund_requests[:1000]):
+            if refund_request.amount:
+                receiver_account: BankAccount = refund_request.bank_account
+                lines.extend(
+                    [
+                        f"HD:11 {today} {bank_account.iban.bank_code} {n} {refund_request.bank_account.iban.bank_code}",
+                        f"KC:{str(round(refund_request.amount * 100)).rjust(15, '0')} 000000 {currency}",
+                        f"UD:{bank_account.account_prefix} {bank_account.account_number} SENDER",
+                        f"DI:{cfd_multiline(site_name)}",
+                        f"UK:{receiver_account.account_prefix} {receiver_account.account_number} RECEIVER",
+                        f"AK:{0}",  # specific symbol
+                        f"KI:{cfd_multiline(str(refund_request.registration.user))}",
+                        f"EC:{constant_symbol:04}",
+                        f"ZD:{refund_request.registration.variable_symbol}",
+                        f"ZK:{refund_request.registration.variable_symbol}",
+                        f"AV:{cfd_multiline(message + ' ' + str(refund_request.registration))}",
+                    ]
+                )
+
+        response.write("\r\n".join(lines).encode("ascii", errors="ignore"))
+
+        return response
+
+
+def cfd_multiline(s: str) -> str:
+    lines: List[str] = []
+    line = ""
+    for word in s.split():
+        if len(word) > 35:
+            continue
+        if len(line) + len(word) > 34:
+            lines.append(line)
+            line = ""
+        line = line + " " + word if line else word
+    lines.append(line)
+    return ascii("\r\n   ".join(lines[:4])).upper()

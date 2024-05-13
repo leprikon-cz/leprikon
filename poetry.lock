@@ -3350,18 +3350,19 @@ files = [
 
 [[package]]
 name = "schwifty"
-version = "2024.5.0"
+version = "2024.5.2"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "schwifty-2024.5.0-py3-none-any.whl", hash = "sha256:c84ec51ad6d68f82b0035068927dac62f3087f07c9d334ec5032ef7ffd0a131c"},
-    {file = "schwifty-2024.5.0.tar.gz", hash = "sha256:d58a92a2548e98153977006a4033ca2b7445b5915a4f9de114db66f411224823"},
+    {file = "schwifty-2024.5.2-py3-none-any.whl", hash = "sha256:fceea304b220c8ad2e4026cce70bb1a785e4aaea2880b4c38a23e213935abb50"},
+    {file = "schwifty-2024.5.2.tar.gz", hash = "sha256:06ed66b6a154aa67d0c0eba9fd56e6cf031ff200d8c7941a93ec969a352b7367"},
 ]
 
 [package.dependencies]
 importlib-resources = {version = ">=5.10", markers = "python_version <= \"3.11\""}
 pycountry = "*"
+typing-extensions = {version = ">=4.0.1", markers = "python_version <= \"3.10\""}
 
 [package.extras]
 pydantic = ["pydantic (>=2.0)"]
