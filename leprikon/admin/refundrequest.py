@@ -207,7 +207,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
 
         lines = []
 
-        for n, refund_request in enumerate(refund_requests[:1000]):
+        for n, refund_request in enumerate(refund_requests[:1000], start=1):
             if refund_request.amount:
                 receiver_account: BankAccount = refund_request.bank_account
                 lines.extend(
@@ -220,7 +220,6 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                         f"AK:{0}",  # specific symbol
                         f"KI:{cfd_multiline(str(refund_request.registration.user))}",
                         f"EC:{constant_symbol:04}",
-                        f"ZD:{refund_request.registration.variable_symbol}",
                         f"ZK:{refund_request.registration.variable_symbol}",
                         f"AV:{cfd_multiline(message + ' ' + str(refund_request.registration))}",
                     ]
