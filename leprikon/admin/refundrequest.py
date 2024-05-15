@@ -225,6 +225,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
                     ]
                 )
 
+        lines.append("")  # File must end with CRLF
         response.write("\r\n".join(lines).encode("ascii", errors="ignore"))
 
         return response
