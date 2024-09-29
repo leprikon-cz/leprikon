@@ -2,22 +2,22 @@ __version__ = "3.11.2"
 default_app_config = "leprikon.apps.LeprikonConfig"
 
 staticfiles_urls = {
-    "leprikon/lib/bootstrap/css/bootstrap-theme.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap.min.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap-theme.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css.map",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap.min.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css.map",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap-theme.min.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap-theme.min.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css.map",  # NOQA
-    "leprikon/lib/bootstrap/css/bootstrap.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css.map",  # NOQA
-    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.svg": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg",  # NOQA
-    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.ttf": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf",  # NOQA
-    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.eot": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot",  # NOQA
-    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.woff": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff",  # NOQA
-    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.woff2": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2",  # NOQA
-    "leprikon/lib/bootstrap/js/bootstrap.min.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js",  # NOQA
-    "leprikon/lib/bootstrap/js/npm.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/npm.js",  # NOQA
-    "leprikon/lib/bootstrap/js/bootstrap.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap-theme.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.css",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap.min.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap-theme.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.css.map",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap.min.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css.map",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap-theme.min.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap.css": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.css",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap-theme.min.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css.map",  # NOQA
+    "leprikon/lib/bootstrap/css/bootstrap.css.map": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.css.map",  # NOQA
+    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.svg": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.svg",  # NOQA
+    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.ttf": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.ttf",  # NOQA
+    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.eot": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.eot",  # NOQA
+    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.woff": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.woff",  # NOQA
+    "leprikon/lib/bootstrap/fonts/glyphicons-halflings-regular.woff2": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.woff2",  # NOQA
+    "leprikon/lib/bootstrap/js/bootstrap.min.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js",  # NOQA
+    "leprikon/lib/bootstrap/js/npm.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/npm.js",  # NOQA
+    "leprikon/lib/bootstrap/js/bootstrap.js": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.js",  # NOQA
     "leprikon/lib/bootstrap-datetimepicker.min.css": (
         "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css",
         "sha384",
