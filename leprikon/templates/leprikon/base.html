@@ -81,5 +81,13 @@
 
     {% render_block "js" %}
 
+    <script>
+        CMS.$(document).ready(function() {
+            window.setTimeout(function() {
+                CMS.$('html').removeAttr('data-touch-action');
+            }, 2000);
+        });
+    </script>
+
 </body>
 </html>
