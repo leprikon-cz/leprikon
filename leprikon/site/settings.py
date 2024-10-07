@@ -44,6 +44,10 @@ DEBUG_LOG = "LOG" in DEBUG_TOKENS
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "*").split(",")]
 
+# Leprikon URL
+LEPRIKON_DOMAIN = os.environ.get("LEPRIKON_DOMAIN")
+LEPRIKON_URL = os.environ.get("LEPRIKON_URL", LEPRIKON_DOMAIN and f"https://{LEPRIKON_DOMAIN}")
+
 
 # Application definition
 
@@ -53,6 +57,7 @@ INSTALLED_APPS = [
     "leprikon",
     "adminsortable2",
     "bankreader",
+    "corsheaders",
     "djangocms_admin_style",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -118,6 +123,7 @@ if not CMSPLUGIN_FILER_MIGRATED:
 MIDDLEWARE = [
     "cms.middleware.utils.ApphookReloadMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -132,6 +138,10 @@ MIDDLEWARE = [
     "social_django.middleware.SocialAuthExceptionMiddleware",
     "leprikon.middleware.LeprikonMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    LEPRIKON_URL,
+] + [origin.strip() for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if origin.strip()]
 
 CRON_CLASSES = [
     "leprikon.cronjobs.SendPaymentRequest",
@@ -249,10 +259,6 @@ if DATABASES["default"]["ENGINE"].endswith("mysql"):
             )
         ),
     }
-
-# Leprikon URL
-LEPRIKON_DOMAIN = os.environ.get("LEPRIKON_DOMAIN")
-LEPRIKON_URL = os.environ.get("LEPRIKON_URL", LEPRIKON_DOMAIN and f"https://{LEPRIKON_DOMAIN}")
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -501,7 +507,7 @@ SPECTACULAR_SETTINGS = {
     "TOS": None,
     "VERSION": "v1",
     "SERVERS": [
-        {"url": "http://localhost:8000/", "description": "local"},
+        {"url": LEPRIKON_URL},
     ],
     # options
     "CAMELIZE_NAMES": True,
