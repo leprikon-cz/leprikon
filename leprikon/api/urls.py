@@ -12,8 +12,8 @@ api_router.register(r"schoolyear", views.SchoolYearViewSet, "schoolyear")
 api_router.register(r"user", views.UserViewSet, "user")
 
 urlpatterns = [
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/swagger/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger"),
+    path("api/docs/", SpectacularRedocView.as_view(url_name="api:schema"), name="redoc"),
     path("api/", include(api_router.urls)),
-    path("schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("swagger/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger"),
-    path("docs/", SpectacularRedocView.as_view(url_name="api:schema"), name="redoc"),
 ]
