@@ -310,6 +310,7 @@ class BaseAttachment(models.Model):
             ("payment_received", _("payment received")),
             ("payment_returned", _("payment returned")),
         ),
+        max_length=250,
         default=[],
         help_text=_("The attachment will be sent with notification on selected events."),
     )
