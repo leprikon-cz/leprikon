@@ -712,13 +712,13 @@ django = ">=3.2"
 
 [[package]]
 name = "django-cms"
-version = "3.11.8"
+version = "3.11.9"
 description = "Lean enterprise content management powered by Django."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "django_cms-3.11.8-py2.py3-none-any.whl", hash = "sha256:683440d9b569f225ea0d6260407106d43a50997f5c8be112aed21368aa3a1405"},
-    {file = "django_cms-3.11.8.tar.gz", hash = "sha256:8eda384dc78c7dfee45333f29a0fc28e2906cd20da3b4431cf3298ec579103c0"},
+    {file = "django_cms-3.11.9-py2.py3-none-any.whl", hash = "sha256:a383fb90159476da79d9e15f0b6701fbf85ec14eb1e7fe57ac8a1a60b55905c5"},
+    {file = "django_cms-3.11.9.tar.gz", hash = "sha256:52908f55c401aacbdb033586b8b88a09862ded3e714650a0b8f89ee9ad6d8218"},
 ]
 
 [package.dependencies]
