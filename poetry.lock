@@ -803,13 +803,13 @@ xlsx = ["pyexcel-xlsx (>=0.4.0)"]
 
 [[package]]
 name = "django-filer"
-version = "3.2.3"
+version = "3.3.0"
 description = "A file management application for django that makes handling of files and images a breeze."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django_filer-3.2.3-py3-none-any.whl", hash = "sha256:b0501899d2097a5c5e0c263a697071ca64e32b9cbe9172ad41e4d681b5e67377"},
-    {file = "django_filer-3.2.3.tar.gz", hash = "sha256:a7c173484416e5d71f80838b5105213acf119184267e4e17f47ed3f197e3ba1d"},
+    {file = "django_filer-3.3.0-py3-none-any.whl", hash = "sha256:6f7fac2b800f4eda1f39fe8d2ee13ed29d7e22ea16f1f248bcb62701f055bbe2"},
+    {file = "django_filer-3.3.0.tar.gz", hash = "sha256:21bc9ac9644e256d40db4a92486c7da8a7b55c062fed603ab69cb4906585c438"},
 ]
 
 [package.dependencies]
