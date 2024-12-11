@@ -45,8 +45,8 @@ DEBUG_LOG = "LOG" in DEBUG_TOKENS
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "*").split(",")]
 
 # Leprikon URL
-LEPRIKON_DOMAIN = os.environ.get("LEPRIKON_DOMAIN")
-LEPRIKON_URL = os.environ.get("LEPRIKON_URL", LEPRIKON_DOMAIN and f"https://{LEPRIKON_DOMAIN}")
+LEPRIKON_DOMAIN = os.environ.get("LEPRIKON_DOMAIN", "localhost")
+LEPRIKON_URL = os.environ.get("LEPRIKON_URL", f"https://{LEPRIKON_DOMAIN}")
 
 
 # Application definition
