@@ -1,4 +1,4 @@
-from adminsortable2.admin import SortableInlineAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin
 from django.db import IntegrityError
@@ -36,7 +36,7 @@ class SchoolYearPeriodInlineAdmin(SortableInlineAdminMixin, admin.TabularInline)
 
 
 @admin.register(SchoolYearDivision)
-class SchoolYearDivisionAdmin(admin.ModelAdmin):
+class SchoolYearDivisionAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = ("copy_to_school_year",)
     inlines = (SchoolYearPeriodInlineAdmin,)
     list_display = ("name",)

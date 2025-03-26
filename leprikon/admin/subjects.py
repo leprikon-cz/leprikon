@@ -118,7 +118,7 @@ class SubjectTimeInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class SubjectBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin, SortableAdminMixin, admin.ModelAdmin):
     registration_model = None
     actions = (
         SendMessageAdminMixin.actions + BulkUpdateMixin.actions + AdminExportMixin.actions + ("set_registration_dates",)

@@ -2,7 +2,7 @@
 # base #
 ########
 
-FROM ubuntu:22.04 AS base
+FROM ubuntu:24.04 AS base
 
 WORKDIR /app
 
@@ -18,6 +18,7 @@ RUN apt-get update \
   && apt-get -y upgrade \
   && apt-get -y --no-install-recommends install \
   git \
+  libicu74 \
   libmysqlclient21 \
   libpython3.10 \
   locales \
@@ -29,7 +30,6 @@ RUN apt-get update \
   sqlite3 \
   supervisor \
   tzdata \
-  && pip3 install --no-cache-dir --upgrade pip \
   && ln -s /usr/bin/python3 /usr/local/bin/python \
   && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
 ENV LC_ALL cs_CZ.UTF-8
@@ -49,7 +49,7 @@ RUN apt-get -y --no-install-recommends install \
   libssl-dev \
   pkg-config \
   python3-dev
-RUN pip install poetry wheel
+RUN pip install --break-system-packages poetry wheel
 RUN virtualenv /venv
 ENV VIRTUAL_ENV=/venv
 COPY requirements.txt ./
@@ -82,7 +82,7 @@ COPY conf /app/conf
 COPY startup /app/startup
 COPY translations /app/translations
 
-RUN cp -a /app/translations/* /venv/lib/python3.10/site-packages/ \
+RUN cp -a /app/translations/* /venv/lib/python3.12/site-packages/ \
   && mkdir -p data/ipython htdocs/media htdocs/static run \
   && leprikon collectstatic --no-input \
   && rm data/db.sqlite3 \

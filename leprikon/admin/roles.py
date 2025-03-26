@@ -1,4 +1,4 @@
-from adminsortable2.admin import SortableInlineAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -23,7 +23,7 @@ class ContactInlineAdmin(SortableInlineAdminMixin, admin.TabularInline):
 
 
 @admin.register(Leader)
-class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
+class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = SendMessageAdminMixin.actions + AdminExportMixin.actions + ("add_school_year",)
     filter_horizontal = ("school_years",)
     inlines = (ContactInlineAdmin,)
