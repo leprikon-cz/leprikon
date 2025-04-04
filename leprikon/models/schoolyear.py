@@ -2,6 +2,7 @@ from datetime import date
 
 from cms.models import CMSPlugin
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
@@ -27,7 +28,15 @@ class SchoolYearManager(models.Manager):
 
 
 class SchoolYear(models.Model):
-    year = models.IntegerField(_("year"), unique=True, help_text=_("Only the first of the two years."))
+    year = models.IntegerField(
+        _("year"),
+        unique=True,
+        validators=[
+            MinValueValidator(2000),
+            MaxValueValidator(3000),
+        ],
+        help_text=_("Only the first of the two years."),
+    )
     active = models.BooleanField(_("active"), default=False)
 
     objects = SchoolYearManager()
