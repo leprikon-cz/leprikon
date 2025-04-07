@@ -14,9 +14,9 @@
 {% endfor %}
 {% endif %}
 
-{% if subjects.count %}
-{% for object in subjects %}
-{% include 'leprikon/subject_preview.html' with object=object.subject %}
+{% if activities.count %}
+{% for object in activities %}
+{% include 'leprikon/activity_preview.html' with object=object.activity %}
 {% endfor %}
 {% endif %}
 

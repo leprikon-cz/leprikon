@@ -4,9 +4,9 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+from .activities import ActivityType, ActivityVariant
 from .leprikonsite import LeprikonSite
 from .schoolyear import SchoolYear
-from .subjects import SubjectType, SubjectVariant
 
 
 class RegistrationLink(models.Model):
@@ -17,15 +17,15 @@ class RegistrationLink(models.Model):
         related_name="registration_links",
         verbose_name=_("school year"),
     )
-    subject_type = models.ForeignKey(
-        SubjectType, on_delete=models.CASCADE, related_name="registration_links", verbose_name=_("subject type")
+    activity_type = models.ForeignKey(
+        ActivityType, on_delete=models.CASCADE, related_name="registration_links", verbose_name=_("activity type")
     )
     slug = models.SlugField(editable=False, max_length=64)
     name = models.CharField(_("name"), max_length=50)
     reg_from = models.DateTimeField(_("registration active from"))
     reg_to = models.DateTimeField(_("registration active to"))
-    subject_variants = models.ManyToManyField(
-        SubjectVariant, blank=False, related_name="registration_links", verbose_name=_("subjects")
+    activity_variants = models.ManyToManyField(
+        ActivityVariant, blank=False, related_name="registration_links", verbose_name=_("activities")
     )
 
     class Meta:

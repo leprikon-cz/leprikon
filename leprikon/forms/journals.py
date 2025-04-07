@@ -6,10 +6,10 @@ from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettext
 
+from ..models.activities import ActivityModel, RegistrationParticipant
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
-from ..models.subjects import SubjectRegistrationParticipant, SubjectType
 from ..models.timesheets import Timesheet, TimesheetPeriod
 from ..utils import comma_separated, first_upper
 from .fields import ReadonlyField
@@ -18,7 +18,7 @@ from .widgets import CheckboxSelectMultipleBootstrap
 
 
 def get_participant_choices(participants_qs):
-    participants: List[SubjectRegistrationParticipant] = list(participants_qs.select_related("registration"))
+    participants: List[RegistrationParticipant] = list(participants_qs.select_related("registration"))
     groups = (
         (
             _("Approved participants"),
@@ -49,31 +49,31 @@ def get_participant_choices(participants_qs):
 class JournalAdminForm(forms.ModelForm):
     class Meta:
         model = Journal
-        exclude = ["subject", "school_year_division"]
+        exclude = ["activity", "school_year_division"]
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
         # limit choices of leaders
         leaders_choices = self.fields["leaders"].widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(subjects=self.subject)
+        leaders_choices.queryset = leaders_choices.queryset.filter(activities=self.activity)
 
         # limit choices of participants
-        participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject=self.subject)
+        participants_qs = RegistrationParticipant.objects.filter(registration__activity=self.activity)
 
-        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+        if self.activity.activity_type.model == ActivityModel.COURSE:
             participants_qs = participants_qs.filter(
-                registration__subject_variant__school_year_division=self.instance.school_year_division
+                registration__activity_variant__school_year_division=self.instance.school_year_division
             )
 
         participant_ids = set(participants_qs.values_list("id", flat=True))
         participant_ids |= set(self.instance.participants.values_list("id", flat=True))
         participant_ids |= set(
-            SubjectRegistrationParticipant.objects.filter(
+            RegistrationParticipant.objects.filter(
                 journal_entries__journal=self.instance,
             ).values_list("id", flat=True),
         )
-        self.fields["participants"].widget.choices.queryset = SubjectRegistrationParticipant.objects.filter(
+        self.fields["participants"].widget.choices.queryset = RegistrationParticipant.objects.filter(
             id__in=participant_ids
         )
 
@@ -87,65 +87,65 @@ class JournalCreateForm(FormMixin, forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
+        self.activity = kwargs.pop("activity", None) or kwargs["instance"].activity
         super().__init__(*args, **kwargs)
-        self.instance.subject = self.subject
+        self.instance.activity = self.activity
         self.readonly_fields = [
-            ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
+            ReadonlyField(label=first_upper(self.activity.activity_type.name), value=self.activity),
         ]
 
-        school_year_divisions = SchoolYearDivision.objects.filter(variants__subject=self.subject).distinct()
+        school_year_divisions = SchoolYearDivision.objects.filter(variants__activity=self.activity).distinct()
         if school_year_divisions.exists():
             self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
         else:
             del self.fields["school_year_division"]
 
-        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
+        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.activity.all_leaders)
 
 
 class JournalUpdateForm(FormMixin, forms.ModelForm):
     JournalTimeFormset = inlineformset_factory(
-        Journal, JournalTime, fields=["day_of_week", "start", "end"], can_delete=True, extra=1
+        Journal, JournalTime, fields=["days_of_week", "start_time", "end_time"], can_delete=True, extra=1
     )
 
     class Meta:
         model = Journal
-        exclude = ["subject", "school_year_division"]
+        exclude = ["activity", "school_year_division"]
         widgets = {
             "leaders": CheckboxSelectMultipleBootstrap(),
             "participants": CheckboxSelectMultipleBootstrap(),
         }
 
     def __init__(self, *args, **kwargs):
-        self.subject = kwargs.pop("subject", None) or kwargs["instance"].subject
+        self.activity = kwargs.pop("activity", None) or kwargs["instance"].activity
         super().__init__(*args, **kwargs)
-        self.instance.subject = self.subject
+        self.instance.activity = self.activity
         self.readonly_fields = [
-            ReadonlyField(label=first_upper(self.subject.subject_type.name), value=self.subject),
+            ReadonlyField(label=first_upper(self.activity.activity_type.name), value=self.activity),
         ]
 
-        participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject_id=self.subject.id)
+        participants_qs = RegistrationParticipant.objects.filter(registration__activity_id=self.activity.id)
 
         if self.instance.school_year_division:
             self.readonly_fields.append(
                 ReadonlyField(label=first_upper(_("school year division")), value=self.instance.school_year_division),
             )
             participants_qs = participants_qs.filter(
-                registration__subject_variant__school_year_division=self.instance.school_year_division
+                registration__activity_variant__school_year_division=self.instance.school_year_division
             )
 
         participant_ids = set(participants_qs.values_list("id", flat=True))
         participant_ids |= set(self.instance.participants.values_list("id", flat=True))
         participant_ids |= set(
-            SubjectRegistrationParticipant.objects.filter(
+            RegistrationParticipant.objects.filter(
                 journal_entries__journal=self.instance,
             ).values_list("id", flat=True),
         )
         self.fields["participants"].widget.choices = get_participant_choices(
-            SubjectRegistrationParticipant.objects.filter(id__in=participant_ids)
+            RegistrationParticipant.objects.filter(id__in=participant_ids)
         )
 
-        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.subject.all_leaders)
+        self.fields["leaders"].widget.choices = tuple((leader.id, leader) for leader in self.activity.all_leaders)
 
         self.inline_formsets = [self.JournalTimeFormset(data=kwargs.get("data"), instance=kwargs.get("instance"))]
 

@@ -9,17 +9,35 @@ from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 from ..utils import attributes
+from .activities import (
+    Activity,
+    ActivityDiscount,
+    ActivityGroup,
+    ActivityModel,
+    ActivityType,
+    ActivityVariant,
+    Registration,
+)
 from .agegroup import AgeGroup
 from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision
-from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects
 
 
-class Orderable(Subject):
+class Orderable(Activity):
     duration = models.DurationField(_("duration"), help_text=_("Format: HH:MM:SS"))
+    preparation_time = models.DurationField(
+        _("preparation time"),
+        default=timedelta(0),
+        help_text=_("Time to prepare before the event. (HH:MM:SS)"),
+    )
+    recovery_time = models.DurationField(
+        _("recovery time"),
+        default=timedelta(0),
+        help_text=_("Time to recover after the event. (HH:MM:SS)"),
+    )
     due_from_days = models.IntegerField(
         _("number of days to send the payment request before event date"),
         blank=True,
@@ -38,10 +56,6 @@ class Orderable(Subject):
         verbose_name = _("orderable event")
         verbose_name_plural = _("orderable events")
 
-    @attributes(short_description=_("duration"))
-    def get_times_list(self):
-        return self.duration
-
     def copy_to_school_year(old, school_year: SchoolYear):
         new = Orderable.objects.get(id=old.id)
         new.id, new.pk = None, None
@@ -58,9 +72,9 @@ class Orderable(Subject):
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
         for old_variant in old.all_variants:
-            new_variant = SubjectVariant.objects.get(id=old_variant.id)
+            new_variant = ActivityVariant.objects.get(id=old_variant.id)
             new_variant.id, new_variant.pk = None, None
-            new_variant.subject = new
+            new_variant.activity = new
             if old_variant.school_year_division:
                 new_variant.school_year_division = SchoolYearDivision.objects.filter(
                     school_year=school_year,
@@ -79,10 +93,8 @@ class Orderable(Subject):
         return new
 
 
-class OrderableRegistration(SubjectRegistration):
-    subject_type = SubjectType.ORDERABLE
-    start_date = models.DateField(_("start date"))
-    start_time = models.TimeField(_("start time"), blank=True, null=True)
+class OrderableRegistration(Registration):
+    activity_type = ActivityModel.ORDERABLE
 
     class Meta:
         app_label = "leprikon"
@@ -104,34 +116,22 @@ class OrderableRegistration(SubjectRegistration):
             due_from=self.payment_requested
             and (
                 self.payment_requested.date()
-                if self.subject.orderable.due_from_days is None
+                if self.activity.orderable.due_from_days is None
                 else max(
-                    self.start_date - timedelta(days=self.subject.orderable.due_from_days),
+                    self.start_date - timedelta(days=self.activity.orderable.due_from_days),
                     self.payment_requested.date(),
                 )
             ),
             due_date=self.payment_requested
             and max(
-                self.start_date - timedelta(days=self.subject.orderable.due_date_days),
-                self.payment_requested.date() + timedelta(days=self.subject.orderable.min_due_date_days),
+                self.start_date - timedelta(days=self.activity.orderable.due_date_days),
+                self.payment_requested.date() + timedelta(days=self.activity.orderable.min_due_date_days),
             ),
         )
         if d is None and self.cached_balance != payment_status.balance:
             self.cached_balance = payment_status.balance
             self.save(update_fields=["cached_balance"])
         return payment_status
-
-    @cached_property
-    def end_date(self):
-        if self.start_time:
-            return (datetime.combine(self.start_date, self.start_time) + self.subject.orderable.duration).date()
-        else:
-            return self.start_date + self.subject.orderable.duration
-
-    @cached_property
-    def end_time(self):
-        if self.start_time:
-            return (datetime.combine(self.start_date, self.start_time) + self.subject.orderable.duration).time()
 
     @attributes(admin_order_field="start_date", short_description=_("event date"))
     def event_date(self):
@@ -154,7 +154,7 @@ class OrderableRegistration(SubjectRegistration):
         )
 
 
-class OrderableDiscount(SubjectDiscount):
+class OrderableDiscount(ActivityDiscount):
     registration = models.ForeignKey(
         OrderableRegistration, on_delete=models.CASCADE, related_name="discounts", verbose_name=_("registration")
     )
@@ -192,9 +192,9 @@ class OrderableListPlugin(CMSPlugin):
         help_text=_("Keep empty to skip searching by departments."),
     )
     event_types = models.ManyToManyField(
-        SubjectType,
+        ActivityType,
         blank=True,
-        limit_choices_to={"subject_type": SubjectType.ORDERABLE},
+        limit_choices_to={"activity_type": ActivityModel.ORDERABLE},
         related_name="+",
         verbose_name=_("event types"),
         help_text=_("Keep empty to skip searching by event types."),
@@ -214,7 +214,7 @@ class OrderableListPlugin(CMSPlugin):
         help_text=_("Keep empty to skip searching by target groups."),
     )
     groups = models.ManyToManyField(
-        SubjectGroup,
+        ActivityGroup,
         blank=True,
         related_name="+",
         verbose_name=_("event groups"),
@@ -281,7 +281,7 @@ class OrderableListPlugin(CMSPlugin):
         if self.all_departments:
             events = events.filter(department__in=self.all_departments)
         if self.all_event_types:
-            events = events.filter(subject_type__in=self.all_event_types)
+            events = events.filter(activity_type__in=self.all_event_types)
         if self.all_age_groups:
             events = events.filter(age_groups__in=self.all_age_groups)
         if self.all_target_groups:
@@ -292,9 +292,9 @@ class OrderableListPlugin(CMSPlugin):
             events = events.filter(groups__in=self.all_groups)
             groups = self.all_groups
         elif self.all_event_types:
-            groups = SubjectGroup.objects.filter(subject_types__in=self.all_event_types)
+            groups = ActivityGroup.objects.filter(activity_types__in=self.all_event_types)
         else:
-            groups = SubjectGroup.objects.all()
+            groups = ActivityGroup.objects.all()
 
         context.update(
             {
@@ -311,8 +311,8 @@ class FilteredOrderableListPlugin(CMSPlugin):
         SchoolYear, blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("school year")
     )
     event_types = models.ManyToManyField(
-        SubjectType,
-        limit_choices_to={"subject_type": SubjectType.ORDERABLE},
+        ActivityType,
+        limit_choices_to={"activity_type": ActivityModel.ORDERABLE},
         related_name="+",
         verbose_name=_("event types"),
     )
@@ -332,11 +332,11 @@ class FilteredOrderableListPlugin(CMSPlugin):
             self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
         )
 
-        from ..forms.subjects import SubjectFilterForm
+        from ..forms.activities import ActivityFilterForm
 
-        form = SubjectFilterForm(
-            subject_type_type=SubjectType.ORDERABLE,
-            subject_types=self.all_event_types,
+        form = ActivityFilterForm(
+            activity_type_model=ActivityModel.ORDERABLE,
+            activity_types=self.all_event_types,
             school_year=school_year,
             is_staff=context["request"].user.is_staff,
             data=context["request"].GET,

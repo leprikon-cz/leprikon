@@ -6,7 +6,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 import leprikon.models.fields
-import leprikon.models.subjects
+import leprikon.models.activities
 
 
 class Migration(migrations.Migration):
@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         blank=True,
                         help_text="Keep empty to skip searching by age groups.",
-                        related_name="_orderablelistplugin_age_groups_+",
+                        related_name="+",
                         to="leprikon.AgeGroup",
                         verbose_name="age groups",
                     ),
@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         blank=True,
                         help_text="Keep empty to skip searching by departments.",
-                        related_name="_orderablelistplugin_departments_+",
+                        related_name="+",
                         to="leprikon.Department",
                         verbose_name="departments",
                     ),
@@ -216,7 +216,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 help_text="Keep empty to skip searching by event types.",
-                related_name="_orderablelistplugin_event_types_+",
+                related_name="+",
                 to="leprikon.SubjectType",
                 verbose_name="event types",
             ),
@@ -227,7 +227,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 help_text="Keep empty to skip searching by groups.",
-                related_name="_orderablelistplugin_groups_+",
+                related_name="+",
                 to="leprikon.SubjectGroup",
                 verbose_name="event groups",
             ),
@@ -238,7 +238,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 help_text="Keep empty to skip searching by leaders.",
-                related_name="_orderablelistplugin_leaders_+",
+                related_name="+",
                 to="leprikon.Leader",
                 verbose_name="leaders",
             ),
@@ -261,7 +261,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 help_text="Keep empty to skip searching by target groups.",
-                related_name="_orderablelistplugin_target_groups_+",
+                related_name="+",
                 to="leprikon.TargetGroup",
                 verbose_name="target groups",
             ),
@@ -280,7 +280,7 @@ class Migration(migrations.Migration):
             model_name="filteredorderablelistplugin",
             name="event_types",
             field=models.ManyToManyField(
-                related_name="_filteredorderablelistplugin_event_types_+",
+                related_name="+",
                 to="leprikon.SubjectType",
                 verbose_name="event types",
             ),

@@ -9,31 +9,60 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leprikon', '0042_chat_group_types'),
+        ("leprikon", "0042_chat_group_types"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RegistrationLink',
+            name="RegistrationLink",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(editable=False, max_length=64)),
-                ('name', models.CharField(max_length=50, verbose_name='name')),
-                ('reg_from', models.DateTimeField(verbose_name='registration active from')),
-                ('reg_to', models.DateTimeField(verbose_name='registration active to')),
-                ('school_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='registration_links', to='leprikon.SchoolYear', verbose_name='school year')),
-                ('subject_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registration_links', to='leprikon.SubjectType', verbose_name='subject type')),
-                ('subjects', models.ManyToManyField(related_name='registration_links', to='leprikon.Subject', verbose_name='subjects')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("slug", models.SlugField(editable=False, max_length=64)),
+                ("name", models.CharField(max_length=50, verbose_name="name")),
+                ("reg_from", models.DateTimeField(verbose_name="registration active from")),
+                ("reg_to", models.DateTimeField(verbose_name="registration active to")),
+                (
+                    "school_year",
+                    models.ForeignKey(
+                        editable=False,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="registration_links",
+                        to="leprikon.SchoolYear",
+                        verbose_name="school year",
+                    ),
+                ),
+                (
+                    "subject_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="registration_links",
+                        to="leprikon.SubjectType",
+                        verbose_name="activity type",
+                    ),
+                ),
+                (
+                    "subjects",
+                    models.ManyToManyField(
+                        related_name="registration_links", to="leprikon.Subject", verbose_name="subjects"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'registration link',
-                'verbose_name_plural': 'registration links',
-                'ordering': ('reg_from', 'reg_to'),
+                "verbose_name": "registration link",
+                "verbose_name_plural": "registration links",
+                "ordering": ("reg_from", "reg_to"),
             },
         ),
         migrations.AddField(
-            model_name='subjectregistration',
-            name='registration_link',
-            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='registrations', to='leprikon.RegistrationLink', verbose_name='registration link'),
+            model_name="subjectregistration",
+            name="registration_link",
+            field=models.ForeignKey(
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="registrations",
+                to="leprikon.RegistrationLink",
+                verbose_name="registration link",
+            ),
         ),
     ]

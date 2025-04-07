@@ -6,7 +6,7 @@ from menus.base import Menu, Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 from social_django.context_processors import backends
 
-from .models.subjects import SubjectType
+from .models.activities import ActivityType
 from .utils import current_url, first_upper, url_with_back
 
 
@@ -44,13 +44,13 @@ class LeprikonMenu(CMSAttachMenu):
                     attr={"require_leader": True},
                 )
             )
-            for subject_type in SubjectType.objects.all():
+            for activity_type in ActivityType.objects.all():
                 nodes.append(
                     NavigationNode(
-                        first_upper(_("My {subject_type}").format(subject_type=subject_type.plural)),
-                        reverse("leprikon:subject_list_mine", kwargs={"subject_type": subject_type.slug}),
+                        first_upper(_("My {activity_type}").format(activity_type=activity_type.plural)),
+                        reverse("leprikon:activity_list_mine", kwargs={"activity_type": activity_type.slug}),
                         len(nodes),
-                        attr={"require_leader": subject_type.slug},
+                        attr={"require_leader": activity_type.slug},
                     )
                 )
             nodes.append(
@@ -231,8 +231,8 @@ class LeprikonModifier(Modifier):
             if require_leader:
                 kwargs = {"school_year": request.school_year}
                 if isinstance(require_leader, str):
-                    kwargs["subject_type__slug"] = require_leader
-                if not request.leader or not request.leader.subjects.filter(**kwargs).exists():
+                    kwargs["activity_type__slug"] = require_leader
+                if not request.leader or not request.leader.activities.filter(**kwargs).exists():
                     show = False
             if node.attr.get("require_staff", False) and not request.user.is_staff:
                 show = False
@@ -273,5 +273,5 @@ def invalidate_menu_cache(sender, **kwargs):
     menu_pool.clear()
 
 
-post_save.connect(invalidate_menu_cache, sender=SubjectType)
-post_delete.connect(invalidate_menu_cache, sender=SubjectType)
+post_save.connect(invalidate_menu_cache, sender=ActivityType)
+post_delete.connect(invalidate_menu_cache, sender=ActivityType)

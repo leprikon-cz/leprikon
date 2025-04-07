@@ -138,7 +138,9 @@ class TransactionBaseAdmin(
         populate_view = self.admin_site.admin_view(
             permission_required(f"{self.model._meta.app_label}.add_{self.model._meta.model_name}")(self.populate)
         )
-        return [path("populate.json", populate_view, name="leprikon_subjectpayment_populate")] + super().get_urls()
+        return [
+            path("populate.json", populate_view, name="leprikon_payment_populate"),
+        ] + super().get_urls()
 
     def populate(self, request):
         try:
@@ -174,10 +176,10 @@ class TransactionAdmin(TransactionBaseAdmin):
         except (KeyError, ValueError):
             return HttpResponseBadRequest()
         if transaction.amount > 0:
-            url = reverse("admin:leprikon_subjectreceivedpayment_add")
+            url = reverse("admin:leprikon_receivedpayment_add")
             transaction_type = Transaction.PAYMENT_BANK
         else:
-            url = reverse("admin:leprikon_subjectreturnedpayment_add")
+            url = reverse("admin:leprikon_returnedpayment_add")
             transaction_type = Transaction.RETURN_BANK
         query = urlencode(
             dict(

@@ -9,12 +9,17 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.courses import CoursePaymentsForm, CoursePaymentsStatusForm, CourseStatsForm
+from ...models.activities import (
+    ActivityModel,
+    ActivityTime,
+    Payment,
+    RegistrationParticipant,
+)
 from ...models.citizenship import Citizenship
 from ...models.courses import Course, CourseRegistration
 from ...models.journals import JournalTime
 from ...models.roles import Participant
 from ...models.statgroup import StatGroup
-from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectTime, SubjectType
 from ...views.generic import FormView
 
 
@@ -28,13 +33,13 @@ class ReportCoursePaymentsView(FormView):
     def form_valid(self, form):
         context = form.cleaned_data
         context["form"] = form
-        context["received_payments"] = SubjectPayment.objects.filter(
-            target_registration__subject__subject_type__subject_type=SubjectType.COURSE,
+        context["received_payments"] = Payment.objects.filter(
+            target_registration__activity__activity_type__model=ActivityModel.COURSE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["returned_payments"] = SubjectPayment.objects.filter(
-            source_registration__subject__subject_type__subject_type=SubjectType.COURSE,
+        context["returned_payments"] = Payment.objects.filter(
+            source_registration__activity__activity_type__model=ActivityModel.COURSE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
@@ -83,7 +88,7 @@ class ReportCoursePaymentsStatusView(FormView):
                         status=registration.get_payment_status(self.date),
                     )
                     for registration in CourseRegistration.objects.filter(
-                        subject=self.course,
+                        activity=self.course,
                         approved__date__lte=self.date,
                     )
                 )
@@ -105,7 +110,7 @@ class ReportCourseStatsView(FormView):
     ReportItem = namedtuple("ReportItem", ("stat_group", "all", "boys", "girls", "citizenships"))
 
     _journal_deltas = {}
-    _subject_deltas = {}
+    _activity_deltas = {}
 
     def get_delta(self, cache, model, **kwargs):
         [id] = kwargs.values()
@@ -123,8 +128,8 @@ class ReportCourseStatsView(FormView):
         return self.get_delta(self._journal_deltas, JournalTime, journal_id=journal_id)
 
     @lru_cache
-    def get_subject_delta(self, subject_id):
-        return self.get_delta(self._subject_deltas, SubjectTime, subject_id=subject_id)
+    def get_activity_delta(self, activity_id):
+        return self.get_delta(self._activity_deltas, ActivityTime, activity_id=activity_id)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -143,18 +148,18 @@ class ReportCourseStatsView(FormView):
 
         if approved_later:
             # approved registrations created by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__created__date__lte=d,
                 registration__approved__isnull=False,
             )
         else:
             # registrations approved by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__approved__date__lte=d,
             )
         participants = (
             participants.filter(
-                registration__subject__in=form.cleaned_data["courses"],
+                registration__activity__in=form.cleaned_data["courses"],
             )
             .exclude(registration__canceled__date__lte=d)
             .select_related("registration", "age_group")
@@ -169,14 +174,14 @@ class ReportCourseStatsView(FormView):
         else:
             participants = list(participants)
 
-        context["courses_count"] = len(set(participant.registration.subject_id for participant in participants))
+        context["courses_count"] = len(set(participant.registration.activity_id for participant in participants))
 
         weekly_delta_by_participant = defaultdict(timedelta)
         for participant in participants:
             weekly_delta_by_participant[participant.key] += sum(
                 (self.get_journal_delta(journal.id) for journal in participant.journals.all()),
                 start=timedelta(0),
-            ) or self.get_subject_delta(participant.registration.subject_id)
+            ) or self.get_activity_delta(participant.registration.activity_id)
 
         delta = sum(
             weekly_delta_by_participant.values(),

@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with activity_type=object.activity.activity_type activity=object.activity %}Registration for {{activity_type}} {{activity}} was refused{% endblocktrans %}

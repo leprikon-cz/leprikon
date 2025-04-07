@@ -1,6 +1,6 @@
 {% load i18n leprikon_tags sekizai_tags thumbnail %}
 
-<div class="box box-{{ object.subject_type.subject_type }} box-{{ object.subject_type.slug }}">
+<div class="box box-{{ object.activity_type.model }} box-{{ object.activity_type.slug }}">
     <div class="box-header">
         <strong>{{ object.display_name }}</strong>
         {% for group in object.all_groups %}
@@ -10,7 +10,7 @@
         {% endfor %}
         {% if object.price_text %}<small>{{ object.price_text }}</small>{% endif %}
         {% if request.user.is_staff or request.leader in object.all_leaders %}
-        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:subject_update' object.subject_type.slug object.id %}">
+        <a class="btn btn-primary btn-xs" href="{% url_with_back 'leprikon:activity_update' object.activity_type.slug object.id %}">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
             {% trans 'edit' %}
         </a>
@@ -97,11 +97,11 @@
 
         {% if request.user.is_staff or request.leader in object.all_leaders %}
         <div class="btn-group">
-            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:subject_registrations' object.subject_type.slug object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url_with_back 'leprikon:activity_registrations' object.activity_type.slug object.id %}">
                 {% trans 'registrations' %}
                 ({{ object.approved_registrations_count }}{% if object.unapproved_registrations_count %} + {{ object.unapproved_registrations_count }}{% endif %})
             </a>
-            <a class="btn btn-sm btn-default" href="{% url 'leprikon:subject_journals' object.subject_type.slug object.id %}">
+            <a class="btn btn-sm btn-default" href="{% url 'leprikon:activity_journals' object.activity_type.slug object.id %}">
                 {% trans 'journals' %}
             </a>
         </div>

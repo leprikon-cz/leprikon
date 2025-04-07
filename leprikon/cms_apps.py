@@ -18,23 +18,23 @@ class LeprikonApp(CMSApp):
 
 
 @apphook_pool.register
-class LeprikonSubjectTypeApp(CMSApp):
-    name = _("Leprikon subject type")
-    app_name = "leprikon_subject_type"
+class LeprikonActivityTypeApp(CMSApp):
+    name = _("Leprikon activity type")
+    app_name = "leprikon_activity_type"
 
     def get_urls(self, page=None, language=None, **kwargs):
         return [
-            path("", views.subject_list, name="subject_list"),
-            path("<int:pk>/", views.subject_detail, name="subject_detail"),
+            path("", views.activity_list, name="activity_list"),
+            path("<int:pk>/", views.activity_detail, name="activity_detail"),
             path(
                 "<int:pk>/{registration}/".format(**LEPRIKON_URL),
-                transaction.atomic(views.subject_registration_form),
-                name="subject_registration_form",
+                transaction.atomic(views.registration_form),
+                name="registration_form",
             ),
             path(
                 "<int:pk>/<int:variant_pk>/{registration}/".format(**LEPRIKON_URL),
-                transaction.atomic(views.subject_registration_form),
-                name="subject_registration_form",
+                transaction.atomic(views.registration_form),
+                name="registration_form",
             ),
         ]
 

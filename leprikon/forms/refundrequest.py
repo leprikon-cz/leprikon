@@ -16,9 +16,9 @@ class RefundRequestBaseForm(FormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.registration = registration
         self.readonly_fields = [
-            ReadonlyField(label=first_upper(registration.subject.subject_type.name), value=registration.subject.name)
+            ReadonlyField(label=first_upper(registration.activity.activity_type.name), value=registration.activity.name)
         ]
-        if registration.subject.registration_type_participants:
+        if registration.activity.registration_type_participants:
             if len(registration.all_participants) > 1:
                 label = _("Participants")
             else:
@@ -26,7 +26,7 @@ class RefundRequestBaseForm(FormMixin, forms.ModelForm):
             self.readonly_fields.append(
                 ReadonlyField(label=label, value=comma_separated(registration.all_participants))
             )
-        elif registration.subject.registration_type_groups:
+        elif registration.activity.registration_type_groups:
             self.readonly_fields.append(ReadonlyField(label=_("Contact person"), value=registration.group.full_name))
             if registration.group.name:
                 self.readonly_fields.append(ReadonlyField(label=_("Group name"), value=registration.group.name))
