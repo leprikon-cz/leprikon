@@ -107,7 +107,7 @@ def currency(val: Union[int, float, Decimal], international=False) -> str:
         # this should be the most fitting sign position
         s = sign + s
 
-    return s.replace("<", "").replace(">", "").replace(" ", "\u00A0")
+    return s.replace("<", "").replace(">", "").replace(" ", "\u00a0")
 
 
 def amount_color(amount):
@@ -223,7 +223,7 @@ def merge_objects(source, target, attributes=None, exclude=[]):
 
 @transaction.atomic
 def merge_users(source, target):
-    from .models.subjects import SubjectRegistration
+    from .models.activities import Registration
 
     target = merge_objects(source, target, ("first_name", "last_name", "email"))
     target.date_joined = (
@@ -256,7 +256,7 @@ def merge_users(source, target):
         "cancelation_requested_by",
         "canceled_by",
     ):
-        SubjectRegistration.objects.filter(**{attr: source}).update(**{attr: target})
+        Registration.objects.filter(**{attr: source}).update(**{attr: target})
 
     for sp in source.leprikon_participants.all():
         tp = target.leprikon_participants.filter(birth_num=sp.birth_num).first()

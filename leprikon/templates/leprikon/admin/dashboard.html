@@ -26,40 +26,40 @@
     </tr>
 </table>
 <table style="width: 900px !important; margin-bottom: 30px !important;">
-    {% for subject_type in subject_types %}
+    {% for activity_type in activity_types %}
     <tr>
         <td width="25%" align="center">
-            <a style="display: block;" href="{{ subject_type.get_subjects_url }}">
-                <span style="font-size: 20px; line-height: 40px; text-align: center;">{{ subject_type.plural|first_upper }}</span>
+            <a style="display: block;" href="{{ activity_type.get_activities_url }}">
+                <span style="font-size: 20px; line-height: 40px; text-align: center;">{{ activity_type.plural|first_upper }}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_subject_variants_url }}">
+            <a style="display: block;" href="{{ activity_type.get_activity_variants_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'price and registering variants' %}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_registrations_url }}">
+            <a style="display: block;" href="{{ activity_type.get_registrations_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'registrations' %}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_journals_url }}">
+            <a style="display: block;" href="{{ activity_type.get_journals_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'journals' %}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_received_payments_url }}">
+            <a style="display: block;" href="{{ activity_type.get_received_payments_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'received payments' %}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_returned_payments_url }}">
+            <a style="display: block;" href="{{ activity_type.get_returned_payments_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'returned payments' %}</span>
             </a>
         </td>
         <td width="25%">
-            <a style="display: block;" href="{{ subject_type.get_discounts_url }}">
+            <a style="display: block;" href="{{ activity_type.get_discounts_url }}">
                 <span style="font-size: 16px; line-height: 40px; text-align: center;">{% trans 'discounts' %}</span>
             </a>
         </td>

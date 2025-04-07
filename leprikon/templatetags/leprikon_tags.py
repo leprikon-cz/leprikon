@@ -16,7 +16,7 @@ from lxml.html import fromstring, tostring
 
 from ..conf import settings
 from ..forms.schoolyear import SchoolYearForm
-from ..models.subjects import Subject
+from ..models.activities import Activity
 from ..utils import (
     comma_separated as _comma_separated,
     currency as _currency,
@@ -44,10 +44,10 @@ def comma_separated(value):
 
 @register.inclusion_tag("leprikon/admin/dashboard.html", takes_context=True)
 def dashboard(context):
-    from ..models.subjects import SubjectType
+    from ..models.activities import ActivityType
 
     context = context.__copy__()
-    context["subject_types"] = SubjectType.objects.all()
+    context["activity_types"] = ActivityType.objects.all()
     return context
 
 
@@ -99,12 +99,12 @@ def current_url(context):
 
 
 @register.inclusion_tag("leprikon/registration_links.html", takes_context=True)
-def registration_links(context, subject: Subject):
+def registration_links(context, activity: Activity):
     now = timezone.now()
     context = context.__copy__()
-    context["subject"] = subject
+    context["activity"] = activity
     if context["request"].user.is_authenticated:
-        context["registrations"] = subject.registrations.filter(user=context["request"].user, canceled=None)
+        context["registrations"] = activity.registrations.filter(user=context["request"].user, canceled=None)
     else:
         context["registrations"] = []
 
@@ -116,12 +116,12 @@ def registration_links(context, subject: Subject):
     if registration_link:
         source = registration_link
         context["registration_url"] = _url_with_back(
-            reverse("leprikon:registration_link_form", args=(registration_link.slug, subject.id)),
+            reverse("leprikon:registration_link_form", args=(registration_link.slug, activity.id)),
             current_url(context),
         )
     else:
-        source = subject
-        context["registration_url"] = _url_with_back(subject.get_registration_url(), current_url(context))
+        source = activity
+        context["registration_url"] = _url_with_back(activity.get_registration_url(), current_url(context))
 
     context["registration_allowed"] = source.registration_allowed
 

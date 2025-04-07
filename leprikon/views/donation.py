@@ -1,8 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 
 from ..models.donation import Donation
+from .activities import PDFMixin
 from .generic import DetailView, ListView
-from .subjects import PDFMixin
 
 
 class DonationViewMixin:

@@ -9,17 +9,36 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms', '0022_auto_20180620_1551'),
-        ('leprikon', '0054_registration_dates_by_cleanup'),
+        ("cms", "0022_auto_20180620_1551"),
+        ("leprikon", "0054_registration_dates_by_cleanup"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SchoolYearBlockPlugin',
+            name="SchoolYearBlockPlugin",
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='leprikon_schoolyearblockplugin', serialize=False, to='cms.CMSPlugin')),
-                ('school_years', models.ManyToManyField(help_text='Which school years should the block be visible for?', related_name='_schoolyearblockplugin_school_years_+', to='leprikon.SchoolYear', verbose_name='school years')),
+                (
+                    "cmsplugin_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        related_name="leprikon_schoolyearblockplugin",
+                        serialize=False,
+                        to="cms.CMSPlugin",
+                    ),
+                ),
+                (
+                    "school_years",
+                    models.ManyToManyField(
+                        help_text="Which school years should the block be visible for?",
+                        related_name="+",
+                        to="leprikon.SchoolYear",
+                        verbose_name="school years",
+                    ),
+                ),
             ],
-            bases=('cms.cmsplugin',),
+            bases=("cms.cmsplugin",),
         ),
     ]

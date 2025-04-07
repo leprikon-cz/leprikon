@@ -6,8 +6,8 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes, currency
+from .activities import Registration
 from .fields import BankAccountField
-from .subjects import SubjectRegistration
 
 
 class RefundRequest(models.Model):
@@ -20,8 +20,8 @@ class RefundRequest(models.Model):
         related_name="+",
         verbose_name=_("requested by"),
     )
-    registration: SubjectRegistration = models.OneToOneField(
-        SubjectRegistration,
+    registration: Registration = models.OneToOneField(
+        Registration,
         on_delete=models.PROTECT,
         related_name="refund_request",
         verbose_name=_("registration"),

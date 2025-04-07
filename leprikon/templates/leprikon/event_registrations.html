@@ -3,14 +3,14 @@
 
 {% block content %}
 
-<h1>{% block title %}{% blocktrans with subject_type=event.subject_type.name_akuzativ name=event.name %}Registrations for {{ subject_type }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
+<h1>{% block title %}{% blocktrans with activity_type=event.activity_type.name_akuzativ name=event.name %}Registrations for {{ activity_type }} {{ name }}{% endblocktrans %}{% endblock %}</h1>
 
 <h2>{% trans 'Active Registrations' %}</h2>
 
 {% for reg in event.all_approved_registrations %}
 {% include 'leprikon/registration_details.html' with reg=reg.eventregistration %}
 {% empty %}
-<p>{% blocktrans with subject_type=event.subject_type.name_akuzativ %}There are no active registrations for this {{ subject_type }}.{% endblocktrans %}</p>
+<p>{% blocktrans with activity_type=event.activity_type.name_akuzativ %}There are no active registrations for this {{ activity_type }}.{% endblocktrans %}</p>
 {% endfor %}
 
 {% if event.all_unapproved_registrations %}

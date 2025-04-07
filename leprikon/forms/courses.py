@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ..models.courses import CourseDiscount, CourseRegistration, CourseRegistrationPeriod
 from ..models.schoolyear import SchoolYearDivision, SchoolYearPeriod
-from .subjects import RegistrationAdminForm
+from .activities import RegistrationAdminForm
 
 
 class CourseRegistrationAdminForm(RegistrationAdminForm):
@@ -22,10 +22,10 @@ class CourseRegistrationAdminForm(RegistrationAdminForm):
         try:
             self.school_year_division = SchoolYearDivision.objects.get(pk=int(self.data["school_year_division"]))
         except (KeyError, TypeError, ValueError, SchoolYearDivision.DoesNotExist):
-            if self.instance.subject_variant_id and self.instance.subject_variant.school_year_division_id:
-                self.school_year_division = self.instance.subject_variant.school_year_division
+            if self.instance.activity_variant_id and self.instance.activity_variant.school_year_division_id:
+                self.school_year_division = self.instance.activity_variant.school_year_division
             else:
-                self.school_year_division = self.subject_variant.school_year_division
+                self.school_year_division = self.activity_variant.school_year_division
         self.available_periods = self.school_year_division.periods.all()
         self.fields["periods"].widget.choices.queryset = self.available_periods
         self.fields["periods"].initial = self.available_periods.filter(

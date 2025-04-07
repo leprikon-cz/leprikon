@@ -10,13 +10,13 @@
         <div class="col-sm-9">
         {% endif %}
         {{ object.description | safe }}
-        {% for group in object.get_subjects_by_types %}
-        {% if group.subjects|filter_current_school_year:request.school_year %}
+        {% for group in object.get_activities_by_types %}
+        {% if group.activities|filter_current_school_year:request.school_year %}
         <div class="row">
-            <label class="col-sm-3">{{ group.subject_type.plural }}:</label>
+            <label class="col-sm-3">{{ group.activity_type.plural }}:</label>
             <div class="col-sm-6">
-                {% for subject in group.subjects|filter_current_school_year:request.school_year %}
-                <a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a><br />
+                {% for activity in group.activities|filter_current_school_year:request.school_year %}
+                <a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a><br />
                 {% endfor %}
             </div>
         </div>

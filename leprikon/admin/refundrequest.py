@@ -16,7 +16,7 @@ from ..models.refundrequest import RefundRequest
 from ..models.utils import BankAccount
 from ..utils import amount_color, ascii, attributes, currency, localeconv
 from .export import AdminExportMixin
-from .filters import SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
+from .filters import ActivityListFilter, ActivityTypeListFilter, SchoolYearListFilter
 from .utils import datetime_with_by
 
 
@@ -44,15 +44,15 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         "bic",
     )
     list_filter = (
-        ("registration__subject__school_year", SchoolYearListFilter),
-        "registration__subject__department",
-        "registration__subject__organization",
-        ("registration__subject__subject_type", SubjectTypeListFilter),
-        ("registration__subject", SubjectListFilter),
+        ("registration__activity__school_year", SchoolYearListFilter),
+        "registration__activity__department",
+        "registration__activity__organization",
+        ("registration__activity__activity_type", ActivityTypeListFilter),
+        ("registration__activity", ActivityListFilter),
     )
     search_fields = (
         "registration__variable_symbol",
-        "registration__subject__name",
+        "registration__activity__name",
         "registration__participants__first_name",
         "registration__participants__last_name",
         "registration__participants__birth_num",

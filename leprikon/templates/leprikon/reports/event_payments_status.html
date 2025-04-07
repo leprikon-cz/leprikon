@@ -59,12 +59,12 @@
         </td>
         <td class="right">{{ rs.status.receivable | currency }}</td>
         <td class="right">
-            <a href="{% url 'admin:leprikon_subjectreceivedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+            <a href="{% url 'admin:leprikon_receivedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
                 {{ rs.status.received | currency }}
             </a>
         </td>
         <td class="right">
-            <a href="{% url 'admin:leprikon_subjectreturnedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
+            <a href="{% url 'admin:leprikon_returnedpayment_changelist' %}?registration_id={{ rs.registration.id }}" target="_blank">
                 {{ rs.status.returned | currency }}
             </a>
         </td>

@@ -1,5 +1,6 @@
 from . import (  # noqa
     account,
+    activities,
     agegroup,
     agreements,
     citizenship,
@@ -23,7 +24,6 @@ from . import (  # noqa
     schoolyear,
     startend,
     statgroup,
-    subjects,
     targetgroup,
     timesheets,
     transaction,

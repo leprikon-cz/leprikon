@@ -1,10 +1,13 @@
+from datetime import time
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
 class StartEndMixin(object):
     def validate(self):
-        if self.start and self.end and self.start > self.end:
+        # (time(0) represents the end of the day)
+        if self.start and self.end and self.start > self.end and self.end != time(0):
             raise ValidationError(
                 {
                     "start": [_("Start must be before end")],

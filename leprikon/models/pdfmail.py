@@ -37,10 +37,10 @@ class PdfExportAndMailMixin(object):
             "site": LeprikonSite.objects.get_current(),
         }
 
-    def get_mail_subject(self, event):
-        return self.mail_subject_patterns[event].format(
-            subject_type=self.subject.subject_type.name_akuzativ,
-            subject=self.subject.name,
+    def get_mail_activity(self, event):
+        return self.mail_activity_patterns[event].format(
+            activity_type=self.activity.activity_type.name_akuzativ,
+            activity=self.activity.name,
         )
 
     def get_print_setup(self, event):
@@ -58,21 +58,20 @@ class PdfExportAndMailMixin(object):
         )
 
     def send_mail(self, event="received"):
-        template_subject = self.select_template(event, "subject.txt")
-        template_txt = self.select_template(event, "txt")
-        template_html = self.select_template(event, "html")
+        html_template = self.select_template(event, "html")
+        txt_template = self.select_template(event, "txt")
+        subject_template = self.select_template(event, "subject.txt")
         context = self.get_context(event)
-        content_subject = template_subject.render(context)
-        content_txt = template_txt.render(context)
-        content_html = template_html.render(context)
-        subject = whitespace.sub(" ", content_subject).strip()
+        html = html_template.render(context)
+        txt = txt_template.render(context)
+        subject = subject_template.render(context)
         EmailMultiAlternatives(
-            subject=subject,
-            body=content_txt.strip(),
+            subject=whitespace.sub(" ", subject).strip(),
+            body=txt.strip(),
             from_email=settings.SERVER_EMAIL,
             to=self.all_recipients,
             headers={"X-Mailer": "Leprikon (http://leprikon.cz/)"},
-            alternatives=[(content_html, "text/html")],
+            alternatives=[(html, "text/html")],
             attachments=self.get_attachments(event),
         ).send()
 

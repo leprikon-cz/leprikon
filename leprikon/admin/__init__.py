@@ -9,8 +9,10 @@ from django.utils.translation import gettext_lazy as _
 
 from . import (  # NOQA
     account,
+    activities,
     agegroup,
     agreements,
+    calendar,
     citizenship,
     courses,
     department,
@@ -30,7 +32,6 @@ from . import (  # NOQA
     school,
     schoolyear,
     statgroup,
-    subjects,
     targetgroup,
     timesheets,
     transaction,

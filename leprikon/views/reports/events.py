@@ -8,11 +8,11 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.events import EventPaymentsForm, EventPaymentsStatusForm, EventStatsForm
+from ...models.activities import ActivityModel, Payment, RegistrationParticipant
 from ...models.citizenship import Citizenship
 from ...models.events import Event, EventRegistration
 from ...models.roles import Participant
 from ...models.statgroup import StatGroup
-from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectType
 from ...views.generic import FormView
 
 
@@ -26,13 +26,13 @@ class ReportEventPaymentsView(FormView):
     def form_valid(self, form):
         context = form.cleaned_data
         context["form"] = form
-        context["received_payments"] = SubjectPayment.objects.filter(
-            target_registration__subject__subject_type__subject_type=SubjectType.EVENT,
+        context["received_payments"] = Payment.objects.filter(
+            target_registration__activity__activity_type__model=ActivityModel.EVENT,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["returned_payments"] = SubjectPayment.objects.filter(
-            source_registration__subject__subject_type__subject_type=SubjectType.EVENT,
+        context["returned_payments"] = Payment.objects.filter(
+            source_registration__activity__activity_type__model=ActivityModel.EVENT,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
@@ -80,7 +80,7 @@ class ReportEventPaymentsStatusView(FormView):
                         status=registration.get_payment_status(self.date),
                     )
                     for registration in EventRegistration.objects.filter(
-                        subject=self.event,
+                        activity=self.event,
                         approved__date__lte=self.date,
                     )
                 )
@@ -123,18 +123,18 @@ class ReportEventStatsView(FormView):
 
         if approved_later:
             # approved registrations created by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__created__date__lte=d,
                 registration__approved__isnull=False,
             )
         else:
             # registrations approved by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__approved__date__lte=d,
             )
         participants = (
             participants.filter(
-                registration__subject__in=form.cleaned_data["events"],
+                registration__activity__in=form.cleaned_data["events"],
             )
             .exclude(registration__canceled__date__lte=d)
             .select_related("registration", "age_group")
@@ -150,9 +150,9 @@ class ReportEventStatsView(FormView):
             participants = list(participants)
 
         if min_days:
-            participants = [p for p in participants if self.get_event_days(p.registration.subject_id) >= min_days]
+            participants = [p for p in participants if self.get_event_days(p.registration.activity_id) >= min_days]
 
-        context["events_count"] = len(set(participant.registration.subject_id for participant in participants))
+        context["events_count"] = len(set(participant.registration.activity_id for participant in participants))
 
         if unique_participants:
             participants = list({p.key: p for p in participants}.values())
