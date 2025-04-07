@@ -8,16 +8,24 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
+from .activities import (
+    Activity,
+    ActivityDiscount,
+    ActivityGroup,
+    ActivityModel,
+    ActivityType,
+    ActivityVariant,
+    Registration,
+)
 from .agegroup import AgeGroup
 from .department import Department
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision, SchoolYearPeriod
-from .subjects import Subject, SubjectDiscount, SubjectGroup, SubjectRegistration, SubjectType, SubjectVariant
 from .targetgroup import TargetGroup
 from .utils import PaymentStatus, change_year, copy_related_objects
 
 
-class Course(Subject):
+class Course(Activity):
     class Meta:
         app_label = "leprikon"
         ordering = ("code", "name")
@@ -40,9 +48,9 @@ class Course(Subject):
         new.leaders.set(old.all_leaders)
         new.questions.set(old.questions.all())
         for old_variant in old.all_variants:
-            new_variant = SubjectVariant.objects.get(id=old_variant.id)
+            new_variant = ActivityVariant.objects.get(id=old_variant.id)
             new_variant.id, new_variant.pk = None, None
-            new_variant.subject = new
+            new_variant.activity = new
             if old_variant.school_year_division:
                 new_variant.school_year_division = SchoolYearDivision.objects.filter(
                     school_year=school_year,
@@ -61,8 +69,8 @@ class Course(Subject):
         return new
 
 
-class CourseRegistration(SubjectRegistration):
-    subject_type = SubjectType.COURSE
+class CourseRegistration(Registration):
+    activity_type = ActivityModel.COURSE
 
     class Meta:
         app_label = "leprikon"
@@ -203,7 +211,7 @@ class CourseRegistrationPeriod(models.Model):
         )
 
 
-class CourseDiscount(SubjectDiscount):
+class CourseDiscount(ActivityDiscount):
     registration = models.ForeignKey(
         CourseRegistration,
         on_delete=models.CASCADE,
@@ -254,9 +262,9 @@ class CourseListPlugin(CMSPlugin):
         help_text=_("Keep empty to skip searching by departments."),
     )
     course_types = models.ManyToManyField(
-        SubjectType,
+        ActivityType,
         blank=True,
-        limit_choices_to={"subject_type": SubjectType.COURSE},
+        limit_choices_to={"activity_type": ActivityModel.COURSE},
         related_name="+",
         verbose_name=_("course types"),
         help_text=_("Keep empty to skip searching by course types."),
@@ -276,7 +284,7 @@ class CourseListPlugin(CMSPlugin):
         help_text=_("Keep empty to skip searching by target groups."),
     )
     groups = models.ManyToManyField(
-        SubjectGroup,
+        ActivityGroup,
         blank=True,
         related_name="+",
         verbose_name=_("course groups"),
@@ -343,7 +351,7 @@ class CourseListPlugin(CMSPlugin):
         if self.all_departments:
             courses = courses.filter(department__in=self.all_departments)
         if self.all_course_types:
-            courses = courses.filter(subject_type__in=self.all_course_types)
+            courses = courses.filter(activity_type__in=self.all_course_types)
         if self.all_age_groups:
             courses = courses.filter(age_groups__in=self.all_age_groups)
         if self.all_target_groups:
@@ -354,9 +362,9 @@ class CourseListPlugin(CMSPlugin):
             courses = courses.filter(groups__in=self.all_groups)
             groups = self.all_groups
         elif self.all_course_types:
-            groups = SubjectGroup.objects.filter(subject_types__in=self.all_course_types)
+            groups = ActivityGroup.objects.filter(activity_types__in=self.all_course_types)
         else:
-            groups = SubjectGroup.objects.all()
+            groups = ActivityGroup.objects.all()
 
         context.update(
             {
@@ -373,8 +381,8 @@ class FilteredCourseListPlugin(CMSPlugin):
         SchoolYear, blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("school year")
     )
     course_types = models.ManyToManyField(
-        SubjectType,
-        limit_choices_to={"subject_type": SubjectType.COURSE},
+        ActivityType,
+        limit_choices_to={"activity_type": ActivityModel.COURSE},
         related_name="+",
         verbose_name=_("course types"),
     )
@@ -394,11 +402,11 @@ class FilteredCourseListPlugin(CMSPlugin):
             self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
         )
 
-        from ..forms.subjects import SubjectFilterForm
+        from ..forms.activities import ActivityFilterForm
 
-        form = SubjectFilterForm(
-            subject_type_type=SubjectType.COURSE,
-            subject_types=self.all_course_types,
+        form = ActivityFilterForm(
+            activity_type_model=ActivityModel.COURSE,
+            activity_types=self.all_course_types,
             school_year=school_year,
             is_staff=context["request"].user.is_staff,
             data=context["request"].GET,

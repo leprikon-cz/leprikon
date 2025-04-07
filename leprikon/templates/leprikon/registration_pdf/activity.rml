@@ -44,29 +44,34 @@
         </blockTableStyle>
     </stylesheet>
     <story>
-        <para style="title">{% blocktrans with subject_type=object.subject.subject_type.name_akuzativ %}Registration for {{ subject_type }}{% endblocktrans %}</para>
-        <para style="subtitle">{% blocktrans with school_year=object.subject.school_year %}in school year {{ school_year }}{% endblocktrans %}</para>
+        <para style="title">{% blocktrans with activity_type=object.activity.activity_type.name_akuzativ %}Registration for {{ activity_type }}{% endblocktrans %}</para>
+        <para style="subtitle">{% blocktrans with school_year=object.activity.school_year %}in school year {{ school_year }}{% endblocktrans %}</para>
 
         <spacer length="2mm"/>
 
         <blockTable style="blocktable">
             <tr>
-                <td>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Name of {{ subject_type }}{% endblocktrans %}</td>
-                <td><para style="para">{{ object.subject.name }}</para></td>
+                <td>{% blocktrans with activity_type=object.activity.activity_type.name_genitiv %}Name of {{ activity_type }}{% endblocktrans %}</td>
+                <td><para style="para">{{ object.activity.name }}</para></td>
             </tr>
+            {% if object.activity_variant.name %}
+            <tr>
+                <td>{% trans 'Variant' %}</td>
+                <td><para style="para">{{ object.activity_variant.name }}</para></td>
+            </tr>
+            {% endif %}
             <tr>
                 <td>{% trans 'Price' %}</td>
                 <td>
                     <para style="para">
                         {{ object.price_text }}
-                        {% if object.subject_variant.name %}({{ object.subject_variant.name }}){% endif %}
                     </para>
                 </td>
             </tr>
-            {% if object.subject.event.start_date %}
+            {% if object.activity.event.start_date %}
             <tr>
                 <td>{% trans 'Event date' %}</td>
-                <td><para style="para">{{ object.subject.event.event_date }}</para></td>
+                <td><para style="para">{{ object.activity.event.event_date }}</para></td>
             </tr>
             {% elif object.orderableregistration.start_date %}
             <tr>
@@ -78,10 +83,10 @@
                 <td>{% trans 'Periods' %}</td>
                 <td><para style="para">{% for registration_period in object.courseregistration.all_registration_periods %}{{ registration_period }}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</para></td>
             </tr>
-            {% if object.subject.course.all_times %}
+            {% if object.activity.course.all_times %}
             <tr>
                 <td>{% trans 'Times' %}</td>
-                <td><para style="para">{{ object.subject.course.get_times_list }}</para></td>
+                <td><para style="para">{{ object.activity.course.get_times_list }}</para></td>
             </tr>
             {% endif %}
             {% endif %}
@@ -206,7 +211,7 @@
 
         {% endfor %}
 
-        {% if object.all_group_members %}
+        {% if object.activity.registration_type_groups %}
         <para style="title">{% trans 'Group' %}</para>
 
         <spacer length="2mm"/>
@@ -264,6 +269,7 @@
 
         <spacer length="2mm"/>
 
+        {% if object.activity_variant.require_group_members_list %}
         <blockTable style="blocktable">
             <tr>
                 <td>{% trans 'First name' %}</td>
@@ -278,7 +284,14 @@
             </tr>
         {% endfor %}
         </blockTable>
-
+        {% else %}
+        <blockTable style="blocktable">
+            <tr>
+                <td>{% trans 'Participants count' %}</td>
+                <td><para style="para">{{ object.participants_count }}</para></td>
+            </tr>
+        </blockTable>
+        {% endif %}
         <spacer length="1cm"/>
         {% endif %}
 

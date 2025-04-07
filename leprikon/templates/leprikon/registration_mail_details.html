@@ -1,11 +1,11 @@
 {% load i18n leprikon_tags %}
 
 <p>
-    {{ object.subject.subject_type.name | first_upper }}: {{ object.subject.name }}<br/>
-    {% if object.subject.registration_type_participants %}
+    {{ object.activity.activity_type.name | first_upper }}: {{ object.activity.name }}<br/>
+    {% if object.activity.registration_type_participants %}
         {% if object.all_participants|length > 1 %}{% trans 'Participants' %}{% else %}{% trans 'Participant' %}{% endif %}:
         {{ object.all_participants|comma_separated }}<br/>
-    {% elif object.subject.registration_type_groups %}
+    {% elif object.activity.registration_type_groups %}
         {% trans 'Contact person' %}: {{ object.group.full_name }}
         {% if object.group.name %}<br/>{% trans 'Group name' %}: {{ object.group.name }}{% endif %}
     {% endif %}

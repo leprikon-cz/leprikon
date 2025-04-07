@@ -8,11 +8,11 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ...forms.reports.orderables import OrderablePaymentsForm, OrderablePaymentsStatusForm, OrderableStatsForm
+from ...models.activities import ActivityModel, Payment, RegistrationParticipant
 from ...models.citizenship import Citizenship
 from ...models.orderables import Orderable, OrderableRegistration
 from ...models.roles import Participant
 from ...models.statgroup import StatGroup
-from ...models.subjects import SubjectPayment, SubjectRegistrationParticipant, SubjectType
 from ...views.generic import FormView
 
 
@@ -26,13 +26,13 @@ class ReportOrderablePaymentsView(FormView):
     def form_valid(self, form):
         context = form.cleaned_data
         context["form"] = form
-        context["received_payments"] = SubjectPayment.objects.filter(
-            target_registration__subject__subject_type__subject_type=SubjectType.ORDERABLE,
+        context["received_payments"] = Payment.objects.filter(
+            target_registration__activity__activity_type__model=ActivityModel.ORDERABLE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
-        context["returned_payments"] = SubjectPayment.objects.filter(
-            source_registration__subject__subject_type__subject_type=SubjectType.ORDERABLE,
+        context["returned_payments"] = Payment.objects.filter(
+            source_registration__activity__activity_type__model=ActivityModel.ORDERABLE,
             accounted__gte=context["date_start"],
             accounted__lte=context["date_end"],
         )
@@ -81,7 +81,7 @@ class ReportOrderablePaymentsStatusView(FormView):
                         status=registration.get_payment_status(self.date),
                     )
                     for registration in OrderableRegistration.objects.filter(
-                        subject=self.orderable,
+                        activity=self.orderable,
                         approved__date__lte=self.date,
                     )
                 )
@@ -124,18 +124,18 @@ class ReportOrderableStatsView(FormView):
 
         if approved_later:
             # approved registrations created by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__created__date__lte=d,
                 registration__approved__isnull=False,
             )
         else:
             # registrations approved by the date
-            participants = SubjectRegistrationParticipant.objects.filter(
+            participants = RegistrationParticipant.objects.filter(
                 registration__approved__date__lte=d,
             )
         participants = (
             participants.filter(
-                registration__subject__in=form.cleaned_data["orderables"],
+                registration__activity__in=form.cleaned_data["orderables"],
             )
             .exclude(registration__canceled__date__lte=d)
             .select_related("registration", "age_group")
@@ -151,9 +151,9 @@ class ReportOrderableStatsView(FormView):
             participants = list(participants)
 
         if min_days:
-            participants = [p for p in participants if self.get_orderable_days(p.registration.subject_id) >= min_days]
+            participants = [p for p in participants if self.get_orderable_days(p.registration.activity_id) >= min_days]
 
-        context["orderables_count"] = len(set(participant.registration.subject_id for participant in participants))
+        context["orderables_count"] = len(set(participant.registration.activity_id for participant in participants))
 
         if unique_participants:
             participants = list({p.key: p for p in participants}.values())

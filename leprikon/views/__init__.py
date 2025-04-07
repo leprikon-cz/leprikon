@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..conf import settings
 from . import (
+    activities,
     billing_info,
     donation,
     journals,
@@ -16,7 +17,6 @@ from . import (
     registrations,
     reports,
     schoolyear,
-    subjects,
     summaries,
     terms_conditions,
     timesheets,
@@ -80,16 +80,16 @@ password_reset_confirm = user.PasswordResetConfirmView.as_view()
 password_reset_complete = user.PasswordResetCompleteView.as_view()
 
 registration_list = login_required(registrations.RegistrationsListView.as_view())
-registration_pdf = login_required(subjects.SubjectRegistrationPdfView.as_view())
-registration_payment_request = login_required(subjects.SubjectRegistrationPaymentRequestView.as_view())
-registration_cancel = login_required(subjects.SubjectRegistrationCancelView.as_view())
+registration_pdf = login_required(activities.RegistrationPdfView.as_view())
+registration_payment_request = login_required(activities.RegistrationPaymentRequestView.as_view())
+registration_cancel = login_required(activities.RegistrationCancelView.as_view())
 
 registration_link = registrationlink.RegistrationLinkView.as_view()
 registration_link_form = login_required(registrationlink.RegistrationLinkFormView.as_view())
 
-payment_list = login_required(subjects.SubjectPaymentsListView.as_view())
-received_payment_pdf = login_required(subjects.SubjectReceivedPaymentPdfView.as_view())
-returned_payment_pdf = login_required(subjects.SubjectReturnedPaymentPdfView.as_view())
+payment_list = login_required(activities.PaymentsListView.as_view())
+received_payment_pdf = login_required(activities.ReceivedPaymentPdfView.as_view())
+returned_payment_pdf = login_required(activities.ReturnedPaymentPdfView.as_view())
 
 refund_request_create = login_required(refundrequest.RefundRequestCreateView.as_view())
 refund_request_update = login_required(refundrequest.RefundRequestUpdateView.as_view())
@@ -125,13 +125,13 @@ journalentry_delete = leader_or_staff_required(journals.JournalEntryDeleteView.a
 journalleaderentry_update = leader_or_staff_required(journals.JournalLeaderEntryUpdateView.as_view())
 journalleaderentry_delete = leader_or_staff_required(journals.JournalLeaderEntryDeleteView.as_view())
 
-subject_list = subjects.SubjectListView.as_view()
-subject_list_mine = leader_required(subjects.SubjectListMineView.as_view())
-subject_detail = subjects.SubjectDetailView.as_view()
-subject_registration_form = login_required(subjects.SubjectRegistrationFormView.as_view())
-subject_update = leader_or_staff_required(subjects.SubjectUpdateView.as_view())
-subject_registrations = leader_or_staff_required(subjects.SubjectRegistrationsView.as_view())
-subject_journals = leader_or_staff_required(subjects.SubjectJournalsView.as_view())
+activity_list = activities.ActivityListView.as_view()
+activity_list_mine = leader_required(activities.ActivityListMineView.as_view())
+activity_detail = activities.ActivityDetailView.as_view()
+registration_form = login_required(activities.RegistrationFormView.as_view())
+activity_update = leader_or_staff_required(activities.ActivityUpdateView.as_view())
+activity_registrations = leader_or_staff_required(activities.ActivityRegistrationsView.as_view())
+activity_journals = leader_or_staff_required(activities.ActivityJournalsView.as_view())
 
 message_list = login_required(messages.MessageListView.as_view())
 message_detail = csrf_exempt(messages.MessageDetailView.as_view())

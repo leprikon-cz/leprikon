@@ -45,7 +45,7 @@ class SendPaymentRequest(SentryCronJobBase):
                 approved__isnull=False,
                 canceled__isnull=True,
                 payment_requested__isnull=True,
-                subject__event__due_from__lte=today,
+                activity__event__due_from__lte=today,
             ),
             (
                 registration
@@ -53,7 +53,7 @@ class SendPaymentRequest(SentryCronJobBase):
                     approved__isnull=False,
                     canceled__isnull=True,
                     payment_requested__isnull=True,
-                ).select_related("subject__orderable")
+                ).select_related("activity__orderable")
                 if registration.get_due_from() <= today
             ),
         ):

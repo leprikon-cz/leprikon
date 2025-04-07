@@ -10,7 +10,7 @@ import django.db.models.deletion
 import django.utils.timezone
 import djangocms_text_ckeditor.fields
 import leprikon.models.fields
-import leprikon.models.subjects
+import leprikon.models.activities
 import multiselectfield.db.fields
 
 
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 "proxy": True,
                 "indexes": [],
             },
-            bases=(leprikon.models.subjects.SubjectPaymentMixin, "leprikon.transaction"),
+            bases=(leprikon.models.activities.PaymentMixin, "leprikon.transaction"),
         ),
         migrations.CreateModel(
             name="SubjectReturnedPayment",
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 "proxy": True,
                 "indexes": [],
             },
-            bases=(leprikon.models.subjects.SubjectPaymentMixin, "leprikon.transaction"),
+            bases=(leprikon.models.activities.PaymentMixin, "leprikon.transaction"),
         ),
         migrations.AlterModelOptions(
             name="transaction",

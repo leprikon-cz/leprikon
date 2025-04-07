@@ -479,7 +479,13 @@ COUNTRIES_FIRST = ["CZ", "SK"]
 if "LEPRIKON_VARIABLE_SYMBOL_EXPRESSION" in os.environ:
     LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = os.environ.get("LEPRIKON_VARIABLE_SYMBOL_EXPRESSION")
 
-LEPRIKON_SHOW_SUBJECT_CODE = os.environ.get("LEPRIKON_SHOW_SUBJECT_CODE", "").lower() in ("1", "y", "yes", "t", "true")
+LEPRIKON_SHOW_ACTIVITY_CODE = os.environ.get("LEPRIKON_SHOW_ACTIVITY_CODE", "").lower() in (
+    "1",
+    "y",
+    "yes",
+    "t",
+    "true",
+)
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 

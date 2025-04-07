@@ -1,7 +1,7 @@
 {% load i18n leprikon_tags %}
 <div class="box box-registration">
     <div class="box-header">
-        <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.subject.name }}{% if reg.canceled %}</s>{% endif %}</strong>
+        <strong>{% if reg.canceled %}<s>{% endif %}{{ reg.activity.name }}{% if reg.canceled %}</s>{% endif %}</strong>
         <small>({% trans 'registration number' %}: {{ reg.variable_symbol }})</small>
         <a class="btn btn-primary btn-xs" href="{{ reg.get_absolute_url }}" name="{{ reg.slug }}">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -19,11 +19,17 @@
 
     <div class="box-content">
         <div class="row">
-            <label class="col-sm-4">{{ reg.subject.subject_type.name | first_upper }}:</label>
+            <label class="col-sm-4">{{ reg.activity.activity_type.name | first_upper }}:</label>
             <div class="col-sm-8">
-                <a href="{{ reg.subject.get_absolute_url }}">{{ reg.subject.name }}</a>
+                <a href="{{ reg.activity.get_absolute_url }}">{{ reg.activity.name }}</a>
             </div>
         </div>
+        {% if reg.activity_variant.name %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Variant' %}:</label>
+            <div class="col-sm-8">{{ reg.activity_variant.name }}</div>
+        </div>
+        {% endif %}
         {% if reg.start_date %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Event date' %}:</label>
@@ -75,7 +81,7 @@
             {% include 'leprikon/registration_participant_presence.html' %}
         {% endfor %}
 
-        {% if reg.all_group_members %}
+        {% if reg.activity.registration_type_groups %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Group name' %}:</label>
                 <div class="col-sm-8">
@@ -88,12 +94,19 @@
                     {{ reg.group.full_name }}
                 </div>
             </div>
+            {% if reg.activity_variant.require_group_members_list %}
             <div class="row">
                 <label class="col-sm-4">{% trans 'Group members' %}:</label>
                 <div class="col-sm-8">
                     {{ reg.group_members_list_html }}
                 </div>
             </div>
+            {% else %}
+            <div class="row">
+                <label class="col-sm-4">{% trans 'Participants count' %}:</label>
+                <div class="col-sm-8">{{ reg.participants_count }}</div>
+            </div>
+            {% endif %}
         {% endif %}
 
         {% include 'leprikon/registration_payments.html' %}

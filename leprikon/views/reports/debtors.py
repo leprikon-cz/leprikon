@@ -35,7 +35,7 @@ class ReportDebtorsView(FormView):
 
         for reg in chain.from_iterable(
             qs.filter(
-                subject__school_year=self.request.school_year,
+                activity__school_year=self.request.school_year,
                 approved__date__lte=context["date"],
             )
             .prefetch_related(

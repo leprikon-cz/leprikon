@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from leprikon.models.activities import Activity, CalendarEvent, RegistrationParticipant
 from leprikon.models.schoolyear import SchoolYear
-from leprikon.models.subjects import SubjectRegistrationParticipant
 
 
-class SubjectRegistrationParticipantSerializer(serializers.ModelSerializer):
+class RegistrationParticipantSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubjectRegistrationParticipant
+        model = RegistrationParticipant
         fields = ["id", "label"]
 
 
@@ -30,3 +30,37 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ["username", "first_name", "last_name", "email"]
+
+
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = ["id", "name"]
+
+
+class GetResourceConflictSerializer(serializers.Serializer):
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()
+
+
+class ResourceConflictSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()
+    title = serializers.CharField()
+    allDay = serializers.BooleanField()
+    color = serializers.CharField()
+
+
+class CalendarEventSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CalendarEvent
+        fields = [
+            "id",
+            "title",
+            "start",
+            "end",
+            "all_day",
+            # "color",
+        ]

@@ -5,7 +5,7 @@
 
 <h1>{% block title %}{{ title }}{% endblock %}</h1>
 
-{% if view.subject_variant %}
+{% if view.activity_variant %}
 
 {% if form.errors %}
     <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
@@ -17,16 +17,28 @@
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
 
-    {% if form.instance.subject.orderable %}
-        <h3>{% trans 'Event date' %}</h3>
-        {% include 'leprikon/form_item.html' with item=form.start_date %}
-        {% include 'leprikon/form_item.html' with item=form.start_time %}
+    {% if form.instance.activity.orderable %}
+        <h3>{% trans 'Choose event date' %}</h3>
+        <div class="form-group required">
+            <div id='event-time-calendar'></div>
+            <label class="control-label col-md-3">
+                {% trans 'Selected event time' %}
+            </label>
+            <div class="col-md-9{% if form.start_date.errors or form.start_time.errors %} alert alert-danger{% endif %}">
+                {{ form.start_date }} {{ form.start_time }}
+                <input id="selected-time-input" type="text" class="form-control" value="" readonly/>
+                {% if form.start_date.errors or form.start_time.errors %}
+                <div>{% trans 'Select available time in the calendar above.' %}</div>
+                {% endif %}
+            </div>
+        </div>
     {% endif %}
 
-    {% if form.instance.subject_variant.allow_period_selection %}
+    {% if form.instance.activity_variant.allow_period_selection %}
     {% include 'leprikon/form_item.html' with item=form.periods %}
     {% endif %}
 
+    {% if form.instance.activity.registration_type_participants %}
     {{ form.participants_formset.management_form }}
 
     {% for participant_form in form.participants_formset %}
@@ -106,12 +118,19 @@
             </div>
         </div>
     {% endfor %}
+    {% endif %}
+
+    {% if form.instance.activity.registration_type_groups %}
+    <h3>{% trans 'Group' %}</h3>
 
     {{ form.group_formset.management_form }}
-    {{ form.group_members_formset.management_form }}
 
     {% for group_form in form.group_formset %}
-        <h3>{% trans 'Group' %}</h3>
+        {% if group_form.user_group_contacts %}
+        {% include 'leprikon/form_item.html' with item=group_form.group_contact_select_form.group_contact %}
+        {% else %}
+        <input type="hidden" name="{{ group_form.prefix }}-group_contact_select-group_contact" value="new"/>
+        {% endif %}
         {% include 'leprikon/form_item.html' with item=group_form.target_group %}
         <div id="{{ group_form.prefix }}-school_details" class="hidden">
             {% include 'leprikon/form_item.html' with item=group_form.school %}
@@ -135,29 +154,34 @@
         {% endfor %}
     {% endfor %}
 
-    {% for group_member_form in form.group_members_formset %}
-        {% if forloop.first %}
-        <h3>{% trans 'Participants list' %}</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{ group_member_form.first_name.label }}</th>
-                    <th>{{ group_member_form.last_name.label }}</th>
-                    <th>{{ group_member_form.note.label }}</th>
-                </tr>
-            </thead>
-            <tbody>
-        {% endif %}
-                <tr>
-                    {% include 'leprikon/form_inline_item.html' with item=group_member_form.first_name %}
-                    {% include 'leprikon/form_inline_item.html' with item=group_member_form.last_name %}
-                    {% include 'leprikon/form_inline_item.html' with item=group_member_form.note %}
-                </tr>
-        {% if forloop.last %}
-            </tbody>
-        </table>
-        {% endif %}
-    {% endfor %}
+    <h3>{% trans 'Participants' %}</h3>
+    {% if form.instance.activity_variant.require_group_members_list %}
+
+    {{ form.group_members_formset.management_form }}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{ form.group_members_formset.0.first_name.label }}</th>
+                <th>{{ form.group_members_formset.0.last_name.label }}</th>
+                <th>{{ form.group_members_formset.0.note.label }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for group_member_form in form.group_members_formset %}
+            <tr>
+                {% include 'leprikon/form_inline_item.html' with item=group_member_form.first_name %}
+                {% include 'leprikon/form_inline_item.html' with item=group_member_form.last_name %}
+               {% include 'leprikon/form_inline_item.html' with item=group_member_form.note %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    {% include 'leprikon/form_item.html' with item=form.participants_count %}
+    {% endif %}
+
+    {% endif %}
 
     <h3>{% trans 'Billing information' %}</h3>
 
@@ -206,10 +230,161 @@
 
 {% addtoblock 'css' %}
 {{ form.media.css }}
+<style>
+    #event-time-calendar table {
+        margin-bottom: unset;
+    }
+    #event-time-calendar {
+        margin-bottom: 15px;
+    }
+</style>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
 {{ form.media.js }}
+{% if form.instance.activity.orderable %}
+<!-- TODO: use some variable -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+
+<script>
+
+var {
+    businessHours,
+    slotMinTime,
+    slotMaxTime,
+    minStartDate,
+    maxEndDate
+} = {{ form.instance.activity_variant.full_calendar_setup|safe }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarElement = document.getElementById('event-time-calendar');
+    var startDateInput = document.getElementById('id_start_date');
+    var startTimeInput = document.getElementById('id_start_time');
+    var selectedTimeInput = document.getElementById('selected-time-input');
+
+    function getEndTime(start) {
+        return new Date(start.getTime() + {{ form.instance.activity.orderable.duration.seconds }} * 1000);
+    }
+
+    function setFormValues(start, end) {
+        startDateInput.value = start.toISOString().slice(0, 10);
+        startTimeInput.value = start.toTimeString().slice(0, 8);
+        selectedTimeInput.value = start.toLocaleString('cs-CZ', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        }) + ' - ' + end.toLocaleString('cs-CZ', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    function setSelectedTime(start, end) {
+        // remove existing event
+        var existingEvent = calendar.getEventById('selected-time');
+        if (existingEvent) {
+            existingEvent.remove();
+        }
+
+        // add new event
+        calendar.addEvent({
+            id: 'selected-time',
+            start: start,
+            end: end,
+            title: "{% trans 'selected event time' %}",
+            allDay: false,
+            editable: true,
+            resizableFromStart: false,
+            durationEditable: false,
+        });
+
+        // set start date and time inputs
+        setFormValues(start, end);
+    }
+
+    function isAvailable(start, end) {
+        // don't allow the event to start before the minimum start date
+        if (start < new Date(minStartDate)) {
+            return false;
+        }
+
+        // don't allow the event to end after the maximum end date if set
+        if (maxEndDate && end > new Date(maxEndDate)) {
+            return false;
+        }
+
+        // don't allow the event to span multiple days
+        if (start.getDate() !== end.getDate()) {
+            return false;
+        }
+    
+        // ensure selection is within business hours
+        var startTime = start.toTimeString().slice(0, 5);
+        var endTime = end.toTimeString().slice(0, 5);
+        var day = start.getDay();
+        if (!businessHours.some(bh => bh.daysOfWeek.includes(day) && startTime >= bh.startTime.padStart(5, '0') && endTime <= bh.endTime.padStart(5, '0'))) {
+            return false;
+        }
+
+        // ensure selection does not overlap with existing events
+        if (calendar.getEvents().some(event => (event.id !== 'selected-time' && start < event.end && end > event.start))) {
+            return false;
+        }
+    
+        return true;
+    }
+    
+    calendar = new FullCalendar.Calendar(calendarElement, {
+        initialView: 'timeGridWeek',
+        locale: '{{ LANGUAGE_CODE }}',
+        firstDay: 1,
+        allDaySlot: false,
+        selectable: true,
+        businessHours,
+        slotMinTime: '8:00',
+        slotMaxTime: '18:00',
+        // hide days outside of business hours
+        hiddenDays: [0,1,2,3,4,5,6].filter(d=>!businessHours.some(bh=>bh.daysOfWeek.includes(d))),
+        events: '{% url 'api:activity-resource-conflicts' view.activity_variant.id %}',
+        selectAllow: function (selectInfo) {
+            return isAvailable(selectInfo.start, selectInfo.end);
+        },
+        select: function(info) {
+            var start = info.start;
+            var end = getEndTime(start);
+
+            calendar.unselect();
+            if (isAvailable(start, end)) {
+                setSelectedTime(start, end);    
+            }
+        },
+        eventDrop: function(info) {
+            var start = info.event.start;
+            var end = getEndTime(start);
+
+            if (isAvailable(start, end)) {
+                setFormValues(start, end);
+            } else {
+                info.revert();
+            }
+        },
+    });
+    calendar.render();
+    {% if form.start_date.value and form.start_time.value %}
+    var start = new Date('{{ form.start_date.value }}T{{ form.start_time.value }}');
+    var end = getEndTime(start);
+    setSelectedTime(start, end);
+    calendar.changeView('timeGridWeek', '{{ form.start_date.value|date:"Y-m-d" }}');
+    {% else %}
+    calendar.changeView('timeGridWeek', minStartDate);
+    {% endif %}
+});
+
+</script>
+{% endif %}
 
 <script type="text/javascript">
 
@@ -271,7 +446,7 @@ var citizenship_requires_birth_num = {{% for citizenship in participant_form.all
 };
 {% endif %}{% endfor %}
 
-var age_groups = {{% for age_group in form.instance.subject.all_age_groups %}
+var age_groups = {{% for age_group in form.instance.activity.all_age_groups %}
     {{ age_group.id }}: {
         'require_school': {% if age_group.require_school %}true{% else %}false{% endif %},
         'min_age': {% if age_group.min_age is None %}null{% else %}{{ age_group.min_age }}{% endif %},
@@ -279,7 +454,7 @@ var age_groups = {{% for age_group in form.instance.subject.all_age_groups %}
     },{% endfor %}
 };
 
-var target_groups = {{% for target_group in form.instance.subject.all_target_groups %}
+var target_groups = {{% for target_group in form.instance.activity.all_target_groups %}
     {{ target_group.id }}: {
         'require_school': {% if target_group.require_school %}true{% else %}false{% endif %},
     },{% endfor %}
@@ -300,10 +475,10 @@ function toggle_section(show, section_name, update_required) {
 }
 
 $(document).ready(function() {
-    {% if form.subject_variant %}
+    {% if form.activity_variant %}
     /* Show price for selected variant */
-    $('input[type=radio][name={{ form.subject_variant.html_name }}]').change(function() {
-        {% for variant in form.instance.subject.all_variants %}
+    $('input[type=radio][name={{ form.activity_variant.html_name }}]').change(function() {
+        {% for variant in form.instance.activity.all_variants %}
         if (this.value == {{ variant.id }}) {
             $('#price').text('{{ variant.price_text | escapejs }}');
         }{% endfor %}
@@ -330,7 +505,7 @@ $(document).ready(function() {
             $('#id_{{ participant_form.prefix }}-school_other').val('');
             $('#id_{{ participant_form.prefix }}-school_class').val('');
             $('#id_{{ participant_form.prefix }}-health').val('');
-            {% for question in participant_form.subject.all_questions %}
+            {% for question in participant_form.activity.all_questions %}
             $('#id_{{ participant_form.prefix }}-questions-{{ question.slug }}').val('');
             $('#id_{{ participant_form.prefix }}-questions-{{ question.slug }}').trigger('change');
             {% endfor %}
@@ -463,6 +638,45 @@ $(document).ready(function() {
     {% endfor %}
 
     {% for group_form in form.group_formset %}
+    /* Select participant */
+    $('input[type=radio][name={{ group_form.prefix }}-group_contact_select-group_contact]').change(function() {
+        if (this.value == 'new') {
+            $('#id_{{ group_form.prefix }}-name').val('');
+            $('#id_{{ group_form.prefix }}-first_name').val('');
+            $('#id_{{ group_form.prefix }}-last_name').val('');
+            $('#id_{{ group_form.prefix }}-target_group').val('').change();
+            $('#id_{{ group_form.prefix }}-street').val('');
+            $('#id_{{ group_form.prefix }}-city').val('');
+            $('#id_{{ group_form.prefix }}-postal_code').val('');
+            $('#id_{{ group_form.prefix }}-phone').val('');
+            $('#id_{{ group_form.prefix }}-email').val('');
+            $('#id_{{ group_form.prefix }}-school').val('').change();
+            $('#id_{{ group_form.prefix }}-school_other').val('');
+            $('#id_{{ group_form.prefix }}-school_class').val('');
+            {% for question in group_form.activity.all_questions %}
+            $('#id_{{ group_form.prefix }}-questions-{{ question.slug }}').val('');
+            $('#id_{{ group_form.prefix }}-questions-{{ question.slug }}').trigger('change');
+            {% endfor %}
+        }{% for group_contact in group_form.user_group_contacts %} else if (this.value == {{ group_contact.id }}) {
+            $('#id_{{ group_form.prefix }}-name').val('{{ group_contact.name | escapejs }}');
+            $('#id_{{ group_form.prefix }}-first_name').val('{{ group_contact.first_name | escapejs }}');
+            $('#id_{{ group_form.prefix }}-last_name').val('{{ group_contact.last_name | escapejs }}');
+            $('#id_{{ group_form.prefix }}-target_group').val('{{ group_contact.target_group_id }}').change();
+            $('#id_{{ group_form.prefix }}-street').val('{{ group_contact.street | escapejs }}');
+            $('#id_{{ group_form.prefix }}-city').val('{{ group_contact.city | escapejs }}');
+            $('#id_{{ group_form.prefix }}-postal_code').val('{{ group_contact.postal_code | escapejs }}');
+            $('#id_{{ group_form.prefix }}-phone').val('{{ group_contact.phone | escapejs }}');
+            $('#id_{{ group_form.prefix }}-email').val('{{ group_contact.email | escapejs }}');
+            $('#id_{{ group_form.prefix }}-school').val('{% if group_contact.school_other %}other{% else %}{{ group_contact.school_id }}{% endif %}').change();
+            $('#id_{{ group_form.prefix }}-school_other').val('{{ group_contact.school_other | escapejs }}');
+            $('#id_{{ group_form.prefix }}-school_class').val('{{ group_contact.school_class | escapejs }}');
+            {% for key, value in group_contact.get_answers.items %}
+            $('#id_{{ group_form.prefix }}-questions-{{ key }}').val('{{ value | escapejs }}');
+            $('#id_{{ group_form.prefix }}-questions-{{ key }}').trigger('change');
+            {% endfor %}
+        }{% endfor %}
+    });
+
     /* Set callback on group's school change */
     $('#id_{{ group_form.prefix }}-school').change(function() {
         toggle_section(this.value == 'other', '{{ group_form.prefix }}-school_other', true);
@@ -522,7 +736,7 @@ $(document).ready(function() {
         </div>
         <div class="box-content">
             {{ variant.description | safe }}
-            <a href="{% if view.registration_link %}{% url_with_back 'leprikon:registration_link_form' view.registration_link.slug variant.subject_id variant.id %}{% else %}{{ variant.get_registration_url }}{% endif %}" class="btn btn-primary">{% trans "Choose this variant" %}</a>
+            <a href="{% if view.registration_link %}{% url_with_back 'leprikon:registration_link_form' view.registration_link.slug variant.activity_id variant.id %}{% else %}{{ variant.get_registration_url }}{% endif %}" class="btn btn-primary">{% trans "Choose this variant" %}</a>
         </div>
     </div>
 </div>

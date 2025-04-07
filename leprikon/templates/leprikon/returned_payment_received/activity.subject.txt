@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with activity_type=object.registration.activity.activity_type activity=object.registration.activity %}Registration for {{activity_type}} {{activity}} - returned payment confirmation{% endblocktrans %}

@@ -12,45 +12,45 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.registrationlink import RegistrationLinkAdminForm
+from ..models.activities import ActivityModel, ActivityType
 from ..models.courses import CourseRegistration
 from ..models.events import EventRegistration
 from ..models.orderables import OrderableRegistration
 from ..models.registrationlink import RegistrationLink
-from ..models.subjects import SubjectType
 from ..utils import attributes
 from .export import AdminExportMixin
-from .filters import SchoolYearListFilter, SubjectTypeListFilter
+from .filters import ActivityTypeListFilter, SchoolYearListFilter
 
 
 @admin.register(RegistrationLink)
 class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
     _registration_models = {
-        SubjectType.COURSE: CourseRegistration,
-        SubjectType.EVENT: EventRegistration,
-        SubjectType.ORDERABLE: OrderableRegistration,
+        ActivityModel.COURSE: CourseRegistration,
+        ActivityModel.EVENT: EventRegistration,
+        ActivityModel.ORDERABLE: OrderableRegistration,
     }
     list_display = (
         "id",
         "name",
         "get_link",
-        "subject_type",
+        "activity_type",
         "reg_from",
         "reg_to",
         "get_registrations_link",
     )
     list_filter = (
         ("school_year", SchoolYearListFilter),
-        "subject_type__subject_type",
-        ("subject_type", SubjectTypeListFilter),
+        "activity_type__model",
+        ("activity_type", ActivityTypeListFilter),
     )
-    filter_horizontal = ("subject_variants",)
+    filter_horizontal = ("activity_variants",)
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and len(request.POST) == 3:
             return HttpResponseRedirect(
-                "{}?subject_type={}".format(
+                "{}?activity_type={}".format(
                     request.path,
-                    request.POST.get("subject_type", ""),
+                    request.POST.get("activity_type", ""),
                 )
             )
         else:
@@ -61,34 +61,34 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
         if obj:
             request.school_year = obj.school_year
 
-        # get subject type
+        # get activity type
         try:
-            # first try request.POST (user may want to change subject type)
-            request.subject_type = SubjectType.objects.get(id=int(request.POST.get("subject_type")))
-        except (SubjectType.DoesNotExist, TypeError, ValueError):
+            # first try request.POST (user may want to change activity type)
+            request.activity_type = ActivityType.objects.get(id=int(request.POST.get("activity_type")))
+        except (ActivityType.DoesNotExist, TypeError, ValueError):
             if obj:
-                # use subject type from object
-                request.subject_type = obj.subject_type
+                # use activity type from object
+                request.activity_type = obj.activity_type
             else:
-                # try to get subject type from request.GET
+                # try to get activity type from request.GET
                 try:
-                    request.subject_type = SubjectType.objects.get(
-                        id=int(request.GET.get("subject_type")),
+                    request.activity_type = ActivityType.objects.get(
+                        id=int(request.GET.get("activity_type")),
                     )
-                except (SubjectType.DoesNotExist, TypeError, ValueError):
-                    request.subject_type = None
+                except (ActivityType.DoesNotExist, TypeError, ValueError):
+                    request.activity_type = None
 
-        if request.subject_type:
+        if request.activity_type:
             kwargs["form"] = type(
                 RegistrationLinkAdminForm.__name__,
                 (RegistrationLinkAdminForm,),
                 {
                     "school_year": request.school_year,
-                    "subject_type": request.subject_type,
+                    "activity_type": request.activity_type,
                 },
             )
         else:
-            kwargs["fields"] = ["subject_type"]
+            kwargs["fields"] = ["activity_type"]
 
         return super().get_form(request, obj, **kwargs)
 
@@ -123,13 +123,13 @@ class RegistrationLinkAdmin(AdminExportMixin, admin.ModelAdmin):
         return (
             super()
             .get_queryset(request)
-            .select_related("subject_type")
+            .select_related("activity_type")
             .annotate(registrations_count=Count("registrations"))
         )
 
     @attributes(short_description=_("registrations"))
     def get_registrations_link(self, obj):
-        registration_model = self._registration_models[obj.subject_type.subject_type]
+        registration_model = self._registration_models[obj.activity_type.model]
         return mark_safe(
             format_html(
                 '<a href="{url}">{count}</a>',

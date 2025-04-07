@@ -12,6 +12,8 @@ from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
+from leprikon.models.targetgroup import TargetGroup
+
 from ..conf import settings
 from ..forms.leaders import LeaderFilterForm
 from ..utils import attributes
@@ -69,19 +71,19 @@ class Leader(models.Model):
 
         return JournalLeaderEntry.objects.filter(
             timesheet__leader=self,
-            journal_entry__journal__subject__school_year=school_year,
-        ).exclude(journal_entry__journal__subject__in=self.subjects.all())
+            journal_entry__journal__activity__school_year=school_year,
+        ).exclude(journal_entry__journal__activity__in=self.activities.all())
 
-    SubjectsGroup = namedtuple("SubjectsGroup", ("subject_type", "subjects"))
+    ActivitiesGroup = namedtuple("ActivitiesGroup", ("activity_type", "activities"))
 
-    def get_subjects_by_types(self):
-        from .subjects import SubjectType
+    def get_activities_by_types(self):
+        from .activities import ActivityType
 
         return (
-            self.SubjectsGroup(
-                subject_type=subject_type, subjects=subject_type.subjects.filter(public=True, leaders=self)
+            self.ActivitiesGroup(
+                activity_type=activity_type, activities=activity_type.activities.filter(public=True, leaders=self)
             )
-            for subject_type in SubjectType.objects.all()
+            for activity_type in ActivityType.objects.all()
         )
 
     def get_absolute_url(self):
@@ -222,6 +224,69 @@ class Participant(models.Model):
             return self.school_name or self.school_class or ""
 
 
+class GroupContact(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="leprikon_group_contacts",
+        verbose_name=_("user"),
+    )
+    target_group = models.ForeignKey(
+        TargetGroup, on_delete=models.PROTECT, related_name="+", verbose_name=_("target group")
+    )
+    name = models.CharField(_("group name"), blank=True, default="", max_length=150)
+    first_name = models.CharField(_("first name"), max_length=30)
+    last_name = models.CharField(_("last name"), max_length=30)
+    street = models.CharField(_("street"), max_length=150)
+    city = models.CharField(_("city"), max_length=150)
+    postal_code = PostalCodeField(_("postal code"))
+    phone = models.CharField(_("phone"), max_length=30)
+    email = EmailField(_("email address"))
+    school = models.ForeignKey(
+        School, blank=True, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("school")
+    )
+    school_other = models.CharField(_("other school"), max_length=150, blank=True, default="")
+    school_class = models.CharField(_("class"), max_length=30, blank=True, default="")
+    answers = models.TextField(_("additional answers"), blank=True, default="{}", editable=False)
+
+    class Meta:
+        app_label = "leprikon"
+        verbose_name = _("Group contact")
+        verbose_name_plural = _("Group contacts")
+
+    def __str__(self):
+        return f"{self.name} ({self.full_name})" if self.name else self.full_name
+
+    def get_answers(self):
+        return loads(self.answers)
+
+    @cached_property
+    def full_name(self):
+        return "{} {}".format(self.first_name, self.last_name)
+
+    @cached_property
+    def address(self):
+        return "{}, {}, {}".format(self.street, self.city, self.postal_code)
+
+    @cached_property
+    def contact(self) -> str:
+        if self.email and self.phone:
+            return "{}, {}".format(self.phone, self.email)
+        else:
+            return self.email or self.phone or ""
+
+    @cached_property
+    def school_name(self) -> str:
+        return self.school and str(self.school) or self.school_other
+
+    @cached_property
+    def school_and_class(self) -> str:
+        if self.school_name and self.school_class:
+            return "{}, {}".format(self.school_name, self.school_class)
+        else:
+            return self.school_name or self.school_class or ""
+
+
 class BillingInfo(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="leprikon_billing_info", verbose_name=_("user")
@@ -270,8 +335,13 @@ class LeaderListPlugin(CMSPlugin):
     school_year = models.ForeignKey(
         SchoolYear, blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("school year")
     )
-    subject = models.ForeignKey(
-        "leprikon.Subject", blank=True, null=True, on_delete=models.CASCADE, related_name="+", verbose_name=_("subject")
+    activity = models.ForeignKey(
+        "leprikon.Activity",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name=_("activity"),
     )
     template = models.CharField(
         _("template"),
@@ -285,17 +355,17 @@ class LeaderListPlugin(CMSPlugin):
         app_label = "leprikon"
 
     def clean(self):
-        if self.school_year and self.subject and self.subject.school_year != self.school_year:
+        if self.school_year and self.activity and self.activity.school_year != self.school_year:
             raise ValidationError(
                 {
-                    "school_year": [_("Selected subject is not in the selected school year.")],
-                    "subject": [_("Selected subject is not in the selected school year.")],
+                    "school_year": [_("Selected activity is not in the selected school year.")],
+                    "activity": [_("Selected activity is not in the selected school year.")],
                 }
             )
 
     def render(self, context):
-        if self.subject:
-            leaders = self.subject.leaders.all()
+        if self.activity:
+            leaders = self.activity.leaders.all()
         else:
             school_year = (
                 self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()

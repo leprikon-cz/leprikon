@@ -12,7 +12,7 @@
     }
     $('#id_bankreader_transaction').change(function () {
         $.getJSON(
-            '{% url 'admin:leprikon_subjectpayment_populate' %}',
+            '{% url 'admin:leprikon_payment_populate' %}',
             {bankreader_transaction: this.value},
             populate,
         );

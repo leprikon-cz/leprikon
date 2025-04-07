@@ -1,12 +1,12 @@
 import colorsys
 import logging
-from collections import OrderedDict, namedtuple
-from datetime import datetime, time
+from collections import namedtuple
+from datetime import date, datetime, time
 from decimal import Decimal
 from email.mime.image import MIMEImage
 from io import BytesIO
 from itertools import chain
-from json import loads
+from json import dumps, loads
 from os.path import basename
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, List, Set, Union
@@ -37,6 +37,7 @@ from ..conf import settings
 from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
+from .calendar import CalendarEvent, ConflictingTimeSlot, Resource, ResourceGroup, get_conflicting_timeslots
 from .citizenship import Citizenship
 from .department import Department
 from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField, UniquePageField
@@ -50,9 +51,14 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear, SchoolYearDivision
 from .targetgroup import TargetGroup
-from .times import AbstractTime, TimesMixin
+from .times import AbstractTime, TimesMixin, WeeklyTimes, end_time_format, start_time_format
 from .transaction import AbstractTransaction, Transaction
-from .utils import BankAccount, PaymentStatus, generate_variable_symbol, lazy_help_text_with_html_default
+from .utils import (
+    BankAccount,
+    PaymentStatus,
+    generate_variable_symbol,
+    lazy_help_text_with_html_default,
+)
 
 if TYPE_CHECKING:
     from .courses import CourseRegistration
@@ -94,25 +100,14 @@ DEFAULT_TEXTS = {
 }
 
 
-class SubjectType(models.Model):
-    COURSE = "course"
-    EVENT = "event"
-    ORDERABLE = "orderable"
-    subject_type_labels = OrderedDict(
-        [
-            (COURSE, _("course")),
-            (EVENT, _("event")),
-            (ORDERABLE, _("orderable event")),
-        ]
-    )
-    subject_type_type_labels = OrderedDict(
-        [
-            (COURSE, _("course type")),
-            (EVENT, _("event type")),
-            (ORDERABLE, _("orderable event type")),
-        ]
-    )
-    subject_type = models.CharField(_("subjects"), max_length=10, choices=subject_type_labels.items())
+class ActivityModel(models.TextChoices):
+    COURSE = "course", _("course")
+    EVENT = "event", _("fixed time event")
+    ORDERABLE = "orderable", _("orderable event")
+
+
+class ActivityType(models.Model):
+    model = models.CharField(_("data model"), max_length=10, choices=ActivityModel.choices)
     name = models.CharField(_("name (singular)"), max_length=150)
     name_genitiv = models.CharField(_("name (genitiv)"), max_length=150, blank=True)
     name_akuzativ = models.CharField(_("name (akuzativ)"), max_length=150, blank=True)
@@ -122,12 +117,12 @@ class SubjectType(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="leprikon_subject_type",
+        related_name="leprikon_activity_type",
         verbose_name=_("page"),
         help_text=_(
-            "Select page, where the subjects will be listed. New subject type requireds new page. "
+            "Select page, where the activities will be listed. New activity type requires a new page. "
             "If You assign an existing page, the current content of the page will be replaced "
-            "with the new subject list."
+            "with the new list of activities."
         ),
     )
     order = models.IntegerField(_("order"), blank=True, default=0)
@@ -143,7 +138,7 @@ class SubjectType(models.Model):
         blank=True,
         related_name="+",
         verbose_name=_("additional legal agreements"),
-        help_text=_("Add additional legal agreements specific to this subject type."),
+        help_text=_("Add additional legal agreements specific to this activity type."),
     )
     reg_print_setup = models.ForeignKey(
         PrintSetup,
@@ -238,8 +233,8 @@ class SubjectType(models.Model):
     class Meta:
         app_label = "leprikon"
         ordering = ("order",)
-        verbose_name = _("subject type")
-        verbose_name_plural = _("subject types")
+        verbose_name = _("activity type")
+        verbose_name_plural = _("activity types")
 
     def __str__(self):
         return self.name
@@ -260,35 +255,51 @@ class SubjectType(models.Model):
         return list(self.attachments.all())
 
     def get_absolute_url(self):
-        return reverse(self.slug + ":subject_list")
+        return reverse(self.slug + ":activity_list")
 
     def get_journals_url(self):
         change_list = reverse("admin:leprikon_journal_changelist")
-        return f"{change_list}?subject__subject_type__id__exact={self.id}"
+        return f"{change_list}?activity__activity_type__id__exact={self.id}"
 
-    def get_subjects_url(self):
-        change_list = reverse(f"admin:leprikon_{self.subject_type}_changelist")
-        return f"{change_list}?subject_type__id__exact={self.id}"
+    def get_activities_url(self):
+        change_list = reverse(f"admin:leprikon_{self.model}_changelist")
+        return f"{change_list}?activity_type__id__exact={self.id}"
 
-    def get_subject_variants_url(self):
-        change_list = reverse("admin:leprikon_subjectvariant_changelist")
-        return f"{change_list}?subject__subject_type__id__exact={self.id}"
+    def get_activity_variants_url(self):
+        change_list = reverse("admin:leprikon_activityvariant_changelist")
+        return f"{change_list}?activity__activity_type__id__exact={self.id}"
 
     def get_registrations_url(self):
-        change_list = reverse(f"admin:leprikon_{self.subject_type}registration_changelist")
-        return f"{change_list}?subject__subject_type__id__exact={self.id}"
+        change_list = reverse(f"admin:leprikon_{self.model}registration_changelist")
+        return f"{change_list}?activity__activity_type__id__exact={self.id}"
 
     def get_discounts_url(self):
-        change_list = reverse(f"admin:leprikon_{self.subject_type}discount_changelist")
-        return f"{change_list}?registration__subject__subject_type__id__exact={self.id}"
+        change_list = reverse(f"admin:leprikon_{self.model}discount_changelist")
+        return f"{change_list}?registration__activity__activity_type__id__exact={self.id}"
 
     def get_received_payments_url(self):
-        change_list = reverse("admin:leprikon_subjectreceivedpayment_changelist")
-        return f"{change_list}?target_registration__subject__subject_type__id__exact={self.id}"
+        change_list = reverse("admin:leprikon_receivedpayment_changelist")
+        return f"{change_list}?target_registration__activity__activity_type__id__exact={self.id}"
 
     def get_returned_payments_url(self):
-        change_list = reverse("admin:leprikon_subjectreturnedpayment_changelist")
-        return f"{change_list}?source_registration__subject__subject_type__id__exact={self.id}"
+        change_list = reverse("admin:leprikon_returnedpayment_changelist")
+        return f"{change_list}?source_registration__activity__activity_type__id__exact={self.id}"
+
+
+class ActivityTypeTexts(ActivityType):
+    class Meta:
+        app_label = "leprikon"
+        proxy = True
+        verbose_name = _("texts")
+        verbose_name_plural = _("texts")
+
+
+class ActivityTypePrintSetups(ActivityType):
+    class Meta:
+        app_label = "leprikon"
+        proxy = True
+        verbose_name = _("print setups")
+        verbose_name_plural = _("print setups")
 
 
 class BaseAttachment(models.Model):
@@ -327,24 +338,24 @@ class BaseAttachment(models.Model):
         return str(self.file)
 
 
-class SubjectTypeAttachment(BaseAttachment):
-    subject_type = models.ForeignKey(
-        SubjectType, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("subject type")
+class ActivityTypeAttachment(BaseAttachment):
+    activity_type = models.ForeignKey(
+        ActivityType, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("activity type")
     )
 
 
-class SubjectGroup(models.Model):
+class ActivityGroup(models.Model):
     name = models.CharField(_("name"), max_length=150)
     plural = models.CharField(_("plural"), max_length=150)
     color = ColorField(_("color"))
     order = models.IntegerField(_("order"), blank=True, default=0)
-    subject_types = models.ManyToManyField(SubjectType, related_name="groups", verbose_name=_("subject type"))
+    activity_types = models.ManyToManyField(ActivityType, related_name="groups", verbose_name=_("activity type"))
 
     class Meta:
         app_label = "leprikon"
         ordering = ("order",)
-        verbose_name = _("subject group")
-        verbose_name_plural = _("subject groups")
+        verbose_name = _("activity group")
+        verbose_name_plural = _("activity groups")
 
     def __str__(self):
         return self.name
@@ -372,7 +383,7 @@ class SubjectGroup(models.Model):
         )
 
 
-class Subject(TimesMixin, models.Model):
+class Activity(TimesMixin, models.Model):
     PARTICIPANTS = "P"
     GROUPS = "G"
     REGISTRATION_TYPE_CHOICES = [
@@ -382,10 +393,10 @@ class Subject(TimesMixin, models.Model):
     REGISTRATION_TYPES = dict(REGISTRATION_TYPE_CHOICES)
 
     school_year = models.ForeignKey(
-        SchoolYear, editable=False, on_delete=models.CASCADE, related_name="subjects", verbose_name=_("school year")
+        SchoolYear, editable=False, on_delete=models.CASCADE, related_name="activities", verbose_name=_("school year")
     )
-    subject_type = models.ForeignKey(
-        SubjectType, on_delete=models.PROTECT, related_name="subjects", verbose_name=_("subject type")
+    activity_type = models.ForeignKey(
+        ActivityType, on_delete=models.PROTECT, related_name="activities", verbose_name=_("activity type")
     )
     registration_type = models.CharField(
         _("registration type"),
@@ -404,16 +415,16 @@ class Subject(TimesMixin, models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="subjects",
+        related_name="activities",
         verbose_name=_("department"),
     )
-    groups = models.ManyToManyField(SubjectGroup, verbose_name=_("groups"), related_name="subjects", blank=True)
+    groups = models.ManyToManyField(ActivityGroup, verbose_name=_("groups"), related_name="activities", blank=True)
     place = models.ForeignKey(
-        Place, blank=True, null=True, on_delete=models.SET_NULL, related_name="subjects", verbose_name=_("place")
+        Place, blank=True, null=True, on_delete=models.SET_NULL, related_name="activities", verbose_name=_("place")
     )
-    age_groups = models.ManyToManyField(AgeGroup, related_name="subjects", verbose_name=_("age groups"))
-    target_groups = models.ManyToManyField(TargetGroup, related_name="subjects", verbose_name=_("target groups"))
-    leaders = models.ManyToManyField(Leader, blank=True, related_name="subjects", verbose_name=_("leaders"))
+    age_groups = models.ManyToManyField(AgeGroup, related_name="activities", verbose_name=_("age groups"))
+    target_groups = models.ManyToManyField(TargetGroup, related_name="activities", verbose_name=_("target groups"))
+    leaders = models.ManyToManyField(Leader, blank=True, related_name="activities", verbose_name=_("leaders"))
     public = models.BooleanField(_("public"), default=False)
     photo = FilerImageField(verbose_name=_("photo"), blank=True, null=True, related_name="+", on_delete=models.SET_NULL)
     page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
@@ -432,7 +443,7 @@ class Subject(TimesMixin, models.Model):
         blank=True,
         related_name="+",
         verbose_name=_("additional legal agreements"),
-        help_text=_("Add additional legal agreements specific for this subject."),
+        help_text=_("Add additional legal agreements specific for this activity."),
     )
     reg_print_setup = models.ForeignKey(
         PrintSetup,
@@ -441,7 +452,7 @@ class Subject(TimesMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("registration print setup"),
-        help_text=_("Only use to set value specific for this subject."),
+        help_text=_("Only use to set value specific for this activity."),
     )
     decision_print_setup = models.ForeignKey(
         PrintSetup,
@@ -450,7 +461,7 @@ class Subject(TimesMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("registration print setup"),
-        help_text=_("Only use to set value specific for this subject."),
+        help_text=_("Only use to set value specific for this activity."),
     )
     pr_print_setup = models.ForeignKey(
         PrintSetup,
@@ -459,7 +470,7 @@ class Subject(TimesMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("payment request print setup"),
-        help_text=_("Only use to set value specific for this subject."),
+        help_text=_("Only use to set value specific for this activity."),
     )
     bill_print_setup = models.ForeignKey(
         PrintSetup,
@@ -468,7 +479,7 @@ class Subject(TimesMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("payment print setup"),
-        help_text=_("Only use to set value specific for this subject."),
+        help_text=_("Only use to set value specific for this activity."),
     )
     organization = models.ForeignKey(
         Organization,
@@ -477,7 +488,7 @@ class Subject(TimesMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
         verbose_name=_("organization"),
-        help_text=_("Only use to set value specific for this subject."),
+        help_text=_("Only use to set value specific for this activity."),
     )
     text_registration_received = HTMLField(_("text: registration received"), blank=True, default="")
     text_registration_approved = HTMLField(_("text: registration approved"), blank=True, default="")
@@ -492,8 +503,8 @@ class Subject(TimesMixin, models.Model):
     class Meta:
         app_label = "leprikon"
         ordering = ("code", "name")
-        verbose_name = _("subject")
-        verbose_name_plural = _("subjects")
+        verbose_name = _("activity")
+        verbose_name_plural = _("activities")
 
     def __str__(self):
         return "{} {}".format(self.school_year, self.display_name)
@@ -506,7 +517,7 @@ class Subject(TimesMixin, models.Model):
 
     @cached_property
     def price_text(self) -> str:
-        return " | ".join(v.price_text for v in self.all_variants)
+        return " | ".join(set(v.price_text for v in self.all_variants))
 
     @cached_property
     def registration_type_participants(self):
@@ -517,29 +528,29 @@ class Subject(TimesMixin, models.Model):
         return self.registration_type == self.GROUPS
 
     @cached_property
-    def subject(self):
-        if self.subject_type.subject_type == self.subject_type.COURSE:
+    def activity(self):
+        if self.activity_type.model == ActivityModel.COURSE:
             return self.course
         else:
             return self.event
 
     @cached_property
     def display_name(self):
-        if settings.LEPRIKON_SHOW_SUBJECT_CODE and self.code:
+        if settings.LEPRIKON_SHOW_ACTIVITY_CODE and self.code:
             return f"{self.code} – {self.name}"
         else:
             return self.name
 
     @cached_property
-    def all_variants(self) -> List["SubjectVariant"]:
+    def all_variants(self) -> List["ActivityVariant"]:
         return list(self.variants.all())
 
     @cached_property
-    def all_available_variants(self) -> List["SubjectVariant"]:
+    def all_available_variants(self) -> List["ActivityVariant"]:
         return [variant for variant in self.all_variants if variant.registration_allowed]
 
     @cached_property
-    def all_groups(self) -> List["SubjectGroup"]:
+    def all_groups(self) -> List["ActivityGroup"]:
         return list(self.groups.all())
 
     @cached_property
@@ -556,20 +567,22 @@ class Subject(TimesMixin, models.Model):
 
     @cached_property
     def all_questions(self) -> Set["Question"]:
-        return set(self.subject_type.all_questions + list(self.questions.all()))
+        return set(self.activity_type.all_questions + list(self.questions.all()))
 
     @cached_property
-    def all_attachments(self) -> List["SubjectAttachment"]:
+    def all_attachments(self) -> List["ActivityAttachment"]:
         return list(self.attachments.all())
 
     @cached_property
     def public_attachments(self):
         return [
-            attachment for attachment in (self.subject_type.all_attachments + self.all_attachments) if attachment.public
+            attachment
+            for attachment in (self.activity_type.all_attachments + self.all_attachments)
+            if attachment.public
         ]
 
     @cached_property
-    def all_registrations(self) -> List["SubjectRegistration"]:
+    def all_registrations(self) -> List["Registration"]:
         return list(self.registrations.all())
 
     @cached_property
@@ -623,13 +636,13 @@ class Subject(TimesMixin, models.Model):
         return self.max_registrations_count and self.active_registrations_count > self.max_registrations_count
 
     def get_absolute_url(self):
-        return reverse(self.subject_type.slug + ":subject_detail", args=(self.id,))
+        return reverse(self.activity_type.slug + ":activity_detail", args=(self.id,))
 
     def get_registration_url(self):
-        return reverse(self.subject_type.slug + ":subject_registration_form", args=(self.id,))
+        return reverse(self.activity_type.slug + ":registration_form", args=(self.id,))
 
     def get_edit_url(self):
-        return reverse("admin:leprikon_{}_change".format(self.subject._meta.model_name), args=(self.id,))
+        return reverse("admin:leprikon_{}_change".format(self.activity._meta.model_name), args=(self.id,))
 
     @attributes(short_description=_("age groups list"))
     def get_age_groups_list(self):
@@ -652,9 +665,9 @@ class Subject(TimesMixin, models.Model):
 
     def get_template_variants(self):
         return (
-            self.subject_type.slug,
-            self.subject_type.subject_type,
-            "subject",
+            self.activity_type.slug,
+            self.activity_type.model,
+            "activity",
         )
 
     @property
@@ -706,32 +719,42 @@ class Subject(TimesMixin, models.Model):
         return sorted(
             chain(
                 self.registration_agreements.all(),
-                self.subject_type.registration_agreements.all(),
+                self.activity_type.registration_agreements.all(),
                 LeprikonSite.objects.get_current().registration_agreements.all(),
             ),
             key=lambda agreement: agreement.order,
         )
 
 
-class SubjectTime(AbstractTime):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="times", verbose_name=_("course"))
+class ActivityTime(AbstractTime):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="times", verbose_name=_("course"))
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("day_of_week", "start")
+        ordering = ("start_date", "days_of_week", "start_time")
         verbose_name = _("time")
         verbose_name_plural = _("times")
 
 
-class SubjectVariant(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="variants", verbose_name=_("subject"))
+class ActivityVariant(models.Model):
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="variants", verbose_name=_("activity")
+    )
     name = models.CharField(_("variant name"), max_length=150, blank=True, default="")
     description = HTMLField(_("variant description"), blank=True, default="")
     reg_from = models.DateTimeField(_("registration active from"), blank=True, null=True)
     reg_to = models.DateTimeField(_("registration active to"), blank=True, null=True)
-    age_groups = models.ManyToManyField(AgeGroup, related_name="subject_variants", verbose_name=_("age groups"))
+    age_groups = models.ManyToManyField(AgeGroup, related_name="activity_variants", verbose_name=_("age groups"))
     target_groups = models.ManyToManyField(
-        TargetGroup, related_name="subject_variants", verbose_name=_("target groups")
+        TargetGroup, related_name="activity_variants", verbose_name=_("target groups")
+    )
+    require_group_members_list = models.BooleanField(
+        _("require group members list"),
+        default=False,
+        help_text=_(
+            "Require group members list to be filled in registration form. "
+            "If not set, only the number of group members is required."
+        ),
     )
     min_participants_count = models.PositiveIntegerField(
         _("minimal participants / group members count per registration"), default=1
@@ -753,31 +776,55 @@ class SubjectVariant(models.Model):
         default=False,
         help_text=_("allow user to choose school year periods on registration form"),
     )
+    required_resources = models.ManyToManyField(
+        Resource,
+        blank=True,
+        related_name="activity_variants",
+        verbose_name=_("required resources"),
+    )
+    required_resource_groups = models.ManyToManyField(
+        ResourceGroup,
+        blank=True,
+        related_name="activity_variants",
+        verbose_name=_("required resource groups"),
+    )
+
     order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("subject", "order")
+        ordering = ("activity", "order")
         verbose_name = _("price and registering variant")
         verbose_name_plural = _("price and registering variants")
 
     def __str__(self):
-        return f"{self.subject.display_name} / {self.name}" if self.name else self.subject.display_name
+        return f"{self.activity.display_name} / {self.name}" if self.name else self.activity.display_name
 
     @cached_property
     def price_text(self) -> str:
-        price = currency(self.get_price())
+        if self.registration_price:
+            if self.participant_price:
+                price = _("{registration_price} + {participant_price} / participant").format(
+                    registration_price=currency(self.registration_price),
+                    participant_price=currency(self.participant_price),
+                )
+            else:
+                price = currency(self.registration_price)
+        elif self.participant_price:
+            price = _("{participant_price} / participant").format(
+                participant_price=currency(self.participant_price),
+            )
+        else:
+            return str(_("free"))
         if self.school_year_division:
             return f"{price} / {self.school_year_division.price_unit_name}"
         return price
 
-    def get_price(self, participants_count=None) -> Decimal:
-        if participants_count is None:
-            participants_count = self.min_participants_count
-        return self.registration_price + participants_count * self.participant_price
+    def get_price(self, participants_count: int) -> Decimal:
+        return self.registration_price + (participants_count * self.participant_price)
 
     def get_registration_url(self):
-        return reverse(self.subject.subject_type.slug + ":subject_registration_form", args=(self.subject_id, self.id))
+        return reverse(self.activity.activity_type.slug + ":registration_form", args=(self.activity_id, self.id))
 
     @property
     def registration_allowed(self):
@@ -800,14 +847,53 @@ class SubjectVariant(models.Model):
     def unapproved_registrations(self):
         return self.active_registrations.filter(approved=None)
 
+    def get_conflicting_timeslots(self, start_date: date, end_date: date) -> list[ConflictingTimeSlot]:
+        return get_conflicting_timeslots(
+            start_date,
+            end_date,
+            list(self.required_resources.all()),
+            list(self.required_resource_groups.all()),
+            self.activity.orderable.preparation_time,
+            self.activity.orderable.recovery_time,
+        )
 
-class SubjectAttachment(BaseAttachment):
-    subject = models.ForeignKey(
-        Subject, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("subject")
+    @cached_property
+    def weekly_times(self) -> WeeklyTimes:
+        return WeeklyTimes(at.weekly_time for at in self.activity.times.all())
+
+    @property
+    def full_calendar_setup(self):
+        start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
+        end_dates = [wt.end_date for wt in self.weekly_times if wt.end_date]
+        return dumps(
+            {
+                "businessHours": [
+                    {
+                        "daysOfWeek": [d.isoweekday() % 7 for d in wt.days_of_week],
+                        "startTime": wt.start_time.strftime("%H:%M"),
+                        "endTime": "24:00" if wt.end_time == time(0) else wt.end_time.strftime("%H:%M"),
+                    }
+                    for wt in self.weekly_times or WeeklyTimes.unlimited()
+                ],
+                "minStartDate": max(min(start_dates, default=date.today()), date.today()).strftime("%Y-%m-%d"),
+                "maxEndDate": max(end_dates).strftime("%Y-%m-%d") if end_dates else None,
+                "slotMinTime": start_time_format(min((wt.start_time for wt in self.weekly_times), default=time(0))),
+                "slotMaxTime": end_time_format(
+                    time(0)
+                    if any(wt.end_time == time(0) for wt in self.weekly_times)
+                    else max((wt.end_time for wt in self.weekly_times), default=time(0))
+                ),
+            }
+        )
+
+
+class ActivityAttachment(BaseAttachment):
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="attachments", verbose_name=_("activity")
     )
 
 
-class SubjectRegistration(PdfExportAndMailMixin, models.Model):
+class Registration(PdfExportAndMailMixin, models.Model):
     object_name = "registration"
     slug = models.SlugField(editable=False, max_length=250, null=True)
     user = models.ForeignKey(
@@ -816,12 +902,21 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         related_name="leprikon_registrations",
         verbose_name=_("user"),
     )
-    subject = models.ForeignKey(
-        Subject, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("subject")
+    activity: Activity = models.ForeignKey(
+        Activity, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("activity")
     )
-    subject_variant = models.ForeignKey(
-        SubjectVariant, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("variant")
+    activity_variant: ActivityVariant = models.ForeignKey(
+        ActivityVariant, on_delete=models.PROTECT, related_name="registrations", verbose_name=_("variant")
     )
+    calendar_event: CalendarEvent | None = models.OneToOneField(
+        CalendarEvent,
+        on_delete=models.PROTECT,
+        related_name="registration",
+        verbose_name=_("calendar event"),
+        null=True,
+    )
+
+    participants_count = models.PositiveIntegerField(_("participants count"))
     price = PriceField(_("price"), editable=False)
 
     created = models.DateTimeField(_("time of registration"), editable=False, auto_now_add=True)
@@ -904,39 +999,39 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     def __str__(self):
         return "{} - {}".format(
-            self.subject,
+            self.activity,
             (
                 self.group
-                if self.subject.registration_type_groups
+                if self.activity.registration_type_groups
                 else comma_separated([p.full_name for p in self.all_participants])
             ),
         )
 
     def get_changelist_url(self):
-        url = reverse(f"admin:leprikon_{self.subjectregistration._meta.model_name}_changelist")
+        url = reverse(f"admin:leprikon_{self.activityregistration._meta.model_name}_changelist")
         query = {"id": self.id}
         if self.canceled:
             query["canceled"] = "yes"
         return f"{url}?{urlencode(query)}"
 
     def get_edit_url(self):
-        return reverse(f"admin:leprikon_{self.subjectregistration._meta.model_name}_change", args=(self.id,))
+        return reverse(f"admin:leprikon_{self.activityregistration._meta.model_name}_change", args=(self.id,))
 
     def get_payment_request_url(self):
         return reverse("leprikon:registration_payment_request", args=(self.id, self.variable_symbol))
 
     @cached_property
-    def subjectregistration(self) -> Union["CourseRegistration", "EventRegistration", "OrderableRegistration"]:
-        if self.subject.subject_type.subject_type == self.subject.subject_type.COURSE:
+    def activityregistration(self) -> Union["CourseRegistration", "EventRegistration", "OrderableRegistration"]:
+        if self.activity.activity_type.model == ActivityModel.COURSE:
             return self.courseregistration
-        elif self.subject.subject_type.subject_type == self.subject.subject_type.EVENT:
+        elif self.activity.activity_type.model == ActivityModel.EVENT:
             return self.eventregistration
-        elif self.subject.subject_type.subject_type == self.subject.subject_type.ORDERABLE:
+        elif self.activity.activity_type.model == ActivityModel.ORDERABLE:
             return self.orderableregistration
         raise NotImplementedError()
 
     @cached_property
-    def all_participants(self) -> List["SubjectRegistrationParticipant"]:
+    def all_participants(self) -> List["RegistrationParticipant"]:
         return list(self.participants.all())
 
     @attributes(short_description=_("participants"))
@@ -960,7 +1055,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                 count = (
                     type(self)
                     .objects.filter(
-                        subject__school_year_id=self.subject.school_year_id,
+                        activity__school_year_id=self.activity.school_year_id,
                         canceled__isnull=not self.canceled,
                         **query,
                     )
@@ -985,7 +1080,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     @attributes(short_description=_("group members"))
     def group_members_list_html(self):
-        return mark_safe("<br/>".join(map(str, self.all_group_members)))
+        if self.activity_variant.require_group_members_list:
+            return mark_safe("<br/>".join(map(str, self.all_group_members)))
+        return str(self.participants_count)
 
     @cached_property
     def all_questions(self):
@@ -1015,7 +1112,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
 
     @cached_property
     def all_attachments(self):
-        return self.subject.all_attachments + self.subject.subject_type.all_attachments
+        return self.activity.all_attachments + self.activity.activity_type.all_attachments
 
     @cached_property
     def all_recipients(self):
@@ -1043,13 +1140,13 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         return self.get_payment_status()
 
     def get_payment_status(self, d=None) -> PaymentStatus:
-        return self.subjectregistration.get_payment_status(d)
+        return self.activityregistration.get_payment_status(d)
 
     @cached_property
     def organization(self):
         return (
-            self.subject.organization
-            or self.subject.subject_type.organization
+            self.activity.organization
+            or self.activity.activity_type.organization
             or LeprikonSite.objects.get_current().organization
             or Organization()
         )
@@ -1061,7 +1158,7 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             ("ACC", ("%s+%s" % (org.iban, org.bic)) if org.bic else org.iban),
             ("AM", self.payment_status.amount_due),
             ("CC", localeconv["int_curr_symbol"].strip()),
-            ("MSG", "%s, %s" % (self.subject.name[:29], str(self)[:29])),
+            ("MSG", "%s, %s" % (self.activity.name[:29], str(self)[:29])),
             ("RN", slugify(self.organization.name).replace("*", "")[:35]),
             ("X-VS", self.variable_symbol),
         )
@@ -1079,79 +1176,79 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     @cached_property
     def price_text(self) -> str:
         price = currency(self.price)
-        if self.subject_variant.school_year_division_id:
-            return f"{price} / {self.subject_variant.school_year_division.price_unit_name}"
+        if self.activity_variant.school_year_division_id:
+            return f"{price} / {self.activity_variant.school_year_division.price_unit_name}"
         return price
 
     @cached_property
     def text_registration_received(self):
         return (
-            self.subject.text_registration_received
-            or self.subject.subject_type.text_registration_received
+            self.activity.text_registration_received
+            or self.activity.activity_type.text_registration_received
             or DEFAULT_TEXTS["text_registration_received"]
         )
 
     @cached_property
     def text_registration_approved(self):
         return (
-            self.subject.text_registration_approved
-            or self.subject.subject_type.text_registration_approved
+            self.activity.text_registration_approved
+            or self.activity.activity_type.text_registration_approved
             or DEFAULT_TEXTS["text_registration_approved"]
         )
 
     @cached_property
     def text_registration_refused(self):
         return (
-            self.subject.text_registration_refused
-            or self.subject.subject_type.text_registration_refused
+            self.activity.text_registration_refused
+            or self.activity.activity_type.text_registration_refused
             or DEFAULT_TEXTS["text_registration_refused"]
         )
 
     @cached_property
     def text_registration_payment_request(self):
         return (
-            self.subject.text_registration_payment_request
-            or self.subject.subject_type.text_registration_payment_request
+            self.activity.text_registration_payment_request
+            or self.activity.activity_type.text_registration_payment_request
             or DEFAULT_TEXTS["text_registration_payment_request"]
         )
 
     @cached_property
     def text_registration_refund_offer(self):
         return (
-            self.subject.text_registration_refund_offer
-            or self.subject.subject_type.text_registration_refund_offer
+            self.activity.text_registration_refund_offer
+            or self.activity.activity_type.text_registration_refund_offer
             or DEFAULT_TEXTS["text_registration_refund_offer"]
         )
 
     @cached_property
     def text_registration_canceled(self):
         return (
-            self.subject.text_registration_canceled
-            or self.subject.subject_type.text_registration_canceled
+            self.activity.text_registration_canceled
+            or self.activity.activity_type.text_registration_canceled
             or DEFAULT_TEXTS["text_registration_canceled"]
         )
 
     @cached_property
     def text_discount_granted(self):
         return (
-            self.subject.text_discount_granted
-            or self.subject.subject_type.text_discount_granted
+            self.activity.text_discount_granted
+            or self.activity.activity_type.text_discount_granted
             or DEFAULT_TEXTS["text_discount_granted"]
         )
 
     @cached_property
     def text_payment_received(self):
         return (
-            self.subject.text_payment_received
-            or self.subject.subject_type.text_payment_received
+            self.activity.text_payment_received
+            or self.activity.activity_type.text_payment_received
             or DEFAULT_TEXTS["text_payment_received"]
         )
 
     @cached_property
     def text_payment_returned(self):
         return (
-            self.subject.text_payment_returned
-            or self.subject.subject_type.text_payment_returned
+            self.activity.text_payment_returned
+            or self.activity.activity_type.text_payment_returned
             or DEFAULT_TEXTS["text_payment_returned"]
         )
 
@@ -1219,8 +1316,8 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
             self.send_mail("approved")
             if not self.payment_requested:
                 self.request_payment(approved_by)
-            if len(self.subject.all_journals) == 1:
-                journal = self.subject.all_journals[0]
+            if len(self.activity.all_journals) == 1:
+                journal = self.activity.all_journals[0]
                 for participant in self.all_participants:
                     journal.participants.add(participant)
         else:
@@ -1278,6 +1375,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     self.canceled = timezone.now()
                     self.canceled_by = refused_by
                     self.save()
+                    if self.calendar_event:
+                        self.calendar_event.is_canceled = True
+                        self.calendar_event.save()
                     self.send_mail("refused")
             else:
                 raise ValidationError(_("The registration {r} has already been refued.").format(r=self))
@@ -1295,6 +1395,9 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
                     self.canceled = timezone.now()
                     self.canceled_by = canceled_by
                     self.save()
+                    if self.calendar_event:
+                        self.calendar_event.is_canceled = True
+                        self.calendar_event.save()
                     self.send_mail("canceled")
             else:
                 raise ValidationError(_("The registration {r} has already been canceled.").format(r=self))
@@ -1310,10 +1413,10 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
         self.slug = "{}-{}".format(
             slugify(
                 "{}-{}".format(
-                    self.subject.name[:100],
+                    self.activity.name[:100],
                     (
                         self.group
-                        if self.subject.registration_type_groups
+                        if self.activity.registration_type_groups
                         else comma_separated([p.full_name for p in self.all_participants])
                     ),
                 )
@@ -1325,30 +1428,30 @@ class SubjectRegistration(PdfExportAndMailMixin, models.Model):
     def get_print_setup(self, event):
         if event == "payment_request":
             return (
-                self.subject.pr_print_setup
-                or self.subject.subject_type.pr_print_setup
+                self.activity.pr_print_setup
+                or self.activity.activity_type.pr_print_setup
                 or LeprikonSite.objects.get_current().pr_print_setup
                 or PrintSetup()
             )
         if event == "decision":
             return (
-                self.subject.decision_print_setup
-                or self.subject.subject_type.decision_print_setup
+                self.activity.decision_print_setup
+                or self.activity.activity_type.decision_print_setup
                 or LeprikonSite.objects.get_current().decision_print_setup
                 or PrintSetup()
             )
         return (
-            self.subject.reg_print_setup
-            or self.subject.subject_type.reg_print_setup
+            self.activity.reg_print_setup
+            or self.activity.activity_type.reg_print_setup
             or LeprikonSite.objects.get_current().reg_print_setup
             or PrintSetup()
         )
 
     def get_template_variants(self):
         return (
-            self.subject.subject_type.slug,
-            self.subject.subject_type.subject_type,
-            "subject",
+            self.activity.activity_type.slug,
+            self.activity.activity_type.model,
+            "activity",
         )
 
     def get_attachments(self, event):
@@ -1409,9 +1512,9 @@ class SchoolMixin:
         return "{}, {}".format(self.school_name, self.school_class)
 
 
-class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
+class RegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
     registration = models.ForeignKey(
-        SubjectRegistration, on_delete=models.CASCADE, related_name="participants", verbose_name=_("registration")
+        Registration, on_delete=models.CASCADE, related_name="participants", verbose_name=_("registration")
     )
     first_name = models.CharField(_("first name"), max_length=30)
     last_name = models.CharField(_("last name"), max_length=30)
@@ -1560,9 +1663,9 @@ class SubjectRegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, m
             return self.full_name
 
 
-class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
+class RegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
     registration = models.OneToOneField(
-        SubjectRegistration, on_delete=models.CASCADE, related_name="group", verbose_name=_("registration")
+        Registration, on_delete=models.CASCADE, related_name="group", verbose_name=_("registration")
     )
     target_group = models.ForeignKey(
         TargetGroup, on_delete=models.PROTECT, related_name="+", verbose_name=_("target group")
@@ -1592,9 +1695,9 @@ class SubjectRegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.
         return self.name or self.full_name
 
 
-class SubjectRegistrationGroupMember(models.Model):
+class RegistrationGroupMember(models.Model):
     registration = models.ForeignKey(
-        SubjectRegistration, on_delete=models.CASCADE, related_name="group_members", verbose_name=_("registration")
+        Registration, on_delete=models.CASCADE, related_name="group_members", verbose_name=_("registration")
     )
     first_name = models.CharField(_("first name"), max_length=30)
     last_name = models.CharField(_("last name"), max_length=30)
@@ -1620,9 +1723,9 @@ class SubjectRegistrationGroupMember(models.Model):
         return "{} {}".format(self.first_name, self.last_name)
 
 
-class SubjectRegistrationBillingInfo(models.Model):
+class RegistrationBillingInfo(models.Model):
     registration = models.OneToOneField(
-        SubjectRegistration, on_delete=models.CASCADE, related_name="billing_info", verbose_name=_("registration")
+        Registration, on_delete=models.CASCADE, related_name="billing_info", verbose_name=_("registration")
     )
     name = models.CharField(_("name"), max_length=150)
     street = models.CharField(_("street"), max_length=150, blank=True, default="")
@@ -1649,7 +1752,7 @@ class SubjectRegistrationBillingInfo(models.Model):
         return ", ".join(filter(bool, (self.street, self.city, self.postal_code)))
 
 
-class SubjectDiscount(AbstractTransaction):
+class ActivityDiscount(AbstractTransaction):
     amount = PriceField(_("discount"), default=0)
     explanation = models.CharField(_("discount explanation"), max_length=250, blank=True, default="")
 
@@ -1664,12 +1767,12 @@ class SubjectDiscount(AbstractTransaction):
         return currency(self.amount)
 
 
-class SubjectPaymentMixin:
+class PaymentMixin:
     @cached_property
-    def subject_organization(self):
+    def activity_organization(self):
         return (
-            self.registration.subject.organization
-            or self.registration.subject.subject_type.organization
+            self.registration.activity.organization
+            or self.registration.activity.activity_type.organization
             or LeprikonSite.objects.get_current().organization
             or Organization()
         )
@@ -1680,17 +1783,17 @@ class SubjectPaymentMixin:
 
     def get_print_setup(self, event):
         return (
-            self.registration.subject.bill_print_setup
-            or self.registration.subject.subject_type.bill_print_setup
+            self.registration.activity.bill_print_setup
+            or self.registration.activity.activity_type.bill_print_setup
             or LeprikonSite.objects.get_current().bill_print_setup
             or PrintSetup()
         )
 
     def get_template_variants(self):
         return (
-            self.registration.subject.subject_type.slug,
-            self.registration.subject.subject_type.subject_type,
-            "subject",
+            self.registration.activity.activity_type.slug,
+            self.registration.activity.activity_type.model,
+            "activity",
         )
 
     def get_attachments(self, event):
@@ -1711,9 +1814,9 @@ class SubjectPaymentMixin:
         return self.registration.all_recipients
 
 
-class SubjectPayment(Transaction):
+class Payment(Transaction):
     object_name = "payment"
-    transaction_types = Transaction.SUBJECTS
+    transaction_types = Transaction.ACTIVITIES
 
     class Meta:
         proxy = True
@@ -1725,16 +1828,16 @@ class SubjectPayment(Transaction):
         sub_payments = []
         if self.target_registration:
             sub_payments.append(
-                SubjectReceivedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
+                ReceivedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
             )
         if self.source_registration:
             sub_payments.append(
-                SubjectReturnedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
+                ReturnedPayment(**{key: value for key, value in self.__dict__.items() if key[0] != "_"})
             )
         return sub_payments
 
 
-class SubjectReceivedPayment(SubjectPaymentMixin, Transaction):
+class ReceivedPayment(PaymentMixin, Transaction):
     object_name = "received_payment"
     transaction_types = Transaction.PAYMENTS
 
@@ -1753,7 +1856,7 @@ class SubjectReceivedPayment(SubjectPaymentMixin, Transaction):
         return self.target_registration
 
 
-class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
+class ReturnedPayment(PaymentMixin, Transaction):
     object_name = "returned_payment"
     transaction_types = Transaction.RETURNS
 
@@ -1773,15 +1876,15 @@ class SubjectReturnedPayment(SubjectPaymentMixin, Transaction):
 
 
 @receiver(models.signals.post_save, sender=PaysPayment)
-def payment_create_subject_payment(instance, **kwargs):
+def payment_create_payment(instance, **kwargs):
     payment = instance
     # check realized payment
     if payment.status != PaysPayment.REALIZED:
         return
     # check registration
     try:
-        registration = SubjectRegistration.objects.get(variable_symbol=int(payment.order_id))
-    except (ValueError, SubjectRegistration.DoesNotExist):
+        registration = Registration.objects.get(variable_symbol=int(payment.order_id))
+    except (ValueError, Registration.DoesNotExist):
         return
     # create payment
     Transaction.objects.create(
@@ -1794,26 +1897,26 @@ def payment_create_subject_payment(instance, **kwargs):
     )
 
 
-@receiver(models.signals.post_save, sender=SubjectType)
-def subject_type_update_page(instance, **kwargs):
-    subject_type = instance
-    if subject_type.page_id:
+@receiver(models.signals.post_save, sender=ActivityType)
+def activity_type_update_page(instance, **kwargs):
+    activity_type = instance
+    if activity_type.page_id:
         updated = Page.objects.filter(
-            application_urls="LeprikonSubjectTypeApp",
-            application_namespace=subject_type.slug,
-        ).exclude(models.Q(id=subject_type.page_id) | models.Q(publisher_draft=subject_type.page_id)).update(
+            application_urls="LeprikonActivityTypeApp",
+            application_namespace=activity_type.slug,
+        ).exclude(models.Q(id=activity_type.page_id) | models.Q(publisher_draft=activity_type.page_id)).update(
             application_urls=None,
             application_namespace=None,
         ) + Page.objects.filter(
-            models.Q(id=subject_type.page_id) | models.Q(publisher_draft=subject_type.page_id)
+            models.Q(id=activity_type.page_id) | models.Q(publisher_draft=activity_type.page_id)
         ).update(
-            application_urls="LeprikonSubjectTypeApp",
-            application_namespace=subject_type.slug,
+            application_urls="LeprikonActivityTypeApp",
+            application_namespace=activity_type.slug,
         )
     else:
         updated = Page.objects.filter(
-            application_urls="LeprikonSubjectTypeApp",
-            application_namespace=subject_type.slug,
+            application_urls="LeprikonActivityTypeApp",
+            application_namespace=activity_type.slug,
         ).update(
             application_urls=None,
             application_namespace=None,
@@ -1823,28 +1926,28 @@ def subject_type_update_page(instance, **kwargs):
 
 
 @receiver(models.signals.post_save, sender=Page)
-def page_update_subject_type(instance, **kwargs):
+def page_update_activity_type(instance, **kwargs):
     page = instance
     if not page.publisher_is_draft:
         return
-    if page.application_urls != "LeprikonSubjectTypeApp":
-        SubjectType.objects.filter(page=page).update(page=None)
+    if page.application_urls != "LeprikonActivityTypeApp":
+        ActivityType.objects.filter(page=page).update(page=None)
         return
-    subject_type = SubjectType.objects.filter(slug=page.application_namespace).first()
-    if subject_type is None:
+    activity_type = ActivityType.objects.filter(slug=page.application_namespace).first()
+    if activity_type is None:
         Page.objects.filter(id=page.id).update(
             application_urls=None,
             application_namespace=None,
         )
         set_restart_trigger()
         return
-    SubjectType.objects.filter(page=page).exclude(id=subject_type.id).update(page=None)
-    if subject_type.page_id != page.id:
-        SubjectType.objects.filter(id=subject_type.id).update(page=page)
+    ActivityType.objects.filter(page=page).exclude(id=activity_type.id).update(page=None)
+    if activity_type.page_id != page.id:
+        ActivityType.objects.filter(id=activity_type.id).update(page=page)
 
 
 @receiver(models.signals.post_save, sender=BankreaderTransaction)
-def transaction_create_subject_payment(instance, **kwargs):
+def transaction_create_payment(instance, **kwargs):
     transaction = instance
     # check variable symbol
     if not transaction.variable_symbol:
@@ -1854,7 +1957,7 @@ def transaction_create_subject_payment(instance, **kwargs):
     if max_closure_date and transaction.accounted_date <= max_closure_date:
         return
     # check registration
-    registration = SubjectRegistration.objects.filter(variable_symbol=transaction.variable_symbol).first()
+    registration = Registration.objects.filter(variable_symbol=transaction.variable_symbol).first()
     if not registration:
         return
     # create payment

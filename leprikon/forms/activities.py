@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, datetime
 from json import dumps
 from typing import Any
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import transaction
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -14,29 +15,31 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_message
 
+from ..models.activities import (
+    Activity,
+    ActivityGroup,
+    ActivityModel,
+    ActivityType,
+    ActivityVariant,
+    CalendarEvent,
+    Registration,
+    RegistrationBillingInfo,
+    RegistrationGroup,
+    RegistrationGroupMember,
+    RegistrationParticipant,
+)
 from ..models.agegroup import AgeGroup
 from ..models.citizenship import Citizenship
 from ..models.courses import Course, CourseRegistration, CourseRegistrationPeriod
 from ..models.department import Department
 from ..models.events import Event, EventRegistration
-from ..models.fields import DAY_OF_WEEK
+from ..models.fields import DayOfWeek, DaysOfWeek
 from ..models.leprikonsite import LeprikonSite
 from ..models.orderables import Orderable, OrderableRegistration
 from ..models.place import Place
-from ..models.roles import BillingInfo, Leader, Parent, Participant
+from ..models.roles import BillingInfo, GroupContact, Leader, Parent, Participant
 from ..models.school import School
 from ..models.schoolyear import SchoolYearPeriod
-from ..models.subjects import (
-    Subject,
-    SubjectGroup,
-    SubjectRegistration,
-    SubjectRegistrationBillingInfo,
-    SubjectRegistrationGroup,
-    SubjectRegistrationGroupMember,
-    SubjectRegistrationParticipant,
-    SubjectType,
-    SubjectVariant,
-)
 from ..models.targetgroup import TargetGroup
 from ..utils import get_age, get_birth_date, get_gender
 from .fields import AgreementBooleanField
@@ -51,7 +54,7 @@ class RegistrationsFilterForm(FormMixin, forms.Form):
     not_paid = forms.BooleanField(label=_("Not paid"), required=False)
 
 
-class SubjectFilterForm(FormMixin, forms.Form):
+class ActivityFilterForm(FormMixin, forms.Form):
     q = forms.CharField(label=_("Search term"), required=False)
     course_types = forms.ModelMultipleChoiceField(queryset=None, label=_("Course type"), required=False)
     event_types = forms.ModelMultipleChoiceField(queryset=None, label=_("Event type"), required=False)
@@ -62,86 +65,86 @@ class SubjectFilterForm(FormMixin, forms.Form):
     places = forms.ModelMultipleChoiceField(queryset=None, label=_("Place"), required=False)
     age_groups = forms.ModelMultipleChoiceField(queryset=None, label=_("Age group"), required=False)
     target_groups = forms.ModelMultipleChoiceField(queryset=None, label=_("Target group"), required=False)
-    days_of_week = forms.MultipleChoiceField(
-        label=_("Day of week"), choices=tuple(sorted(DAY_OF_WEEK.items())), required=False
-    )
+    days_of_week = forms.MultipleChoiceField(label=_("Day of week"), choices=DayOfWeek.choices, required=False)
     past = forms.BooleanField(label=_("Show past"), required=False)
     reg_active = forms.BooleanField(label=_("Available for registration"), required=False)
     invisible = forms.BooleanField(label=_("Show invisible"), required=False)
 
     _models = {
-        SubjectType.COURSE: Course,
-        SubjectType.EVENT: Event,
-        SubjectType.ORDERABLE: Orderable,
+        ActivityModel.COURSE: Course,
+        ActivityModel.EVENT: Event,
+        ActivityModel.ORDERABLE: Orderable,
     }
 
-    def __init__(self, subject_type_type, subject_types, school_year, is_staff, data, **kwargs):
+    def __init__(self, activity_type_model, activity_types, school_year, is_staff, data, **kwargs):
         super().__init__(data=data, **kwargs)
-        self.subject_type_type = subject_type_type
+        self.activity_type_model = activity_type_model
 
-        # pre filter subjects by initial params
-        qs = self._models[subject_type_type].objects
-        if subject_type_type != SubjectType.EVENT or data.get("past"):
+        # pre filter activities by initial params
+        qs = self._models[activity_type_model].objects
+        if activity_type_model != ActivityModel.EVENT or data.get("past"):
             qs = qs.filter(school_year=school_year)
-        if len(subject_types) == 1:
-            qs = qs.filter(subject_type=subject_types[0])
+        if len(activity_types) == 1:
+            qs = qs.filter(activity_type=activity_types[0])
         else:
-            qs = qs.filter(subject_type__in=subject_types)
+            qs = qs.filter(activity_type__in=activity_types)
         if not is_staff or "invisible" not in data:
             qs = qs.filter(public=True)
         self.qs = qs
 
-        subject_ids = tuple(qs.order_by("id").values_list("id", flat=True).distinct())
-        if len(subject_types) == 1:
+        activity_ids = tuple(qs.order_by("id").values_list("id", flat=True).distinct())
+        if len(activity_types) == 1:
             del self.fields["course_types"]
             del self.fields["event_types"]
             del self.fields["orderable_types"]
-        elif subject_type_type == SubjectType.COURSE:
+        elif activity_type_model == ActivityModel.COURSE:
             del self.fields["event_types"]
             del self.fields["orderable_types"]
-            self.fields["course_types"].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
-        elif subject_type_type == SubjectType.EVENT:
+            self.fields["course_types"].queryset = ActivityType.objects.filter(id__in=(st.id for st in activity_types))
+        elif activity_type_model == ActivityModel.EVENT:
             del self.fields["course_types"]
             del self.fields["orderable_types"]
-            self.fields["event_types"].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
-        elif subject_type_type == SubjectType.ORDERABLE:
+            self.fields["event_types"].queryset = ActivityType.objects.filter(id__in=(st.id for st in activity_types))
+        elif activity_type_model == ActivityModel.ORDERABLE:
             del self.fields["course_types"]
             del self.fields["event_types"]
-            self.fields["orderable_types"].queryset = SubjectType.objects.filter(id__in=(st.id for st in subject_types))
+            self.fields["orderable_types"].queryset = ActivityType.objects.filter(
+                id__in=(st.id for st in activity_types)
+            )
 
-        self.fields["departments"].queryset = Department.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields["departments"].queryset = Department.objects.filter(activities__id__in=activity_ids).distinct()
         if self.fields["departments"].queryset.count() == 0:
             del self.fields["departments"]
 
-        self.fields["groups"].queryset = SubjectGroup.objects.filter(
-            subject_types__in=subject_types, subjects__id__in=subject_ids
+        self.fields["groups"].queryset = ActivityGroup.objects.filter(
+            activity_types__in=activity_types, activities__id__in=activity_ids
         ).distinct()
         if self.fields["groups"].queryset.count() == 0:
             del self.fields["groups"]
 
         self.fields["leaders"].queryset = (
-            Leader.objects.filter(subjects__id__in=subject_ids)
+            Leader.objects.filter(activities__id__in=activity_ids)
             .distinct()
             .order_by("user__first_name", "user__last_name")
         )
         if self.fields["leaders"].queryset.count() == 0:
             del self.fields["leaders"]
 
-        self.fields["places"].queryset = Place.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields["places"].queryset = Place.objects.filter(activities__id__in=activity_ids).distinct()
         if self.fields["places"].queryset.count() == 0:
             del self.fields["places"]
 
-        self.fields["age_groups"].queryset = AgeGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields["age_groups"].queryset = AgeGroup.objects.filter(activities__id__in=activity_ids).distinct()
         if self.fields["age_groups"].queryset.count() == 0:
             del self.fields["age_groups"]
 
-        self.fields["target_groups"].queryset = TargetGroup.objects.filter(subjects__id__in=subject_ids).distinct()
+        self.fields["target_groups"].queryset = TargetGroup.objects.filter(activities__id__in=activity_ids).distinct()
         if self.fields["target_groups"].queryset.count() == 0:
             del self.fields["target_groups"]
 
-        if subject_type_type != SubjectType.COURSE:
+        if activity_type_model == ActivityModel.EVENT:
             del self.fields["days_of_week"]
-        if subject_type_type != SubjectType.EVENT:
+        if activity_type_model != ActivityModel.EVENT:
             del self.fields["past"]
         if not is_staff:
             del self.fields["invisible"]
@@ -156,11 +159,11 @@ class SubjectFilterForm(FormMixin, forms.Form):
         for word in self.cleaned_data["q"].split():
             qs = qs.filter(Q(name__icontains=word) | Q(description__icontains=word))
         if self.cleaned_data.get("course_types"):
-            qs = qs.filter(subject_type__in=self.cleaned_data["course_types"])
+            qs = qs.filter(activity_type__in=self.cleaned_data["course_types"])
         elif self.cleaned_data.get("event_types"):
-            qs = qs.filter(subject_type__in=self.cleaned_data["event_types"])
+            qs = qs.filter(activity_type__in=self.cleaned_data["event_types"])
         elif self.cleaned_data.get("orderable_types"):
-            qs = qs.filter(subject_type__in=self.cleaned_data["orderable_types"])
+            qs = qs.filter(activity_type__in=self.cleaned_data["orderable_types"])
         if self.cleaned_data.get("departments"):
             qs = qs.filter(department__in=self.cleaned_data["departments"])
         if self.cleaned_data.get("groups"):
@@ -174,8 +177,8 @@ class SubjectFilterForm(FormMixin, forms.Form):
         if self.cleaned_data.get("target_groups"):
             qs = qs.filter(target_groups__in=self.cleaned_data["target_groups"])
         if self.cleaned_data.get("days_of_week"):
-            qs = qs.filter(times__day_of_week__in=self.cleaned_data["days_of_week"])
-        if self.subject_type_type == SubjectType.EVENT:
+            qs = qs.filter(times__days_of_week__match=DaysOfWeek(self.cleaned_data["days_of_week"]))
+        if self.activity_type_model == ActivityModel.EVENT:
             if self.cleaned_data["past"]:
                 qs = qs.filter(end_date__lte=now()).order_by("-start_date", "-start_time")
             else:
@@ -188,20 +191,20 @@ class SubjectFilterForm(FormMixin, forms.Form):
         return qs.distinct()
 
 
-class SubjectForm(FormMixin, forms.ModelForm):
+class ActivityForm(FormMixin, forms.ModelForm):
     class Meta:
-        model = Subject
+        model = Activity
         fields = ["description"]
 
 
-class SubjectAdminForm(forms.ModelForm):
+class ActivityAdminForm(forms.ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
         leprikon_site = LeprikonSite.objects.get_current()
 
         # limit choices of groups
-        self.fields["groups"].widget.choices.queryset = self.subject_type.groups.all()
+        self.fields["groups"].widget.choices.queryset = self.activity_type.groups.all()
 
         # limit choices of leaders
         leaders_choices = self.fields["leaders"].widget.choices
@@ -211,7 +214,7 @@ class SubjectAdminForm(forms.ModelForm):
         if instance:
             questions_choices = self.fields["questions"].widget.choices
             questions_choices.queryset = questions_choices.queryset.exclude(
-                id__in=instance.subject_type.questions.values("id")
+                id__in=instance.activity_type.questions.values("id")
             )
 
         # limit choices of registration agreements
@@ -221,30 +224,30 @@ class SubjectAdminForm(forms.ModelForm):
         )
         if instance:
             registration_agreements_choices.queryset = registration_agreements_choices.queryset.exclude(
-                id__in=instance.subject_type.registration_agreements.values("id")
+                id__in=instance.activity_type.registration_agreements.values("id")
             )
 
 
-class SubjectVariantForm(forms.ModelForm):
-    subject: Subject
+class ActivityVariantForm(forms.ModelForm):
+    activity: Activity
 
     class Meta:
-        model = SubjectVariant
-        exclude = ("subject", "order")
+        model = ActivityVariant
+        exclude = ("activity", "order")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.instance.subject = self.subject
-        if self.subject.subject_type.subject_type == SubjectType.COURSE:
+        self.instance.activity = self.activity
+        if self.activity.activity_type.model == ActivityModel.COURSE:
             school_year_divisions = self.fields["school_year_division"].widget.choices.queryset.filter(
-                school_year=self.subject.school_year
+                school_year=self.activity.school_year
             )
             self.fields["school_year_division"].widget.choices.queryset = school_year_divisions
-        if self.subject.registration_type_participants:
-            self.fields["age_groups"].widget.choices.queryset = self.subject.age_groups.all()
-        if self.subject.registration_type_groups:
-            self.fields["target_groups"].widget.choices.queryset = self.subject.target_groups.all()
-        if SubjectVariant.objects.filter(subject=self.subject).exclude(id=self.instance.id).count():
+        if self.activity.registration_type_participants:
+            self.fields["age_groups"].widget.choices.queryset = self.activity.age_groups.all()
+        if self.activity.registration_type_groups:
+            self.fields["target_groups"].widget.choices.queryset = self.activity.target_groups.all()
+        if ActivityVariant.objects.filter(activity=self.activity).exclude(id=self.instance.id).count():
             self.fields["name"].required = True
 
 
@@ -290,8 +293,8 @@ class SchoolMixin:
 class RegistrationParticipantFormMixin:
     def clean_birth_num(self):
         if self.cleaned_data["birth_num"]:
-            qs = SubjectRegistrationParticipant.objects.filter(
-                registration__subject_id=self.subject.id,
+            qs = RegistrationParticipant.objects.filter(
+                registration__activity_id=self.activity.id,
                 registration__canceled=None,
                 birth_num=self.cleaned_data["birth_num"],
             )
@@ -396,9 +399,9 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         super().__init__(**kwargs)
 
         # choices for age group
-        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups.all()
-        if self.subject.age_groups.count() == 1:
-            self.fields["age_group"].initial = self.subject.age_groups.first()
+        self.fields["age_group"].widget.choices.queryset = self.activity.age_groups.all()
+        if self.activity.age_groups.count() == 1:
+            self.fields["age_group"].initial = self.activity.age_groups.first()
 
         # initial school
         if School.objects.count() == 0:
@@ -434,7 +437,7 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
         self.questions_form = type(
             str("QuestionsForm"),
             (FormMixin, forms.Form),
-            dict((q.slug, q.get_field()) for q in self.subject.all_questions),
+            dict((q.slug, q.get_field()) for q in self.activity.all_questions),
         )(**kwargs)
 
     @cached_property
@@ -467,11 +470,8 @@ class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, S
             for field_name, error in form.errors.items()
         }
 
+    @transaction.atomic
     def save(self, commit=True):
-        with transaction.atomic():
-            return self._save(commit)
-
-    def _save(self, commit):
         # set answers
         self.instance.answers = dumps(self.questions_form.cleaned_data)
 
@@ -563,18 +563,29 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
         super().__init__(**kwargs)
 
         # choices for target group
-        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups.all()
-        if self.subject.target_groups.count() == 1:
-            self.fields["target_group"].initial = self.subject.target_groups.first()
+        self.fields["target_group"].widget.choices.queryset = self.activity.target_groups.all()
+        if self.activity.target_groups.count() == 1:
+            self.fields["target_group"].initial = self.activity.target_groups.first()
 
         # initial school
         self.fields["school"].initial = "other" if School.objects.count() == 0 else None
+
+        class GroupContactSelectForm(FormMixin, forms.Form):
+            group_contact = forms.ChoiceField(
+                label=_("Choose"),
+                choices=[("new", _("new group information"))] + list((gc.id, gc) for gc in self.user_group_contacts),
+                initial="new",
+                widget=RadioSelectBootstrap(),
+            )
+
+        kwargs["prefix"] = self.prefix + "-group_contact_select"
+        self.group_contact_select_form = GroupContactSelectForm(**kwargs)
 
         kwargs["prefix"] = self.prefix + "-questions"
         self.questions_form = type(
             str("QuestionsForm"),
             (FormMixin, forms.Form),
-            dict((q.slug, q.get_field()) for q in self.subject.all_questions),
+            dict((q.slug, q.get_field()) for q in self.activity.all_questions),
         )(**kwargs)
 
     @cached_property
@@ -588,6 +599,7 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
     def required_forms(self):
         return [
             super(),
+            self.group_contact_select_form,
             self.questions_form,
         ]
 
@@ -604,12 +616,40 @@ class RegistrationGroupForm(FormMixin, SchoolMixin, forms.ModelForm):
             for field_name, error in form.errors.items()
         }
 
+    @transaction.atomic
     def save(self, commit=True):
         # set answers
         self.instance.answers = dumps(self.questions_form.cleaned_data)
 
         # create
-        return super().save(commit)
+        super().save(commit)
+
+        # save / update group contact
+        if self.group_contact_select_form.cleaned_data["group_contact"] == "new":
+            group_contact = GroupContact()
+            group_contact.user = self.instance.registration.user
+        else:
+            group_contact = GroupContact.objects.get(id=self.group_contact_select_form.cleaned_data["group_contact"])
+        for attr in [
+            "target_group",
+            "name",
+            "first_name",
+            "last_name",
+            "street",
+            "city",
+            "postal_code",
+            "phone",
+            "email",
+            "school",
+            "school_other",
+            "school_class",
+        ]:
+            setattr(group_contact, attr, getattr(self.instance, attr))
+        group_contact_answers = group_contact.get_answers()
+        group_contact_answers.update(self.instance.get_answers())
+        group_contact.answers = dumps(group_contact_answers)
+        group_contact.save()
+        return self.instance
 
 
 class RegistrationGroupMemberForm(FormMixin, forms.ModelForm):
@@ -620,24 +660,24 @@ class RegistrationBillingInfoForm(FormMixin, forms.ModelForm):
     use_required_attribute = False
 
     class Meta:
-        model = SubjectRegistrationBillingInfo
+        model = RegistrationBillingInfo
         exclude = ["registration"]
 
 
 class RegistrationForm(FormMixin, forms.ModelForm):
-    instance: SubjectRegistration
+    instance: Registration
 
-    def __init__(self, subject: Subject, subject_variant: SubjectVariant, user, **kwargs):
+    def __init__(self, activity: Activity, activity_variant: ActivityVariant, user, **kwargs):
         super().__init__(**kwargs)
         self.user = user
-        self.instance.subject = subject
-        self.instance.subject_variant = subject_variant
+        self.instance.activity = activity
+        self.instance.activity_variant = activity_variant
 
         # sub forms
-        if subject.registration_type_participants:
+        if activity.registration_type_participants:
             registered_birth_nums = list(
-                SubjectRegistrationParticipant.objects.filter(
-                    registration_id__in=self.instance.subject.active_registrations.values("id"),
+                RegistrationParticipant.objects.filter(
+                    registration_id__in=self.instance.activity.active_registrations.values("id"),
                     birth_num__isnull=False,
                 ).values_list("birth_num", flat=True)
             )
@@ -646,7 +686,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 RegistrationParticipantForm.__name__,
                 (RegistrationParticipantForm,),
                 {
-                    "subject": subject,
+                    "activity": activity,
                     "user_participants": user.leprikon_participants.exclude(
                         birth_num__in=registered_birth_nums,
                     ),
@@ -655,25 +695,31 @@ class RegistrationForm(FormMixin, forms.ModelForm):
             )
 
             self.participants_formset = inlineformset_factory(
-                SubjectRegistration,
-                SubjectRegistrationParticipant,
+                Registration,
+                RegistrationParticipant,
                 form=participant_form,
                 fk_name="registration",
                 exclude=[],
-                extra=subject_variant.max_participants_count,
-                min_num=subject_variant.min_participants_count,
-                max_num=subject_variant.max_participants_count,
+                extra=activity_variant.max_participants_count,
+                min_num=activity_variant.min_participants_count,
+                max_num=activity_variant.max_participants_count,
                 validate_min=True,
                 validate_max=True,
             )(kwargs.get("data"), instance=self.instance)
 
-        elif subject.registration_type_groups:
-            group_form = type(RegistrationGroupForm.__name__, (RegistrationGroupForm,), {"subject": subject})
+            del self.fields["participants_count"]
+
+        elif activity.registration_type_groups:
+            GroupForm = type(
+                RegistrationGroupForm.__name__,
+                (RegistrationGroupForm,),
+                {"activity": activity, "user_group_contacts": user.leprikon_group_contacts.all()},
+            )
 
             self.group_formset = inlineformset_factory(
-                SubjectRegistration,
-                SubjectRegistrationGroup,
-                form=group_form,
+                Registration,
+                RegistrationGroup,
+                form=GroupForm,
                 fk_name="registration",
                 exclude=[],
                 extra=1,
@@ -683,23 +729,33 @@ class RegistrationForm(FormMixin, forms.ModelForm):
                 validate_max=True,
             )(kwargs.get("data"), instance=self.instance)
 
-            self.group_members_formset = inlineformset_factory(
-                SubjectRegistration,
-                SubjectRegistrationGroupMember,
-                form=RegistrationGroupMemberForm,
-                fk_name="registration",
-                exclude=[],
-                extra=subject_variant.max_participants_count,
-                min_num=subject_variant.min_participants_count,
-                max_num=subject_variant.max_participants_count,
-                validate_min=True,
-                validate_max=True,
-            )(kwargs.get("data"), instance=self.instance)
+            if activity_variant.require_group_members_list:
+                self.group_members_formset = inlineformset_factory(
+                    Registration,
+                    RegistrationGroupMember,
+                    form=RegistrationGroupMemberForm,
+                    fk_name="registration",
+                    exclude=[],
+                    extra=activity_variant.max_participants_count,
+                    min_num=activity_variant.min_participants_count,
+                    max_num=activity_variant.max_participants_count,
+                    validate_min=True,
+                    validate_max=True,
+                )(kwargs.get("data"), instance=self.instance)
+            if activity_variant.require_group_members_list:
+                del self.fields["participants_count"]
+            else:
+                self.fields["participants_count"].validators = [
+                    MinValueValidator(activity_variant.min_participants_count),
+                    MaxValueValidator(activity_variant.max_participants_count),
+                ]
+                self.fields["participants_count"].widget.attrs["min"] = activity_variant.min_participants_count
+                self.fields["participants_count"].widget.attrs["max"] = activity_variant.max_participants_count
 
         del kwargs["instance"]
 
         self.agreement_forms = []
-        for agreement in self.instance.subject.all_registration_agreements:
+        for agreement in self.instance.activity.all_registration_agreements:
             kwargs["prefix"] = "agreement_%s" % agreement.id
             form_attributes = {
                 "agreement": agreement,
@@ -754,10 +810,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
     @cached_property
     def all_forms(self):
         all_forms = self.required_forms
-        if self.instance.subject.registration_type_participants:
+        if self.instance.activity.registration_type_participants:
             all_forms += self.participants_formset.forms
-        elif self.instance.subject.registration_type_groups:
-            all_forms += self.group_formset.forms + self.group_members_formset.forms
+        elif self.instance.activity.registration_type_groups:
+            all_forms += self.group_formset.forms
+            if self.instance.activity_variant.require_group_members_list:
+                all_forms += self.group_members_formset.forms
         if (
             not self.billing_info_select_form.is_valid()
             or self.billing_info_select_form.cleaned_data["billing_info"] != "none"
@@ -768,13 +826,12 @@ class RegistrationForm(FormMixin, forms.ModelForm):
     def is_valid(self):
         # validate all required forms
         results = [form.is_valid() for form in self.required_forms]
-        if self.instance.subject.registration_type_participants:
+        if self.instance.activity.registration_type_participants:
             results.append(self.participants_formset.is_valid())
-        elif self.instance.subject.registration_type_groups:
-            results += [
-                self.group_formset.is_valid(),
-                self.group_members_formset.is_valid(),
-            ]
+        elif self.instance.activity.registration_type_groups:
+            results.append(self.group_formset.is_valid())
+            if self.instance.activity_variant.require_group_members_list:
+                results.append(self.group_members_formset.is_valid())
         if (
             not self.billing_info_select_form.is_valid()
             or self.billing_info_select_form.cleaned_data["billing_info"] != "none"
@@ -796,34 +853,40 @@ class RegistrationForm(FormMixin, forms.ModelForm):
         self.instance.created_by = self.user
         self.instance.user = self.user
 
-        if self.instance.subject.registration_type_participants:
-            participants_count = self.participants_formset.total_form_count()
-        elif self.instance.subject.registration_type_groups:
-            participants_count = self.group_members_formset.total_form_count()
+        if self.instance.activity.registration_type_participants:
+            self.instance.participants_count = len([data for data in self.participants_formset.cleaned_data if data])
+        elif self.instance.activity.registration_type_groups:
+            if self.instance.activity_variant.require_group_members_list:
+                self.instance.participants_count = len(
+                    [data for data in self.group_members_formset.cleaned_data if data]
+                )
+            else:
+                self.instance.participants_count = self.cleaned_data["participants_count"]
 
         # set price
-        self.instance.price = self.instance.subject_variant.get_price(participants_count)
+        self.instance.price = self.instance.activity_variant.get_price(self.instance.participants_count)
 
         # create
         super().save(True)
 
-        if self.instance.subject.registration_type_participants:
+        if self.instance.activity.registration_type_participants:
             # save participants
             self.participants_formset.user = self.instance.user
             self.participants_formset.save()
 
-        elif self.instance.subject.registration_type_groups:
+        elif self.instance.activity.registration_type_groups:
             # save group
             self.group_formset.save()
 
             # save group members
-            self.group_members_formset.save()
+            if self.instance.activity_variant.require_group_members_list:
+                self.group_members_formset.save()
 
         # save additional questions
-        self.instance.questions.set(self.instance.subject.all_questions)
+        self.instance.questions.set(self.instance.activity.all_questions)
 
         # save legal agreements
-        self.instance.agreements.set(self.instance.subject.all_registration_agreements)
+        self.instance.agreements.set(self.instance.activity.all_registration_agreements)
 
         # save agreement options
         for agreement_form in self.agreement_forms:
@@ -871,14 +934,17 @@ class CourseRegistrationForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.subject_variant.school_year_division:
-            self.available_periods = self.instance.subject_variant.school_year_division.periods.exclude(
+        if self.instance.activity_variant.school_year_division:
+            self.available_periods = self.instance.activity_variant.school_year_division.periods.exclude(
                 end__lt=date.today(),
             )
         else:
             self.available_periods = []
 
-        if self.instance.subject_variant.school_year_division and self.instance.subject_variant.allow_period_selection:
+        if (
+            self.instance.activity_variant.school_year_division
+            and self.instance.activity_variant.allow_period_selection
+        ):
             self.fields["periods"].widget.choices.queryset = self.available_periods
         else:
             del self.fields["periods"]
@@ -886,8 +952,9 @@ class CourseRegistrationForm(RegistrationForm):
     class Meta:
         model = CourseRegistration
         exclude = (
-            "subject",
-            "subject_variant",
+            "activity",
+            "activity_variant",
+            "calendar_event",
             "user",
             "cancelation_requested",
             "cancelation_requested_by",
@@ -912,8 +979,9 @@ class EventRegistrationForm(RegistrationForm):
     class Meta:
         model = EventRegistration
         exclude = (
-            "subject",
-            "subject_variant",
+            "activity",
+            "activity_variant",
+            "calendar_event",
             "user",
             "cancelation_requested",
             "cancelation_requested_by",
@@ -923,11 +991,15 @@ class EventRegistrationForm(RegistrationForm):
 
 
 class OrderableRegistrationForm(RegistrationForm):
+    start_date = forms.DateField(widget=forms.HiddenInput())
+    start_time = forms.TimeField(widget=forms.HiddenInput())
+
     class Meta:
         model = OrderableRegistration
         exclude = (
-            "subject",
-            "subject_variant",
+            "activity",
+            "activity_variant",
+            "calendar_event",
             "user",
             "cancelation_requested",
             "cancelation_requested_by",
@@ -935,34 +1007,53 @@ class OrderableRegistrationForm(RegistrationForm):
             "canceled_by",
         )
 
+    @transaction.atomic
+    def save(self, commit=True):
+        start = datetime.combine(self.cleaned_data["start_date"], self.cleaned_data["start_time"])
+        end: datetime = start + self.instance.activity.orderable.duration
+        self.instance.calendar_event = CalendarEvent.objects.create(
+            name=self.instance.activity.name,
+            activity=self.instance.activity,
+            start_date=start.date(),
+            start_time=start.time(),
+            end_date=end.date(),
+            end_time=end.time(),
+            preparation_time=self.instance.activity.orderable.preparation_time,
+            recovery_time=self.instance.activity.orderable.recovery_time,
+            is_canceled=False,
+        )
+        self.instance.calendar_event.resources.set(self.instance.activity_variant.required_resources.all())
+        self.instance.calendar_event.resource_groups.set(self.instance.activity_variant.required_resource_groups.all())
+        return super().save()
+
 
 class RegistrationAdminForm(forms.ModelForm):
-    instance: SubjectRegistration
-    subject: Subject
-    subject_variant: SubjectVariant
+    instance: Registration
+    activity: Activity
+    activity_variant: ActivityVariant
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
-        self.fields["subject_variant"].widget.choices.queryset = self.subject.variants.all()
+        self.fields["activity_variant"].widget.choices.queryset = self.activity.variants.all()
 
         # choices for agreement options
         if "agreement_options" in self.fields:
-            instance: SubjectRegistration = kwargs.get("instance")
+            instance: Registration = kwargs.get("instance")
             self.fields["agreement_options"].widget.choices = tuple(
                 (agreement.name, tuple((option.id, option.name) for option in agreement.all_options))
-                for agreement in (instance.all_agreements if instance else self.subject.all_registration_agreements)
+                for agreement in (instance.all_agreements if instance else self.activity.all_registration_agreements)
             )
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
-        subject = cleaned_data.get("subject")
-        subject_variant = cleaned_data.get("subject_variant")
-        if subject and subject_variant and subject_variant.subject_id != subject.id:
+        activity = cleaned_data.get("activity")
+        activity_variant = cleaned_data.get("activity_variant")
+        if activity and activity_variant and activity_variant.activity_id != activity.id:
             raise ValidationError(
                 {
-                    "subject_variant": ValidationError(
-                        self.fields["subject_variant"].error_messages["invalid_choice"],
+                    "activity_variant": ValidationError(
+                        self.fields["activity_variant"].error_messages["invalid_choice"],
                         code="invalid_choice",
                     )
                 }
@@ -1007,11 +1098,11 @@ class RegistrationParticipantAdminForm(RegistrationParticipantFormMixin, SchoolA
         super().__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
 
-        self.fields["age_group"].widget.choices.queryset = self.subject.age_groups.all()
-        if self.subject.age_groups.count() == 1:
-            self.fields["age_group"].initial = self.subject.age_groups.first()
+        self.fields["age_group"].widget.choices.queryset = self.activity.age_groups.all()
+        if self.activity.age_groups.count() == 1:
+            self.fields["age_group"].initial = self.activity.age_groups.first()
 
-        questions = self.obj.all_questions if self.obj else self.subject.all_questions
+        questions = self.obj.all_questions if self.obj else self.activity.all_questions
         answers = instance.get_answers() if instance else {}
         for q in questions:
             self.fields["q_" + q.slug].initial = answers.get(q.slug)
@@ -1022,7 +1113,7 @@ class RegistrationParticipantAdminForm(RegistrationParticipantFormMixin, SchoolA
         self.instance.answers = dumps(
             {
                 q.slug: self.cleaned_data["q_" + q.slug]
-                for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
+                for q in (self.obj.all_questions if self.obj else self.activity.all_questions)
             }
         )
         self._set_birth_date_gender()
@@ -1036,9 +1127,9 @@ class RegistrationGroupAdminForm(SchoolAdminMixin, forms.ModelForm):
         super().__init__(data, *args, **kwargs)
         instance = kwargs.get("instance")
 
-        self.fields["target_group"].widget.choices.queryset = self.subject.target_groups.all()
+        self.fields["target_group"].widget.choices.queryset = self.activity.target_groups.all()
 
-        questions = self.obj.all_questions if self.obj else self.subject.all_questions
+        questions = self.obj.all_questions if self.obj else self.activity.all_questions
         answers = instance.get_answers() if instance else {}
         for q in questions:
             self.fields["q_" + q.slug].initial = answers.get(q.slug)
@@ -1047,7 +1138,7 @@ class RegistrationGroupAdminForm(SchoolAdminMixin, forms.ModelForm):
         self.instance.answers = dumps(
             {
                 q.slug: self.cleaned_data["q_" + q.slug]
-                for q in (self.obj.all_questions if self.obj else self.subject.all_questions)
+                for q in (self.obj.all_questions if self.obj else self.activity.all_questions)
             }
         )
         return super().save(commit)

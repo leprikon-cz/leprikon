@@ -9,18 +9,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leprikon', '0048_birth_date'),
+        ("leprikon", "0048_birth_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='courselistplugin',
-            name='target_groups',
-            field=models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by target groups.', related_name='_courselistplugin_target_groups_+', to='leprikon.TargetGroup', verbose_name='target groups'),
+            model_name="courselistplugin",
+            name="target_groups",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Keep empty to skip searching by target groups.",
+                related_name="+",
+                to="leprikon.TargetGroup",
+                verbose_name="target groups",
+            ),
         ),
         migrations.AddField(
-            model_name='eventlistplugin',
-            name='target_groups',
-            field=models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by target groups.', related_name='_eventlistplugin_target_groups_+', to='leprikon.TargetGroup', verbose_name='target groups'),
+            model_name="eventlistplugin",
+            name="target_groups",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Keep empty to skip searching by target groups.",
+                related_name="+",
+                to="leprikon.TargetGroup",
+                verbose_name="target groups",
+            ),
         ),
     ]

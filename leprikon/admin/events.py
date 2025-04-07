@@ -8,19 +8,19 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from ..models.activities import ActivityModel
 from ..models.events import Event, EventDiscount, EventRegistration
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
 from ..utils import attributes, currency
+from .activities import ActivityBaseAdmin, ActivityDiscountBaseAdmin, RegistrationBaseAdmin
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 @admin.register(Event)
-class EventAdmin(SubjectBaseAdmin):
-    subject_type_type = SubjectType.EVENT
+class EventAdmin(ActivityBaseAdmin):
+    activity_type_model = ActivityModel.EVENT
     registration_model = EventRegistration
-    actions = SubjectBaseAdmin.actions + (
+    actions = ActivityBaseAdmin.actions + (
         "publish",
         "unpublish",
         "copy_to_school_year",
@@ -29,7 +29,7 @@ class EventAdmin(SubjectBaseAdmin):
         "id",
         "code",
         "name",
-        "subject_type",
+        "activity_type",
         "get_groups_list",
         "get_leaders_list",
         "get_times_list",
@@ -47,7 +47,7 @@ class EventAdmin(SubjectBaseAdmin):
         "code",
         "name",
         "department",
-        "subject_type",
+        "activity_type",
         "registration_type",
         "get_groups_list",
         "get_leaders_list",
@@ -123,9 +123,9 @@ class EventAdmin(SubjectBaseAdmin):
 
 
 @admin.register(EventRegistration)
-class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
-    subject_type_type = SubjectType.EVENT
-    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
+class EventRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
+    activity_type_model = ActivityModel.EVENT
+    actions = RegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
 
     @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):
@@ -215,7 +215,7 @@ class EventRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
 
 
 @admin.register(EventDiscount)
-class EventDiscountAdmin(SubjectDiscountBaseAdmin):
-    actions = SubjectDiscountBaseAdmin.actions
-    list_display = ("accounted", "registration", "subject", "amount_html", "explanation")
-    list_export = ("accounted", "registration", "subject", "amount", "explanation")
+class EventDiscountAdmin(ActivityDiscountBaseAdmin):
+    actions = ActivityDiscountBaseAdmin.actions
+    list_display = ("accounted", "registration", "activity", "amount_html", "explanation")
+    list_export = ("accounted", "registration", "activity", "amount", "explanation")

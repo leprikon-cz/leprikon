@@ -10,16 +10,16 @@
             <blockTable style="with-borders">
                 <tr>
                     <td>
-                        <para style="title">{{ object.subject_organization.name }}</para>
+                        <para style="title">{{ object.activity_organization.name }}</para>
                         <spacer length="2mm"/>
                         <para style="left">{% trans 'address' %}:</para>
-                        <para style="left">{{ object.subject_organization.street }}</para>
-                        <para style="left">{{ object.subject_organization.postal_code }}, {{ object.subject_organization.city }}</para>
+                        <para style="left">{{ object.activity_organization.street }}</para>
+                        <para style="left">{{ object.activity_organization.postal_code }}, {{ object.activity_organization.city }}</para>
                         <spacer length="2mm"/>
-                        {% if object.subject_organization.email %}<para style="left">{% trans 'email' %}: {{ object.subject_organization.email }}</para>{% endif %}
-                        {% if object.subject_organization.phone %}<para style="left">{% trans 'phone' %}: {{ object.subject_organization.phone }}</para>{% endif %}
-                        {% if object.subject_organization.email or object.subject_organization.phone %}<spacer length="2mm"/>{% endif %}
-                        <para style="left">{% trans 'company number' %}: {{ object.subject_organization.company_num }}</para>
+                        {% if object.activity_organization.email %}<para style="left">{% trans 'email' %}: {{ object.activity_organization.email }}</para>{% endif %}
+                        {% if object.activity_organization.phone %}<para style="left">{% trans 'phone' %}: {{ object.activity_organization.phone }}</para>{% endif %}
+                        {% if object.activity_organization.email or object.activity_organization.phone %}<spacer length="2mm"/>{% endif %}
+                        <para style="left">{% trans 'company number' %}: {{ object.activity_organization.company_num }}</para>
                     </td>
                 </tr>
             </blockTable>

@@ -10,6 +10,8 @@ api_router = DefaultRouter(trailing_slash=False)
 api_router.register(r"journal", views.JournalViewSet, "journal")
 api_router.register(r"schoolyear", views.SchoolYearViewSet, "schoolyear")
 api_router.register(r"user", views.UserViewSet, "user")
+api_router.register(r"activity", views.ActivityViewSet, "activity")
+api_router.register(r"calendarevent", views.CalendarEventViewSet, "calendarevent")
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

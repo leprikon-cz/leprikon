@@ -46,11 +46,11 @@
         <blockTable style="blocktable">
             <tr>
                 <td>{% trans "School year" %}</td>
-                <td><para style="para">{{ object.subject.school_year }}</para></td>
+                <td><para style="para">{{ object.activity.school_year }}</para></td>
             </tr>
             <tr>
-                <td>{% blocktrans with subject_type=object.subject.subject_type.name_genitiv %}Name of {{ subject_type }}{% endblocktrans %}</td>
-                <td><para style="para">{{ object.subject.name }}</para></td>
+                <td>{% blocktrans with activity_type=object.activity.activity_type.name_genitiv %}Name of {{ activity_type }}{% endblocktrans %}</td>
+                <td><para style="para">{{ object.activity.name }}</para></td>
             </tr>
             {% for p in object.all_participants %}
                 <tr>
@@ -69,7 +69,7 @@
                 </tr>
                 {% endif %}
             {% endfor %}
-            {% if object.all_group_members %}
+            {% if object.activity.registration_type_groups %}
                 <tr>
                     <td>{% trans 'Group name' %}</td>
                     <td><para style="para">{{ object.group.name }}</para></td>

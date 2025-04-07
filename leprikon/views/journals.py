@@ -4,7 +4,7 @@ from django.urls.base import reverse_lazy as reverse
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.journals import JournalCreateForm, JournalEntryForm, JournalLeaderEntryForm, JournalUpdateForm
-from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, Subject
+from ..models.journals import Activity, Journal, JournalEntry, JournalLeaderEntry
 from ..utils import reverse_with_back
 from .generic import CreateView, DeleteView, DetailView, TemplateView, UpdateView
 
@@ -40,16 +40,16 @@ class JournalCreateView(CreateView):
     template_name = "leprikon/journal_form.html"
     title = _("New journal")
 
-    def dispatch(self, request, subject):
-        kwargs = {"id": subject}
+    def dispatch(self, request, activity):
+        kwargs = {"id": activity}
         if not self.request.user.is_staff:
             kwargs["leaders"] = self.request.leader
-        self.subject = get_object_or_404(Subject, **kwargs)
+        self.activity = get_object_or_404(Activity, **kwargs)
         return super().dispatch(request)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["subject"] = self.subject
+        kwargs["activity"] = self.activity
         kwargs["initial"] = dict(leaders=[self.request.leader])
         return kwargs
 
@@ -78,7 +78,7 @@ class JournalDeleteView(DeleteView):
     def get_queryset(self):
         qs = super().get_queryset()
         if not self.request.user.is_staff:
-            qs = qs.filter(subject__leaders=self.request.leader)
+            qs = qs.filter(activity__leaders=self.request.leader)
         return qs
 
     def get_object(self):

@@ -8,27 +8,26 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from ..models.activities import ActivityModel
 from ..models.orderables import Orderable, OrderableDiscount, OrderableRegistration
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
 from ..utils import attributes, currency
+from .activities import ActivityBaseAdmin, ActivityDiscountBaseAdmin, RegistrationBaseAdmin
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 @admin.register(Orderable)
-class OrderableAdmin(SubjectBaseAdmin):
-    subject_type_type = SubjectType.ORDERABLE
+class OrderableAdmin(ActivityBaseAdmin):
+    activity_type_model = ActivityModel.ORDERABLE
     registration_model = OrderableRegistration
     list_display = (
         "id",
         "code",
         "name",
-        "subject_type",
+        "activity_type",
         "get_groups_list",
         "get_leaders_list",
         "get_times_list",
-        "duration",
         "place",
         "get_registering_link",
         "get_registrations_link",
@@ -42,7 +41,7 @@ class OrderableAdmin(SubjectBaseAdmin):
         "code",
         "name",
         "department",
-        "subject_type",
+        "activity_type",
         "registration_type",
         "get_groups_list",
         "get_leaders_list",
@@ -57,7 +56,7 @@ class OrderableAdmin(SubjectBaseAdmin):
         "get_unapproved_registrations_count",
         "note",
     )
-    actions = SubjectBaseAdmin.actions + (
+    actions = ActivityBaseAdmin.actions + (
         "publish",
         "unpublish",
         "copy_to_school_year",
@@ -121,12 +120,10 @@ class OrderableAdmin(SubjectBaseAdmin):
 
 
 @admin.register(OrderableRegistration)
-class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
-    subject_type_type = SubjectType.ORDERABLE
-    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
-    list_display = (
-        SubjectRegistrationBaseAdmin.list_display[:3] + ("event_date",) + SubjectRegistrationBaseAdmin.list_display[3:]
-    )
+class OrderableRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
+    activity_type_model = ActivityModel.ORDERABLE
+    actions = RegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
+    list_display = RegistrationBaseAdmin.list_display[:3] + ("event_date",) + RegistrationBaseAdmin.list_display[3:]
 
     @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):
@@ -210,12 +207,11 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
                 ' &nbsp; <a class="popup-link" href="{href_add}" style="background-position: 0 0" title="{title_add}">'
                 '<img src="{icon_add}" alt="+"/></a>',
                 color=obj.payment_status.color,
-                href_list=reverse("admin:leprikon_subjectreceivedpayment_changelist")
+                href_list=reverse("admin:leprikon_receivedpayment_changelist")
                 + "?target_registration={}".format(obj.id),
                 title=obj.payment_status.title,
                 amount=currency(obj.payment_status.received),
-                href_add=reverse("admin:leprikon_subjectreceivedpayment_add")
-                + "?target_registration={}".format(obj.id),
+                href_add=reverse("admin:leprikon_receivedpayment_add") + "?target_registration={}".format(obj.id),
                 icon_add=static("admin/img/icon-addlink.svg"),
                 title_add=_("add payment"),
             )
@@ -235,7 +231,7 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdm
 
 
 @admin.register(OrderableDiscount)
-class OrderableDiscountAdmin(SubjectDiscountBaseAdmin):
-    actions = SubjectDiscountBaseAdmin.actions
-    list_display = ("accounted", "registration", "subject", "amount_html", "explanation")
-    list_export = ("accounted", "registration", "subject", "amount", "explanation")
+class OrderableDiscountAdmin(ActivityDiscountBaseAdmin):
+    actions = ActivityDiscountBaseAdmin.actions
+    list_display = ("accounted", "registration", "activity", "amount_html", "explanation")
+    list_export = ("accounted", "registration", "activity", "amount", "explanation")

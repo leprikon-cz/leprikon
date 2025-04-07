@@ -7,72 +7,91 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leprikon', '0018_citizenship_cleanup'),
+        ("leprikon", "0018_citizenship_cleanup"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Department',
+            name="Department",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='name')),
-                ('code', models.PositiveSmallIntegerField(blank=True, default=0, verbose_name='department code')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=50, verbose_name="name")),
+                ("code", models.PositiveSmallIntegerField(blank=True, default=0, verbose_name="department code")),
             ],
             options={
-                'ordering': ('code', 'name'),
-                'verbose_name': 'department',
-                'verbose_name_plural': 'departments',
+                "ordering": ("code", "name"),
+                "verbose_name": "department",
+                "verbose_name_plural": "departments",
             },
         ),
         migrations.RemoveField(
-            model_name='manager',
-            name='school_years',
+            model_name="manager",
+            name="school_years",
         ),
         migrations.RemoveField(
-            model_name='manager',
-            name='user',
+            model_name="manager",
+            name="user",
         ),
         migrations.AlterModelOptions(
-            name='course',
-            options={'ordering': ('code', 'name'), 'verbose_name': 'course', 'verbose_name_plural': 'courses'},
+            name="course",
+            options={"ordering": ("code", "name"), "verbose_name": "course", "verbose_name_plural": "courses"},
         ),
         migrations.AlterModelOptions(
-            name='subject',
-            options={'ordering': ('code', 'name'), 'verbose_name': 'subject', 'verbose_name_plural': 'subjects'},
+            name="subject",
+            options={"ordering": ("code", "name"), "verbose_name": "subject", "verbose_name_plural": "subjects"},
         ),
         migrations.RemoveField(
-            model_name='courselistplugin',
-            name='managers',
+            model_name="courselistplugin",
+            name="managers",
         ),
         migrations.RemoveField(
-            model_name='eventlistplugin',
-            name='managers',
+            model_name="eventlistplugin",
+            name="managers",
         ),
         migrations.RemoveField(
-            model_name='subject',
-            name='managers',
+            model_name="subject",
+            name="managers",
         ),
         migrations.AlterField(
-            model_name='subject',
-            name='age_groups',
-            field=models.ManyToManyField(related_name='subjects', to='leprikon.AgeGroup', verbose_name='age groups'),
+            model_name="subject",
+            name="age_groups",
+            field=models.ManyToManyField(related_name="subjects", to="leprikon.AgeGroup", verbose_name="age groups"),
         ),
         migrations.DeleteModel(
-            name='Manager',
+            name="Manager",
         ),
         migrations.AddField(
-            model_name='courselistplugin',
-            name='departments',
-            field=models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by departments.', related_name='_courselistplugin_departments_+', to='leprikon.Department', verbose_name='departments'),
+            model_name="courselistplugin",
+            name="departments",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Keep empty to skip searching by departments.",
+                related_name="+",
+                to="leprikon.Department",
+                verbose_name="departments",
+            ),
         ),
         migrations.AddField(
-            model_name='eventlistplugin',
-            name='departments',
-            field=models.ManyToManyField(blank=True, help_text='Keep empty to skip searching by departments.', related_name='_eventlistplugin_departments_+', to='leprikon.Department', verbose_name='departments'),
+            model_name="eventlistplugin",
+            name="departments",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Keep empty to skip searching by departments.",
+                related_name="+",
+                to="leprikon.Department",
+                verbose_name="departments",
+            ),
         ),
         migrations.AddField(
-            model_name='subject',
-            name='department',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='subjects', to='leprikon.Department', verbose_name='department'),
+            model_name="subject",
+            name="department",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="subjects",
+                to="leprikon.Department",
+                verbose_name="department",
+            ),
         ),
     ]

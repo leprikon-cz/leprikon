@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 PRICE_DECIMAL_PLACES = 2
 PRICE_MAX_DIGITS = 10
 
-LEPRIKON_SHOW_SUBJECT_CODE = False
+LEPRIKON_SHOW_ACTIVITY_CODE = False
 
 LEPRIKON_COUNTRY = "CZ"
 
@@ -128,7 +128,9 @@ LEPRIKON_MENU_ADD_LOGOUT = True
 
 LEPRIKON_SITE_CACHE_MAX_AGE = 5
 
-# expression to create variable symbol (subject.code + last two digits of year + last four digits of id)
-LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = "reg.subject.code * 1000000 + (reg.created.year % 100) * 10000 + (reg.id % 10000)"
+# expression to create variable symbol (activity.code + last two digits of year + last four digits of id)
+LEPRIKON_VARIABLE_SYMBOL_EXPRESSION = (
+    "reg.activity.code * 1000000 + (reg.created.year % 100) * 10000 + (reg.id % 10000)"
+)
 
 SESSION_STAFF_COOKIE_AGE = 60 * 60 * 10

@@ -9,11 +9,11 @@ from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 
 from ..utils import attributes
+from .activities import Activity, RegistrationParticipant
 from .pdfmail import PdfExportAndMailMixin
 from .roles import Leader
 from .schoolyear import SchoolYearDivision, SchoolYearPeriod
 from .startend import StartEndMixin
-from .subjects import Subject, SubjectRegistrationParticipant
 from .times import AbstractTime, TimesMixin
 
 
@@ -82,7 +82,9 @@ class JournalPeriod:
 
 class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
     object_name = "journal"
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="journals", verbose_name=_("subject"))
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="journals", verbose_name=_("activity")
+    )
     school_year_division = models.ForeignKey(
         SchoolYearDivision,
         blank=True,
@@ -94,7 +96,7 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
     name = models.CharField(_("journal name"), blank=True, default="", max_length=150)
     leaders = models.ManyToManyField(Leader, blank=True, related_name="journals", verbose_name=_("leaders"))
     participants = models.ManyToManyField(
-        SubjectRegistrationParticipant, blank=True, related_name="journals", verbose_name=_("participants")
+        RegistrationParticipant, blank=True, related_name="journals", verbose_name=_("participants")
     )
     risks = HTMLField(_("risks"), blank=True)
     plan = HTMLField(_("plan"), blank=True)
@@ -106,7 +108,7 @@ class Journal(PdfExportAndMailMixin, TimesMixin, models.Model):
         verbose_name_plural = _("journal")
 
     def __str__(self):
-        return f"{self.subject.display_name} - {self.name}" if self.name else self.subject.display_name
+        return f"{self.activity.display_name} - {self.name}" if self.name else self.activity.display_name
 
     @cached_property
     def all_journal_entries(self):
@@ -144,7 +146,7 @@ class JournalTime(AbstractTime):
 
     class Meta:
         app_label = "leprikon"
-        ordering = ("day_of_week", "start")
+        ordering = ("start_date", "days_of_week", "start_time")
         verbose_name = _("time")
         verbose_name_plural = _("times")
 
@@ -165,10 +167,10 @@ class JournalEntry(StartEndMixin, models.Model):
     end = models.TimeField(_("end time"), blank=True, null=True)
     agenda = HTMLField(_("session agenda"), default="")
     participants = models.ManyToManyField(
-        SubjectRegistrationParticipant, blank=True, related_name="journal_entries", verbose_name=_("participants")
+        RegistrationParticipant, blank=True, related_name="journal_entries", verbose_name=_("participants")
     )
     participants_instructed = models.ManyToManyField(
-        SubjectRegistrationParticipant,
+        RegistrationParticipant,
         blank=True,
         related_name="instructed",
         verbose_name=_("participants instructed about safety and internal rules"),
@@ -290,10 +292,10 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
     def journal(self):
         return self.journal_entry.journal
 
-    @attributes(short_description=_("subject"))
+    @attributes(short_description=_("activity"))
     @cached_property
-    def subject(self):
-        return self.journal_entry.journal.subject
+    def activity(self):
+        return self.journal_entry.journal.activity
 
     @cached_property
     def datetime_start(self):
@@ -310,7 +312,7 @@ class JournalLeaderEntry(StartEndMixin, models.Model):
 
     @property
     def group(self):
-        return self.subject
+        return self.activity
 
     def get_edit_url(self):
         return reverse("leprikon:journalleaderentry_update", args=(self.id,))

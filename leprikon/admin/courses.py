@@ -9,23 +9,23 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.courses import CourseDiscountAdminForm, CourseRegistrationAdminForm
+from ..models.activities import ActivityModel
 from ..models.courses import Course, CourseDiscount, CourseRegistration
 from ..models.schoolyear import SchoolYear, SchoolYearDivision
-from ..models.subjects import SubjectType
 from ..utils import attributes, currency
+from .activities import ActivityBaseAdmin, ActivityDiscountBaseAdmin, RegistrationBaseAdmin
 from .pdf import PdfExportAdminMixin
-from .subjects import SubjectBaseAdmin, SubjectDiscountBaseAdmin, SubjectRegistrationBaseAdmin
 
 
 @admin.register(Course)
-class CourseAdmin(SubjectBaseAdmin):
-    subject_type_type = SubjectType.COURSE
+class CourseAdmin(ActivityBaseAdmin):
+    activity_type_model = ActivityModel.COURSE
     registration_model = CourseRegistration
     list_display = (
         "id",
         "code",
         "name",
-        "subject_type",
+        "activity_type",
         "get_groups_list",
         "get_leaders_list",
         "get_times_list",
@@ -42,7 +42,7 @@ class CourseAdmin(SubjectBaseAdmin):
         "code",
         "name",
         "department",
-        "subject_type",
+        "activity_type",
         "registration_type",
         "get_groups_list",
         "get_leaders_list",
@@ -57,7 +57,7 @@ class CourseAdmin(SubjectBaseAdmin):
         "get_unapproved_registrations_count",
         "note",
     )
-    actions = SubjectBaseAdmin.actions + (
+    actions = ActivityBaseAdmin.actions + (
         "publish",
         "unpublish",
         "copy_to_school_year",
@@ -118,10 +118,10 @@ class CourseAdmin(SubjectBaseAdmin):
 
 
 @admin.register(CourseRegistration)
-class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin):
+class CourseRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
     form = CourseRegistrationAdminForm
-    subject_type_type = SubjectType.COURSE
-    actions = SubjectRegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
+    activity_type_model = ActivityModel.COURSE
+    actions = RegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
 
     def get_queryset(self, request):
         return (
@@ -149,7 +149,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
         school_year_divisions = {
             school_year_division.id: school_year_division
             for school_year_division in SchoolYearDivision.objects.filter(
-                variants__subject__registrations__in=queryset,
+                variants__activity__registrations__in=queryset,
             ).distinct()
         }
 
@@ -199,7 +199,7 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     )
                     for registration in queryset.all()
                     for registration_period in registration.course_registration_periods.filter(
-                        period__in=form.cleaned_data[f"periods_{registration.subject_variant.school_year_division_id}"]
+                        period__in=form.cleaned_data[f"periods_{registration.activity_variant.school_year_division_id}"]
                     )
                 )
                 self.message_user(request, _("The discounts have been created for selected registrations."))
@@ -274,14 +274,14 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
                     '{period}: <a style="color: {color}" href="{href}" title="{title}">' "<b>{amount}</b></a>",
                     period=period.registration_period.period.name,
                     color=period.status.color,
-                    href=reverse("admin:leprikon_subjectreceivedpayment_changelist") + f"?target_registration={obj.id}",
+                    href=reverse("admin:leprikon_receivedpayment_changelist") + f"?target_registration={obj.id}",
                     title=period.status.title,
                     amount=currency(period.status.received),
                 )
                 + format_html(
                     '<a class="popup-link" href="{href}" style="background-position: 0 0" title="{title}">'
                     '<img src="{icon}" alt="+"/></a>',
-                    href=reverse("admin:leprikon_subjectreceivedpayment_add") + f"?target_registration={obj.id}",
+                    href=reverse("admin:leprikon_receivedpayment_add") + f"?target_registration={obj.id}",
                     title=_("add payment"),
                     icon=static("admin/img/icon-addlink.svg"),
                 )
@@ -311,9 +311,9 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, SubjectRegistrationBaseAdmin)
 
 
 @admin.register(CourseDiscount)
-class CourseDiscountAdmin(SubjectDiscountBaseAdmin):
-    actions = SubjectDiscountBaseAdmin.actions
+class CourseDiscountAdmin(ActivityDiscountBaseAdmin):
+    actions = ActivityDiscountBaseAdmin.actions
     form = CourseDiscountAdminForm
-    list_display = ("accounted", "registration", "subject", "period", "amount_html", "explanation")
-    list_export = ("accounted", "registration", "subject", "period", "amount", "explanation")
+    list_display = ("accounted", "registration", "activity", "period", "amount_html", "explanation")
+    list_export = ("accounted", "registration", "activity", "period", "amount", "explanation")
     closed_fields = ("accounted", "registration", "period", "amount")

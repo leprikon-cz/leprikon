@@ -8,11 +8,17 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.journals import JournalAdminForm, JournalEntryAdminForm, JournalLeaderEntryAdminForm
+from ..models.activities import Activity
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
-from ..models.subjects import Subject
 from ..utils import attributes
 from .export import AdminExportMixin
-from .filters import JournalListFilter, LeaderListFilter, SchoolYearListFilter, SubjectListFilter, SubjectTypeListFilter
+from .filters import (
+    ActivityListFilter,
+    ActivityTypeListFilter,
+    JournalListFilter,
+    LeaderListFilter,
+    SchoolYearListFilter,
+)
 
 
 class JournalTimeInlineAdmin(admin.TabularInline):
@@ -24,14 +30,14 @@ class JournalTimeInlineAdmin(admin.TabularInline):
 class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
     filter_horizontal = ("leaders", "participants")
     inlines = (JournalTimeInlineAdmin,)
-    list_display = ("subject", "name", "get_times_list", "journal_links")
+    list_display = ("activity", "name", "get_times_list", "journal_links")
     list_filter = (
-        ("subject__school_year", SchoolYearListFilter),
-        ("subject__subject_type", SubjectTypeListFilter),
+        ("activity__school_year", SchoolYearListFilter),
+        ("activity__activity_type", ActivityTypeListFilter),
         ("leaders", LeaderListFilter),
-        ("subject", SubjectListFilter),
+        ("activity", ActivityListFilter),
     )
-    raw_id_fields = ("subject",)
+    raw_id_fields = ("activity",)
 
     # do not allow to add journals in admin
     def has_add_permission(self, request, obj=None):
@@ -39,7 +45,7 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         if not object_id and request.method == "POST" and len(request.POST) == 3:
-            return HttpResponseRedirect(f"{request.path}?subject=" + request.POST.get("subject", ""))
+            return HttpResponseRedirect(f"{request.path}?activity=" + request.POST.get("activity", ""))
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
@@ -47,31 +53,31 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
         return [] if hasattr(request, "hide_inlines") else super().get_inline_instances(request, obj)
 
     def get_form(self, request, obj, **kwargs):
-        # get subject
+        # get activity
         try:
-            # first try request.POST (user may want to change subject)
-            request.subject = Subject.objects.get(id=int(request.POST.get("subject")))
-        except (Subject.DoesNotExist, TypeError, ValueError):
+            # first try request.POST (user may want to change activity)
+            request.activity = Activity.objects.get(id=int(request.POST.get("activity")))
+        except (Activity.DoesNotExist, TypeError, ValueError):
             if obj:
-                # use subject type from object
-                request.subject = obj.subject
+                # use activity from object
+                request.activity = obj.activity
             else:
-                # try to get subject type from request.GET
+                # try to get activity from request.GET
                 try:
-                    request.subject = Subject.objects.get(
-                        id=int(request.GET.get("subject")),
+                    request.activity = Activity.objects.get(
+                        id=int(request.GET.get("activity")),
                     )
-                except (Subject.DoesNotExist, TypeError, ValueError):
-                    request.subject = None
+                except (Activity.DoesNotExist, TypeError, ValueError):
+                    request.activity = None
 
-        if request.subject:
+        if request.activity:
             kwargs["form"] = type(
                 "JournalAdminForm",
                 (JournalAdminForm,),
-                {"subject": request.subject},
+                {"activity": request.activity},
             )
         else:
-            kwargs["fields"] = ["subject"]
+            kwargs["fields"] = ["activity"]
             request.hide_inlines = True
 
         return super().get_form(request, obj, **kwargs)
@@ -137,10 +143,10 @@ class JournalAdmin(AdminExportMixin, admin.ModelAdmin):
 @admin.register(JournalLeaderEntry)
 class JournalLeaderEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     form = JournalLeaderEntryAdminForm
-    list_display = ("timesheet", "date", "start", "end", "duration", "subject")
+    list_display = ("timesheet", "date", "start", "end", "duration", "activity")
     list_filter = (
         ("timesheet__leader", LeaderListFilter),
-        ("journal_entry__journal__subject", SubjectListFilter),
+        ("journal_entry__journal__activity", ActivityListFilter),
     )
     ordering = ("-journal_entry__date", "-start")
 
@@ -200,7 +206,7 @@ class JournalEntryAdmin(AdminExportMixin, admin.ModelAdmin):
     date_hierarchy = "date"
     list_display = ("id", "journal_name", "date", "start", "end", "duration", "agenda_html")
     list_filter = (
-        ("journal__subject__school_year", SchoolYearListFilter),
+        ("journal__activity__school_year", SchoolYearListFilter),
         ("journal__leaders", LeaderListFilter),
         ("journal", JournalListFilter),
     )

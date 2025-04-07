@@ -9,7 +9,7 @@
             <Vystaveno>{{ registration.payment_requested|date:"Y-m-d" }}</Vystaveno>
             <DatUcPr>{{ registration.payment_requested|date:"Y-m-d" }}</DatUcPr>
             <PlnenoDPH>{{ registration.payment_requested|date:"Y-m-d" }}</PlnenoDPH>
-            {% if registration.subject_type == "course" %}
+            {% if registration.activity_type == "course" %}
             {% for pps in registration.period_payment_statuses %}
             {% if forloop.last %}<Splatno>{{ pps.status.due_date|date:"Y-m-d" }}</Splatno>{% endif %}
             {% endfor %}
@@ -71,7 +71,7 @@
                 <EMail>{{ registration.user.email }}</EMail>
             </KonecPrij>
             <SeznamPolozek>
-                {% if registration.subject_type == "course" %}
+                {% if registration.activity_type == "course" %}
                 {% for pps in registration.period_payment_statuses %}
                 <Polozka>
                     <Popis>{{ registration|stringformat:"s"|slice:"0:25" }} {{ pps.period.name|stringformat:"s"|slice:"0:23" }}</Popis>

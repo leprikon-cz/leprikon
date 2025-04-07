@@ -8,9 +8,9 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from ..models.activities import ActivityModel
 from ..models.roles import Contact, Leader
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import SubjectType
 from ..utils import attributes
 from .export import AdminExportMixin
 from .filters import SchoolYearListFilter
@@ -141,7 +141,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
                 url=self.courses_url,
                 leader=obj.id,
-                count=obj.subjects.filter(subject_type__subject_type=SubjectType.COURSE).count(),
+                count=obj.activities.filter(activity_type__model=ActivityModel.COURSE).count(),
             )
         )
 
@@ -151,7 +151,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
                 url=self.events_url,
                 leader=obj.id,
-                count=obj.subjects.filter(subject_type__subject_type=SubjectType.EVENT).count(),
+                count=obj.activities.filter(activity_type__model=ActivityModel.EVENT).count(),
             )
         )
 
@@ -161,7 +161,7 @@ class LeaderAdmin(AdminExportMixin, SendMessageAdminMixin, admin.ModelAdmin):
             '<a href="{url}?leaders__id={leader}">{count}</a>'.format(
                 url=self.orderables_url,
                 leader=obj.id,
-                count=obj.subjects.filter(subject_type__subject_type=SubjectType.ORDERABLE).count(),
+                count=obj.activities.filter(activity_type__model=ActivityModel.ORDERABLE).count(),
             )
         )
 

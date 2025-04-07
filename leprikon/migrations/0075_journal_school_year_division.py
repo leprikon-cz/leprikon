@@ -1,6 +1,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
-from leprikon.models.subjects import SubjectType
+from leprikon.models.activities import ActivityModel, ActivityType
 
 
 def set_journal_school_year_division(apps, schema_editor):
@@ -8,7 +8,7 @@ def set_journal_school_year_division(apps, schema_editor):
     JournalEntry = apps.get_model("leprikon", "JournalEntry")
     Journal = apps.get_model("leprikon", "Journal")
 
-    for journal in Journal.objects.filter(subject__subject_type__subject_type=SubjectType.COURSE):
+    for journal in Journal.objects.filter(subject__subject_type__subject_type=ActivityModel.COURSE):
         school_year_divisions = list(
             SchoolYearDivision.objects.filter(
                 course_registrations__participants__in=journal.participants.all()

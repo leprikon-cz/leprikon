@@ -3,18 +3,18 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.refundrequest import DonationForm, PaymentTransferForm, RefundRequestForm
+from ..models.activities import Registration
 from ..models.refundrequest import RefundRequest
-from ..models.subjects import SubjectRegistration
 from .generic import CreateView, DeleteView, UpdateView
 
 
 class RegistrationMixin:
     def dispatch(self, request, pk, **kwargs):
         self.registration = get_object_or_404(
-            SubjectRegistration,
+            Registration,
             pk=pk,
             user=request.user,
-        ).subjectregistration
+        ).activityregistration
         if not self.registration.payment_status.overpaid:
             raise Http404
         return super().dispatch(request, **kwargs)
@@ -45,7 +45,7 @@ class RefundRequestUpdateView(RefundRequestQuerysetMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["registration"] = self.object.registration.subjectregistration
+        kwargs["registration"] = self.object.registration.activityregistration
         return kwargs
 
 

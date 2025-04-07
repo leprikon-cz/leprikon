@@ -234,7 +234,7 @@ tr.message.notread {
     font-weight: bold;
 }
 
-td.message-subject a {
+td.message-activity a {
     display: block;
     padding: 3px;
 }

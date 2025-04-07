@@ -1,16 +1,17 @@
 import re
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 from cms.forms.fields import PageSelectFormField
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
-from ..utils import get_birth_date
+from ..utils import comma_separated, get_birth_date
 from .utils import BankAccount, parse_bank_account
 
 
@@ -49,24 +50,154 @@ class PriceField(models.DecimalField):
         super().__init__(*args, **kwargs)
 
 
-DAY_OF_WEEK = {
-    1: _("Monday"),
-    2: _("Tuesday"),
-    3: _("Wednesday"),
-    4: _("Thursday"),
-    5: _("Friday"),
-    6: _("Saturday"),
-    7: _("Sunday"),
-}
+class DayOfWeek(models.IntegerChoices):
+    MONDAY = 1 << 0, _("Monday")
+    TUESDAY = 1 << 1, _("Tuesday")
+    WEDNESDAY = 1 << 2, _("Wednesday")
+    THURSDAY = 1 << 3, _("Thursday")
+    FRIDAY = 1 << 4, _("Friday")
+    SATURDAY = 1 << 5, _("Saturday")
+    SUNDAY = 1 << 6, _("Sunday")
+
+    def isoweekday(self) -> int:
+        """
+        Returns the ISO weekday number (1=Monday, 7=Sunday).
+        """
+        return {
+            self.MONDAY: 1,
+            self.TUESDAY: 2,
+            self.WEDNESDAY: 3,
+            self.THURSDAY: 4,
+            self.FRIDAY: 5,
+            self.SATURDAY: 6,
+            self.SUNDAY: 7,
+        }[self]
+
+    @classmethod
+    def from_isoweekday(cls, iso_weekday: int) -> "DayOfWeek":
+        """
+        Returns the DayOfWeek from an ISO weekday number (1=Monday, 7=Sunday).
+        """
+        return [
+            cls.SUNDAY,
+            cls.MONDAY,
+            cls.TUESDAY,
+            cls.WEDNESDAY,
+            cls.THURSDAY,
+            cls.FRIDAY,
+            cls.SATURDAY,
+            cls.SUNDAY,
+        ][iso_weekday]
 
 
-class DayOfWeekField(models.IntegerField):
+class DaysOfWeek(list[DayOfWeek]):
+
+    def __init__(self, value: int | Iterable[DayOfWeek] = 0) -> None:
+        if isinstance(value, (int, DayOfWeek)):
+            return super().__init__(day for day in DayOfWeek if value & day)
+        return super().__init__(DayOfWeek(day) for day in value)
+
+    def int(self) -> int:
+        return sum(int(i) for i in self)
+
+    def __str__(self) -> str:
+        i = self.int()
+        parts = []
+        sequence = []
+        for day in DayOfWeek:
+            available = day & i
+            if available:
+                sequence.append(day.label)
+            if (not available or day == DayOfWeek.SUNDAY) and sequence:
+                if len(sequence) == 1:
+                    parts.append(sequence[0])
+                else:
+                    parts.append(f"{sequence[0]} - {sequence[-1]}")
+                sequence = []
+        return comma_separated(parts)
+
+    def __and__(self, other: "DaysOfWeek") -> "DaysOfWeek":
+        return DaysOfWeek(self.int() & other.int())
+
+    @classmethod
+    def all(cls) -> "DaysOfWeek":
+        """
+        Returns all days of the week.
+        """
+        return DaysOfWeek(DayOfWeek)
+
+
+class DaysOfWeekField(models.SmallIntegerField):
+    """
+    A field for storing a list of days of the week as a bitmask.
+    """
+
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators = ()
+
+    def from_db_value(self, value: Optional[int], expression, connection) -> Optional[DaysOfWeek]:
+        return None if value is None else DaysOfWeek(value)
+
+    def to_python(self, value: Any) -> Optional[DaysOfWeek]:
+        return None if value is None else DaysOfWeek(value)
+
+    def get_prep_value(self, value: Any) -> Optional[int]:
+        return None if value is None else sum(DaysOfWeek(value))
+
+    def formfield(self, widget=None, form_class=None, choices_form_class=None, **kwargs):
+        """Return a django.forms.Field instance for this field."""
+
         defaults = {
-            "choices": tuple(sorted(DAY_OF_WEEK.items())),
+            "required": not self.blank,
+            "label": capfirst(self.verbose_name),
+            "choices": DayOfWeek.choices,
+            "coerce": int,
+            "widget": forms.SelectMultiple,
+            "help_text": self.help_text,
         }
+        if self.has_default():
+            if callable(self.default):
+                defaults["initial"] = self.default
+                defaults["show_hidden_initial"] = True
+            else:
+                defaults["initial"] = self.get_default()
+        if self.null:
+            defaults["empty_value"] = None
+        if choices_form_class is not None:
+            form_class = choices_form_class
+        else:
+            form_class = forms.TypedMultipleChoiceField
+        # Many of the subclass-specific formfield arguments (min_value,
+        # max_value) don't apply for choice fields, so be sure to only pass
+        # the values that TypedChoiceField will understand.
+        for k in list(kwargs):
+            if k not in (
+                "coerce",
+                "empty_value",
+                "choices",
+                "required",
+                "widget",
+                "label",
+                "initial",
+                "help_text",
+                "error_messages",
+                "show_hidden_initial",
+                "disabled",
+            ):
+                del kwargs[k]
         defaults.update(kwargs)
-        super().__init__(*args, **defaults)
+        return form_class(**defaults)
+
+
+@DaysOfWeekField.register_lookup
+class BitwiseMatchAny(models.Lookup):
+    lookup_name = "match"
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        return f"({lhs} & {rhs}) <> 0", lhs_params + rhs_params
 
 
 birth_num_regex = re.compile("^[0-9]{2}([0257][1-9]|[1368][0-2])[0-3][0-9]/?[0-9]{3,4}$")

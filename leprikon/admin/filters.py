@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from ..models.activities import Activity, ActivityGroup, ActivityModel, ActivityType
 from ..models.journals import Journal
 from ..models.roles import Leader
 from ..models.schoolyear import SchoolYear
-from ..models.subjects import Subject, SubjectGroup, SubjectType
 
 
 class SchoolYearListFilter(admin.FieldListFilter):
@@ -114,55 +114,55 @@ class CanceledListFilter(admin.SimpleListFilter):
         ]
 
 
-class SubjectTypeListFilter(admin.RelatedFieldListFilter):
+class ActivityTypeListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        self.subject_types = SubjectType.objects.all()
-        subject_type_type = getattr(model_admin, "subject_type_type", None)
-        if subject_type_type:
-            self.subject_types = self.subject_types.filter(subject_type=subject_type_type)
+        self.activity_types = ActivityType.objects.all()
+        activity_type_model: ActivityModel = getattr(model_admin, "activity_type_model", None)
+        if activity_type_model:
+            self.activity_types = self.activity_types.filter(model=activity_type_model)
         super().__init__(field, request, params, model, model_admin, field_path)
-        if subject_type_type:
-            self.title = SubjectType.subject_type_type_labels[subject_type_type]
-        request.leprikon_subject_type_id = self.lookup_val
+        if activity_type_model:
+            self.title = activity_type_model.label
+        request.leprikon_activity_type_id = self.lookup_val
 
     def field_choices(self, field, request, model_admin):
-        return [(t.id, t.plural) for t in self.subject_types.all()]
+        return [(t.id, t.plural) for t in self.activity_types.all()]
 
 
-class SubjectGroupListFilter(admin.RelatedFieldListFilter):
+class ActivityGroupListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
-        subject_type_type = getattr(model_admin, "subject_type_type", None)
-        if hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
-            self.groups = SubjectGroup.objects.filter(subject_types__id=request.leprikon_subject_type_id)
-        elif subject_type_type:
-            self.groups = SubjectGroup.objects.filter(subject_types__subject_type=subject_type_type)
+        activity_type_model = getattr(model_admin, "activity_type_model", None)
+        if hasattr(request, "leprikon_activity_type_id") and request.leprikon_activity_type_id:
+            self.groups = ActivityGroup.objects.filter(activity_types__id=request.leprikon_activity_type_id)
+        elif activity_type_model:
+            self.groups = ActivityGroup.objects.filter(activity_types__model=activity_type_model)
         else:
-            self.groups = SubjectGroup.objects.all()
+            self.groups = ActivityGroup.objects.all()
         super().__init__(field, request, params, model, model_admin, field_path)
-        request.leprikon_subject_group_id = self.lookup_val
+        request.leprikon_activity_group_id = self.lookup_val
 
     def field_choices(self, field, request, model_admin):
         return [(g.id, g.plural) for g in self.groups.distinct()]
 
 
-class SubjectListFilter(admin.RelatedFieldListFilter):
-    model = Subject
+class ActivityListFilter(admin.RelatedFieldListFilter):
+    model = Activity
 
     def __init__(self, field, request, params, model, model_admin, field_path):
-        self.subjects = self.model.objects.filter(school_year=request.school_year)
-        subject_type_type = getattr(model_admin, "subject_type_type", None)
-        if hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
-            self.subjects = self.subjects.filter(subject_type__id=request.leprikon_subject_type_id)
-        elif subject_type_type:
-            self.subjects = self.subjects.filter(subject_type__subject_type=subject_type_type)
-        if hasattr(request, "leprikon_subject_group_id") and request.leprikon_subject_group_id:
-            self.subjects = self.subjects.filter(subject_group__id=request.leprikon_subject_group_id)
+        self.activities = self.model.objects.filter(school_year=request.school_year)
+        activity_type_model: ActivityModel = getattr(model_admin, "activity_type_model", None)
+        if hasattr(request, "leprikon_activity_type_id") and request.leprikon_activity_type_id:
+            self.activities = self.activities.filter(activity_type__id=request.leprikon_activity_type_id)
+        elif activity_type_model:
+            self.activities = self.activities.filter(activity_type__model=activity_type_model)
+        if hasattr(request, "leprikon_activity_group_id") and request.leprikon_activity_group_id:
+            self.activities = self.activities.filter(activity_group__id=request.leprikon_activity_group_id)
         super().__init__(field, request, params, model, model_admin, field_path)
-        if subject_type_type:
-            self.title = SubjectType.subject_type_labels[subject_type_type]
+        if activity_type_model:
+            self.title = activity_type_model.label
 
     def field_choices(self, field, request, model_admin):
-        return [(s.id, s.name) for s in self.subjects]
+        return [(s.id, s.name) for s in self.activities]
 
 
 class JournalListFilter(admin.RelatedFieldListFilter):
@@ -170,14 +170,14 @@ class JournalListFilter(admin.RelatedFieldListFilter):
 
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.journals = (
-            self.model.objects.filter(subject__school_year=request.school_year)
-            .select_related("subject")
-            .order_by("subject__name", "name")
+            self.model.objects.filter(activity__school_year=request.school_year)
+            .select_related("activity")
+            .order_by("activity__name", "name")
         )
-        if hasattr(request, "leprikon_subject_id") and request.leprikon_subject_id:
-            self.journals = self.journals.filter(subject_id=request.leprikon_subject_id)
-        elif hasattr(request, "leprikon_subject_type_id") and request.leprikon_subject_type_id:
-            self.journals = self.journals.filter(subject__subject_type__id=request.leprikon_subject_type_id)
+        if hasattr(request, "leprikon_activity_id") and request.leprikon_activity_id:
+            self.journals = self.journals.filter(activity_id=request.leprikon_activity_id)
+        elif hasattr(request, "leprikon_activity_type_id") and request.leprikon_activity_type_id:
+            self.journals = self.journals.filter(activity__activity_type__id=request.leprikon_activity_type_id)
         super().__init__(field, request, params, model, model_admin, field_path)
 
     def field_choices(self, field, request, model_admin):

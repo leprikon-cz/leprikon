@@ -12,7 +12,7 @@
 <table class="table table-hover">
     <tr>
         <th>{% trans 'date' %}</th>
-        <th>{% trans 'subject' %}</th>
+        <th>{% trans 'activity' %}</th>
         <th>{% trans 'start' %}</th>
         <th>{% trans 'end' %}</th>
         <th></th>
@@ -20,7 +20,7 @@
     {% for entry in alternate_leader_entries %}
     <tr>
         <td>{{ entry.journal_entry.date }}</td>
-        <td>{{ entry.journal_entry.subject.name }}</td>
+        <td>{{ entry.journal_entry.activity.name }}</td>
         <td>{{ entry.start }}</td>
         <td>{{ entry.end }}</td>
         <td>

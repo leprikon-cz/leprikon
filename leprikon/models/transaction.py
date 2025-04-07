@@ -100,7 +100,7 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
     )
     PAYMENTS = frozenset({PAYMENT_CASH, PAYMENT_BANK, PAYMENT_ONLINE, TRANSFER})
     RETURNS = frozenset({RETURN_CASH, RETURN_BANK, TRANSFER, DONATION_TRANSFER})
-    SUBJECTS = frozenset(PAYMENTS.union(RETURNS))
+    ACTIVITIES = frozenset(PAYMENTS.union(RETURNS))
     DONATIONS = frozenset({DONATION_CASH, DONATION_BANK, DONATION_ONLINE, DONATION_TRANSFER})
     BANKS = frozenset({PAYMENT_BANK, RETURN_BANK, DONATION_BANK})
     ONLINES = frozenset({PAYMENT_ONLINE, DONATION_ONLINE})
@@ -123,9 +123,9 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
     # not editable
     mail_sent = models.DateTimeField(_("mail sent"), editable=False, null=True)
 
-    # subject payment fields
+    # payment fields
     source_registration = models.ForeignKey(
-        "SubjectRegistration",
+        "Registration",
         blank=True,
         null=True,
         on_delete=models.PROTECT,
@@ -134,7 +134,7 @@ class Transaction(PdfExportAndMailMixin, AbstractTransaction):
         help_text=_("The payment will be deducted from this registration."),
     )
     target_registration = models.ForeignKey(
-        "SubjectRegistration",
+        "Registration",
         blank=True,
         null=True,
         on_delete=models.PROTECT,
