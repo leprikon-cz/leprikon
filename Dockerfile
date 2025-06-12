@@ -70,7 +70,7 @@ RUN poetry install --only-root
 FROM base AS final
 
 LABEL name="Leprikón"
-LABEL maintainer="Jakub Dorňák <jakub.dornak@misli.cz>"
+LABEL maintainer="Jakub Dorňák <jakub.dornak@qbsoftware.cz>"
 
 COPY --from=build /venv /venv
 COPY --from=build /app/leprikon /app/leprikon
