@@ -1,0 +1,10 @@
+{% extends 'leprikon/default.html' %}
+{% load cms_tags i18n leprikon_tags %}
+
+{% block content %}
+
+<h1>{% block title %}{{ object.full_name }}{% endblock %}</h1>
+
+{% include 'leprikon/leader_preview.html' with hide_header=True %}
+
+{% endblock %}
