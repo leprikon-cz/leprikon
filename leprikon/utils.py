@@ -107,7 +107,7 @@ def currency(val: Union[int, float, Decimal], international=False) -> str:
         # this should be the most fitting sign position
         s = sign + s
 
-    return s.replace("<", "").replace(">", "").replace(" ", "\u00A0")
+    return s.replace("<", "").replace(">", "").replace(" ", "\u00a0")
 
 
 def amount_color(amount):

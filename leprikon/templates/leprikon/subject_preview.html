@@ -69,7 +69,9 @@
         {% if object.all_leaders %}
         <p>
             {% blocktrans count counter=object.all_leaders|length %}Led by{% plural %}Led by{% endblocktrans %}
-            {{ object.get_leaders_list }}
+            {% for leader in object.all_leaders %}
+            <a href="{{ leader.get_absolute_url }}">{{ leader.full_name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
         </p>
         {% endif %}
 

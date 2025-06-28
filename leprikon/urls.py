@@ -90,7 +90,6 @@ urlpatterns = [
     d_path("{billing_info}/<int:pk>/{delete}/", "billing_info_delete"),
     d_path("{messages}/", "message_list"),
     d_path("{messages}/<slug>/", "message_detail"),
-    d_path("{leaders}/", "leader_list"),
     d_path("{school_year}/", "school_year"),
     d_path("{reports}/", "report_list"),
     d_path("{reports}/{courses}/{payments}/", "report_course_payments"),

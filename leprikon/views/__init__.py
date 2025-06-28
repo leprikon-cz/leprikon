@@ -137,6 +137,7 @@ message_list = login_required(messages.MessageListView.as_view())
 message_detail = csrf_exempt(messages.MessageDetailView.as_view())
 
 leader_list = leaders.LeaderListView.as_view()
+leader_detail = leaders.LeaderDetailView.as_view()
 
 timesheet_list = leader_required(timesheets.TimesheetListView.as_view())
 timesheet_detail = leader_required(timesheets.TimesheetDetailView.as_view())

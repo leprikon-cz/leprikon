@@ -1,8 +1,9 @@
+from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.leaders import LeaderFilterForm
 from ..models.roles import Leader
-from .generic import FilteredListView
+from .generic import DetailView, FilteredListView
 
 
 class LeaderListView(FilteredListView):
@@ -21,3 +22,10 @@ class LeaderListView(FilteredListView):
             school_year=self.request.school_year,
             data=self.request.GET,
         )
+
+
+class LeaderDetailView(DetailView):
+    model = Leader
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(slug=F("user__username"))

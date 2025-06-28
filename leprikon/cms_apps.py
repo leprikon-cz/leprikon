@@ -37,3 +37,15 @@ class LeprikonSubjectTypeApp(CMSApp):
                 name="subject_registration_form",
             ),
         ]
+
+
+@apphook_pool.register
+class LeprikonLeadersApp(CMSApp):
+    name = _("Leprikon leaders")
+    app_name = "leprikon_leaders"
+
+    def get_urls(self, page=None, language=None, **kwargs):
+        return [
+            path("", views.leader_list, name="leader_list"),
+            path("<slug>/", views.leader_detail, name="leader_detail"),
+        ]

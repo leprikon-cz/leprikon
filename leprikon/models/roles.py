@@ -5,6 +5,7 @@ from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import NoReverseMatch, reverse
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -80,6 +81,12 @@ class Leader(models.Model):
             self.SubjectsGroup(subject_type=subject_type, subjects=subject_type.subjects.filter(leaders=self))
             for subject_type in SubjectType.objects.all()
         )
+
+    def get_absolute_url(self):
+        try:
+            return reverse("leprikon_leaders:leader_detail", kwargs={"slug": self.user.username})
+        except NoReverseMatch:
+            return ""
 
 
 class Contact(models.Model):

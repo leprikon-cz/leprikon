@@ -1,9 +1,11 @@
 {% load i18n leprikon_tags sekizai_tags thumbnail %}
 
 <div class="box box-leader">
+    {% if not hide_header %}
     <div class="box-header">
         <strong>{{ object.full_name }}</strong>
     </div>
+    {% endif %}
 
     <div class="box-content">
         {% if object.photo %}
