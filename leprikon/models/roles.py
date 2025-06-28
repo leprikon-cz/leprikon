@@ -78,7 +78,9 @@ class Leader(models.Model):
         from .subjects import SubjectType
 
         return (
-            self.SubjectsGroup(subject_type=subject_type, subjects=subject_type.subjects.filter(leaders=self))
+            self.SubjectsGroup(
+                subject_type=subject_type, subjects=subject_type.subjects.filter(public=True, leaders=self)
+            )
             for subject_type in SubjectType.objects.all()
         )
 
