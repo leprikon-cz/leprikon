@@ -19,7 +19,6 @@ services:
       CACHE_LOCATION: unix:///var/run/redis/redis.sock
       SECRET_KEY: SECRET_KEY
       SERVER_EMAIL: '"Leprikón <leprikon@leprikon.cz>"'
-      CMSPLUGIN_FILER_MIGRATED: yes
     ports:
       - 80:80
       - 443:443

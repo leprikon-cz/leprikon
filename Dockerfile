@@ -54,8 +54,6 @@ RUN virtualenv /venv
 ENV VIRTUAL_ENV=/venv
 COPY requirements.txt ./
 RUN /venv/bin/pip install -r requirements.txt
-# TODO: remove following line
-RUN /venv/bin/pip install git+https://github.com/leprikon-cz/cmsplugin-filer.git@leprikon
 COPY poetry.lock pyproject.toml ./
 RUN poetry install --only main --no-root
 COPY README.rst /app/README.rst
