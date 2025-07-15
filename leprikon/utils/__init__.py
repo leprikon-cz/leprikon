@@ -1,7 +1,5 @@
 import locale
-import os
 import re
-import string
 import unicodedata
 import zlib
 from datetime import date
@@ -17,7 +15,7 @@ from django.utils.functional import lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .conf import settings
+from ..conf import settings
 
 MALE = "m"
 FEMALE = "f"
@@ -63,7 +61,7 @@ def currency(val: Union[int, float, Decimal], international=False) -> str:
     # grouping
     groups = []
     s = str(abs(int(val)))
-    for interval in locale._grouping_intervals(localeconv["mon_grouping"]):
+    for interval in locale._grouping_intervals(localeconv["mon_grouping"]):  # type: ignore
         if not s:
             break
         groups.append(s[-interval:])
@@ -129,10 +127,6 @@ def comma_separated(lst: Iterable) -> str:
         return _(", and ").join([", ".join(lst[:-1]), lst[-1]])
     else:
         return _(", and ").join(lst)
-
-
-def get_rand_hash(length=32, stringset=string.ascii_letters + string.digits):
-    return "".join([stringset[i % len(stringset)] for i in [ord(x) for x in os.urandom(length)]])
 
 
 def current_url(request):
