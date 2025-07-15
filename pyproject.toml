@@ -17,6 +17,16 @@ line_length = 120
 profile = "black"
 skip_glob = "*migrations*"
 
+[tool.mypy]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "leprikon.site.settings_mypy"
+strict_settings = false
+
 [tool.poetry]
 name = "leprikon"
 version = "4.0.1"
@@ -42,7 +52,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 Django = "<4"
 certbot-nginx = "*"
 certbot = "*"
@@ -90,9 +100,11 @@ psycopg2-binary = "*"
 pyexcel-xlsxw = "*"
 PyICU = "*"
 pypdf = "*"
+python-dateutil = "*"
 python-memcached = "*"
 requests = "*"
 sentry-sdk = "*"
+setuptools = "<81"
 schwifty = "*"
 social-auth-app-django = "*"
 sqlparse = "*"
@@ -105,9 +117,11 @@ black = "*"
 isort = "*"
 python-dotenv = "*"
 pytest = "*"
+pytest-django = "*"
 mypy = "*"
 django-stubs = "*"
 poetry-plugin-export = "*"
+types-python-dateutil = "*"
 
 [tool.poetry.scripts]
 leprikon = 'leprikon.__main__:main'
@@ -115,3 +129,12 @@ leprikon = 'leprikon.__main__:main'
 [build-system]
 build-backend = "poetry.masonry.api"
 requires = ["poetry>=0.12"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "leprikon.site.settings"
+pythonpath = ["."]
+python_files = ["test_*.py", "*_test.py", "tests/*.py"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::django.utils.deprecation.RemovedInDjango41Warning",
+]

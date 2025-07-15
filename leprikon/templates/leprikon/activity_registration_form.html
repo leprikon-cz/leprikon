@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var start = new Date('{{ form.start_date.value }}T{{ form.start_time.value }}');
     var end = getEndTime(start);
     setSelectedTime(start, end);
-    calendar.changeView('timeGridWeek', '{{ form.start_date.value|date:"Y-m-d" }}');
+    calendar.changeView('timeGridWeek', '{{ form.start_date.value }}');
     {% else %}
     calendar.changeView('timeGridWeek', minStartDate);
     {% endif %}

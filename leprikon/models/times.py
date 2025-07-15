@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
-from itertools import product
 from typing import Optional
 
 from django.db import models
@@ -8,92 +7,9 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes, comma_separated
+from ..utils.calendar import WeeklyTime, time_slot_format
 from .fields import DaysOfWeek, DaysOfWeekField
 from .startend import StartEndMixin
-
-
-def start_time_format(start: time) -> str:
-    return start.strftime("%H:%M")
-
-
-def end_time_format(end: time) -> str:
-    return "24:00" if end == time(0) else end.strftime("%H:%M")
-
-
-def time_slot_format(start_time: time, end_time: time) -> str:
-    return _("{start_time} - {end_time}").format(
-        start_time=start_time_format(start_time), end_time=end_time_format(end_time)
-    )
-
-
-@dataclass
-class WeeklyTime:
-    """
-    Represents a weekly time range.
-    If end_time is 0:00, it actually means 24:00 (end of the day)
-    """
-
-    start_date: Optional[date]
-    end_date: Optional[date]
-    days_of_week: DaysOfWeek
-    start_time: time
-    end_time: time
-
-    def __str__(self):
-        return _("{days}, {time}").format(
-            days=self.days_of_week,
-            time=time_slot_format(self.start_time, self.end_time),
-        )
-
-    def __bool__(self) -> bool:
-        if not self.days_of_week:
-            return False
-        if self.start_time >= self.end_time and self.end_time != time(0):
-            return False
-        if self.start_date and self.end_date and self.start_date > self.end_date:
-            return False
-        return True
-
-    def __and__(self, other: "WeeklyTime") -> Optional["WeeklyTime"]:
-        return (
-            WeeklyTime(
-                start_date=(
-                    max(self.start_date, other.start_date)
-                    if self.start_date and other.start_date
-                    else self.start_date or other.start_date
-                ),
-                end_date=(
-                    min(self.end_date, other.end_date)
-                    if self.end_date and other.end_date
-                    else self.end_date or other.end_date
-                ),
-                days_of_week=DaysOfWeek(self.days_of_week & other.days_of_week),
-                start_time=max(self.start_time, other.start_time),
-                # if any of the end times is 0:00:00 (which means EOD), use the other one
-                end_time=(
-                    max(self.end_time, other.end_time)
-                    if time(0) in (self.end_time, other.end_time)
-                    else min(self.end_time, other.end_time)
-                ),
-            )
-            or None
-        )
-
-    @classmethod
-    def unlimited(cls) -> "WeeklyTimes":
-        return WeeklyTime(None, None, DaysOfWeek.all(), time(0), time(0))
-
-
-class WeeklyTimes(list[WeeklyTime]):
-    def __and__(self, other: "WeeklyTimes") -> "WeeklyTimes":
-        return WeeklyTimes(a for a in [a1 & a2 for a1, a2 in product(self, other)] if a)
-
-    def __str__(self):
-        return comma_separated(self)
-
-    @classmethod
-    def unlimited(cls) -> "WeeklyTimes":
-        return WeeklyTimes([WeeklyTime.unlimited()])
 
 
 @dataclass

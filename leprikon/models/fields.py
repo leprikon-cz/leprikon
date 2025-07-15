@@ -1,5 +1,5 @@
 import re
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 
 from cms.forms.fields import PageSelectFormField
 from django import forms
@@ -11,7 +11,8 @@ from django.utils.translation import gettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
-from ..utils import comma_separated, get_birth_date
+from ..utils import get_birth_date
+from ..utils.calendar import DayOfWeek, DaysOfWeek
 from .utils import BankAccount, parse_bank_account
 
 
@@ -48,83 +49,6 @@ class PriceField(models.DecimalField):
         kwargs.setdefault("decimal_places", settings.PRICE_DECIMAL_PLACES)
         kwargs.setdefault("max_digits", settings.PRICE_MAX_DIGITS)
         super().__init__(*args, **kwargs)
-
-
-class DayOfWeek(models.IntegerChoices):
-    MONDAY = 1 << 0, _("Monday")
-    TUESDAY = 1 << 1, _("Tuesday")
-    WEDNESDAY = 1 << 2, _("Wednesday")
-    THURSDAY = 1 << 3, _("Thursday")
-    FRIDAY = 1 << 4, _("Friday")
-    SATURDAY = 1 << 5, _("Saturday")
-    SUNDAY = 1 << 6, _("Sunday")
-
-    def isoweekday(self) -> int:
-        """
-        Returns the ISO weekday number (1=Monday, 7=Sunday).
-        """
-        return {
-            self.MONDAY: 1,
-            self.TUESDAY: 2,
-            self.WEDNESDAY: 3,
-            self.THURSDAY: 4,
-            self.FRIDAY: 5,
-            self.SATURDAY: 6,
-            self.SUNDAY: 7,
-        }[self]
-
-    @classmethod
-    def from_isoweekday(cls, iso_weekday: int) -> "DayOfWeek":
-        """
-        Returns the DayOfWeek from an ISO weekday number (1=Monday, 7=Sunday).
-        """
-        return [
-            cls.SUNDAY,
-            cls.MONDAY,
-            cls.TUESDAY,
-            cls.WEDNESDAY,
-            cls.THURSDAY,
-            cls.FRIDAY,
-            cls.SATURDAY,
-            cls.SUNDAY,
-        ][iso_weekday]
-
-
-class DaysOfWeek(list[DayOfWeek]):
-
-    def __init__(self, value: int | Iterable[DayOfWeek] = 0) -> None:
-        if isinstance(value, (int, DayOfWeek)):
-            return super().__init__(day for day in DayOfWeek if value & day)
-        return super().__init__(DayOfWeek(day) for day in value)
-
-    def int(self) -> int:
-        return sum(int(i) for i in self)
-
-    def __str__(self) -> str:
-        i = self.int()
-        parts = []
-        sequence = []
-        for day in DayOfWeek:
-            available = day & i
-            if available:
-                sequence.append(day.label)
-            if (not available or day == DayOfWeek.SUNDAY) and sequence:
-                if len(sequence) == 1:
-                    parts.append(sequence[0])
-                else:
-                    parts.append(f"{sequence[0]} - {sequence[-1]}")
-                sequence = []
-        return comma_separated(parts)
-
-    def __and__(self, other: "DaysOfWeek") -> "DaysOfWeek":
-        return DaysOfWeek(self.int() & other.int())
-
-    @classmethod
-    def all(cls) -> "DaysOfWeek":
-        """
-        Returns all days of the week.
-        """
-        return DaysOfWeek(DayOfWeek)
 
 
 class DaysOfWeekField(models.SmallIntegerField):

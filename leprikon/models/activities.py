@@ -35,9 +35,20 @@ from multiselectfield import MultiSelectField
 
 from ..conf import settings
 from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
+from ..utils.calendar import (
+    SimpleEvent,
+    TimeSlot,
+    WeeklyTimes,
+    apply_preparation_and_recovery_times,
+    end_time_format,
+    get_conflicting_timeslots,
+    get_time_slots_by_weekly_times,
+    get_unavailable_time_slots,
+    start_time_format,
+)
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
-from .calendar import CalendarEvent, ConflictingTimeSlot, Resource, ResourceGroup, get_conflicting_timeslots
+from .calendar import CalendarEvent, Resource, ResourceGroup
 from .citizenship import Citizenship
 from .department import Department
 from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField, UniquePageField
@@ -51,7 +62,7 @@ from .roles import Leader
 from .school import School
 from .schoolyear import SchoolYear, SchoolYearDivision
 from .targetgroup import TargetGroup
-from .times import AbstractTime, TimesMixin, WeeklyTimes, end_time_format, start_time_format
+from .times import AbstractTime, TimesMixin
 from .transaction import AbstractTransaction, Transaction
 from .utils import (
     BankAccount,
@@ -847,12 +858,43 @@ class ActivityVariant(models.Model):
     def unapproved_registrations(self):
         return self.active_registrations.filter(approved=None)
 
-    def get_conflicting_timeslots(self, start_date: date, end_date: date) -> list[ConflictingTimeSlot]:
-        return get_conflicting_timeslots(
-            start_date,
-            end_date,
-            list(self.required_resources.all()),
-            list(self.required_resource_groups.all()),
+    def get_conflicting_timeslots(self, start_date: date, end_date: date) -> list[TimeSlot]:
+        relevant_resource_ids: set[int] = set(
+            chain(
+                self.required_resources.through.objects.filter(activityvariant_id=self.id).values_list(
+                    "resource_id", flat=True
+                ),
+                ResourceGroup.resources.through.objects.filter(resourcegroup__activity_variants=self.id).values_list(
+                    "resource_id", flat=True
+                ),
+            )
+        )
+        relevant_resources = Resource.objects.filter(id__in=relevant_resource_ids).prefetch_related("availabilities")
+        relevant_calendar_events = CalendarEvent.objects.filter(
+            start_date__lte=end_date,
+            end_date__gte=start_date,
+        ).filter(
+            models.Q(resources__in=relevant_resource_ids)
+            | models.Q(resource_groups__resources__in=relevant_resource_ids)
+        )
+
+        events: list[SimpleEvent] = []
+
+        # unavailable times for each relevant resource
+        for resource in relevant_resources:
+            available_timeslots = get_time_slots_by_weekly_times(resource.weekly_times, start_date, end_date)
+            events.extend(
+                SimpleEvent(time_slot, [{resource.id}])
+                for time_slot in get_unavailable_time_slots(available_timeslots, start_date, end_date)
+            )
+
+        # calendar events
+        events.extend(event.simple_event for event in relevant_calendar_events)
+
+        conflicting_timeslots = get_conflicting_timeslots(events)
+
+        return apply_preparation_and_recovery_times(
+            conflicting_timeslots,
             self.activity.orderable.preparation_time,
             self.activity.orderable.recovery_time,
         )

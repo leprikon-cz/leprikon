@@ -1,10 +1,12 @@
-from dataclasses import dataclass
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
+from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 
 from django.db import models
 from django.utils.formats import date_format, time_format
 from django.utils.translation import gettext_lazy as _
+
+from leprikon.utils.calendar import SimpleEvent, TimeSlot, WeeklyTimes
 
 from .fields import DaysOfWeek, DaysOfWeekField
 from .roles import Leader
@@ -38,6 +40,14 @@ class Resource(models.Model):
         if self.leader:
             self.name = str(self.leader)
         return super().save(force_insert, force_update, using, update_fields)
+
+    @property
+    def all_availabilities(self) -> list["ResourceAvailability"]:
+        return list(self.availabilities.all())
+
+    @property
+    def weekly_times(self) -> WeeklyTimes:
+        return WeeklyTimes(availability.weekly_time for availability in self.all_availabilities)
 
 
 class ResourceAvailability(StartEndMixin, models.Model):
@@ -126,6 +136,29 @@ class CalendarEvent(models.Model):
     def end(self) -> datetime:
         return datetime.combine(self.end_date, time(0) if self.end_time is None else self.end_time)
 
+    @cached_property
+    def effective_start(self) -> datetime:
+        if self.start_time:
+            return datetime.combine(self.start_date, self.start_time) - self.preparation_time
+        return datetime.combine(self.start_date, time(0))
+
+    @cached_property
+    def effective_end(self) -> datetime:
+        if self.end_time:
+            return datetime.combine(self.end_date, self.end_time) + self.recovery_time
+        return datetime.combine(self.end_date, time(0))
+
+    @property
+    def simple_event(self) -> SimpleEvent:
+        return SimpleEvent(
+            timeslot=TimeSlot(self.effective_start, self.effective_end),
+            resource_groups=[{resource.id} for resource in self.resources.all()]
+            + [
+                {resource.id for resource in resource_group.resources.all()}
+                for resource_group in self.resource_groups.all()
+            ],
+        )
+
     class Meta:
         app_label = "leprikon"
         verbose_name = _("calendar event")
@@ -149,34 +182,3 @@ class CalendarEvent(models.Model):
                 else date_format(self.end_date, "SHORT_DATE_FORMAT")
             ),
         )
-
-
-@dataclass
-class ConflictingTimeSlot:
-    start: datetime
-    end: datetime
-
-
-def get_conflicting_timeslots(
-    start_date: date,
-    end_date: date,
-    required_resources: list[Resource],
-    required_resource_groups: list[ResourceGroup],
-    preparation_time: timedelta,
-    recovery_time: timedelta,
-) -> list[ConflictingTimeSlot]:
-    conflicting_events = list(
-        CalendarEvent.objects.filter(
-            end_date__gte=start_date,
-            start_date__lt=end_date,
-            resources__in=required_resources,
-        ).distinct()
-    )
-    # TODO: Handle resource groups conflicts
-    return [
-        ConflictingTimeSlot(
-            start=(datetime.combine(event.start_date, event.start_time) if event.start_time else event.start_date),
-            end=(datetime.combine(event.end_date, event.end_time) if event.end_time else event.end_date),
-        )
-        for event in conflicting_events
-    ]

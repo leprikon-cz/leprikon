@@ -135,8 +135,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         """
         activity_variant: ActivityVariant = self.get_object()
         input_serializer = GetResourceConflictSerializer(data=request.query_params)
-        if not input_serializer.is_valid():
-            return Response(input_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        input_serializer.is_valid(raise_exception=True)
 
         conflicts = [
             dict(

@@ -1,11 +1,13 @@
 import csv
 from datetime import datetime
 from functools import partial
+from typing import Any, Callable, Self, Sequence
 
 import django_excel
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import F
-from django.http import HttpResponse
+from django.db.models import F, QuerySet
+from django.http import HttpRequest, HttpResponse
+from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes
@@ -26,7 +28,10 @@ def get_verbose_name(field) -> str:
 
 
 class AdminExportMixin:
-    actions = ("export_as_xlsx", "export_as_csv")
+    actions: Sequence[Callable[[Self, HttpRequest, QuerySet[Any, Any]], HttpResponseBase | None] | str] | None = (
+        "export_as_xlsx",
+        "export_as_csv",
+    )
 
     def get_list_export(self, request):
         try:
