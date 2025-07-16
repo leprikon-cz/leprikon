@@ -38,6 +38,16 @@ staticfiles_urls = {
         "sha384",
         "2q+7Pk3OSOseTKfNi/t8mZzYRIovdg+nfXYeKmmnivkyD+nxosintmGKX7SWcrOG",
     ),  # NOQA
+    "leprikon/lib/ekko-lightbox.min.css": (
+        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css",
+        "sha512",
+        "Velp0ebMKjcd9RiCoaHhLXkR1sFoCCWXNp6w4zj1hfMifYB5441C+sKeBl/T/Ka6NjBiRfBBQRaQ\nq65ekYz3UQ==",
+    ),  # NOQA
+    "leprikon/lib/ekko-lightbox.min.js": (
+        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js",
+        "sha512",
+        "Y2IiVZeaBwXG1wSV7f13plqlmFOx8MdjuHyYFVoYzhyRr3nH/NMDjTBSswijzADdNzMyWNetbLMf\nOpIPl6Cv9g==",
+    ),  # NOQA
     "leprikon/lib/jquery.min.js": (
         "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js",
         "sha256",
