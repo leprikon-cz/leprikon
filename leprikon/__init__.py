@@ -1,4 +1,4 @@
-__version__ = "4.0.1"
+__version__ = "4.0.2"
 default_app_config = "leprikon.apps.LeprikonConfig"
 
 staticfiles_urls = {
@@ -39,12 +39,12 @@ staticfiles_urls = {
         "2q+7Pk3OSOseTKfNi/t8mZzYRIovdg+nfXYeKmmnivkyD+nxosintmGKX7SWcrOG",
     ),  # NOQA
     "leprikon/lib/ekko-lightbox.min.css": (
-        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.css",
+        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.2/ekko-lightbox.min.css",
         "sha384",
         "EsoR0pjPTZTUy5b8kJf6aTfA7quYluD5mNQ/Lz4hsxU2kXuuc6PlXVfBJCFdTXqD",
     ),  # NOQA
     "leprikon/lib/ekko-lightbox.min.js": (
-        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.1/ekko-lightbox.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/4.0.2/ekko-lightbox.min.js",
         "sha384",
         "2aVpK/uKiYlyFXHZ36wvxOPZyWeouEKvbSUlqCrkFhyT80n2aSYtT15Tgdn6g41M",
     ),  # NOQA
