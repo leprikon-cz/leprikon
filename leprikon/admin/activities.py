@@ -828,6 +828,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
     exclude = ["activity"]
     raw_id_fields = (
         "activity_variant",
+        "calendar_event",
         "user",
     )
 

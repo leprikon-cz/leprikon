@@ -955,6 +955,7 @@ class Registration(PdfExportAndMailMixin, models.Model):
         on_delete=models.PROTECT,
         related_name="registration",
         verbose_name=_("calendar event"),
+        blank=True,
         null=True,
     )
 
