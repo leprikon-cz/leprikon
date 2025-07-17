@@ -873,6 +873,7 @@ class ActivityVariant(models.Model):
         relevant_calendar_events = CalendarEvent.objects.filter(
             start_date__lte=end_date,
             end_date__gte=start_date,
+            is_canceled=False,
         ).filter(
             models.Q(resources__in=relevant_resource_ids)
             | models.Q(resource_groups__resources__in=relevant_resource_ids)
