@@ -1,7 +1,7 @@
 import colorsys
 import logging
 from collections import namedtuple
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from email.mime.image import MIMEImage
 from io import BytesIO
@@ -859,16 +859,13 @@ class ActivityVariant(models.Model):
         return self.active_registrations.filter(approved=None)
 
     def get_conflicting_timeslots(self, start_date: date, end_date: date) -> list[TimeSlot]:
-        relevant_resource_ids: set[int] = set(
+        required_resource_groups = list(
             chain(
-                self.required_resources.through.objects.filter(activityvariant_id=self.id).values_list(
-                    "resource_id", flat=True
-                ),
-                ResourceGroup.resources.through.objects.filter(resourcegroup__activity_variants=self.id).values_list(
-                    "resource_id", flat=True
-                ),
+                ({r.id} for r in self.required_resources.all()),
+                (set(r.id for r in rg.resources.all()) for rg in self.required_resource_groups.all()),
             )
         )
+        relevant_resource_ids: set[int] = set(chain.from_iterable(required_resource_groups))
         relevant_resources = Resource.objects.filter(id__in=relevant_resource_ids).prefetch_related("availabilities")
         relevant_calendar_events = CalendarEvent.objects.filter(
             start_date__lte=end_date,
@@ -879,7 +876,15 @@ class ActivityVariant(models.Model):
             | models.Q(resource_groups__resources__in=relevant_resource_ids)
         )
 
-        events: list[SimpleEvent] = []
+        events: list[SimpleEvent] = [
+            SimpleEvent(
+                TimeSlot(
+                    start=datetime.combine(start_date, time(0)),
+                    end=datetime.combine(end_date, time(0)) + timedelta(days=1),
+                ),
+                required_resource_groups,
+            )
+        ]
 
         # unavailable times for each relevant resource
         for resource in relevant_resources:
