@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -11,12 +12,15 @@ from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from leprikon.models.calendar import CalendarExport
+
 from ..models.activities import ActivityVariant, CalendarEvent
 from ..models.journals import Journal
 from ..models.schoolyear import SchoolYear
 from .serializers import (
     ActivitySerializer,
     CalendarEventSerializer,
+    CalendarExportSerializer,
     CredentialsSerializer,
     GetResourceConflictSerializer,
     RegistrationParticipantSerializer,
@@ -165,5 +169,22 @@ class CalendarEventViewSet(viewsets.ModelViewSet):
     permission_classes = [DjangoModelPermissions]
 
     def get_queryset(self):
-        queryset = CalendarEvent.objects.filter(activity__school_year=self.request.school_year)
-        return queryset
+        return CalendarEvent.objects.all()
+
+
+class CalendarExportViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CalendarExportSerializer
+    permission_classes = [DjangoModelPermissions]
+
+    def get_queryset(self):
+        return CalendarExport.objects.all()
+
+    @extend_schema(operation_id="calendar_export_ical", responses={200: str})
+    @action(detail=True, methods=["get"], permission_classes=[])
+    def ical(self, request: Request, pk: str):
+        calendar_export: CalendarExport = self.get_object()
+        return HttpResponse(
+            calendar_export.get_ical(),
+            content_type="text/calendar",
+            headers={"Content-Disposition": f'inline; filename="calendar-{calendar_export.id}.ics"'},
+        )

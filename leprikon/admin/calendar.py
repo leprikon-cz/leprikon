@@ -1,8 +1,11 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from ..models.calendar import CalendarEvent, Resource, ResourceAvailability, ResourceGroup
+from leprikon.models.leprikonsite import LeprikonSite
+
+from ..models.calendar import CalendarEvent, CalendarExport, Resource, ResourceAvailability, ResourceGroup
 from .filters import IsNullFieldListFilter
 
 
@@ -64,3 +67,31 @@ class CalendarEventAdmin(admin.ModelAdmin):
     @admin.display(description=_("resource groups"))
     def resource_groups_list(self, obj):
         return ", ".join([str(group) for group in obj.resource_groups.all()])
+
+
+@admin.register(CalendarExport)
+class CalendarExportAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "resources_list",
+        "relevant_events_count",
+        "ical_url",
+    )
+    list_filter = ("resources",)
+    filter_horizontal = ("resources",)
+
+    @admin.display(description=_("resources"))
+    def resources_list(self, obj: CalendarExport) -> str:
+        if not obj.resource_ids:
+            return _("all resources")
+        return mark_safe("<br>".join(str(resource) for resource in obj.resources.all()))
+
+    @admin.display(description=_("relevant events count"))
+    def relevant_events_count(self, obj: CalendarExport) -> str:
+        return f"{obj.relevant_events.count()} / {obj.limit_events_count}"
+
+    @admin.display(description=_("iCal URL"))
+    def ical_url(self, obj: CalendarExport) -> str:
+        leprikon_site = LeprikonSite.objects.get_current()
+        uri = reverse("api:calendarexport-ical", args=(obj.id,))
+        return leprikon_site.url + uri

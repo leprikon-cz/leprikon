@@ -110,6 +110,7 @@ social-auth-app-django = "*"
 sqlparse = "*"
 trml2pdf = "*"
 Whoosh = "*"
+icalendar = "^6.3.1"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"

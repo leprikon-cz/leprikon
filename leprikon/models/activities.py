@@ -38,6 +38,7 @@ from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_pa
 from ..utils.calendar import (
     SimpleEvent,
     TimeSlot,
+    TimeSlots,
     WeeklyTimes,
     apply_preparation_and_recovery_times,
     end_time_format,
@@ -867,11 +868,13 @@ class ActivityVariant(models.Model):
         )
         relevant_resource_ids: set[int] = set(chain.from_iterable(required_resource_groups))
         relevant_resources = Resource.objects.filter(id__in=relevant_resource_ids).prefetch_related("availabilities")
-        relevant_calendar_events = CalendarEvent.objects.filter(
+        relevant_calendar_events_by_timeslot = CalendarEvent.objects.filter(
             start_date__lte=end_date,
             end_date__gte=start_date,
             is_canceled=False,
-        ).filter(
+        )
+        blocking_events = relevant_calendar_events_by_timeslot.filter(blocks_all_resources=True)
+        relevant_calendar_events = relevant_calendar_events_by_timeslot.filter(blocks_all_resources=False).filter(
             models.Q(resources__in=relevant_resource_ids)
             | models.Q(resource_groups__resources__in=relevant_resource_ids)
         )
@@ -897,7 +900,9 @@ class ActivityVariant(models.Model):
         # calendar events
         events.extend(event.simple_event for event in relevant_calendar_events)
 
-        conflicting_timeslots = get_conflicting_timeslots(events)
+        conflicting_timeslots = TimeSlots(get_conflicting_timeslots(events)) | TimeSlots(
+            event.timeslot for event in blocking_events
+        )
 
         return apply_preparation_and_recovery_times(
             conflicting_timeslots,

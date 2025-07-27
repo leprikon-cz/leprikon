@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from leprikon.models.activities import Activity, CalendarEvent, RegistrationParticipant
+from leprikon.models.calendar import CalendarExport
 from leprikon.models.schoolyear import SchoolYear
 
 
@@ -58,9 +59,13 @@ class CalendarEventSerializer(serializers.ModelSerializer):
         model = CalendarEvent
         fields = [
             "id",
-            "title",
+            "name",
             "start",
             "end",
-            "all_day",
-            # "color",
         ]
+
+
+class CalendarExportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalendarExport
+        fields = "__all__"

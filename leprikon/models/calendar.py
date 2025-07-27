@@ -1,11 +1,15 @@
-from datetime import datetime, time, timedelta
+import uuid
+from datetime import date, datetime, time, timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 
 from django.db import models
+from django.urls import reverse
 from django.utils.formats import date_format, time_format
 from django.utils.translation import gettext_lazy as _
+from icalendar import Calendar, Event
 
+from leprikon.models.leprikonsite import LeprikonSite
 from leprikon.utils.calendar import SimpleEvent, TimeSlot, WeeklyTimes
 
 from .fields import DaysOfWeek, DaysOfWeekField
@@ -120,6 +124,11 @@ class CalendarEvent(models.Model):
         default=timedelta(0),
         help_text=_("Time to recover after the event. (HH:MM:SS)"),
     )
+    blocks_all_resources = models.BooleanField(
+        _("blocks all resources"),
+        default=False,
+        help_text=_("If checked, the event will block all resources, not just the selected ones."),
+    )
     resources = models.ManyToManyField(
         Resource, blank=True, related_name="calendar_events", verbose_name=_("resources")
     )
@@ -149,9 +158,13 @@ class CalendarEvent(models.Model):
         return datetime.combine(self.end_date, time(0))
 
     @property
+    def timeslot(self) -> TimeSlot:
+        return TimeSlot(self.effective_start, self.effective_end)
+
+    @property
     def simple_event(self) -> SimpleEvent:
         return SimpleEvent(
-            timeslot=TimeSlot(self.effective_start, self.effective_end),
+            timeslot=self.timeslot,
             resource_groups=[{resource.id} for resource in self.resources.all()]
             + [
                 {resource.id for resource in resource_group.resources.all()}
@@ -182,3 +195,64 @@ class CalendarEvent(models.Model):
                 else date_format(self.end_date, "SHORT_DATE_FORMAT")
             ),
         )
+
+    @property
+    def url(self) -> str:
+        leprikon_site = LeprikonSite.objects.get_current()
+        uri = reverse("admin:leprikon_calendarevent_change", args=(self.pk,))
+        return leprikon_site.url + uri
+
+
+class CalendarExport(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(_("name"), max_length=255)
+    resources = models.ManyToManyField(
+        Resource,
+        blank=True,
+        related_name="calendar_exports",
+        verbose_name=_("resources"),
+        help_text=_("Select resources to export calendar events for. Leave empty to export events for all resources."),
+    )
+    export_past_days = models.PositiveSmallIntegerField(_("export past days"), default=30)
+    limit_events_count = models.PositiveSmallIntegerField(
+        _("limit events count"),
+        default=1000,
+        help_text=_("Limit the number of events to export. Huge exports may fail to import to Your calendar."),
+    )
+
+    class Meta:
+        app_label = "leprikon"
+        verbose_name = _("calendar export")
+        verbose_name_plural = _("calendar exports")
+
+    def __str__(self):
+        return self.name
+
+    @cached_property
+    def resource_ids(self) -> set[int]:
+        return set(self.resources.values_list("id", flat=True))
+
+    @property
+    def relevant_events(self) -> models.QuerySet[CalendarEvent]:
+        qs = CalendarEvent.objects.filter(end_date__gte=date.today() - self.export_past_days)
+        if self.resource_ids:
+            qs = qs.filter(
+                models.Q(blocks_all_resources=True)
+                | models.Q(resources__in=self.resource_ids)
+                | models.Q(resource_groups__resources__in=self.resource_ids)
+            )
+        return qs
+
+    def get_ical(self) -> str:
+        calendar = Calendar()
+        calendar.add("prodid", "-//Leprikon//Calendar Export//EN")
+        calendar.add("version", "2.0")
+        for event in self.relevant_events[: self.limit_events_count]:
+            ical_event = Event()
+            ical_event.add("summary", event.name)
+            ical_event.add("dtstart", event.start if event.start_time else event.start_date)
+            # end date is exclusive if end time is not set
+            ical_event.add("dtend", event.end if event.end_time else event.end_date + timedelta(days=1))
+            ical_event.add("url", event.url)
+            calendar.add_component(ical_event)
+        return calendar.to_ical().decode("utf-8")
