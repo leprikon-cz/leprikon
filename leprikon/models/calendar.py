@@ -234,7 +234,7 @@ class CalendarExport(models.Model):
 
     @property
     def relevant_events(self) -> models.QuerySet[CalendarEvent]:
-        qs = CalendarEvent.objects.filter(end_date__gte=date.today() - self.export_past_days)
+        qs = CalendarEvent.objects.filter(end_date__gte=date.today() - timedelta(days=self.export_past_days))
         if self.resource_ids:
             qs = qs.filter(
                 models.Q(blocks_all_resources=True)
