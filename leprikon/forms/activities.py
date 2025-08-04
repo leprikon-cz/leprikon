@@ -177,7 +177,9 @@ class ActivityFilterForm(FormMixin, forms.Form):
         if self.cleaned_data.get("target_groups"):
             qs = qs.filter(target_groups__in=self.cleaned_data["target_groups"])
         if self.cleaned_data.get("days_of_week"):
-            qs = qs.filter(times__days_of_week__match=DaysOfWeek(self.cleaned_data["days_of_week"]))
+            qs = qs.filter(
+                times__days_of_week__match=DaysOfWeek(int(d) for d in self.cleaned_data["days_of_week"]).int()
+            )
         if self.activity_type_model == ActivityModel.EVENT:
             if self.cleaned_data["past"]:
                 qs = qs.filter(end_date__lte=now()).order_by("-start_date", "-start_time")
