@@ -51,7 +51,11 @@ class Resource(models.Model):
 
     @property
     def weekly_times(self) -> WeeklyTimes:
-        return WeeklyTimes(availability.weekly_time for availability in self.all_availabilities)
+        return (
+            WeeklyTimes(availability.weekly_time for availability in self.all_availabilities)
+            if self.all_availabilities
+            else WeeklyTimes.unlimited()
+        )
 
 
 class ResourceAvailability(StartEndMixin, models.Model):
