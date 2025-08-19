@@ -133,25 +133,9 @@ class OrderableRegistration(Registration):
             self.save(update_fields=["cached_balance"])
         return payment_status
 
-    @attributes(admin_order_field="start_date", short_description=_("event date"))
-    def event_date(self):
-        return "{start}{separator}{end}".format(
-            start=(
-                date_format(datetime.combine(self.start_date, self.start_time), "SHORT_DATETIME_FORMAT")
-                if self.start_time
-                else date_format(self.start_date, "SHORT_DATE_FORMAT")
-            ),
-            separator=" - " if self.start_date != self.end_date or self.end_time is not None else "",
-            end=(
-                (time_format(self.end_time, "TIME_FORMAT") if self.end_time else "")
-                if self.start_date == self.end_date
-                else (
-                    date_format(datetime.combine(self.end_date, self.end_time), "SHORT_DATETIME_FORMAT")
-                    if self.end_time
-                    else date_format(self.end_date, "SHORT_DATE_FORMAT")
-                )
-            ),
-        )
+    @attributes(admin_order_field="calendar_event__start_date", short_description=_("event date"))
+    def event_date(self) -> str:
+        return str(self.calendar_event)
 
 
 class OrderableDiscount(ActivityDiscount):
