@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from leprikon.models.leprikonsite import LeprikonSite
 
 from ..models.calendar import CalendarEvent, CalendarExport, Resource, ResourceAvailability, ResourceGroup
-from .filters import IsNullFieldListFilter
+from .filters import IsCanceledListFilter, IsNullFieldListFilter
 
 
 class AvailabilityInlineAdmin(admin.TabularInline):
@@ -49,6 +49,7 @@ class CalendarEventAdmin(admin.ModelAdmin):
         "resource_groups_list",
     )
     list_filter = (
+        IsCanceledListFilter,
         "activity__activity_type",
         "resources",
         "resource_groups",

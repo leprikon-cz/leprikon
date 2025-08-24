@@ -114,6 +114,38 @@ class CanceledListFilter(admin.SimpleListFilter):
         ]
 
 
+class IsCanceledListFilter(admin.SimpleListFilter):
+    title = _("cancelation")
+    parameter_name = "canceled"
+
+    def lookups(self, request, model_admin):
+        return (
+            (None, _("not canceled")),
+            ("yes", _("canceled")),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(is_canceled=True)
+        else:
+            return queryset.filter(is_canceled=False)
+
+    def choices(self, cl):
+        value = self.value()
+        return [
+            {
+                "selected": value != "yes",
+                "query_string": cl.get_query_string({}, [self.parameter_name]),
+                "display": _("active"),
+            },
+            {
+                "selected": value == "yes",
+                "query_string": cl.get_query_string({self.parameter_name: "yes"}),
+                "display": _("canceled"),
+            },
+        ]
+
+
 class ActivityTypeListFilter(admin.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.activity_types = ActivityType.objects.all()

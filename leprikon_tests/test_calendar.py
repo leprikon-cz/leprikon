@@ -11,8 +11,8 @@ from leprikon.utils.calendar import (
     WeeklyTimes,
     apply_preparation_and_recovery_times,
     flatten_events,
+    get_reverse_time_slots,
     get_time_slots_by_weekly_times,
-    get_unavailable_time_slots,
 )
 
 
@@ -252,8 +252,8 @@ def test_time_slot_sub() -> None:
     ) == TimeSlots([hour_to_slot(1, 2), hour_to_slot(3, 4), hour_to_slot(6, 7)])
 
 
-def test_get_unavailable_time_slots() -> None:
-    assert get_unavailable_time_slots(
+def test_get_reverse_time_slots() -> None:
+    assert get_reverse_time_slots(
         available_time_slots=TimeSlots(
             [
                 hour_to_slot(8, 20, 1),

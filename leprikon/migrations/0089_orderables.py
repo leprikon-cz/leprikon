@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import leprikon.models.fields
-from leprikon.models.roles import GroupContact
 
 
 def create_group_contacts(apps, schema_editor):

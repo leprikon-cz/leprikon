@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-28 20:14+0200\n"
+"POT-Creation-Date: 2025-08-24 21:55+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -19,8 +19,8 @@ msgstr ""
 msgid "Leprikon administration"
 msgstr ""
 
-#: admin/activities.py:116 models/activities.py:248 models/activities.py:355
-#: models/activities.py:364 models/activities.py:411
+#: admin/activities.py:116 models/activities.py:246 models/activities.py:353
+#: models/activities.py:362 models/activities.py:409
 #: models/registrationlink.py:21
 msgid "activity type"
 msgstr ""
@@ -29,7 +29,7 @@ msgstr ""
 msgid "advanced settings"
 msgstr ""
 
-#: admin/activities.py:255 models/activities.py:305 models/activities.py:306
+#: admin/activities.py:255 models/activities.py:303 models/activities.py:304
 msgid "texts"
 msgstr ""
 
@@ -47,7 +47,7 @@ msgstr ""
 msgid "registering"
 msgstr ""
 
-#: admin/activities.py:395 models/activities.py:810
+#: admin/activities.py:395 models/activities.py:808
 #: templates/leprikon/admin/dashboard.html:38
 msgid "price and registering variants"
 msgstr ""
@@ -57,7 +57,7 @@ msgid "add price and registering variant"
 msgstr ""
 
 #: admin/activities.py:405 admin/activities.py:600
-#: admin/registrationlink.py:130 models/activities.py:1052
+#: admin/registrationlink.py:130 models/activities.py:1086
 #: templates/leprikon/activity_preview.html:101
 #: templates/leprikon/admin/dashboard.html:43
 msgid "registrations"
@@ -88,7 +88,7 @@ msgid "unapproved registrations count"
 msgstr ""
 
 #: admin/activities.py:457 admin/activities.py:505 admin/roles.py:168
-#: models/activities.py:441 models/roles.py:32
+#: models/activities.py:439 models/roles.py:32
 msgid "photo"
 msgstr ""
 
@@ -171,9 +171,9 @@ msgstr ""
 msgid "approved registration"
 msgstr ""
 
-#: admin/activities.py:1066 admin/activities.py:1215 models/activities.py:518
-#: models/activities.py:753 models/activities.py:945 models/activities.py:959
-#: models/calendar.py:111 models/journals.py:86 models/journals.py:295
+#: admin/activities.py:1066 admin/activities.py:1215 models/activities.py:516
+#: models/activities.py:751 models/activities.py:979 models/activities.py:993
+#: models/calendar.py:115 models/journals.py:86 models/journals.py:295
 #: models/roles.py:344 templates/leprikon/alternating.html:15
 msgid "activity"
 msgstr ""
@@ -190,15 +190,15 @@ msgstr ""
 msgid "refusal decision"
 msgstr ""
 
-#: admin/activities.py:1083 models/activities.py:976
+#: admin/activities.py:1083 models/activities.py:1010
 msgid "time of registration"
 msgstr ""
 
-#: admin/activities.py:1085 models/activities.py:985
+#: admin/activities.py:1085 models/activities.py:1019
 msgid "time of approval"
 msgstr ""
 
-#: admin/activities.py:1087 models/activities.py:994 models/activities.py:1003
+#: admin/activities.py:1087 models/activities.py:1028 models/activities.py:1037
 msgid "payment request time"
 msgstr ""
 
@@ -206,11 +206,11 @@ msgstr ""
 msgid "refund offer time"
 msgstr ""
 
-#: admin/activities.py:1091 models/activities.py:1012
+#: admin/activities.py:1091 models/activities.py:1046
 msgid "time of cancellation request"
 msgstr ""
 
-#: admin/activities.py:1093 models/activities.py:1021
+#: admin/activities.py:1093 models/activities.py:1055
 msgid "time of cancellation"
 msgstr ""
 
@@ -220,7 +220,7 @@ msgstr ""
 
 #: admin/activities.py:1102 admin/courses.py:268 admin/courses.py:305
 #: admin/events.py:212 admin/orderables.py:202 admin/orderables.py:228
-#: models/activities.py:1901 templates/leprikon/admin/dashboard.html:53
+#: models/activities.py:1935 templates/leprikon/admin/dashboard.html:53
 msgid "received payments"
 msgstr ""
 
@@ -228,7 +228,7 @@ msgstr ""
 msgid "add received payment"
 msgstr ""
 
-#: admin/activities.py:1119 models/activities.py:1920
+#: admin/activities.py:1119 models/activities.py:1954
 #: templates/leprikon/admin/dashboard.html:58
 msgid "returned payments"
 msgstr ""
@@ -242,7 +242,7 @@ msgstr ""
 msgid "total price"
 msgstr ""
 
-#: admin/activities.py:1260 models/activities.py:1036
+#: admin/activities.py:1260 models/activities.py:1070
 #: templates/leprikon/received_payment_pdf/recipe.rml:30
 #: templates/leprikon/registration_payment_request/activity.rml:193
 #: templates/leprikon/returned_payment_pdf/recipe.rml:30
@@ -277,17 +277,17 @@ msgstr ""
 msgid "Bulk update"
 msgstr ""
 
-#: admin/calendar.py:25 models/calendar.py:71
+#: admin/calendar.py:25 models/calendar.py:75
 msgid "availabilities"
 msgstr ""
 
 #: admin/calendar.py:36 admin/calendar.py:63 admin/calendar.py:83
-#: models/calendar.py:38 models/calendar.py:92 models/calendar.py:133
-#: models/calendar.py:213
+#: models/calendar.py:38 models/calendar.py:96 models/calendar.py:137
+#: models/calendar.py:217
 msgid "resources"
 msgstr ""
 
-#: admin/calendar.py:67 models/calendar.py:97 models/calendar.py:136
+#: admin/calendar.py:67 models/calendar.py:101 models/calendar.py:140
 msgid "resource groups"
 msgstr ""
 
@@ -376,7 +376,7 @@ msgstr ""
 
 #: admin/courses.py:233 admin/courses.py:291 admin/events.py:189
 #: admin/events.py:204 admin/orderables.py:187 admin/orderables.py:220
-#: models/activities.py:1817 templates/leprikon/admin/dashboard.html:63
+#: models/activities.py:1851 templates/leprikon/admin/dashboard.html:63
 msgid "discounts"
 msgstr ""
 
@@ -488,8 +488,8 @@ msgstr ""
 msgid "printable list of participants"
 msgstr ""
 
-#: admin/journals.py:136 models/activities.py:402 models/activities.py:1091
-#: models/activities.py:1095 models/activities.py:1621 models/journals.py:99
+#: admin/journals.py:136 models/activities.py:400 models/activities.py:1125
+#: models/activities.py:1129 models/activities.py:1655 models/journals.py:99
 #: models/journals.py:170 models/roles.py:188
 #: templates/leprikon/registration_payment_request/activity.rml:125
 #: templates/leprikon/registration_payment_request/activity.rml:147
@@ -663,7 +663,7 @@ msgid "Export setup"
 msgstr ""
 
 #: admin/registrationlink.py:113 admin/registrationlink.py:118
-#: models/activities.py:1044 models/registrationlink.py:34
+#: models/activities.py:1078 models/registrationlink.py:34
 msgid "registration link"
 msgstr ""
 
@@ -679,16 +679,16 @@ msgstr ""
 msgid "Selected leaders were added to school year {}."
 msgstr ""
 
-#: admin/roles.py:99 models/activities.py:1573 models/activities.py:1598
-#: models/activities.py:1607 models/activities.py:1728
-#: models/activities.py:1756 models/roles.py:123 models/roles.py:162
+#: admin/roles.py:99 models/activities.py:1607 models/activities.py:1632
+#: models/activities.py:1641 models/activities.py:1762
+#: models/activities.py:1790 models/roles.py:123 models/roles.py:162
 #: models/roles.py:238
 msgid "first name"
 msgstr ""
 
-#: admin/roles.py:103 models/activities.py:1574 models/activities.py:1599
-#: models/activities.py:1608 models/activities.py:1729
-#: models/activities.py:1757 models/roles.py:124 models/roles.py:163
+#: admin/roles.py:103 models/activities.py:1608 models/activities.py:1633
+#: models/activities.py:1642 models/activities.py:1763
+#: models/activities.py:1791 models/roles.py:124 models/roles.py:163
 #: models/roles.py:239
 msgid "last name"
 msgstr ""
@@ -706,7 +706,7 @@ msgstr ""
 msgid "contacts"
 msgstr ""
 
-#: admin/roles.py:115 models/activities.py:956 models/roles.py:29
+#: admin/roles.py:115 models/activities.py:990 models/roles.py:29
 #: models/roles.py:121 models/roles.py:159 models/roles.py:232
 #: models/roles.py:292 models/useragreement.py:11
 msgid "user"
@@ -720,7 +720,7 @@ msgstr ""
 msgid "events"
 msgstr ""
 
-#: admin/roles.py:158 models/orderables.py:57
+#: admin/roles.py:158 models/orderables.py:56
 msgid "orderable events"
 msgstr ""
 
@@ -749,7 +749,7 @@ msgstr ""
 msgid "settings"
 msgstr ""
 
-#: admin/timesheets.py:59 models/activities.py:424 models/place.py:9
+#: admin/timesheets.py:59 models/activities.py:422 models/place.py:9
 #: models/roles.py:31
 #: templates/leprikon/registration_payment_request/activity.rml:109
 #: templates/leprikon/timesheet_detail.html:29
@@ -846,10 +846,6 @@ msgstr ""
 
 #: admin/user.py:153 admin/user.py:158 admin/user.py:164 admin/user.py:169
 msgid "login"
-msgstr ""
-
-#: api/views.py:149
-msgid "unavailable time"
 msgstr ""
 
 #: apps.py:7 cms_apps.py:13 cms_menus.py:15 cms_plugins/base.py:7
@@ -1014,9 +1010,9 @@ msgstr ""
 msgid "School year block"
 msgstr ""
 
-#: conf/default_settings.py:12 models/activities.py:1587
-#: models/activities.py:1603 models/activities.py:1612
-#: models/activities.py:1733 models/activities.py:1791
+#: conf/default_settings.py:12 models/activities.py:1621
+#: models/activities.py:1637 models/activities.py:1646
+#: models/activities.py:1767 models/activities.py:1825
 #: models/organizations.py:18 models/roles.py:129 models/roles.py:176
 #: models/roles.py:243 models/roles.py:301
 #: templates/leprikon/donation_pdf/recipe.rml:20
@@ -1027,7 +1023,7 @@ msgstr ""
 msgid "phone"
 msgstr ""
 
-#: conf/default_settings.py:13 models/activities.py:1803
+#: conf/default_settings.py:13 models/activities.py:1837
 #: models/organizations.py:40 models/roles.py:314
 #: templates/leprikon/donation_pdf/recipe.rml:15
 #: templates/leprikon/received_payment_pdf/recipe.rml:15
@@ -1146,11 +1142,11 @@ msgstr ""
 msgid "Show invisible"
 msgstr ""
 
-#: forms/activities.py:304
+#: forms/activities.py:306
 msgid "Participant with this birth number has already been registered."
 msgstr ""
 
-#: forms/activities.py:389 forms/activities.py:553
+#: forms/activities.py:391 forms/activities.py:555
 #: templates/leprikon/participant_preview.html:36
 #: templates/leprikon/registration_details.html:71
 #: templates/leprikon/registration_details.html:136
@@ -1159,33 +1155,33 @@ msgstr ""
 msgid "School"
 msgstr ""
 
-#: forms/activities.py:393 forms/activities.py:557 models/activities.py:1593
-#: models/activities.py:1738 models/roles.py:180 models/roles.py:248
+#: forms/activities.py:395 forms/activities.py:559 models/activities.py:1627
+#: models/activities.py:1772 models/roles.py:180 models/roles.py:248
 msgid "other school"
 msgstr ""
 
-#: forms/activities.py:414 forms/activities.py:425 forms/activities.py:575
-#: forms/activities.py:778
+#: forms/activities.py:416 forms/activities.py:427 forms/activities.py:577
+#: forms/activities.py:780
 msgid "Choose"
 msgstr ""
 
-#: forms/activities.py:415
+#: forms/activities.py:417
 msgid "new participant"
 msgstr ""
 
-#: forms/activities.py:426
+#: forms/activities.py:428
 msgid "new parent"
 msgstr ""
 
-#: forms/activities.py:576
+#: forms/activities.py:578
 msgid "new group information"
 msgstr ""
 
-#: forms/activities.py:780
+#: forms/activities.py:782
 msgid "no billing information"
 msgstr ""
 
-#: forms/activities.py:784
+#: forms/activities.py:786
 msgid "new billing information"
 msgstr ""
 
@@ -1221,7 +1217,7 @@ msgstr ""
 msgid "Not approved participants"
 msgstr ""
 
-#: forms/journals.py:131 models/activities.py:784 models/journals.py:94
+#: forms/journals.py:131 models/activities.py:782 models/journals.py:94
 #: models/schoolyear.py:79 models/schoolyear.py:116
 msgid "school year division"
 msgstr ""
@@ -1507,259 +1503,259 @@ msgstr ""
 msgid "account closures"
 msgstr ""
 
-#: models/activities.py:84
+#: models/activities.py:82
 msgid ""
 "Hello,\n"
 "thank You for submitting the registration.\n"
 "We will inform you about its further processing."
 msgstr ""
 
-#: models/activities.py:88
+#: models/activities.py:86
 msgid ""
 "Hello,\n"
 "we are pleased to inform You, that Your registration was approved.\n"
 "We are looking forward to see You."
 msgstr ""
 
-#: models/activities.py:93
+#: models/activities.py:91
 msgid ""
 "Hello,\n"
 "we are sorry to inform You, that Your registration was refused."
 msgstr ""
 
-#: models/activities.py:97
+#: models/activities.py:95
 msgid ""
 "Hello,\n"
 "we'd like to ask You to pay for Your registration.\n"
 "If You have already made the payment recently, please ignore this message."
 msgstr ""
 
-#: models/activities.py:102
+#: models/activities.py:100
 msgid ""
 "Hello,\n"
 "Your registration has been overpaid.\n"
 "Please, tell us how you wish us to refund."
 msgstr ""
 
-#: models/activities.py:104
+#: models/activities.py:102
 msgid ""
 "Hello,\n"
 "Your registration was canceled."
 msgstr ""
 
-#: models/activities.py:105
+#: models/activities.py:103
 msgid ""
 "Hello,\n"
 "we have just grated a discount for Your registration."
 msgstr ""
 
-#: models/activities.py:107
+#: models/activities.py:105
 msgid ""
 "Hello,\n"
 "we have just received Your payment. Thank You.\n"
 "Please see the recipe attached."
 msgstr ""
 
-#: models/activities.py:110
+#: models/activities.py:108
 msgid ""
 "Hello,\n"
 "we have just returned Your payment. Thank You.\n"
 "Please see the recipe attached."
 msgstr ""
 
-#: models/activities.py:116 models/activities.py:742 models/courses.py:32
+#: models/activities.py:114 models/activities.py:740 models/courses.py:32
 #: models/courses.py:240
 msgid "course"
 msgstr ""
 
-#: models/activities.py:117
+#: models/activities.py:115
 msgid "fixed time event"
 msgstr ""
 
-#: models/activities.py:118 models/orderables.py:56
+#: models/activities.py:116 models/orderables.py:55
 msgid "orderable event"
 msgstr ""
 
-#: models/activities.py:122
+#: models/activities.py:120
 msgid "data model"
 msgstr ""
 
-#: models/activities.py:123
+#: models/activities.py:121
 msgid "name (singular)"
 msgstr ""
 
-#: models/activities.py:124
+#: models/activities.py:122
 msgid "name (genitiv)"
 msgstr ""
 
-#: models/activities.py:125
+#: models/activities.py:123
 msgid "name (akuzativ)"
 msgstr ""
 
-#: models/activities.py:126
+#: models/activities.py:124
 msgid "name (plural)"
 msgstr ""
 
-#: models/activities.py:133 models/activities.py:442 models/roles.py:33
+#: models/activities.py:131 models/activities.py:440 models/roles.py:33
 msgid "page"
 msgstr ""
 
-#: models/activities.py:135
+#: models/activities.py:133
 msgid ""
 "Select page, where the activities will be listed. New activity type requires "
 "a new page. If You assign an existing page, the current content of the page "
 "will be replaced with the new list of activities."
 msgstr ""
 
-#: models/activities.py:140 models/activities.py:340 models/activities.py:363
-#: models/activities.py:804 models/agegroup.py:12 models/agreements.py:9
+#: models/activities.py:138 models/activities.py:338 models/activities.py:361
+#: models/activities.py:802 models/agegroup.py:12 models/agreements.py:9
 #: models/agreements.py:33 models/citizenship.py:7 models/roles.py:100
 #: models/schoolyear.py:125 models/statgroup.py:9 models/targetgroup.py:10
 #: models/timesheets.py:125
 msgid "order"
 msgstr ""
 
-#: models/activities.py:145 models/activities.py:448 models/question.py:40
+#: models/activities.py:143 models/activities.py:446 models/question.py:40
 msgid "additional questions"
 msgstr ""
 
-#: models/activities.py:146 models/activities.py:451
+#: models/activities.py:144 models/activities.py:449
 msgid "Add additional questions to be asked in the registration form."
 msgstr ""
 
-#: models/activities.py:152 models/activities.py:457
+#: models/activities.py:150 models/activities.py:455
 msgid "additional legal agreements"
 msgstr ""
 
-#: models/activities.py:153
+#: models/activities.py:151
 msgid "Add additional legal agreements specific to this activity type."
 msgstr ""
 
-#: models/activities.py:161 models/activities.py:466 models/activities.py:475
+#: models/activities.py:159 models/activities.py:464 models/activities.py:473
 msgid "registration print setup"
 msgstr ""
 
-#: models/activities.py:169
+#: models/activities.py:167
 msgid "decision print setup"
 msgstr ""
 
-#: models/activities.py:177 models/activities.py:484
+#: models/activities.py:175 models/activities.py:482
 msgid "payment request print setup"
 msgstr ""
 
-#: models/activities.py:185 models/activities.py:493
+#: models/activities.py:183 models/activities.py:491
 msgid "payment print setup"
 msgstr ""
 
-#: models/activities.py:188 models/activities.py:502 models/organizations.py:34
+#: models/activities.py:186 models/activities.py:500 models/organizations.py:34
 #: models/transaction.py:161
 msgid "organization"
 msgstr ""
 
-#: models/activities.py:191 models/activities.py:505
+#: models/activities.py:189 models/activities.py:503
 msgid "text: registration received"
 msgstr ""
 
-#: models/activities.py:197 models/activities.py:506
+#: models/activities.py:195 models/activities.py:504
 msgid "text: registration approved"
 msgstr ""
 
-#: models/activities.py:203 models/activities.py:507
+#: models/activities.py:201 models/activities.py:505
 msgid "text: registration refused"
 msgstr ""
 
-#: models/activities.py:209 models/activities.py:508
+#: models/activities.py:207 models/activities.py:506
 msgid "text: registration payment request"
 msgstr ""
 
-#: models/activities.py:215 models/activities.py:509
+#: models/activities.py:213 models/activities.py:507
 msgid "text: registration refund offer"
 msgstr ""
 
-#: models/activities.py:221 models/activities.py:510
+#: models/activities.py:219 models/activities.py:508
 msgid "text: registration canceled"
 msgstr ""
 
-#: models/activities.py:227 models/activities.py:511
+#: models/activities.py:225 models/activities.py:509
 msgid "text: discount granted"
 msgstr ""
 
-#: models/activities.py:233 models/activities.py:512
+#: models/activities.py:231 models/activities.py:510
 msgid "text: payment received"
 msgstr ""
 
-#: models/activities.py:239 models/activities.py:513
+#: models/activities.py:237 models/activities.py:511
 msgid "text: payment returned"
 msgstr ""
 
-#: models/activities.py:249
+#: models/activities.py:247
 msgid "activity types"
 msgstr ""
 
-#: models/activities.py:313 models/activities.py:314 models/printsetup.py:24
+#: models/activities.py:311 models/activities.py:312 models/printsetup.py:24
 msgid "print setups"
 msgstr ""
 
-#: models/activities.py:320 models/activities.py:440 models/roles.py:101
+#: models/activities.py:318 models/activities.py:438 models/roles.py:101
 msgid "public"
 msgstr ""
 
-#: models/activities.py:320
+#: models/activities.py:318
 msgid "The attachment will be available before registration."
 msgstr ""
 
-#: models/activities.py:323
+#: models/activities.py:321
 msgid "send when"
 msgstr ""
 
-#: models/activities.py:326
+#: models/activities.py:324
 msgid "registration received"
 msgstr ""
 
-#: models/activities.py:327
+#: models/activities.py:325
 msgid "registration approved"
 msgstr ""
 
-#: models/activities.py:328
+#: models/activities.py:326
 msgid "registration refused"
 msgstr ""
 
-#: models/activities.py:329 models/activities.py:330 models/courses.py:153
+#: models/activities.py:327 models/activities.py:328 models/courses.py:153
 msgid "payment requested"
 msgstr ""
 
-#: models/activities.py:331
+#: models/activities.py:329
 msgid "registration canceled"
 msgstr ""
 
-#: models/activities.py:332
+#: models/activities.py:330
 msgid "discount granted"
 msgstr ""
 
-#: models/activities.py:333
+#: models/activities.py:331
 msgid "payment received"
 msgstr ""
 
-#: models/activities.py:334
+#: models/activities.py:332
 msgid "payment returned"
 msgstr ""
 
-#: models/activities.py:338
+#: models/activities.py:336
 msgid "The attachment will be sent with notification on selected events."
 msgstr ""
 
-#: models/activities.py:346 models/messages.py:119
+#: models/activities.py:344 models/messages.py:119
 msgid "attachment"
 msgstr ""
 
-#: models/activities.py:347 models/messages.py:120
+#: models/activities.py:345 models/messages.py:120
 msgid "attachments"
 msgstr ""
 
-#: models/activities.py:360 models/activities.py:423 models/activities.py:1784
+#: models/activities.py:358 models/activities.py:421 models/activities.py:1818
 #: models/agegroup.py:9 models/agreements.py:8 models/agreements.py:32
-#: models/calendar.py:25 models/calendar.py:91 models/calendar.py:104
-#: models/calendar.py:208 models/citizenship.py:6 models/department.py:6
+#: models/calendar.py:25 models/calendar.py:95 models/calendar.py:108
+#: models/calendar.py:212 models/citizenship.py:6 models/department.py:6
 #: models/place.py:7 models/printsetup.py:11 models/question.py:14
 #: models/registrationlink.py:24 models/roles.py:294 models/school.py:7
 #: models/schoolyear.py:118 models/statgroup.py:8 models/targetgroup.py:9
@@ -1767,428 +1763,452 @@ msgstr ""
 msgid "name"
 msgstr ""
 
-#: models/activities.py:361
+#: models/activities.py:359
 msgid "plural"
 msgstr ""
 
-#: models/activities.py:362
+#: models/activities.py:360
 msgid "color"
 msgstr ""
 
-#: models/activities.py:369
+#: models/activities.py:367
 msgid "activity group"
 msgstr ""
 
-#: models/activities.py:370
+#: models/activities.py:368
 msgid "activity groups"
 msgstr ""
 
-#: models/activities.py:403 models/activities.py:433
+#: models/activities.py:401 models/activities.py:431
 msgid "groups"
 msgstr ""
 
-#: models/activities.py:408 models/courses.py:255 models/courses.py:381
-#: models/events.py:186 models/events.py:312 models/orderables.py:185
-#: models/orderables.py:311 models/registrationlink.py:18 models/roles.py:336
+#: models/activities.py:406 models/courses.py:255 models/courses.py:381
+#: models/events.py:186 models/events.py:312 models/orderables.py:168
+#: models/orderables.py:294 models/registrationlink.py:18 models/roles.py:336
 #: models/roles.py:384 models/schoolyear.py:47 models/schoolyear.py:65
 msgid "school year"
 msgstr ""
 
-#: models/activities.py:414
+#: models/activities.py:412
 msgid "registration type"
 msgstr ""
 
-#: models/activities.py:418
+#: models/activities.py:416
 msgid ""
 "Participant details include birth number (birth day), age group, contacts, "
 "parent, etc. Group member details only include name and note."
 msgstr ""
 
-#: models/activities.py:422
+#: models/activities.py:420
 msgid "accounting code"
 msgstr ""
 
-#: models/activities.py:431 models/department.py:12
+#: models/activities.py:429 models/department.py:12
 msgid "department"
 msgstr ""
 
-#: models/activities.py:435 models/place.py:8 models/place.py:14
+#: models/activities.py:433 models/place.py:8 models/place.py:14
 msgid "place"
 msgstr ""
 
-#: models/activities.py:437 models/activities.py:759 models/agegroup.py:22
-#: models/courses.py:276 models/events.py:207 models/orderables.py:206
+#: models/activities.py:435 models/activities.py:757 models/agegroup.py:22
+#: models/courses.py:276 models/events.py:207 models/orderables.py:189
 msgid "age groups"
 msgstr ""
 
-#: models/activities.py:438 models/activities.py:761 models/courses.py:283
-#: models/events.py:214 models/orderables.py:213 models/targetgroup.py:20
+#: models/activities.py:436 models/activities.py:759 models/courses.py:283
+#: models/events.py:214 models/orderables.py:196 models/targetgroup.py:20
 msgid "target groups"
 msgstr ""
 
-#: models/activities.py:439 models/courses.py:297 models/events.py:226
-#: models/journals.py:97 models/orderables.py:225 models/roles.py:40
+#: models/activities.py:437 models/courses.py:297 models/events.py:226
+#: models/journals.py:97 models/orderables.py:208 models/roles.py:40
 msgid "leaders"
 msgstr ""
 
-#: models/activities.py:443
+#: models/activities.py:441
 msgid "minimal registrations count"
 msgstr ""
 
-#: models/activities.py:444
+#: models/activities.py:442
 msgid "maximal registrations count"
 msgstr ""
 
-#: models/activities.py:445 models/activities.py:1030 models/activities.py:1758
+#: models/activities.py:443 models/activities.py:1064 models/activities.py:1792
 #: models/transaction.py:121
 msgid "note"
 msgstr ""
 
-#: models/activities.py:458
+#: models/activities.py:456
 msgid "Add additional legal agreements specific for this activity."
 msgstr ""
 
-#: models/activities.py:467 models/activities.py:476 models/activities.py:485
-#: models/activities.py:494 models/activities.py:503
+#: models/activities.py:465 models/activities.py:474 models/activities.py:483
+#: models/activities.py:492 models/activities.py:501
 msgid "Only use to set value specific for this activity."
 msgstr ""
 
-#: models/activities.py:519 models/registrationlink.py:28
+#: models/activities.py:517 models/registrationlink.py:28
 msgid "activities"
 msgstr ""
 
-#: models/activities.py:638 templatetags/leprikon_tags.py:147
+#: models/activities.py:636 templatetags/leprikon_tags.py:147
 msgid "Registering will start on {}."
 msgstr ""
 
-#: models/activities.py:640 templatetags/leprikon_tags.py:134
+#: models/activities.py:638 templatetags/leprikon_tags.py:134
 msgid "Registering ended on {}"
 msgstr ""
 
-#: models/activities.py:659
+#: models/activities.py:657
 msgid "age groups list"
 msgstr ""
 
-#: models/activities.py:663
+#: models/activities.py:661
 msgid "groups list"
 msgstr ""
 
-#: models/activities.py:667
+#: models/activities.py:665
 msgid "leaders list"
 msgstr ""
 
-#: models/activities.py:671
+#: models/activities.py:669
 msgid "target groups list"
 msgstr ""
 
-#: models/activities.py:747 models/journals.py:150
+#: models/activities.py:745 models/journals.py:150
 msgid "time"
 msgstr ""
 
-#: models/activities.py:748 models/events.py:45 models/journals.py:151
+#: models/activities.py:746 models/events.py:45 models/journals.py:151
 #: models/times.py:111
 msgid "times"
 msgstr ""
 
-#: models/activities.py:755
+#: models/activities.py:753
 msgid "variant name"
 msgstr ""
 
-#: models/activities.py:756
+#: models/activities.py:754
 msgid "variant description"
 msgstr ""
 
-#: models/activities.py:757 models/registrationlink.py:25
+#: models/activities.py:755 models/registrationlink.py:25
 msgid "registration active from"
 msgstr ""
 
-#: models/activities.py:758 models/registrationlink.py:26
+#: models/activities.py:756 models/registrationlink.py:26
 msgid "registration active to"
 msgstr ""
 
-#: models/activities.py:764
+#: models/activities.py:762
 msgid "require group members list"
 msgstr ""
 
-#: models/activities.py:767
+#: models/activities.py:765
 msgid ""
 "Require group members list to be filled in registration form. If not set, "
 "only the number of group members is required."
 msgstr ""
 
-#: models/activities.py:772
+#: models/activities.py:770
 msgid "minimal participants / group members count per registration"
 msgstr ""
 
-#: models/activities.py:775
+#: models/activities.py:773
 msgid "maximal participants / group members count per registration"
 msgstr ""
 
-#: models/activities.py:777
+#: models/activities.py:775
 msgid "price per registration"
 msgstr ""
 
-#: models/activities.py:778
+#: models/activities.py:776
 msgid "price per participant"
 msgstr ""
 
-#: models/activities.py:787
+#: models/activities.py:785
 msgid "allow period selection"
 msgstr ""
 
-#: models/activities.py:789
+#: models/activities.py:787
 msgid "allow user to choose school year periods on registration form"
 msgstr ""
 
-#: models/activities.py:795
+#: models/activities.py:793
 msgid "required resources"
 msgstr ""
 
-#: models/activities.py:801
+#: models/activities.py:799
 msgid "required resource groups"
 msgstr ""
 
-#: models/activities.py:809
+#: models/activities.py:807
 msgid "price and registering variant"
 msgstr ""
 
-#: models/activities.py:819
+#: models/activities.py:817
 #, python-brace-format
 msgid "{registration_price} + {participant_price} / participant"
 msgstr ""
 
-#: models/activities.py:826
+#: models/activities.py:824
 #, python-brace-format
 msgid "{participant_price} / participant"
 msgstr ""
 
-#: models/activities.py:830
+#: models/activities.py:828
 msgid "free"
 msgstr ""
 
-#: models/activities.py:962
+#: models/activities.py:964
+msgid "today"
+msgstr ""
+
+#: models/activities.py:965
+msgid "month"
+msgstr ""
+
+#: models/activities.py:966
+msgid "week"
+msgstr ""
+
+#: models/activities.py:967
+msgid "day"
+msgstr ""
+
+#: models/activities.py:968
+msgid "list"
+msgstr ""
+
+#: models/activities.py:972
+msgid "selected event time"
+msgstr ""
+
+#: models/activities.py:996
 msgid "variant"
 msgstr ""
 
-#: models/activities.py:968 models/calendar.py:177
+#: models/activities.py:1002 models/calendar.py:181
 msgid "calendar event"
 msgstr ""
 
-#: models/activities.py:973
+#: models/activities.py:1007
 msgid "participants count"
 msgstr ""
 
-#: models/activities.py:974
+#: models/activities.py:1008
 msgid "price"
 msgstr ""
 
-#: models/activities.py:983
+#: models/activities.py:1017
 msgid "created by"
 msgstr ""
 
-#: models/activities.py:992
+#: models/activities.py:1026
 msgid "approved by"
 msgstr ""
 
-#: models/activities.py:1001 models/activities.py:1010
+#: models/activities.py:1035 models/activities.py:1044
 msgid "payment requested by"
 msgstr ""
 
-#: models/activities.py:1019
+#: models/activities.py:1053
 msgid "cancelation requested by"
 msgstr ""
 
-#: models/activities.py:1028
+#: models/activities.py:1062
 msgid "canceled by"
 msgstr ""
 
-#: models/activities.py:1034 models/agreements.py:18
+#: models/activities.py:1068 models/agreements.py:18
 msgid "legal agreements"
 msgstr ""
 
-#: models/activities.py:1047
+#: models/activities.py:1081
 msgid "payments balance"
 msgstr ""
 
-#: models/activities.py:1051 models/activities.py:1571
-#: models/activities.py:1722 models/activities.py:1754
-#: models/activities.py:1782 models/courses.py:145 models/courses.py:219
-#: models/events.py:160 models/orderables.py:159 models/refundrequest.py:27
+#: models/activities.py:1085 models/activities.py:1605
+#: models/activities.py:1756 models/activities.py:1788
+#: models/activities.py:1816 models/courses.py:145 models/courses.py:219
+#: models/events.py:160 models/orderables.py:142 models/refundrequest.py:27
 #: templates/leprikon/registration_links.html:4
 msgid "registration"
 msgstr ""
 
-#: models/activities.py:1120
+#: models/activities.py:1154
 #, python-format
 msgid "%d other registration"
 msgid_plural "%d other registrations"
 msgstr[0] ""
 
-#: models/activities.py:1122
+#: models/activities.py:1156
 msgid "no other registration"
 msgstr ""
 
-#: models/activities.py:1131 models/activities.py:1135
-#: models/activities.py:1763
+#: models/activities.py:1165 models/activities.py:1169
+#: models/activities.py:1797
 msgid "group members"
 msgstr ""
 
-#: models/activities.py:1153 models/agreements.py:42
+#: models/activities.py:1187 models/agreements.py:42
 msgid "agreement options"
 msgstr ""
 
-#: models/activities.py:1380
+#: models/activities.py:1414
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to restore canceled registration {r}. "
 "Please create new one."
 msgstr ""
 
-#: models/activities.py:1382
+#: models/activities.py:1416
 #, python-brace-format
 msgid "The registration {r} has already been approved."
 msgstr ""
 
-#: models/activities.py:1437
+#: models/activities.py:1471
 #, python-brace-format
 msgid "The registration {r} has already been refued."
 msgstr ""
 
-#: models/activities.py:1441
+#: models/activities.py:1475
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to refuse the registration {r}. However, "
 "You may cancel it."
 msgstr ""
 
-#: models/activities.py:1457
+#: models/activities.py:1491
 #, python-brace-format
 msgid "The registration {r} has already been canceled."
 msgstr ""
 
-#: models/activities.py:1461
+#: models/activities.py:1495
 #, python-brace-format
 msgid ""
 "Unfortunately, it is not possible to cancel the registration {r}. However, "
 "You may refuse it."
 msgstr ""
 
-#: models/activities.py:1576 models/citizenship.py:13 models/roles.py:165
+#: models/activities.py:1610 models/citizenship.py:13 models/roles.py:165
 msgid "citizenship"
 msgstr ""
 
-#: models/activities.py:1578 models/roles.py:167
+#: models/activities.py:1612 models/roles.py:167
 msgid "birth number"
 msgstr ""
 
-#: models/activities.py:1579 models/roles.py:168
+#: models/activities.py:1613 models/roles.py:168
 msgid "birth date"
 msgstr ""
 
-#: models/activities.py:1581 models/roles.py:170
+#: models/activities.py:1615 models/roles.py:170
 msgid "gender"
 msgstr ""
 
-#: models/activities.py:1581 models/roles.py:170
+#: models/activities.py:1615 models/roles.py:170
 msgid "male / boy"
 msgstr ""
 
-#: models/activities.py:1581 models/roles.py:170
+#: models/activities.py:1615 models/roles.py:170
 msgid "female / girl"
 msgstr ""
 
-#: models/activities.py:1583 models/agegroup.py:21 models/roles.py:161
+#: models/activities.py:1617 models/agegroup.py:21 models/roles.py:161
 msgid "age group"
 msgstr ""
 
-#: models/activities.py:1584 models/activities.py:1600
-#: models/activities.py:1609 models/activities.py:1730
-#: models/activities.py:1785 models/organizations.py:14 models/roles.py:125
+#: models/activities.py:1618 models/activities.py:1634
+#: models/activities.py:1643 models/activities.py:1764
+#: models/activities.py:1819 models/organizations.py:14 models/roles.py:125
 #: models/roles.py:172 models/roles.py:240 models/roles.py:295
 #: models/school.py:8
 msgid "street"
 msgstr ""
 
-#: models/activities.py:1585 models/activities.py:1601
-#: models/activities.py:1610 models/activities.py:1731
-#: models/activities.py:1786 models/organizations.py:15 models/roles.py:126
+#: models/activities.py:1619 models/activities.py:1635
+#: models/activities.py:1644 models/activities.py:1765
+#: models/activities.py:1820 models/organizations.py:15 models/roles.py:126
 #: models/roles.py:173 models/roles.py:241 models/roles.py:296
 #: models/school.py:9
 msgid "city"
 msgstr ""
 
-#: models/activities.py:1586 models/activities.py:1602
-#: models/activities.py:1611 models/activities.py:1732
-#: models/activities.py:1787 models/organizations.py:16 models/roles.py:127
+#: models/activities.py:1620 models/activities.py:1636
+#: models/activities.py:1645 models/activities.py:1766
+#: models/activities.py:1821 models/organizations.py:16 models/roles.py:127
 #: models/roles.py:174 models/roles.py:242 models/roles.py:297
 msgid "postal code"
 msgstr ""
 
-#: models/activities.py:1588 models/activities.py:1604
-#: models/activities.py:1613 models/activities.py:1734
-#: models/activities.py:1792 models/organizations.py:17 models/roles.py:128
+#: models/activities.py:1622 models/activities.py:1638
+#: models/activities.py:1647 models/activities.py:1768
+#: models/activities.py:1826 models/organizations.py:17 models/roles.py:128
 #: models/roles.py:175 models/roles.py:244 models/roles.py:302
 msgid "email address"
 msgstr ""
 
-#: models/activities.py:1591 models/activities.py:1736 models/roles.py:178
+#: models/activities.py:1625 models/activities.py:1770 models/roles.py:178
 #: models/roles.py:246 models/school.py:14
 msgid "school"
 msgstr ""
 
-#: models/activities.py:1594 models/activities.py:1739 models/roles.py:181
+#: models/activities.py:1628 models/activities.py:1773 models/roles.py:181
 #: models/roles.py:249
 msgid "class"
 msgstr ""
 
-#: models/activities.py:1595 models/roles.py:182
+#: models/activities.py:1629 models/roles.py:182
 msgid "health"
 msgstr ""
 
-#: models/activities.py:1597 models/activities.py:1639
+#: models/activities.py:1631 models/activities.py:1673
 msgid "first parent"
 msgstr ""
 
-#: models/activities.py:1606 models/activities.py:1647
+#: models/activities.py:1640 models/activities.py:1681
 msgid "second parent"
 msgstr ""
 
-#: models/activities.py:1615 models/activities.py:1741 models/roles.py:183
+#: models/activities.py:1649 models/activities.py:1775 models/roles.py:183
 #: models/roles.py:250
 msgid "additional answers"
 msgstr ""
 
-#: models/activities.py:1620 models/roles.py:187
+#: models/activities.py:1654 models/roles.py:187
 #: templates/leprikon/registration_payment_request/activity.rml:125
 #: templates/leprikon/registration_payment_request/activity.rml:147
 #: templates/leprikon/registration_recipe.rml:17
 msgid "participant"
 msgstr ""
 
-#: models/activities.py:1725 models/roles.py:235 models/targetgroup.py:19
+#: models/activities.py:1759 models/roles.py:235 models/targetgroup.py:19
 msgid "target group"
 msgstr ""
 
-#: models/activities.py:1727 models/roles.py:237
+#: models/activities.py:1761 models/roles.py:237
 #: templates/leprikon/registration_payment_request/activity.rml:129
 #: templates/leprikon/registration_payment_request/activity.rml:151
 #: templates/leprikon/registration_recipe.rml:26
 msgid "group name"
 msgstr ""
 
-#: models/activities.py:1745
+#: models/activities.py:1779
 msgid "registered group"
 msgstr ""
 
-#: models/activities.py:1746
+#: models/activities.py:1780
 msgid "registered groups"
 msgstr ""
 
-#: models/activities.py:1762
+#: models/activities.py:1796
 msgid "group member"
 msgstr ""
 
-#: models/activities.py:1788 models/organizations.py:19 models/roles.py:298
+#: models/activities.py:1822 models/organizations.py:19 models/roles.py:298
 #: templates/leprikon/donation_pdf/recipe.rml:22
 #: templates/leprikon/received_payment_pdf/recipe.rml:22
 #: templates/leprikon/registration_payment_request/activity.rml:63
@@ -2197,14 +2217,14 @@ msgstr ""
 msgid "company number"
 msgstr ""
 
-#: models/activities.py:1789 models/organizations.py:20 models/roles.py:299
+#: models/activities.py:1823 models/organizations.py:20 models/roles.py:299
 #: templates/leprikon/billing_info_preview.html:22
 #: templates/leprikon/registration_payment_request/activity.rml:64
 #: templates/leprikon/registration_payment_request/activity.rml:88
 msgid "VAT number"
 msgstr ""
 
-#: models/activities.py:1790 models/roles.py:300
+#: models/activities.py:1824 models/roles.py:300
 #: templates/leprikon/registration_payment_request/activity.rml:83
 #: templates/leprikon/registration_payment_request/activity.rml:128
 #: templates/leprikon/registration_payment_request/activity.rml:150
@@ -2212,54 +2232,54 @@ msgstr ""
 msgid "contact person"
 msgstr ""
 
-#: models/activities.py:1793 models/roles.py:303
+#: models/activities.py:1827 models/roles.py:303
 msgid "employee ID"
 msgstr ""
 
-#: models/activities.py:1797 models/activities.py:1798 models/roles.py:308
+#: models/activities.py:1831 models/activities.py:1832 models/roles.py:308
 #: models/roles.py:309
 msgid "billing information"
 msgstr ""
 
-#: models/activities.py:1810 models/activities.py:1816
+#: models/activities.py:1844 models/activities.py:1850
 #: templates/leprikon/registration_payments.html:29
 #: templates/leprikon/registration_payments.html:37
 msgid "discount"
 msgstr ""
 
-#: models/activities.py:1811
+#: models/activities.py:1845
 msgid "discount explanation"
 msgstr ""
 
-#: models/activities.py:1877
+#: models/activities.py:1911
 msgid "payment"
 msgstr ""
 
-#: models/activities.py:1878
+#: models/activities.py:1912
 msgid "payments"
 msgstr ""
 
-#: models/activities.py:1900
+#: models/activities.py:1934
 msgid "received payment"
 msgstr ""
 
-#: models/activities.py:1907 models/transaction.py:142
+#: models/activities.py:1941 models/transaction.py:142
 msgid "target registration"
 msgstr ""
 
-#: models/activities.py:1919
+#: models/activities.py:1953
 msgid "returned payment"
 msgstr ""
 
-#: models/activities.py:1926 models/transaction.py:133
+#: models/activities.py:1960 models/transaction.py:133
 msgid "source registration"
 msgstr ""
 
-#: models/activities.py:1949
+#: models/activities.py:1983
 msgid "received online payment"
 msgstr ""
 
-#: models/activities.py:2032
+#: models/activities.py:2066
 msgid "imported from account statement"
 msgstr ""
 
@@ -2303,102 +2323,102 @@ msgstr ""
 msgid "agreement option"
 msgstr ""
 
-#: models/calendar.py:37 models/calendar.py:59
+#: models/calendar.py:37 models/calendar.py:63
 msgid "resource"
 msgstr ""
 
-#: models/calendar.py:61 models/calendar.py:113 models/events.py:31
+#: models/calendar.py:65 models/calendar.py:117 models/events.py:31
 #: models/schoolyear.py:119 models/times.py:30 models/timesheets.py:32
 msgid "start date"
 msgstr ""
 
-#: models/calendar.py:62 models/calendar.py:115 models/events.py:32
+#: models/calendar.py:66 models/calendar.py:119 models/events.py:32
 #: models/schoolyear.py:120 models/times.py:36 models/timesheets.py:33
 msgid "end date"
 msgstr ""
 
-#: models/calendar.py:63 models/times.py:41
+#: models/calendar.py:67 models/times.py:41
 msgid "days of week"
 msgstr ""
 
-#: models/calendar.py:64 models/calendar.py:114 models/events.py:33
+#: models/calendar.py:68 models/calendar.py:118 models/events.py:33
 #: models/journals.py:166 models/journals.py:273 models/times.py:42
 #: models/timesheets.py:149
 msgid "start time"
 msgstr ""
 
-#: models/calendar.py:65 models/calendar.py:116 models/events.py:34
+#: models/calendar.py:69 models/calendar.py:120 models/events.py:34
 #: models/journals.py:167 models/journals.py:274 models/times.py:44
 #: models/timesheets.py:150
 msgid "end time"
 msgstr ""
 
-#: models/calendar.py:70
+#: models/calendar.py:74
 msgid "availability"
 msgstr ""
 
-#: models/calendar.py:96
+#: models/calendar.py:100
 msgid "resource group"
 msgstr ""
 
-#: models/calendar.py:118 models/orderables.py:32
+#: models/calendar.py:122 models/orderables.py:31
 msgid "preparation time"
 msgstr ""
 
-#: models/calendar.py:120 models/orderables.py:34
+#: models/calendar.py:124 models/orderables.py:33
 msgid "Time to prepare before the event. (HH:MM:SS)"
 msgstr ""
 
-#: models/calendar.py:123 models/orderables.py:37
+#: models/calendar.py:127 models/orderables.py:36
 msgid "recovery time"
 msgstr ""
 
-#: models/calendar.py:125 models/orderables.py:39
+#: models/calendar.py:129 models/orderables.py:38
 msgid "Time to recover after the event. (HH:MM:SS)"
 msgstr ""
 
-#: models/calendar.py:128
+#: models/calendar.py:132
 msgid "blocks all resources"
 msgstr ""
 
-#: models/calendar.py:130
+#: models/calendar.py:134
 msgid ""
 "If checked, the event will block all resources, not just the selected ones."
 msgstr ""
 
-#: models/calendar.py:138
+#: models/calendar.py:142
 msgid "is canceled"
 msgstr ""
 
-#: models/calendar.py:178
+#: models/calendar.py:182
 msgid "calendar events"
 msgstr ""
 
-#: models/calendar.py:214
+#: models/calendar.py:218
 msgid ""
 "Select resources to export calendar events for. Leave empty to export events "
 "for all resources."
 msgstr ""
 
-#: models/calendar.py:216
+#: models/calendar.py:220
 msgid "export past days"
 msgstr ""
 
-#: models/calendar.py:218
+#: models/calendar.py:222
 msgid "limit events count"
 msgstr ""
 
-#: models/calendar.py:220
+#: models/calendar.py:224
 msgid ""
 "Limit the number of events to export. Huge exports may fail to import to "
 "Your calendar."
 msgstr ""
 
-#: models/calendar.py:225
+#: models/calendar.py:229
 msgid "calendar export"
 msgstr ""
 
-#: models/calendar.py:226
+#: models/calendar.py:230
 msgid "calendar exports"
 msgstr ""
 
@@ -2443,23 +2463,23 @@ msgid "course discounts"
 msgstr ""
 
 #: models/courses.py:242 models/courses.py:301 models/events.py:173
-#: models/events.py:232 models/orderables.py:172 models/orderables.py:231
+#: models/events.py:232 models/orderables.py:155 models/orderables.py:214
 #: models/roles.py:323 models/roles.py:347
 msgid "template"
 msgstr ""
 
 #: models/courses.py:246 models/courses.py:305 models/events.py:177
-#: models/events.py:236 models/orderables.py:176 models/orderables.py:235
+#: models/events.py:236 models/orderables.py:159 models/orderables.py:218
 #: models/roles.py:327 models/roles.py:351
 msgid "The template used to render plugin."
 msgstr ""
 
 #: models/courses.py:261 models/department.py:13 models/events.py:192
-#: models/orderables.py:191
+#: models/orderables.py:174
 msgid "departments"
 msgstr ""
 
-#: models/courses.py:262 models/events.py:193 models/orderables.py:192
+#: models/courses.py:262 models/events.py:193 models/orderables.py:175
 msgid "Keep empty to skip searching by departments."
 msgstr ""
 
@@ -2471,11 +2491,11 @@ msgstr ""
 msgid "Keep empty to skip searching by course types."
 msgstr ""
 
-#: models/courses.py:277 models/events.py:208 models/orderables.py:207
+#: models/courses.py:277 models/events.py:208 models/orderables.py:190
 msgid "Keep empty to skip searching by age groups."
 msgstr ""
 
-#: models/courses.py:284 models/events.py:215 models/orderables.py:214
+#: models/courses.py:284 models/events.py:215 models/orderables.py:197
 msgid "Keep empty to skip searching by target groups."
 msgstr ""
 
@@ -2483,11 +2503,11 @@ msgstr ""
 msgid "course groups"
 msgstr ""
 
-#: models/courses.py:291 models/events.py:222 models/orderables.py:221
+#: models/courses.py:291 models/events.py:222 models/orderables.py:204
 msgid "Keep empty to skip searching by groups."
 msgstr ""
 
-#: models/courses.py:298 models/events.py:229 models/orderables.py:228
+#: models/courses.py:298 models/events.py:229 models/orderables.py:211
 msgid "Keep empty to skip searching by leaders."
 msgstr ""
 
@@ -2512,11 +2532,11 @@ msgstr ""
 msgid "due date"
 msgstr ""
 
-#: models/events.py:37 models/orderables.py:51 models/schoolyear.py:124
+#: models/events.py:37 models/orderables.py:50 models/schoolyear.py:124
 msgid "minimal number of days to due date"
 msgstr ""
 
-#: models/events.py:42 models/events.py:171 models/orderables.py:170
+#: models/events.py:42 models/events.py:171 models/orderables.py:153
 msgid "event"
 msgstr ""
 
@@ -2536,16 +2556,16 @@ msgstr ""
 msgid "event discounts"
 msgstr ""
 
-#: models/events.py:200 models/events.py:318 models/orderables.py:199
-#: models/orderables.py:317
+#: models/events.py:200 models/events.py:318 models/orderables.py:182
+#: models/orderables.py:300
 msgid "event types"
 msgstr ""
 
-#: models/events.py:201 models/orderables.py:200
+#: models/events.py:201 models/orderables.py:183
 msgid "Keep empty to skip searching by event types."
 msgstr ""
 
-#: models/events.py:221 models/orderables.py:220
+#: models/events.py:221 models/orderables.py:203
 msgid "event groups"
 msgstr ""
 
@@ -2600,7 +2620,7 @@ msgstr ""
 msgid "journal entries"
 msgstr ""
 
-#: models/journals.py:202 models/journals.py:308 models/orderables.py:30
+#: models/journals.py:202 models/journals.py:308 models/orderables.py:29
 #: models/timesheets.py:170 templates/leprikon/timesheet_detail.html:27
 msgid "duration"
 msgstr ""
@@ -2702,41 +2722,41 @@ msgstr ""
 msgid "sent by email"
 msgstr ""
 
-#: models/orderables.py:30
+#: models/orderables.py:29
 msgid "Format: HH:MM:SS"
 msgstr ""
 
-#: models/orderables.py:42
+#: models/orderables.py:41
 msgid "number of days to send the payment request before event date"
 msgstr ""
 
-#: models/orderables.py:46
+#: models/orderables.py:45
 msgid ""
 "If set, payment request will be sent this number of days before event date. "
 "If not set, payment request will be sent when registration is approved."
 msgstr ""
 
-#: models/orderables.py:50
+#: models/orderables.py:49
 msgid "number of days to due date before event date"
 msgstr ""
 
-#: models/orderables.py:101
+#: models/orderables.py:100
 msgid "orderable event registration"
 msgstr ""
 
-#: models/orderables.py:102
+#: models/orderables.py:101
 msgid "orderable event registrations"
 msgstr ""
 
-#: models/orderables.py:136
+#: models/orderables.py:135
 msgid "event date"
 msgstr ""
 
-#: models/orderables.py:164
+#: models/orderables.py:147
 msgid "orderable event discount"
 msgstr ""
 
-#: models/orderables.py:165
+#: models/orderables.py:148
 msgid "orderable event discounts"
 msgstr ""
 
@@ -3325,25 +3345,21 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
-#: templates/leprikon/activity_registration_form.html:297
-msgid "selected event time"
-msgstr ""
-
-#: templates/leprikon/activity_registration_form.html:429
+#: templates/leprikon/activity_registration_form.html:296
 #, python-brace-format
 msgid "Minimal age for this age group is ${ageGroup.min_age}."
 msgstr ""
 
-#: templates/leprikon/activity_registration_form.html:436
+#: templates/leprikon/activity_registration_form.html:303
 #, python-brace-format
 msgid "Maximal age for this age group is ${ageGroup.max_age}."
 msgstr ""
 
-#: templates/leprikon/activity_registration_form.html:731
+#: templates/leprikon/activity_registration_form.html:598
 msgid "Select variant"
 msgstr ""
 
-#: templates/leprikon/activity_registration_form.html:741
+#: templates/leprikon/activity_registration_form.html:608
 msgid "Choose this variant"
 msgstr ""
 

@@ -1,8 +1,9 @@
-from datetime import date
+from datetime import date, time, timedelta
+from itertools import chain
+from typing import Iterator
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
@@ -12,6 +13,7 @@ from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from leprikon.conf import settings
 from leprikon.models.calendar import CalendarExport
 
 from ..models.activities import ActivityVariant, CalendarEvent
@@ -19,14 +21,16 @@ from ..models.journals import Journal
 from ..models.schoolyear import SchoolYear
 from .serializers import (
     ActivitySerializer,
+    BusinessHoursSerializer,
     CalendarEventSerializer,
     CalendarExportSerializer,
     CredentialsSerializer,
-    GetResourceConflictSerializer,
+    GetBusinessHoursSerializer,
+    GetUnavailableDatesSerializer,
     RegistrationParticipantSerializer,
-    ResourceConflictSerializer,
     SchoolYearSerializer,
     SetSchoolYearSerializer,
+    UnavailableDateSerializer,
     UserSerializer,
 )
 
@@ -112,53 +116,114 @@ class UserViewSet(viewsets.ViewSet):
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
+    queryset = ActivityVariant.objects.all()
 
     def get_queryset(self):
-        queryset = ActivityVariant.objects.filter(activity__school_year=self.request.school_year)
+        queryset = self.queryset.filter(activity__school_year=self.request.school_year)
         if not self.request.user.is_staff:
             queryset = queryset.filter(activity__is_visible=True)
         return queryset
 
+    def get_object(self) -> ActivityVariant:
+        """Override get_object() type, which is guessed to be Never"""
+        return super().get_object()
+
     @extend_schema(
-        operation_id="resource_conflicts",
+        operation_id="unavailable_dates",
         request=None,
-        responses={200: ResourceConflictSerializer(many=True)},
+        responses={200: UnavailableDateSerializer(many=True)},
         methods=["get"],
         parameters=[
             OpenApiParameter(name="start", type=OpenApiTypes.DATETIME),
             OpenApiParameter(name="end", type=OpenApiTypes.DATETIME),
         ],
     )
+    @action(detail=True, permission_classes=[IsAuthenticated])
+    def unavailable_dates(self, request: Request, pk: str):
+        """
+        Returns a list of full day calendar events for days when the activity variant is not available.
+        """
+        activity_variant: ActivityVariant = self.get_object()
+        input_serializer = GetUnavailableDatesSerializer(data=request.query_params)
+        input_serializer.is_valid(raise_exception=True)
+        start_date: date = input_serializer.validated_data["start"].date()
+        end_date: date = input_serializer.validated_data["end"].date() - timedelta(days=1)
+        available_timeslots = activity_variant.get_available_timeslots(
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        def date_range(start_date: date, end_date: date) -> Iterator[date]:
+            while start_date <= end_date:
+                yield start_date
+                start_date += timedelta(days=1)
+
+        available_dates = set(
+            chain.from_iterable(
+                date_range(time_slot.start.date(), time_slot.end.date()) for time_slot in available_timeslots
+            )
+        )
+
+        unavailable_timeslots = [
+            dict(
+                id=str(d),
+                start=d,
+                allDay=True,
+                color=settings.LEPRIKON_API_UNAVAILABLE_DATE_COLOR,
+                display="background",
+            )
+            for d in date_range(start_date, end_date)
+            if d not in available_dates
+        ]
+
+        return Response(
+            UnavailableDateSerializer(
+                unavailable_timeslots,
+                many=True,
+            ).data
+        )
+
+    @extend_schema(
+        operation_id="business_hours",
+        request=None,
+        responses={200: BusinessHoursSerializer(many=True)},
+        methods=["get"],
+        parameters=[OpenApiParameter(name="date", type=OpenApiTypes.DATE)],
+    )
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
     )
-    def resource_conflicts(self, request: Request, pk: str):
+    def business_hours(self, request: Request, pk: str):
         """
         Returns a list of calendar events that use the same resources as the activity variant.
         """
         activity_variant: ActivityVariant = self.get_object()
-        input_serializer = GetResourceConflictSerializer(data=request.query_params)
+        input_serializer = GetBusinessHoursSerializer(data=request.query_params)
         input_serializer.is_valid(raise_exception=True)
 
-        conflicts = [
+        business_hours = [
             dict(
-                id=f"{conflicting_timeslot.start}-{conflicting_timeslot.end}",
-                start=conflicting_timeslot.start,
-                end=conflicting_timeslot.end,
-                title=_("unavailable time"),
-                allDay=False,
-                color="#99e",  # TODO: Use configurable color
+                days_of_week=[timeslot.start.isoweekday() % 7],
+                start_time=timeslot.start.time(),
+                end_time=timeslot.end.time(),
             )
-            for conflicting_timeslot in activity_variant.get_conflicting_timeslots(
-                start_date=input_serializer.validated_data["start"].date(),
-                end_date=input_serializer.validated_data["end"].date(),
+            for timeslot in activity_variant.get_available_timeslots(
+                input_serializer.validated_data["start"],
+                input_serializer.validated_data["end"] - timedelta(days=1),
             )
         ]
 
         return Response(
-            ResourceConflictSerializer(
-                conflicts,
+            BusinessHoursSerializer(
+                business_hours
+                or [
+                    dict(
+                        days_of_week=[],
+                        start_time=time(0),
+                        end_time=time(0),
+                    )
+                ],
                 many=True,
             ).data
         )

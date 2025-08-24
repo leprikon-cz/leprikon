@@ -1,9 +1,8 @@
 from collections import namedtuple
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from cms.models import CMSPlugin
 from django.db import models
-from django.utils.formats import date_format, time_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
@@ -118,13 +117,13 @@ class OrderableRegistration(Registration):
                 self.payment_requested.date()
                 if self.activity.orderable.due_from_days is None
                 else max(
-                    self.start_date - timedelta(days=self.activity.orderable.due_from_days),
+                    self.calendar_event.start_date - timedelta(days=self.activity.orderable.due_from_days),
                     self.payment_requested.date(),
                 )
             ),
             due_date=self.payment_requested
             and max(
-                self.start_date - timedelta(days=self.activity.orderable.due_date_days),
+                self.calendar_event.start_date - timedelta(days=self.activity.orderable.due_date_days),
                 self.payment_requested.date() + timedelta(days=self.activity.orderable.min_due_date_days),
             ),
         )

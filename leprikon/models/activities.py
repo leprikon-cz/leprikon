@@ -41,11 +41,9 @@ from ..utils.calendar import (
     TimeSlots,
     WeeklyTimes,
     apply_preparation_and_recovery_times,
-    end_time_format,
     get_conflicting_timeslots,
+    get_reverse_time_slots,
     get_time_slots_by_weekly_times,
-    get_unavailable_time_slots,
-    start_time_format,
 )
 from .agegroup import AgeGroup
 from .agreements import Agreement, AgreementOption
@@ -859,7 +857,24 @@ class ActivityVariant(models.Model):
     def unapproved_registrations(self):
         return self.active_registrations.filter(approved=None)
 
-    def get_conflicting_timeslots(self, start_date: date, end_date: date) -> list[TimeSlot]:
+    def get_conflicting_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
+        if start_date > end_date:
+            return TimeSlots()
+        if self.min_start_date > end_date or (self.max_end_date is not None and self.max_end_date < start_date):
+            return TimeSlots.from_date_range(start_date, end_date)
+        all_day_conflicting_timeslots = TimeSlots()
+        if self.min_start_date > start_date:
+            all_day_conflicting_timeslots |= TimeSlots.from_date_range(
+                start_date, self.min_start_date - timedelta(days=1)
+            )
+            start_date = self.min_start_date
+        if self.max_end_date is not None and self.max_end_date < end_date:
+            all_day_conflicting_timeslots |= TimeSlots.from_date_range(self.max_end_date + timedelta(days=1), end_date)
+            end_date = self.max_end_date
+        # if max_end_date is lower than min_start_date (today)
+        if start_date > end_date:
+            return all_day_conflicting_timeslots
+
         required_resource_groups = list(
             chain(
                 ({r.id} for r in self.required_resources.all()),
@@ -894,14 +909,16 @@ class ActivityVariant(models.Model):
             available_timeslots = get_time_slots_by_weekly_times(resource.weekly_times, start_date, end_date)
             events.extend(
                 SimpleEvent(time_slot, [{resource.id}])
-                for time_slot in get_unavailable_time_slots(available_timeslots, start_date, end_date)
+                for time_slot in get_reverse_time_slots(available_timeslots, start_date, end_date)
             )
 
         # calendar events
         events.extend(event.simple_event for event in relevant_calendar_events)
 
-        conflicting_timeslots = TimeSlots(get_conflicting_timeslots(events)) | TimeSlots(
-            event.timeslot for event in blocking_events
+        conflicting_timeslots = (
+            TimeSlots(get_conflicting_timeslots(events))
+            | TimeSlots(event.timeslot for event in blocking_events)
+            | all_day_conflicting_timeslots
         )
 
         return apply_preparation_and_recovery_times(
@@ -910,14 +927,25 @@ class ActivityVariant(models.Model):
             self.activity.orderable.recovery_time,
         )
 
+    def get_available_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
+        return get_reverse_time_slots(self.get_conflicting_timeslots(start_date, end_date), start_date, end_date)
+
     @cached_property
     def weekly_times(self) -> WeeklyTimes:
         return WeeklyTimes(at.weekly_time for at in self.activity.times.all())
 
+    @cached_property
+    def min_start_date(self) -> date:
+        start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
+        return max(min(start_dates) if start_dates else date.today(), date.today())
+
+    @cached_property
+    def max_end_date(self) -> date | None:
+        end_dates = [wt.end_date for wt in self.weekly_times if wt.end_date]
+        return max(end_dates) if end_dates else None
+
     @property
     def full_calendar_setup(self):
-        start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
-        end_dates = [wt.end_date for wt in self.weekly_times if wt.end_date]
         return dumps(
             {
                 "businessHours": [
@@ -928,14 +956,20 @@ class ActivityVariant(models.Model):
                     }
                     for wt in self.weekly_times or WeeklyTimes.unlimited()
                 ],
-                "minStartDate": max(min(start_dates, default=date.today()), date.today()).strftime("%Y-%m-%d"),
-                "maxEndDate": max(end_dates).strftime("%Y-%m-%d") if end_dates else None,
-                "slotMinTime": start_time_format(min((wt.start_time for wt in self.weekly_times), default=time(0))),
-                "slotMaxTime": end_time_format(
-                    time(0)
-                    if any(wt.end_time == time(0) for wt in self.weekly_times)
-                    else max((wt.end_time for wt in self.weekly_times), default=time(0))
-                ),
+                "minStartDate": self.min_start_date.strftime("%Y-%m-%d"),
+                "maxEndDate": self.max_end_date.strftime("%Y-%m-%d") if self.max_end_date else None,
+                "duration": self.activity.orderable.duration.seconds,
+                "locale": settings.LANGUAGE_CODE,
+                "buttonText": {
+                    "today": str(_("today")),
+                    "month": str(_("month")),
+                    "week": str(_("week")),
+                    "day": str(_("day")),
+                    "list": str(_("list")),
+                },
+                "unavailableDatesUrl": reverse("api:activity-unavailable-dates", args=(self.id,)),
+                "businessHoursUrl": reverse("api:activity-business-hours", args=(self.id,)),
+                "selectedEventTimeLabel": str(_("selected event time")),
             }
         )
 
@@ -1178,15 +1212,15 @@ class Registration(PdfExportAndMailMixin, models.Model):
         return recipients
 
     @cached_property
-    def all_discounts(self):
+    def all_discounts(self) -> List["ActivityDiscount"]:
         return list(self.discounts.all())
 
     @cached_property
-    def all_received_payments(self):
+    def all_received_payments(self) -> List["ReceivedPayment"]:
         return list(self.received_payments.all())
 
     @cached_property
-    def all_returned_payments(self):
+    def all_returned_payments(self) -> List["ReturnedPayment"]:
         return list(self.returned_payments.all())
 
     @cached_property
@@ -1197,7 +1231,7 @@ class Registration(PdfExportAndMailMixin, models.Model):
         return self.activityregistration.get_payment_status(d)
 
     @cached_property
-    def organization(self):
+    def organization(self) -> Organization:
         return (
             self.activity.organization
             or self.activity.activity_type.organization

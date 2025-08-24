@@ -213,6 +213,13 @@ class TimeSlot:
                     return TimeSlots()
         return TimeSlots([self]) - other
 
+    @classmethod
+    def from_date_range(cls, start_date: date, end_date: date) -> "TimeSlot":
+        return cls(
+            start=datetime.combine(start_date, time(0)),
+            end=datetime.combine(end_date, time(0)) + timedelta(days=1),
+        )
+
 
 class TimeSlots(list[TimeSlot]):
     def __init__(self, time_slots: Iterable[TimeSlot] = []):
@@ -237,6 +244,10 @@ class TimeSlots(list[TimeSlot]):
         for ts in other:
             result = result - ts
         return result
+
+    @classmethod
+    def from_date_range(cls, start_date: date, end_date: date) -> "TimeSlots":
+        return cls([TimeSlot.from_date_range(start_date, end_date)])
 
 
 @dataclass
@@ -288,7 +299,7 @@ def get_time_slots_by_weekly_times(
     )
 
 
-def get_unavailable_time_slots(
+def get_reverse_time_slots(
     available_time_slots: TimeSlots,
     start_date: date,
     end_date: date,

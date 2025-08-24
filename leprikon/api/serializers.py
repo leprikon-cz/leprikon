@@ -39,18 +39,27 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class GetResourceConflictSerializer(serializers.Serializer):
+class GetUnavailableDatesSerializer(serializers.Serializer):
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()
 
 
-class ResourceConflictSerializer(serializers.Serializer):
+class UnavailableDateSerializer(serializers.Serializer):
     id = serializers.CharField()
-    start = serializers.DateTimeField()
-    end = serializers.DateTimeField()
-    title = serializers.CharField()
-    allDay = serializers.BooleanField()
+    start = serializers.DateField()
     color = serializers.CharField()
+    display = serializers.CharField()
+
+
+class GetBusinessHoursSerializer(serializers.Serializer):
+    start = serializers.DateField()
+    end = serializers.DateField()
+
+
+class BusinessHoursSerializer(serializers.Serializer):
+    days_of_week = serializers.ListField()
+    start_time = serializers.TimeField()
+    end_time = serializers.TimeField()
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):

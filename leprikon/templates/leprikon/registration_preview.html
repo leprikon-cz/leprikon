@@ -24,7 +24,7 @@
                 <a href="{{ reg.activity.get_absolute_url }}">{{ reg.activity.name }}</a>
             </div>
         </div>
-        {% if reg.activity_variant.name %}
+        {% if reg.activity_variant.name and reg.activity_variant.name != reg.activity.name %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Variant' %}:</label>
             <div class="col-sm-8">{{ reg.activity_variant.name }}</div>
@@ -35,6 +35,13 @@
             <label class="col-sm-4">{% trans 'Event date' %}:</label>
             <div class="col-sm-8">
                 {{ reg.event_date }}
+            </div>
+        </div>
+        {% elif reg.orderableregistration %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Event date' %}:</label>
+            <div class="col-sm-8">
+                <strong>{{ reg.orderableregistration.event_date }}</strong>
             </div>
         </div>
         {% endif %}

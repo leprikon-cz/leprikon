@@ -5,6 +5,12 @@
     </div>
 
     <div class="box-content">
+        {% if reg.activity_variant.name and reg.activity_variant.name != reg.activity.name %}
+        <div class="row">
+            <label class="col-sm-4">{% trans 'Variant' %}:</label>
+            <div class="col-sm-8">{{ reg.activity_variant.name }}</div>
+        </div>
+        {% endif %}
         {% if reg.start_date %}
         <div class="row">
             <label class="col-sm-4">{% trans 'Event date' %}:</label>
@@ -12,11 +18,12 @@
                 {{ reg.event_date }}
             </div>
         </div>
-        {% endif %}
-        {% if reg.activity_variant.name %}
+        {% elif reg.orderableregistration %}
         <div class="row">
-            <label class="col-sm-4">{% trans 'Variant' %}:</label>
-            <div class="col-sm-8">{{ reg.activity_variant.name }}</div>
+            <label class="col-sm-4">{% trans 'Event date' %}:</label>
+            <div class="col-sm-8">
+                <strong>{{ reg.orderableregistration.event_date }}</strong>
+            </div>
         </div>
         {% endif %}
         <div class="row">

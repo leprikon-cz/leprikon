@@ -1,5 +1,5 @@
 {% extends 'leprikon/default.html' %}
-{% load i18n cms_tags leprikon_tags sekizai_tags %}
+{% load i18n cms_tags leprikon_tags sekizai_tags static %}
 
 {% block content %}
 
@@ -231,12 +231,8 @@
 {% addtoblock 'css' %}
 {{ form.media.css }}
 <style>
-    #event-time-calendar table {
-        margin-bottom: unset;
-    }
-    #event-time-calendar {
-        margin-bottom: 15px;
-    }
+    /* hide backround events in the time grid view */
+    .fc-timegrid-bg-harness .fc-event.fc-bg-event { display: none; }
 </style>
 {% endaddtoblock %}
 
@@ -244,147 +240,18 @@
 {{ form.media.js }}
 {% if form.instance.activity.orderable %}
 <!-- TODO: use some variable -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
-
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
+<script src="{% static 'leprikon/js/calendar.js' %}"></script>
 <script>
-
-var {
-    businessHours,
-    slotMinTime,
-    slotMaxTime,
-    minStartDate,
-    maxEndDate
-} = {{ form.instance.activity_variant.full_calendar_setup|safe }};
-
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarElement = document.getElementById('event-time-calendar');
-    var startDateInput = document.getElementById('id_start_date');
-    var startTimeInput = document.getElementById('id_start_time');
-    var selectedTimeInput = document.getElementById('selected-time-input');
-
-    function getEndTime(start) {
-        return new Date(start.getTime() + {{ form.instance.activity.orderable.duration.seconds }} * 1000);
-    }
-
-    function setFormValues(start, end) {
-        startDateInput.value = start.toISOString().slice(0, 10);
-        startTimeInput.value = start.toTimeString().slice(0, 8);
-        selectedTimeInput.value = start.toLocaleString('cs-CZ', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-        }) + ' - ' + end.toLocaleString('cs-CZ', {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    }
-
-    function setSelectedTime(start, end) {
-        // remove existing event
-        var existingEvent = calendar.getEventById('selected-time');
-        if (existingEvent) {
-            existingEvent.remove();
-        }
-
-        // add new event
-        calendar.addEvent({
-            id: 'selected-time',
-            start: start,
-            end: end,
-            title: "{% trans 'selected event time' %}",
-            allDay: false,
-            editable: true,
-            resizableFromStart: false,
-            durationEditable: false,
-        });
-
-        // set start date and time inputs
-        setFormValues(start, end);
-    }
-
-    function isAvailable(start, end) {
-        // don't allow the event to start before the minimum start date
-        if (start < new Date(minStartDate)) {
-            return false;
-        }
-
-        // don't allow the event to end after the maximum end date if set
-        if (maxEndDate && end > new Date(maxEndDate)) {
-            return false;
-        }
-
-        // don't allow the event to span multiple days
-        if (start.getDate() !== end.getDate()) {
-            return false;
-        }
-    
-        // ensure selection is within business hours
-        var startTime = start.toTimeString().slice(0, 5);
-        var endTime = end.toTimeString().slice(0, 5);
-        var day = start.getDay();
-        if (!businessHours.some(bh => bh.daysOfWeek.includes(day) && startTime >= bh.startTime.padStart(5, '0') && endTime <= bh.endTime.padStart(5, '0'))) {
-            return false;
-        }
-
-        // ensure selection does not overlap with existing events
-        if (calendar.getEvents().some(event => (event.id !== 'selected-time' && start < event.end && end > event.start))) {
-            return false;
-        }
-    
-        return true;
-    }
-    
-    calendar = new FullCalendar.Calendar(calendarElement, {
-        initialView: 'timeGridWeek',
-        locale: '{{ LANGUAGE_CODE }}',
-        firstDay: 1,
-        allDaySlot: false,
-        selectable: true,
-        businessHours,
-        slotDuration: '0:15',
-        slotLabelInterval: '1:00',
-        slotMinTime: '8:00',
-        slotMaxTime: '18:00',
-        // hide days outside of business hours
-        hiddenDays: [0,1,2,3,4,5,6].filter(d=>!businessHours.some(bh=>bh.daysOfWeek.includes(d))),
-        events: '{% url 'api:activity-resource-conflicts' view.activity_variant.id %}',
-        selectAllow: function (selectInfo) {
-            return isAvailable(selectInfo.start, selectInfo.end);
-        },
-        select: function(info) {
-            var start = info.start;
-            var end = getEndTime(start);
-
-            calendar.unselect();
-            if (isAvailable(start, end)) {
-                setSelectedTime(start, end);    
-            }
-        },
-        eventDrop: function(info) {
-            var start = info.event.start;
-            var end = getEndTime(start);
-
-            if (isAvailable(start, end)) {
-                setFormValues(start, end);
-            } else {
-                info.revert();
-            }
-        },
-    });
-    calendar.render();
     {% if form.start_date.value and form.start_time.value %}
-    var start = new Date('{{ form.start_date.value }}T{{ form.start_time.value }}');
-    var end = getEndTime(start);
-    setSelectedTime(start, end);
-    calendar.changeView('timeGridWeek', '{{ form.start_date.value }}');
+    var selectedStart = new Date('{{ form.start_date.value }}T{{ form.start_time.value }}');
     {% else %}
-    calendar.changeView('timeGridWeek', minStartDate);
+    var selectedStart = undefined;
     {% endif %}
-});
-
+    var calendar = initializeCalendar(
+        {{ form.instance.activity_variant.full_calendar_setup|safe }},
+        selectedStart,
+    );
 </script>
 {% endif %}
 
