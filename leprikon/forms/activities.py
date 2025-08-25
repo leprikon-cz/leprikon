@@ -1013,12 +1013,13 @@ class OrderableRegistrationForm(RegistrationForm):
 
     def clean(self) -> dict[str, Any] | None:
         self.cleaned_data = super().clean()
-        start = datetime.combine(self.cleaned_data["start_date"], self.cleaned_data["start_time"])
-        end: datetime = start + self.instance.activity.orderable.duration
-        timeslot = TimeSlot(start=start, end=end)
-        conflicting_timeslots = self.instance.activity_variant.get_conflicting_timeslots(start.date(), end.date())
-        if timeslot & conflicting_timeslots:
-            self.add_error("start_time", _("This time is not available."))
+        if "start_date" in self.cleaned_data and "start_time" in self.cleaned_data:
+            start = datetime.combine(self.cleaned_data["start_date"], self.cleaned_data["start_time"])
+            end: datetime = start + self.instance.activity.orderable.duration
+            timeslot = TimeSlot(start=start, end=end)
+            conflicting_timeslots = self.instance.activity_variant.get_conflicting_timeslots(start.date(), end.date())
+            if timeslot & conflicting_timeslots:
+                self.add_error("start_time", _("This time is not available."))
         return self.cleaned_data
 
     @transaction.atomic
