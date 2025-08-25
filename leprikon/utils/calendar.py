@@ -184,7 +184,9 @@ class TimeSlot:
     def __post_init__(self):
         assert self.start < self.end
 
-    def __and__(self, other: "TimeSlot") -> "TimeSlots":
+    def __and__(self, other: "TimeSlot|TimeSlots") -> "TimeSlots":
+        if isinstance(other, TimeSlots):
+            return TimeSlots([self]) & other
         if self.start < other.end and self.end > other.start:
             return TimeSlots([TimeSlot(max(self.start, other.start), min(self.end, other.end))])
         return TimeSlots()
@@ -231,7 +233,9 @@ class TimeSlots(list[TimeSlot]):
                 normalized[-1].end = max(normalized[-1].end, ts.end)
         super().__init__(normalized)
 
-    def __and__(self, other: "TimeSlots") -> "TimeSlots":
+    def __and__(self, other: "TimeSlots|TimeSlot") -> "TimeSlots":
+        if isinstance(other, TimeSlot):
+            other = TimeSlots([other])
         return TimeSlots(chain.from_iterable(a1 & a2 for a1, a2 in product(self, other)))
 
     def __or__(self, other: "TimeSlots") -> "TimeSlots":

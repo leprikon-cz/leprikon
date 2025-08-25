@@ -15,6 +15,8 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_message
 
+from leprikon.utils.calendar import TimeSlot
+
 from ..models.activities import (
     Activity,
     ActivityGroup,
@@ -1008,6 +1010,16 @@ class OrderableRegistrationForm(RegistrationForm):
             "canceled",
             "canceled_by",
         )
+
+    def clean(self) -> dict[str, Any] | None:
+        self.cleaned_data = super().clean()
+        start = datetime.combine(self.cleaned_data["start_date"], self.cleaned_data["start_time"])
+        end: datetime = start + self.instance.activity.orderable.duration
+        timeslot = TimeSlot(start=start, end=end)
+        conflicting_timeslots = self.instance.activity_variant.get_conflicting_timeslots(start.date(), end.date())
+        if timeslot & conflicting_timeslots:
+            self.add_error("start_time", _("This time is not available."))
+        return self.cleaned_data
 
     @transaction.atomic
     def save(self, commit=True):
