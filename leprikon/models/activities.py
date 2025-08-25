@@ -904,6 +904,17 @@ class ActivityVariant(models.Model):
             )
         ]
 
+        # unavailable times by activity weekly times
+        available_timeslots = apply_preparation_and_recovery_times(
+            get_time_slots_by_weekly_times(self.weekly_times, start_date, end_date),
+            self.activity.orderable.preparation_time,
+            self.activity.orderable.recovery_time,
+        )
+        events.extend(
+            SimpleEvent(time_slot, required_resource_groups)
+            for time_slot in get_reverse_time_slots(available_timeslots, start_date, end_date)
+        )
+
         # unavailable times for each relevant resource
         for resource in relevant_resources:
             available_timeslots = get_time_slots_by_weekly_times(resource.weekly_times, start_date, end_date)
@@ -948,14 +959,6 @@ class ActivityVariant(models.Model):
     def full_calendar_setup(self):
         return dumps(
             {
-                "businessHours": [
-                    {
-                        "daysOfWeek": [d.isoweekday() % 7 for d in wt.days_of_week],
-                        "startTime": wt.start_time.strftime("%H:%M"),
-                        "endTime": "24:00" if wt.end_time == time(0) else wt.end_time.strftime("%H:%M"),
-                    }
-                    for wt in self.weekly_times or WeeklyTimes.unlimited()
-                ],
                 "minStartDate": self.min_start_date.strftime("%Y-%m-%d"),
                 "maxEndDate": self.max_end_date.strftime("%Y-%m-%d") if self.max_end_date else None,
                 "duration": self.activity.orderable.duration.seconds,

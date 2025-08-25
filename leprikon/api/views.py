@@ -209,7 +209,8 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
                 midnight = datetime.combine(next_date, time(0))
                 yield TimeSlot(start=timeslot.start, end=midnight)
                 timeslot.start = midnight
-            yield timeslot
+            if timeslot.start < timeslot.end:
+                yield timeslot
 
         business_hours = [
             dict(
