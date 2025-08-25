@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta
+from datetime import date, datetime, time, timedelta
 from itertools import chain
 from typing import Iterator
 
@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 from leprikon.conf import settings
 from leprikon.models.calendar import CalendarExport
+from leprikon.utils.calendar import TimeSlot, end_time_format, start_time_format
 
 from ..models.activities import ActivityVariant, CalendarEvent
 from ..models.journals import Journal
@@ -202,16 +203,25 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         input_serializer = GetBusinessHoursSerializer(data=request.query_params)
         input_serializer.is_valid(raise_exception=True)
 
+        def split_multidate_timeslot(timeslot: TimeSlot) -> Iterator[TimeSlot]:
+            while timeslot.start.date() != timeslot.end.date():
+                next_date = timeslot.start.date() + timedelta(days=1)
+                midnight = datetime.combine(next_date, time(0))
+                yield TimeSlot(start=timeslot.start, end=midnight)
+                timeslot.start = midnight
+            yield timeslot
+
         business_hours = [
             dict(
                 days_of_week=[timeslot.start.isoweekday() % 7],
-                start_time=timeslot.start.time(),
-                end_time=timeslot.end.time(),
+                start_time=start_time_format(timeslot.start.time()),
+                end_time=end_time_format(timeslot.end.time()),
             )
-            for timeslot in activity_variant.get_available_timeslots(
+            for raw_timeslot in activity_variant.get_available_timeslots(
                 input_serializer.validated_data["start"],
                 input_serializer.validated_data["end"] - timedelta(days=1),
             )
+            for timeslot in split_multidate_timeslot(raw_timeslot)
         ]
 
         return Response(

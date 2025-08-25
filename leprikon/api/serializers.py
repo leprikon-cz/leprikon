@@ -58,8 +58,8 @@ class GetBusinessHoursSerializer(serializers.Serializer):
 
 class BusinessHoursSerializer(serializers.Serializer):
     days_of_week = serializers.ListField()
-    start_time = serializers.TimeField()
-    end_time = serializers.TimeField()
+    start_time = serializers.CharField()
+    end_time = serializers.CharField()
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):
