@@ -121,7 +121,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(activity__school_year=self.request.school_year)
         if not self.request.user.is_staff:
-            queryset = queryset.filter(activity__is_visible=True)
+            queryset = queryset.filter(activity__public=True)
         return queryset
 
     def get_object(self) -> ActivityVariant:
