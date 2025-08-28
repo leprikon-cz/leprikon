@@ -23,7 +23,7 @@
 .change-list table .row2.reg-new.reg-full
 {
     background: repeating-linear-gradient(
-        45deg,
+        135deg,
         #ddf,
         #ddf 10px,
         #eef 10px,
@@ -51,4 +51,28 @@
 .change-list table .row2.reg-cancel-request:hover
 {
     background: #fee;
+}
+#changelist-legend .reg-new.reg-conflict,
+.change-list table .row1.reg-new.reg-conflict,
+.change-list table .row2.reg-new.reg-conflict
+{
+    background: repeating-linear-gradient(
+        135deg,
+        #ddf 00px,
+        #ddf 10px,
+        #fcc 10px,
+        #fcc 20px
+      );
+}
+#changelist-legend .reg-approved.reg-conflict,
+.change-list table .row1.reg-approved.reg-conflict,
+.change-list table .row2.reg-approved.reg-conflict
+{
+    background: repeating-linear-gradient(
+        135deg,
+        #dfd 00px,
+        #dfd 10px,
+        #edd 10px,
+        #edd 20px
+      );
 }

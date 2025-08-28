@@ -1,0 +1,5 @@
+{% load i18n leprikon_tags %}
+{% if event.all_resources %}{% trans "Resources" %}: {{ event.all_resources|comma_separated }}
+{% endif %}{% if event.all_resource_groups %}{% trans "Resource groups" %}:{% for resource_group in event.all_resource_groups %}
+ - {{ resource_group.name }}: {{ resource_group.all_resources|comma_separated }}{% endfor %}{% endif %}
+{% trans "URL" %}: {{ event.url }}

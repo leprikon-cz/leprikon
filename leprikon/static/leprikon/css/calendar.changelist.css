@@ -1,0 +1,43 @@
+#changelist-legend {
+    margin-bottom: 15px;
+}
+
+#changelist-legend div {
+    padding: 10px;
+    margin: 5px;
+}
+
+#changelist-legend .event-new,
+.change-list table .row1.event-new,
+.change-list table .row2.event-new
+{
+    background: #ddf;
+}
+.change-list table .row1.event-new:hover,
+.change-list table .row2.event-new:hover
+{
+    background: #eef;
+}
+#changelist-legend .event-active,
+.change-list table .row1.event-active,
+.change-list table .row2.event-active
+{
+    background: #dfd;
+}
+.change-list table .row1.event-active:hover,
+.change-list table .row2.event-active:hover
+{
+    background: #efe;
+}
+#changelist-legend .event-active.event-conflict,
+.change-list table .row1.event-active.event-conflict,
+.change-list table .row2.event-active.event-conflict
+{
+    background: repeating-linear-gradient(
+        135deg,
+        #dfd 00px,
+        #dfd 10px,
+        #edd 10px,
+        #edd 20px
+      );
+}

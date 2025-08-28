@@ -126,6 +126,7 @@ class EventAdmin(ActivityBaseAdmin):
 class EventRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
     activity_type_model = ActivityModel.EVENT
     actions = RegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
+    date_hierarchy = "activity__event__start_date"
 
     @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):

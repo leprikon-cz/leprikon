@@ -124,6 +124,7 @@ class OrderableRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
     activity_type_model = ActivityModel.ORDERABLE
     actions = RegistrationBaseAdmin.actions + PdfExportAdminMixin.actions + ("add_discounts",)
     list_display = RegistrationBaseAdmin.list_display[:3] + ("event_date",) + RegistrationBaseAdmin.list_display[3:]
+    date_hierarchy = "calendar_event__start_date"
 
     @attributes(short_description=_("Add discounts to selected registrations"))
     def add_discounts(self, request, queryset):

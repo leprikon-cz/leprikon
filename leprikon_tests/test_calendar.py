@@ -1,6 +1,7 @@
 from datetime import date, datetime, time, timedelta
 
 import pytest
+from django.utils.timezone import is_aware, make_aware
 
 from leprikon.models.fields import DayOfWeek, DaysOfWeek
 from leprikon.utils.calendar import (
@@ -223,6 +224,31 @@ def test_get_time_slots_by_weekly_times() -> None:
         date(2025, 7, 1),
         date(2025, 7, 2),
     ) == [hour_to_slot(0, 0, 1, 3)]
+
+
+def test_timeslot_init() -> None:
+    ts = TimeSlot(datetime(2025, 1, 1, 0, 0), datetime(2025, 1, 2, 0, 0))
+    assert is_aware(ts.start)
+    assert is_aware(ts.end)
+
+
+@pytest.mark.parametrize(
+    "ts, expected_result",
+    [
+        (TimeSlot.from_date_range(date(2025, 1, 1), date(2025, 1, 1)), "01.01.2025"),
+        (TimeSlot.from_date_range(date(2025, 1, 1), date(2025, 1, 2)), "01.01.2025 - 02.01.2025"),
+        (hour_to_slot(9, 12), "01.07.2025 9:00 - 12:00"),
+        (hour_to_slot(12, 9, 1, 2), "01.07.2025 12:00 - 02.07.2025 9:00"),
+    ],
+)
+def test_time_slot_str(ts: TimeSlot, expected_result: str, locale_cs_CZ: None) -> None:
+    assert str(ts) == expected_result
+
+
+def test_time_slot_from_date_range() -> None:
+    ts = TimeSlot.from_date_range(date(2025, 1, 1), date(2025, 1, 2))
+    assert ts.start == make_aware(datetime(2025, 1, 1, 0, 0))
+    assert ts.end == make_aware(datetime(2025, 1, 3, 0, 0))
 
 
 def test_time_slot_sub() -> None:

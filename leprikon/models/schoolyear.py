@@ -51,8 +51,8 @@ class SchoolYear(models.Model):
         return self.name
 
     def delete(self):
-        if self.courses.count() or self.events.count():
-            raise Exception(_("Can not delete sclool year with courses or events."))
+        if self.activities.count():
+            raise Exception(_("Can not delete school year with activities."))
         super().delete()
 
     @cached_property

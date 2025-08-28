@@ -3,6 +3,7 @@ from datetime import date, datetime, time, timedelta
 from typing import Optional
 
 from django.db import models
+from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
@@ -52,17 +53,28 @@ class AbstractTime(StartEndMixin, models.Model):
 
     def __str__(self):
         if self.start_time is not None and self.end_time is not None:
-            return _("{days}, {time}").format(
+            time_part = _("{days}, {time}").format(
                 days=self.days_of_week,
                 time=time_slot_format(self.start_time, self.end_time),
             )
         elif self.start_time is not None:
-            return _("{days}, {time}").format(
+            time_part = _("{days}, {time}").format(
                 days=self.days_of_week,
                 time=self.start_time.strftime("%H:%M"),
             )
         else:
-            return str(self.days_of_week)
+            time_part = str(self.days_of_week)
+        start_date_part = (
+            str(_("from {start_date}").format(start_date=date_format(self.start_date, "SHORT_DATE_FORMAT")))
+            if self.start_date
+            else ""
+        )
+        end_date_part = (
+            str(_("to {end_date}").format(end_date=date_format(self.end_date, "SHORT_DATE_FORMAT")))
+            if self.end_date
+            else ""
+        )
+        return " ".join(filter(None, [time_part, start_date_part, end_date_part]))
 
     @property
     def weekly_time(self) -> WeeklyTime:

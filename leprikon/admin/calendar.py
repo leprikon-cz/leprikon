@@ -58,16 +58,35 @@ class CalendarEventAdmin(admin.ModelAdmin):
     filter_horizontal = ("resources", "resource_groups")
     search_fields = ("activity_variant__name",)
 
+    class Media:
+        css = {"all": ["leprikon/css/calendar.changelist.css"]}
+
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("activity").prefetch_related("resources")
 
     @admin.display(description=_("resources"))
-    def resources_list(self, obj):
+    def resources_list(self, obj: CalendarEvent) -> str:
         return ", ".join([str(resource) for resource in obj.resources.all()])
 
     @admin.display(description=_("resource groups"))
-    def resource_groups_list(self, obj):
+    def resource_groups_list(self, obj: CalendarEvent) -> str:
         return ", ".join([str(group) for group in obj.resource_groups.all()])
+
+    def get_css(self, obj: CalendarEvent) -> str:
+        classes = []
+        if obj.is_canceled:
+            classes.append("event-canceled")
+        else:
+            classes.append("event-active")
+        if obj.has_conflicting_events():
+            classes.append("event-conflict")
+        return " ".join(classes)
+
+    legend = (
+        ("event-active", _("active")),
+        ("event-canceled", _("canceled")),
+        ("event-active event-conflict", _("conflict")),
+    )
 
 
 @admin.register(CalendarExport)

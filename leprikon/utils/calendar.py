@@ -5,6 +5,9 @@ from typing import Iterable, Iterator, Optional
 
 from dateutil.rrule import DAILY, FR, MO, SA, SU, TH, TU, WE, rrule, weekday
 from django.db.models import IntegerChoices
+from django.utils import timezone
+from django.utils.formats import date_format, time_format
+from django.utils.timezone import is_naive, make_aware
 from django.utils.translation import gettext_lazy as _
 
 from . import comma_separated
@@ -117,10 +120,15 @@ class WeeklyTime:
     end_time: time
 
     def __str__(self):
-        return _("{days}, {time}").format(
-            days=self.days_of_week,
-            time=time_slot_format(self.start_time, self.end_time),
+        time_part = str(
+            _("{days}, {time}").format(
+                days=self.days_of_week,
+                time=time_slot_format(self.start_time, self.end_time),
+            )
         )
+        start_date_part = str(_("from {start_date}").format(start_date=self.start_date)) if self.start_date else ""
+        end_date_part = str(_("to {end_date}").format(end_date=self.end_date)) if self.end_date else ""
+        return " ".join(filter(None, [time_part, start_date_part, end_date_part]))
 
     def __bool__(self) -> bool:
         if not self.days_of_week:
@@ -181,7 +189,33 @@ class TimeSlot:
     def __hash__(self) -> int:
         return hash((self.start, self.end))
 
+    def __str__(self) -> str:
+        start = timezone.localtime(self.start)
+        end = timezone.localtime(self.end)
+        if start.time() == time(0) and end.time() == time(0):
+            start_date = start.date()
+            end_date = end.date() - timedelta(days=1)
+            if start_date == end_date:
+                return date_format(start_date, "SHORT_DATE_FORMAT")
+            return "{start} - {end}".format(
+                start=date_format(start_date, "SHORT_DATE_FORMAT"),
+                end=date_format(end_date, "SHORT_DATE_FORMAT"),
+            )
+        if start.date() == end.date():
+            return "{start} - {end}".format(
+                start=date_format(start, "SHORT_DATETIME_FORMAT"),
+                end=time_format(end, "TIME_FORMAT"),
+            )
+        return "{start} - {end}".format(
+            start=date_format(start, "SHORT_DATETIME_FORMAT"),
+            end=date_format(end, "SHORT_DATETIME_FORMAT"),
+        )
+
     def __post_init__(self):
+        if is_naive(self.start):
+            self.start = make_aware(self.start)
+        if is_naive(self.end):
+            self.end = make_aware(self.end)
         assert self.start < self.end
 
     def __and__(self, other: "TimeSlot|TimeSlots") -> "TimeSlots":
@@ -221,6 +255,10 @@ class TimeSlot:
             start=datetime.combine(start_date, time(0)),
             end=datetime.combine(end_date, time(0)) + timedelta(days=1),
         )
+
+    @property
+    def duration(self) -> timedelta:
+        return self.end - self.start
 
 
 class TimeSlots(list[TimeSlot]):
@@ -280,25 +318,25 @@ def get_byweekdays_by_days_of_week(days_of_week: DaysOfWeek) -> list[weekday]:
 
 
 def get_time_slots_by_weekly_times(
-    week_times: WeeklyTimes,
+    weekly_times: WeeklyTimes,
     start_date: date,
     end_date: date,
 ) -> TimeSlots:
     return TimeSlots(
         TimeSlot(
-            start=datetime.combine(dt.date(), week_time.start_time),
+            start=datetime.combine(dt.date(), weekly_time.start_time),
             end=(
-                datetime.combine(dt.date(), week_time.end_time)
-                if week_time.end_time != time(0)
+                datetime.combine(dt.date(), weekly_time.end_time)
+                if weekly_time.end_time != time(0)
                 else dt + timedelta(days=1)
             ),
         )
-        for week_time in week_times
+        for weekly_time in weekly_times
         for dt in rrule(
             DAILY,
-            dtstart=max(week_time.start_date, start_date) if week_time.start_date else start_date,
-            until=min(week_time.end_date, end_date) if week_time.end_date else end_date,
-            byweekday=get_byweekdays_by_days_of_week(week_time.days_of_week),
+            dtstart=max(weekly_time.start_date, start_date) if weekly_time.start_date else start_date,
+            until=min(weekly_time.end_date, end_date) if weekly_time.end_date else end_date,
+            byweekday=get_byweekdays_by_days_of_week(weekly_time.days_of_week),
         )
     )
 

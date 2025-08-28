@@ -161,7 +161,9 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
         available_dates = set(
             chain.from_iterable(
-                date_range(time_slot.start.date(), time_slot.end.date()) for time_slot in available_timeslots
+                date_range(time_slot.start.date(), time_slot.end.date())
+                for time_slot in available_timeslots
+                if time_slot.duration >= activity_variant.activity.orderable.duration
             )
         )
 

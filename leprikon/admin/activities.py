@@ -17,6 +17,8 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from leprikon.models.calendar import CalendarEvent
+
 from ..forms.activities import (
     ActivityAdminForm,
     ActivityVariantForm,
@@ -1048,19 +1050,25 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
             classes.append("reg-approved")
         else:
             classes.append("reg-new")
-            if obj.activity.full:
+            if obj.activity_type != ActivityModel.ORDERABLE and obj.activity.full:
                 classes.append("reg-full")
         if obj.canceled:
             classes.append("reg-canceled")
         else:
             classes.append("reg-active")
+        if obj.activity_type == ActivityModel.ORDERABLE:
+            calendar_event: CalendarEvent = obj.calendar_event
+            if calendar_event.has_conflicting_events:
+                classes.append("reg-conflict")
         return " ".join(classes)
 
     legend = (
         ("reg-cancel-request", _("cancelation requested")),
         ("reg-new", _("new registration")),
         ("reg-new reg-full", _("new registration, capacity full")),
+        ("reg-new reg-conflict", _("new registration, resource conflict")),
         ("reg-approved", _("approved registration")),
+        ("reg-approved reg-conflict", _("approved registration, resource conflict")),
     )
 
     @attributes(short_description=_("activity"))
