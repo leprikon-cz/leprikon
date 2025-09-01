@@ -134,7 +134,7 @@ class OrderableRegistration(Registration):
 
     @attributes(admin_order_field="calendar_event__start_date", short_description=_("event date"))
     def event_date(self) -> str:
-        return str(self.calendar_event.timeslot)
+        return self.calendar_event.event_time
 
 
 class OrderableDiscount(ActivityDiscount):

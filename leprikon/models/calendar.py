@@ -166,23 +166,7 @@ class CalendarEvent(models.Model):
         ordering = ("start_date", "start_time")
 
     def __str__(self) -> str:
-        return "{start} - {end} {name}".format(
-            start=(
-                date_format(self.start, "SHORT_DATETIME_FORMAT")
-                if self.start_time
-                else date_format(self.start_date, "SHORT_DATE_FORMAT")
-            ),
-            end=(
-                (
-                    date_format(self.end, "SHORT_DATETIME_FORMAT")
-                    if self.end_date != self.start_date
-                    else time_format(self.end_time)
-                )
-                if self.end_time
-                else date_format(self.end_date, "SHORT_DATE_FORMAT")
-            ),
-            name=self.name,
-        )
+        return f"{self.event_time} {self.name}"
 
     def clean(self):
         errors = {}
@@ -251,6 +235,25 @@ class CalendarEvent(models.Model):
     def description(self) -> str:
         template = get_template("leprikon/calendar-export.description.txt")
         return template.render({"event": self})
+
+    @cached_property
+    def event_time(self) -> str:
+        return "{start} - {end}".format(
+            start=(
+                date_format(self.start, "SHORT_DATETIME_FORMAT")
+                if self.start_time
+                else date_format(self.start_date, "SHORT_DATE_FORMAT")
+            ),
+            end=(
+                (
+                    date_format(self.end, "SHORT_DATETIME_FORMAT")
+                    if self.end_date != self.start_date
+                    else time_format(self.end_time)
+                )
+                if self.end_time
+                else date_format(self.end_date, "SHORT_DATE_FORMAT")
+            ),
+        )
 
     def has_conflicting_events(self) -> bool:
         if self.is_canceled:
