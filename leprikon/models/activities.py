@@ -541,8 +541,11 @@ class Activity(TimesMixin, models.Model):
     def activity(self):
         if self.activity_type.model == ActivityModel.COURSE:
             return self.course
-        else:
+        if self.activity_type.model == ActivityModel.ORDERABLE:
+            return self.orderable
+        if self.activity_type.model == ActivityModel.EVENT:
             return self.event
+        raise NotImplementedError()
 
     @cached_property
     def display_name(self):
