@@ -1085,18 +1085,6 @@ django = "*"
 typing-extensions = "*"
 
 [[package]]
-name = "django-template-admin"
-version = "2.1.0"
-description = "Django application for advanced template management"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "django_template_admin-2.1.0-py3-none-any.whl", hash = "sha256:ba333417f64130e1a0be84c5d6e09784ad5de2ff71c00feb827e35eea6b2d42a"},
-    {file = "django_template_admin-2.1.0.tar.gz", hash = "sha256:e20e4107c7c722f4f01b3de540b7253654e5a5ae77b0fd4222ea57641fc9ad58"},
-]
-
-[[package]]
 name = "django-treebeard"
 version = "4.7.1"
 description = "Efficient tree implementations for Django"
@@ -4451,4 +4439,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "8c7800290454653befbcf8917f3aca84b8d6cc197538d232deec3ff17e14a011"
+content-hash = "f184613f430ccb8d9dcb7a979b094af409cadf62aa1fb8ba8eb119d7986e20a3"

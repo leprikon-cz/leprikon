@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     "menus",
     "multiselectfield",
     "sekizai",
-    "template_admin",
     "treebeard",
     "filer",
     "easy_thumbnails",
@@ -130,18 +129,13 @@ BASE_TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader",
 ]
-TEMPLATE_LOADERS = [
-    (
-        "template_admin.loader.Loader",
-        (
-            BASE_TEMPLATE_LOADERS
-            if DEBUG_TEMPLATE
-            else [
-                ("django.template.loaders.cached.Loader", BASE_TEMPLATE_LOADERS),
-            ]
-        ),
-    ),
-]
+TEMPLATE_LOADERS = (
+    BASE_TEMPLATE_LOADERS
+    if DEBUG_TEMPLATE
+    else [
+        ("django.template.loaders.cached.Loader", BASE_TEMPLATE_LOADERS),
+    ]
+)
 
 TEMPLATES = [
     {

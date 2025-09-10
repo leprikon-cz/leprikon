@@ -303,9 +303,6 @@ django-sekizai==4.1.0 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:aa12e66ba0335fbe726b7d74cf4e8716b89a0be99a1304a9b9e8b191229e2e4a
 django-staticfiles-downloader==1.1.1 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:c4e004ecee90eff82e8034ac1eeec954d95446c9b99b5b68b4f14f5c09991842
-django-template-admin==2.1.0 ; python_version >= "3.12" and python_version < "4.0" \
-    --hash=sha256:ba333417f64130e1a0be84c5d6e09784ad5de2ff71c00feb827e35eea6b2d42a \
-    --hash=sha256:e20e4107c7c722f4f01b3de540b7253654e5a5ae77b0fd4222ea57641fc9ad58
 django-treebeard==4.7.1 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:846e462904b437155f76e04907ba4e48480716855f88b898df4122bdcfbd6e98 \
     --hash=sha256:995c7120153ab999898fe3043bbdcd8a0fc77cc106eb94de7350e9d02c885135
