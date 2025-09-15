@@ -247,7 +247,7 @@ class ActivityType(models.Model):
         verbose_name_plural = _("activity types")
 
     def __str__(self):
-        return self.name
+        return self.plural
 
     def save(self, *args, **kwargs):
         if self.name_genitiv is None:
