@@ -963,7 +963,9 @@ class ActivityVariant(models.Model):
         return dumps(
             {
                 "minStartDate": self.min_start_date.strftime("%Y-%m-%d"),
-                "maxEndDate": self.max_end_date.strftime("%Y-%m-%d") if self.max_end_date else None,
+                "maxEndDate": (  # add one day to max_end_date to include the last day
+                    (self.max_end_date + timedelta(days=1)).strftime("%Y-%m-%d") if self.max_end_date else None
+                ),
                 "duration": self.activity.orderable.duration.seconds,
                 "locale": settings.LANGUAGE_CODE,
                 "buttonText": {
