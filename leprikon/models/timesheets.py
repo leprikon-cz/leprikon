@@ -37,6 +37,7 @@ class TimesheetPeriod(StartEndMixin, models.Model):
     class Meta:
         app_label = "leprikon"
         ordering = ("-start",)
+        unique_together = (("start", "end"),)
         verbose_name = _("timesheet period")
         verbose_name_plural = _("timesheet periods")
 
@@ -121,7 +122,7 @@ class Timesheet(models.Model):
 
 
 class TimesheetEntryType(models.Model):
-    name = models.CharField(_("name"), max_length=150)
+    name = models.CharField(_("name"), max_length=150, unique=True)
     order = models.IntegerField(_("order"), blank=True, default=0)
 
     class Meta:

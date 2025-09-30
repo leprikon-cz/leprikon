@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
@@ -23,6 +23,7 @@ from ..forms.activities import (
     ActivityAdminForm,
     ActivityVariantForm,
     RegistrationAdminForm,
+    RegistrationForm,
     RegistrationGroupAdminForm,
     RegistrationParticipantAdminForm,
 )
@@ -186,7 +187,7 @@ class ActivityBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin
         else:
             return super().changeform_view(request, object_id, form_url, extra_context)
 
-    def get_exclude(self, request, obj=None):
+    def get_exclude(self, request: HttpRequest, obj: Activity | None = None) -> List[str]:
         if request.registration_type == Activity.PARTICIPANTS:
             exclude = ["target_groups"]
         elif request.registration_type == Activity.GROUPS:
@@ -576,7 +577,7 @@ class ActivityVariantAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMi
             )
         return form
 
-    def get_exclude(self, request: HttpRequest, obj: ActivityVariant | None) -> Any:
+    def get_exclude(self, request: HttpRequest, obj: ActivityVariant | None = None) -> List[str]:
         if not request.activity:
             return []
         exclude = ["activity", "order"]
@@ -827,7 +828,6 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
         "group_members__last_name",
     )
     ordering = ("-created",)
-    exclude = ["activity"]
     raw_id_fields = (
         "activity_variant",
         "calendar_event",
@@ -1011,26 +1011,37 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
             kwargs["fields"] = ["activity_variant"]
         return super().get_form(request, obj, **kwargs)
 
+    def get_exclude(self, request: HttpRequest, obj: Registration | None = None) -> List[str]:
+        if not request.activity:
+            return []
+        exclude = ["activity"]
+        if not request.activity.registration_type_groups or request.activity_variant.require_group_members_list:
+            exclude.append("participants_count")
+        return exclude
+
     def get_inline_instances(self, request, obj=None):
         if request.activity:
             if request.activity.registration_type_participants:
                 inlines = (RegistrationParticipantInlineAdmin,)
             elif request.activity.registration_type_groups:
-                inlines = (RegistrationGroupInlineAdmin, RegistrationGroupMemberInlineAdmin)
+                if request.activity_variant.require_group_members_list:
+                    inlines = (RegistrationGroupInlineAdmin, RegistrationGroupMemberInlineAdmin)
+                else:
+                    inlines = (RegistrationGroupInlineAdmin,)
             return [inline(self.model, self.admin_site) for inline in inlines] + super().get_inline_instances(
                 request, obj
             )
         else:
             return []
 
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request: HttpRequest, obj: Registration, form: RegistrationForm, change: bool):
         obj.activity = obj.activity_variant.activity
+        if obj.activity.registration_type_participants:
+            obj.participants_count = int(form.data["participants-TOTAL_FORMS"])
+        elif obj.activity.registration_type_groups and obj.activity_variant.require_group_members_list:
+            obj.participants_count = int(form.data["group_members-TOTAL_FORMS"])
         if not change:
-            if obj.activity.registration_type_participants:
-                participants_count = int(form.data["participants-TOTAL_FORMS"])
-            elif obj.activity.registration_type_groups:
-                participants_count = int(form.data["group_members-TOTAL_FORMS"])
-            obj.price = obj.activity_variant.get_price(participants_count)
+            obj.price = obj.activity_variant.get_price(obj.participants_count)
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 

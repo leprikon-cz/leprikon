@@ -20,7 +20,7 @@ class RegistrationLink(models.Model):
     activity_type = models.ForeignKey(
         ActivityType, on_delete=models.CASCADE, related_name="registration_links", verbose_name=_("activity type")
     )
-    slug = models.SlugField(editable=False, max_length=64)
+    slug = models.SlugField(editable=False, max_length=64, unique=True)
     name = models.CharField(_("name"), max_length=50)
     reg_from = models.DateTimeField(_("registration active from"))
     reg_to = models.DateTimeField(_("registration active to"))

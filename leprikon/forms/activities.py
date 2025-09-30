@@ -932,6 +932,7 @@ class RegistrationForm(FormMixin, forms.ModelForm):
 
 class CourseRegistrationForm(RegistrationForm):
     periods = forms.ModelMultipleChoiceField(
+        label=_("periods"),
         queryset=SchoolYearPeriod.objects.all(),
         widget=CheckboxSelectMultipleBootstrap(),
     )

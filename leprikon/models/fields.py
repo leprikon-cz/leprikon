@@ -6,6 +6,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
@@ -77,7 +78,7 @@ class DaysOfWeekField(models.SmallIntegerField):
             "label": capfirst(self.verbose_name),
             "choices": DayOfWeek.choices,
             "coerce": int,
-            "widget": forms.SelectMultiple,
+            "widget": CheckboxSelectMultiple,
             "help_text": self.help_text,
         }
         if self.has_default():

@@ -62,7 +62,7 @@ class Event(Activity):
             ),
         )
 
-    def get_next_time(self, now=None):
+    def get_next_time(self, now: date | datetime | None = None) -> Time:
         if not now:
             return Time(
                 date=self.start_date,

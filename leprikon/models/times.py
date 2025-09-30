@@ -94,20 +94,16 @@ class AbstractTime(StartEndMixin, models.Model):
         else:
             return timedelta(0)
 
-    def get_next_time(self, now: date | datetime = None):
+    def get_next_time(self, now: date | datetime = None) -> Time | None:
         now = now or datetime.now()
-        now_day = now.isoweekday()
+        next_date = now.date() if isinstance(now, datetime) else now
         # If the start time is None or less than now, we want to move to the next day
-        force_next_day = isinstance(now, date) or self.start_time is None or self.start_time <= now.time()
-        if force_next_day:
-            now_day = (now_day + 1) % 7
-        daydelta = min((d.isoweekday() - now_day) % 7 for d in self.days_of_week)
-        if daydelta == 0 and force_next_day:
-            daydelta = 7
-        if isinstance(now, datetime):
-            next_date = now.date() + timedelta(daydelta)
-        else:
-            next_date = now + timedelta(daydelta)
+        if isinstance(now, date) or self.start_time is None or self.start_time <= now.time():
+            next_date += timedelta(1)
+        days_of_week_bitmap = self.days_of_week.int()
+        if days_of_week_bitmap:
+            while (1 << next_date.weekday()) & days_of_week_bitmap == 0:
+                next_date += timedelta(1)
         return Time(
             date=next_date,
             start=self.start_time,
@@ -117,14 +113,14 @@ class AbstractTime(StartEndMixin, models.Model):
 
 class TimesMixin:
     @cached_property
-    def all_times(self):
+    def all_times(self) -> list[AbstractTime]:
         return list(self.times.all())
 
     @attributes(short_description=_("times"))
-    def get_times_list(self):
+    def get_times_list(self) -> str:
         return comma_separated(self.all_times)
 
-    def get_next_time(self, now=None):
+    def get_next_time(self, now: date | datetime | None = None) -> Time | None:
         try:
             return min(t.get_next_time(now) for t in self.all_times)
         except ValueError:
