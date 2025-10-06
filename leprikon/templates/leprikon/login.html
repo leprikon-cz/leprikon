@@ -16,45 +16,41 @@
       <div class="panel-body">
         {% if form.used_form == form.password_form %}
         {% if form.errors %}
-            <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
+          <div class="alert alert-danger" role="alert">{% trans 'Please correct the highlighted errors below.' %}</div>
         {% endif %}
         {% for error in form.non_field_errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
         {% endif %}
         <form action="" method="post">{% csrf_token %}
-            {% for item in form.password_form %}
-                {% include 'leprikon/form_item_fullwidth.html' %}
-            {% endfor %}
-            <div class="form-group">
-                <button class="btn btn-block btn-primary" type="submit">{% trans 'Log in' %}</button>
-            </div>
+          {% for item in form.password_form %}
+            {% include 'leprikon/form_item_fullwidth.html' %}
+          {% endfor %}
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">{% trans 'Log in' %}</button>
+            <a class="btn" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
+              {% trans 'Create account' %}
+            </a>
+            <a class="btn" href="{% url 'leprikon:password_reset' %}?{% param_back %}={% url_back %}">
+              {% trans 'Reset password' %}
+            </a>
+          </div>
         </form>
+        {% if backends.not_associated %}
         <hr />
         <div class="form-group">
-          <a class="btn btn-block btn-secondary" href="{% url 'leprikon:user_create' %}?{% param_back %}={% url_back %}">
-              {% trans 'Create account' %}
+          {% if 'google-oauth2' in backends.not_associated %}
+          <a class="btn btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
+            <i class="fa fa-google"></i>
+            {% trans 'Log in with Google' %}
           </a>
-        </div>
-        <div class="form-group">
-          <a class="btn btn-block btn-secondary" href="{% url 'leprikon:password_reset' %}?{% param_back %}={% url_back %}">
-              {% trans 'Reset password' %}
+          {% endif %}
+          {% if 'facebook' in backends.not_associated %}
+          <a class="btn btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
+            <i class="fa fa-facebook"></i>
+            {% trans 'Log in with Facebook' %}
           </a>
-        </div>
-        {% if 'google-oauth2' in backends.not_associated %}
-        <div class="form-group">
-          <a class="btn btn-block btn-social btn-google" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'google-oauth2' %}?next={% url_back %}">
-              <i class="fa fa-google"></i>
-              {% trans 'Log in with Google' %}
-          </a>
-        </div>
-        {% endif %}
-        {% if 'facebook' in backends.not_associated %}
-        <div class="form-group">
-          <a class="btn btn-block btn-social btn-facebook" style="text-align: center; padding-right: 44px" href="{% url 'social:begin' 'facebook' %}?next={% url_back %}">
-              <i class="fa fa-facebook"></i>
-              {% trans 'Log in with Facebook' %}
-          </a>
+          {% endif %}
         </div>
         {% endif %}
       </div>
