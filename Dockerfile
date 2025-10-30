@@ -23,7 +23,6 @@ RUN apt-get update \
   libpython3.12 \
   locales \
   mariadb-client \
-  nginx \
   postgresql-client \
   python3-pip \
   sqlite3 \

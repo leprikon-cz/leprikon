@@ -54,8 +54,6 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.12"
 Django = "<4"
-certbot-nginx = "*"
-certbot = "*"
 django-bankreader = "*"
 djangocms-audio = "*"
 djangocms-file = "*"
