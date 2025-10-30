@@ -9,6 +9,7 @@
 /.idea
 /.ipython
 /.tox
+/.venv
 /.vscode
 /build
 /data

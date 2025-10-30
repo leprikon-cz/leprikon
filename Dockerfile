@@ -19,6 +19,7 @@ RUN apt-get update \
   && apt-get -y --no-install-recommends install \
   git \
   libicu74 \
+  libcairo2 \
   libmysqlclient21 \
   libpython3.12 \
   locales \
@@ -38,15 +39,16 @@ ENV LC_ALL=cs_CZ.UTF-8
 
 FROM base AS build
 
+RUN pip install --break-system-packages poetry wheel
 RUN apt-get -y --no-install-recommends install \
   build-essential \
   gcc \
   libicu-dev \
+  libcairo2-dev \
   libmysqlclient-dev \
   libssl-dev \
   pkg-config \
   python3-dev
-RUN pip install --break-system-packages poetry wheel
 RUN virtualenv /venv
 ENV VIRTUAL_ENV=/venv
 COPY requirements.txt ./
