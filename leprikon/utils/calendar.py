@@ -251,6 +251,15 @@ class TimeSlot:
 
     @classmethod
     def from_date_range(cls, start_date: date, end_date: date) -> "TimeSlot":
+        """Create TimeSlot object from date range.
+
+        Args:
+            start_date: Start date
+            end_date: End date (inclusive)
+
+        Returns:
+            TimeSlot object
+        """
         return cls(
             start=datetime.combine(start_date, time(0)),
             end=datetime.combine(end_date, time(0)) + timedelta(days=1),
@@ -322,6 +331,16 @@ def get_time_slots_by_weekly_times(
     start_date: date,
     end_date: date,
 ) -> TimeSlots:
+    """Get TimeSlots object from WeeklyTimes object.
+
+    Args:
+        weekly_times: WeeklyTimes object
+        start_date: Start date
+        end_date: End date (inclusive)
+
+    Returns:
+        TimeSlots object
+    """
     return TimeSlots(
         TimeSlot(
             start=datetime.combine(dt.date(), weekly_time.start_time),
@@ -342,17 +361,21 @@ def get_time_slots_by_weekly_times(
 
 
 def get_reverse_time_slots(
-    available_time_slots: TimeSlots,
+    time_slots: TimeSlots,
     start_date: date,
     end_date: date,
 ) -> TimeSlots:
-    return (
-        TimeSlot(
-            start=datetime.combine(start_date, time(0)),
-            end=datetime.combine(end_date, time(0)) + timedelta(days=1),
-        )
-        - available_time_slots
-    )
+    """Get reverse TimeSlots object from TimeSlots object.
+
+    Args:
+        time_slots: TimeSlots object
+        start_date: Start date
+        end_date: End date (inclusive)
+
+    Returns:
+        TimeSlots object
+    """
+    return TimeSlot.from_date_range(start_date, end_date) - time_slots
 
 
 def add_event_to_flattened_events(flattened_events: Iterable[SimpleEvent], event: SimpleEvent) -> Iterator[SimpleEvent]:
@@ -430,15 +453,14 @@ def get_conflicting_timeslots(events: Iterable[SimpleEvent]) -> Iterator[TimeSlo
             yield event.timeslot
 
 
-def apply_preparation_and_recovery_times(
-    conflicting_time_slots: Iterable[TimeSlot], preparation_time: timedelta, recovery_time: timedelta
+def extend_timeslots(
+    conflicting_time_slots: Iterable[TimeSlot], time_before: timedelta, time_after: timedelta
 ) -> TimeSlots:
-    """Apply preparation and recovery time to time conflicting times slots.
-    Preparation time is applied to the ends of the conflicting timeslots, and vice versa."""
+    """Extend time slots by given time before and after."""
     return TimeSlots(
         TimeSlot(
-            start=ts.start - recovery_time,
-            end=ts.end + preparation_time,
+            start=ts.start - time_before,
+            end=ts.end + time_after,
         )
         for ts in conflicting_time_slots
     )

@@ -268,9 +268,13 @@ class CalendarEvent(models.Model):
 
         required_resource_groups = self.simple_event.resource_groups
         relevant_resource_ids: set[int] = set(chain.from_iterable(required_resource_groups))
-        relevant_calendar_events = relevant_calendar_events_by_timeslot.filter(blocks_all_resources=False).filter(
-            models.Q(resources__in=relevant_resource_ids)
-            | models.Q(resource_groups__resources__in=relevant_resource_ids)
+        relevant_calendar_events = (
+            relevant_calendar_events_by_timeslot.filter(blocks_all_resources=False)
+            .filter(
+                models.Q(resources__in=relevant_resource_ids)
+                | models.Q(resource_groups__resources__in=relevant_resource_ids)
+            )
+            .distinct()
         )
         relevant_resources = Resource.objects.filter(id__in=relevant_resource_ids).prefetch_related("availabilities")
 
