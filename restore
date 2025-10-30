@@ -9,9 +9,8 @@ fi
 
 BACKUP="$1"
 SERVICE="$(basename "$BACKUP" | sed -s 's/-.*//')"
-DATE=$(date '+%Y%m%d-%H%M')
 
 sudo docker compose stop $SERVICE
-test -d $SERVICE && mv $SERVICE $SERVICE-$DATE
+test -d $SERVICE && sudo rm -r $SERVICE
 sudo tar -xzf $BACKUP
 sudo docker compose start $SERVICE
