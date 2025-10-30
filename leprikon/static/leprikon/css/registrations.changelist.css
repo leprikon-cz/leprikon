@@ -45,12 +45,12 @@
 .change-list table .row1.reg-cancel-request,
 .change-list table .row2.reg-cancel-request
 {
-    background: #fdd;
+    background: #fdd !important;
 }
 .change-list table .row1.reg-cancel-request:hover,
 .change-list table .row2.reg-cancel-request:hover
 {
-    background: #fee;
+    background: #fee !important;
 }
 #changelist-legend .reg-new.reg-conflict,
 .change-list table .row1.reg-new.reg-conflict,
