@@ -40,7 +40,7 @@ from ..utils.calendar import (
     TimeSlot,
     TimeSlots,
     WeeklyTimes,
-    apply_preparation_and_recovery_times,
+    extend_timeslots,
     get_conflicting_timeslots,
     get_reverse_time_slots,
     get_time_slots_by_weekly_times,
@@ -548,7 +548,7 @@ class Activity(TimesMixin, models.Model):
         raise NotImplementedError()
 
     @cached_property
-    def display_name(self):
+    def display_name(self) -> str:
         if settings.LEPRIKON_SHOW_ACTIVITY_CODE and self.code:
             return f"{self.code} – {self.name}"
         else:
@@ -750,7 +750,7 @@ class ActivityTime(AbstractTime):
 
 
 class ActivityVariant(models.Model):
-    activity = models.ForeignKey(
+    activity: Activity = models.ForeignKey(
         Activity, on_delete=models.CASCADE, related_name="variants", verbose_name=_("activity")
     )
     name = models.CharField(_("variant name"), max_length=150, blank=True, default="")
@@ -897,25 +897,27 @@ class ActivityVariant(models.Model):
             | models.Q(resource_groups__resources__in=relevant_resource_ids)
         )
 
+        # variant weekly availability resource group
+        # using 0 as id to avoid conflicts with real resource ids
+        WEEKLY_AVAILABILITY = {0}
+        required_resource_groups.append(WEEKLY_AVAILABILITY)
+
         events: list[SimpleEvent] = [
             SimpleEvent(
-                TimeSlot(
-                    start=datetime.combine(start_date, time(0)),
-                    end=datetime.combine(end_date, time(0)) + timedelta(days=1),
-                ),
+                TimeSlot.from_date_range(start_date, end_date),
                 required_resource_groups,
             )
         ]
 
-        # unavailable times by activity weekly times
-        available_timeslots = apply_preparation_and_recovery_times(
+        # available times by activity weekly times
+        available_timeslots = extend_timeslots(
             get_time_slots_by_weekly_times(self.weekly_times, start_date, end_date),
             self.activity.orderable.preparation_time,
             self.activity.orderable.recovery_time,
         )
         events.extend(
-            SimpleEvent(time_slot, required_resource_groups)
-            for time_slot in get_reverse_time_slots(available_timeslots, start_date, end_date)
+            SimpleEvent(unavailable_timeslot, [WEEKLY_AVAILABILITY])
+            for unavailable_timeslot in get_reverse_time_slots(available_timeslots, start_date, end_date)
         )
 
         # unavailable times for each relevant resource
@@ -929,17 +931,20 @@ class ActivityVariant(models.Model):
         # calendar events
         events.extend(event.simple_event for event in relevant_calendar_events)
 
-        conflicting_timeslots = (
-            TimeSlots(get_conflicting_timeslots(events))
-            | TimeSlots(event.timeslot for event in blocking_events)
-            | all_day_conflicting_timeslots
+        conflicting_timeslots = TimeSlots(get_conflicting_timeslots(events)) | TimeSlots(
+            event.timeslot for event in blocking_events
         )
 
-        return apply_preparation_and_recovery_times(
+        # extend the conflicting timeslots by
+        # - recovery time at the start
+        # - preparation time at the end
+        conflicting_timeslots = extend_timeslots(
             conflicting_timeslots,
-            self.activity.orderable.preparation_time,
             self.activity.orderable.recovery_time,
+            self.activity.orderable.preparation_time,
         )
+
+        return conflicting_timeslots | all_day_conflicting_timeslots
 
     def get_available_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
         return get_reverse_time_slots(self.get_conflicting_timeslots(start_date, end_date), start_date, end_date)
@@ -951,7 +956,8 @@ class ActivityVariant(models.Model):
     @cached_property
     def min_start_date(self) -> date:
         start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
-        return max(min(start_dates) if start_dates else date.today(), date.today())
+        tomorrow = date.today() + timedelta(days=1)
+        return max(min(start_dates) if start_dates else tomorrow, tomorrow)
 
     @cached_property
     def max_end_date(self) -> date | None:

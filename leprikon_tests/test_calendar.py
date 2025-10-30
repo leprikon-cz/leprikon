@@ -10,7 +10,7 @@ from leprikon.utils.calendar import (
     TimeSlots,
     WeeklyTime,
     WeeklyTimes,
-    apply_preparation_and_recovery_times,
+    extend_timeslots,
     flatten_events,
     get_reverse_time_slots,
     get_time_slots_by_weekly_times,
@@ -169,7 +169,7 @@ def test_weekly_time_and(wt_a: WeeklyTime, wt_b: WeeklyTime, expected_result: We
     assert wt_a & wt_b == expected_result
 
 
-def hour_to_slot(hour_start: int, hour_end: int, day_start: int = 1, day_end: int = 1) -> TimeSlot:
+def make_slot(hour_start: int, hour_end: int, day_start: int = 1, day_end: int = 1) -> TimeSlot:
     return TimeSlot(datetime(2025, 7, day_start, hour_start, 0), datetime(2025, 7, day_end, hour_end, 0))
 
 
@@ -196,10 +196,10 @@ def test_get_time_slots_by_weekly_times() -> None:
         date(2025, 7, 1),  # Tuesday
         date(2025, 7, 7),  # Monday
     ) == [
-        hour_to_slot(9, 12, 1, 1),
-        hour_to_slot(9, 0, 2, 3),
-        hour_to_slot(10, 0, 3, 4),
-        hour_to_slot(9, 12, 7, 7),
+        make_slot(9, 12, 1, 1),
+        make_slot(9, 0, 2, 3),
+        make_slot(10, 0, 3, 4),
+        make_slot(9, 12, 7, 7),
     ]
     assert (
         get_time_slots_by_weekly_times(
@@ -223,7 +223,7 @@ def test_get_time_slots_by_weekly_times() -> None:
         WeeklyTimes.unlimited(),
         date(2025, 7, 1),
         date(2025, 7, 2),
-    ) == [hour_to_slot(0, 0, 1, 3)]
+    ) == [make_slot(0, 0, 1, 3)]
 
 
 def test_timeslot_init() -> None:
@@ -237,8 +237,8 @@ def test_timeslot_init() -> None:
     [
         (TimeSlot.from_date_range(date(2025, 1, 1), date(2025, 1, 1)), "01.01.2025"),
         (TimeSlot.from_date_range(date(2025, 1, 1), date(2025, 1, 2)), "01.01.2025 - 02.01.2025"),
-        (hour_to_slot(9, 12), "01.07.2025 9:00 - 12:00"),
-        (hour_to_slot(12, 9, 1, 2), "01.07.2025 12:00 - 02.07.2025 9:00"),
+        (make_slot(9, 12), "01.07.2025 9:00 - 12:00"),
+        (make_slot(12, 9, 1, 2), "01.07.2025 12:00 - 02.07.2025 9:00"),
     ],
 )
 def test_time_slot_str(ts: TimeSlot, expected_result: str, locale_cs_CZ: None) -> None:
@@ -253,71 +253,71 @@ def test_time_slot_from_date_range() -> None:
 
 def test_time_slot_sub() -> None:
     # overlapping start
-    assert hour_to_slot(4, 10) - hour_to_slot(2, 8) == TimeSlots([hour_to_slot(8, 10)])
+    assert make_slot(4, 10) - make_slot(2, 8) == TimeSlots([make_slot(8, 10)])
     # overlapping end
-    assert hour_to_slot(2, 8) - hour_to_slot(4, 10) == TimeSlots([hour_to_slot(2, 4)])
+    assert make_slot(2, 8) - make_slot(4, 10) == TimeSlots([make_slot(2, 4)])
     # split
-    assert hour_to_slot(1, 10) - hour_to_slot(2, 8) == TimeSlots([hour_to_slot(1, 2), hour_to_slot(8, 10)])
+    assert make_slot(1, 10) - make_slot(2, 8) == TimeSlots([make_slot(1, 2), make_slot(8, 10)])
     # remove
-    assert hour_to_slot(2, 8) - hour_to_slot(1, 10) == TimeSlots()
+    assert make_slot(2, 8) - make_slot(1, 10) == TimeSlots()
     # keep
-    assert hour_to_slot(2, 8) - hour_to_slot(10, 12) == TimeSlots([hour_to_slot(2, 8)])
+    assert make_slot(2, 8) - make_slot(10, 12) == TimeSlots([make_slot(2, 8)])
     # touching
-    assert hour_to_slot(2, 8) - hour_to_slot(8, 10) == TimeSlots([hour_to_slot(2, 8)])
-    assert hour_to_slot(8, 10) - hour_to_slot(2, 8) == TimeSlots([hour_to_slot(8, 10)])
+    assert make_slot(2, 8) - make_slot(8, 10) == TimeSlots([make_slot(2, 8)])
+    assert make_slot(8, 10) - make_slot(2, 8) == TimeSlots([make_slot(8, 10)])
 
     # timeslots
-    assert TimeSlots([hour_to_slot(1, 3), hour_to_slot(4, 6)]) - hour_to_slot(2, 5) == TimeSlots(
-        [hour_to_slot(1, 2), hour_to_slot(5, 6)]
+    assert TimeSlots([make_slot(1, 3), make_slot(4, 6)]) - make_slot(2, 5) == TimeSlots(
+        [make_slot(1, 2), make_slot(5, 6)]
     )
-    assert hour_to_slot(2, 8) - TimeSlots([hour_to_slot(1, 3), hour_to_slot(4, 6), hour_to_slot(7, 10)]) == TimeSlots(
-        [hour_to_slot(3, 4), hour_to_slot(6, 7)]
+    assert make_slot(2, 8) - TimeSlots([make_slot(1, 3), make_slot(4, 6), make_slot(7, 10)]) == TimeSlots(
+        [make_slot(3, 4), make_slot(6, 7)]
     )
-    assert TimeSlots([hour_to_slot(1, 4), hour_to_slot(6, 10)]) - TimeSlots(
-        [hour_to_slot(2, 3), hour_to_slot(5, 6), hour_to_slot(7, 10)]
-    ) == TimeSlots([hour_to_slot(1, 2), hour_to_slot(3, 4), hour_to_slot(6, 7)])
+    assert TimeSlots([make_slot(1, 4), make_slot(6, 10)]) - TimeSlots(
+        [make_slot(2, 3), make_slot(5, 6), make_slot(7, 10)]
+    ) == TimeSlots([make_slot(1, 2), make_slot(3, 4), make_slot(6, 7)])
 
 
 def test_get_reverse_time_slots() -> None:
     assert get_reverse_time_slots(
-        available_time_slots=TimeSlots(
+        time_slots=TimeSlots(
             [
-                hour_to_slot(8, 20, 1),
-                hour_to_slot(9, 12, 2, 2),
-                hour_to_slot(20, 9, 2, 3),
+                make_slot(8, 20, 1),
+                make_slot(9, 12, 2, 2),
+                make_slot(20, 9, 2, 3),
             ]
         ),
         start_date=date(2025, 7, 1),
         end_date=date(2025, 7, 3),
     ) == [
-        hour_to_slot(0, 8, 1, 1),
-        hour_to_slot(20, 9, 1, 2),
-        hour_to_slot(12, 20, 2, 2),
-        hour_to_slot(9, 0, 3, 4),
+        make_slot(0, 8, 1, 1),
+        make_slot(20, 9, 1, 2),
+        make_slot(12, 20, 2, 2),
+        make_slot(9, 0, 3, 4),
     ]
 
 
 def test_time_slots_init() -> None:
     # one inside another
-    assert TimeSlots([hour_to_slot(1, 10), hour_to_slot(5, 6)]) == TimeSlots([hour_to_slot(1, 10)])
-    assert TimeSlots([hour_to_slot(5, 6), hour_to_slot(1, 10)]) == TimeSlots([hour_to_slot(1, 10)])
+    assert TimeSlots([make_slot(1, 10), make_slot(5, 6)]) == TimeSlots([make_slot(1, 10)])
+    assert TimeSlots([make_slot(5, 6), make_slot(1, 10)]) == TimeSlots([make_slot(1, 10)])
     # touching
-    assert TimeSlots([hour_to_slot(1, 5), hour_to_slot(5, 10)]) == TimeSlots([hour_to_slot(1, 10)])
+    assert TimeSlots([make_slot(1, 5), make_slot(5, 10)]) == TimeSlots([make_slot(1, 10)])
     # overlapping with wrong order
-    assert TimeSlots([hour_to_slot(4, 10), hour_to_slot(1, 6)]) == TimeSlots([hour_to_slot(1, 10)])
+    assert TimeSlots([make_slot(4, 10), make_slot(1, 6)]) == TimeSlots([make_slot(1, 10)])
     # not ordered
-    assert TimeSlots([hour_to_slot(6, 10), hour_to_slot(1, 4)]) == TimeSlots([hour_to_slot(1, 4), hour_to_slot(6, 10)])
+    assert TimeSlots([make_slot(6, 10), make_slot(1, 4)]) == TimeSlots([make_slot(1, 4), make_slot(6, 10)])
     # duplicate
-    assert TimeSlots([hour_to_slot(2, 8), hour_to_slot(2, 8)]) == TimeSlots([hour_to_slot(2, 8)])
+    assert TimeSlots([make_slot(2, 8), make_slot(2, 8)]) == TimeSlots([make_slot(2, 8)])
 
 
 @pytest.mark.parametrize(
     "tss_a, tss_b, expected_result",
     [
         (
-            TimeSlots([hour_to_slot(9, 12), hour_to_slot(13, 15)]),
-            TimeSlots([hour_to_slot(10, 14)]),
-            TimeSlots([hour_to_slot(10, 12), hour_to_slot(13, 14)]),
+            TimeSlots([make_slot(9, 12), make_slot(13, 15)]),
+            TimeSlots([make_slot(10, 14)]),
+            TimeSlots([make_slot(10, 12), make_slot(13, 14)]),
         )
     ],
 )
@@ -329,9 +329,9 @@ def test_time_slots_and(tss_a: TimeSlots, tss_b: TimeSlots, expected_result: Tim
     "tss_a, tss_b, expected_result",
     [
         (
-            TimeSlots([hour_to_slot(9, 12), hour_to_slot(13, 15)]),
-            TimeSlots([hour_to_slot(10, 14), hour_to_slot(16, 18)]),
-            TimeSlots([hour_to_slot(9, 15), hour_to_slot(16, 18)]),
+            TimeSlots([make_slot(9, 12), make_slot(13, 15)]),
+            TimeSlots([make_slot(10, 14), make_slot(16, 18)]),
+            TimeSlots([make_slot(9, 15), make_slot(16, 18)]),
         )
     ],
 )
@@ -343,50 +343,50 @@ def test_flatten_events() -> None:
     events: list[SimpleEvent] = [
         # first
         SimpleEvent(
-            timeslot=hour_to_slot(9, 12),
+            timeslot=make_slot(9, 12),
             resource_groups=[{1}],
         ),
         # same start
         SimpleEvent(
-            timeslot=hour_to_slot(9, 13),
+            timeslot=make_slot(9, 13),
             resource_groups=[{2}],
         ),
         # inside other
         SimpleEvent(
-            timeslot=hour_to_slot(10, 11),
+            timeslot=make_slot(10, 11),
             resource_groups=[{3}],
         ),
         # touching other, same end
         SimpleEvent(
-            timeslot=hour_to_slot(11, 13),
+            timeslot=make_slot(11, 13),
             resource_groups=[{4}],
         ),
         # not overlaping
         SimpleEvent(
-            timeslot=hour_to_slot(14, 15),
+            timeslot=make_slot(14, 15),
             resource_groups=[{5}],
         ),
     ]
     flattened_events = list(flatten_events(events))
     assert flattened_events == [
         SimpleEvent(
-            timeslot=hour_to_slot(9, 10),
+            timeslot=make_slot(9, 10),
             resource_groups=[{1}, {2}],
         ),
         SimpleEvent(
-            timeslot=hour_to_slot(10, 11),
+            timeslot=make_slot(10, 11),
             resource_groups=[{1}, {2}, {3}],
         ),
         SimpleEvent(
-            timeslot=hour_to_slot(11, 12),
+            timeslot=make_slot(11, 12),
             resource_groups=[{1}, {2}, {4}],
         ),
         SimpleEvent(
-            timeslot=hour_to_slot(12, 13),
+            timeslot=make_slot(12, 13),
             resource_groups=[{2}, {4}],
         ),
         SimpleEvent(
-            timeslot=hour_to_slot(14, 15),
+            timeslot=make_slot(14, 15),
             resource_groups=[{5}],
         ),
     ]
@@ -408,7 +408,7 @@ def test_flatten_events() -> None:
 def test_has_resolvable_resource_groups(resource_groups: list[set[int]], expected_result: bool) -> None:
     assert (
         SimpleEvent(
-            timeslot=hour_to_slot(9, 10),
+            timeslot=make_slot(9, 10),
             resource_groups=resource_groups,
         ).has_resolvable_resource_groups()
         == expected_result
@@ -416,8 +416,13 @@ def test_has_resolvable_resource_groups(resource_groups: list[set[int]], expecte
 
 
 def test_apply_preparation_and_recovery_time():
-    assert apply_preparation_and_recovery_times(
-        TimeSlots([hour_to_slot(9, 10), hour_to_slot(12, 13)]),
+    assert extend_timeslots(
+        TimeSlots([make_slot(9, 10), make_slot(14, 15)]),
         timedelta(hours=1),
+        timedelta(hours=3),
+    ) == [make_slot(8, 18)]
+    assert extend_timeslots(
+        TimeSlots([make_slot(9, 10), make_slot(15, 16)]),
         timedelta(hours=1),
-    ) == [hour_to_slot(8, 14)]
+        timedelta(hours=3),
+    ) == [make_slot(8, 13), make_slot(14, 19)]
