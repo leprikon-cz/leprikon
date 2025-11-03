@@ -1170,11 +1170,18 @@ class Registration(PdfExportAndMailMixin, models.Model):
                     title = _("no other registration")
                 participant_links.append(f"""<a href="{url}" title="{title}">{participant}""")
             return mark_safe("<br/>".join(participant_links))
-        return self.group_members_list_html()
+        return self.group_description_html()
 
     @cached_property
     def all_group_members(self):
         return list(self.group_members.all())
+
+    @attributes(short_description=_("group"))
+    def group_description_html(self):
+        lines = [str(self.group)]
+        if self.group.school_and_class:
+            lines.append(self.group.school_and_class)
+        return mark_safe("<br/>".join(lines))
 
     @attributes(short_description=_("group members"))
     def group_members_list(self):
@@ -1611,7 +1618,9 @@ class SchoolMixin:
 
     @cached_property
     def school_and_class(self) -> str:
-        return "{}, {}".format(self.school_name, self.school_class)
+        if self.school_name and self.school_class:
+            return "{}, {}".format(self.school_name, self.school_class)
+        return self.school_name or self.school_class
 
 
 class RegistrationParticipant(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
@@ -1794,7 +1803,9 @@ class RegistrationGroup(SchoolMixin, PersonMixin, QuestionsMixin, models.Model):
         verbose_name_plural = _("registered groups")
 
     def __str__(self):
-        return self.name or self.full_name
+        if self.name:
+            return f"{self.full_name} ({self.name})"
+        return self.full_name
 
 
 class RegistrationGroupMember(models.Model):
