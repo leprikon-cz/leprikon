@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 from django.utils.timezone import utc
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 
 
 class Migration(migrations.Migration):
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leprikonsite',
             name='user_agreement',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='user agreement'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='user agreement'),
         ),
         migrations.AddField(
             model_name='leprikonsite',

@@ -83,7 +83,7 @@ INSTALLED_APPS = [
     "filer",
     "easy_thumbnails",
     "djangocms_link",
-    "djangocms_text_ckeditor",
+    "djangocms_text",
     "ganalytics",
     "html2rml",
     "qr_code",

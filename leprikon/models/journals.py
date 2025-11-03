@@ -6,7 +6,7 @@ from django.db import models
 from django.urls import reverse_lazy as reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 
 from ..utils import attributes
 from .activities import Activity, RegistrationParticipant

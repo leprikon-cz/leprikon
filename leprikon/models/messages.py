@@ -7,7 +7,7 @@ from django.urls import reverse_lazy as reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 from filer.fields.file import FilerFileField
 
 from ..conf import settings

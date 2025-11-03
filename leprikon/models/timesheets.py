@@ -7,7 +7,7 @@ from django.urls import reverse_lazy as reverse
 from django.utils.dateformat import DateFormat
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 
 from ..utils import attributes
 from .roles import Leader

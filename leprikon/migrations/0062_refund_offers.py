@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 import multiselectfield.db.fields
 
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="subject",
             name="text_registration_refund_offer",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True, default="", verbose_name="text: registration refund offer"
             ),
         ),
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="subjecttype",
             name="text_registration_refund_offer",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True,
                 default="",
                 help_text="<p>Keep empty to use default value:</p><p>Hello,<br/>\nYour registration has been overpaid.<br/>\nPlease, tell us how you wish us to refund.</p>",

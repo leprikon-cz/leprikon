@@ -4,7 +4,7 @@ import cms.models.fields
 from django.db import migrations, models
 import django.db.models.deletion
 import django_countries.fields
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 import filer.fields.file
 import filer.fields.image
 from leprikon.conf import settings
@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                 ("date", models.DateField(verbose_name="date")),
                 ("start", models.TimeField(blank=True, null=True, verbose_name="start time")),
                 ("end", models.TimeField(blank=True, null=True, verbose_name="end time")),
-                ("agenda", djangocms_text_ckeditor.fields.HTMLField(default="", verbose_name="session agenda")),
+                ("agenda", djangocms_text.fields.HTMLField(default="", verbose_name="session agenda")),
             ],
             options={
                 "ordering": ("date", "start", "end"),
@@ -391,7 +391,7 @@ class Migration(migrations.Migration):
                 ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 (
                     "description",
-                    djangocms_text_ckeditor.fields.HTMLField(blank=True, default="", verbose_name="description"),
+                    djangocms_text.fields.HTMLField(blank=True, default="", verbose_name="description"),
                 ),
                 (
                     "page",
@@ -532,7 +532,7 @@ class Migration(migrations.Migration):
                 ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("created", models.DateTimeField(auto_now_add=True, verbose_name="created")),
                 ("subject", models.CharField(max_length=150, verbose_name="subject")),
-                ("text", djangocms_text_ckeditor.fields.HTMLField(default="", verbose_name="text")),
+                ("text", djangocms_text.fields.HTMLField(default="", verbose_name="text")),
             ],
             options={
                 "ordering": ("-created",),
@@ -851,7 +851,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=150, verbose_name="name")),
                 (
                     "description",
-                    djangocms_text_ckeditor.fields.HTMLField(blank=True, default="", verbose_name="description"),
+                    djangocms_text.fields.HTMLField(blank=True, default="", verbose_name="description"),
                 ),
                 (
                     "price",
@@ -864,9 +864,9 @@ class Migration(migrations.Migration):
                 ("reg_to", models.DateTimeField(blank=True, null=True, verbose_name="registration active to")),
                 ("min_count", models.IntegerField(blank=True, null=True, verbose_name="minimal count")),
                 ("max_count", models.IntegerField(blank=True, null=True, verbose_name="maximal count")),
-                ("risks", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="risks")),
-                ("plan", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="plan")),
-                ("evaluation", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="evaluation")),
+                ("risks", djangocms_text.fields.HTMLField(blank=True, verbose_name="risks")),
+                ("plan", djangocms_text.fields.HTMLField(blank=True, verbose_name="plan")),
+                ("evaluation", djangocms_text.fields.HTMLField(blank=True, verbose_name="evaluation")),
                 ("note", models.CharField(blank=True, default="", max_length=300, verbose_name="note")),
                 ("agreement", models.TextField(blank=True, null=True, verbose_name="registration agreement")),
             ],
@@ -1144,7 +1144,7 @@ class Migration(migrations.Migration):
                 ("date", models.DateField(verbose_name="date")),
                 ("start", models.TimeField(verbose_name="start time")),
                 ("end", models.TimeField(verbose_name="end time")),
-                ("description", djangocms_text_ckeditor.fields.HTMLField(verbose_name="work description")),
+                ("description", djangocms_text.fields.HTMLField(verbose_name="work description")),
             ],
             options={
                 "ordering": ("start",),

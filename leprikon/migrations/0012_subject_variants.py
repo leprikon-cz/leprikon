@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 import leprikon.models.fields
 
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=150, verbose_name="variant name")),
                 (
                     "description",
-                    djangocms_text_ckeditor.fields.HTMLField(
+                    djangocms_text.fields.HTMLField(
                         blank=True, default="", verbose_name="variant description"
                     ),
                 ),

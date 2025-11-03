@@ -9,7 +9,7 @@ from django.urls import NoReverseMatch, reverse
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 from filer.fields.image import FilerImageField
 
 from leprikon.models.targetgroup import TargetGroup

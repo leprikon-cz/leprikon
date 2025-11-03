@@ -28,7 +28,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _, ngettext
 from django_pays import payment_url as pays_payment_url
 from django_pays.models import Payment as PaysPayment
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 from filer.fields.file import FilerFileField
 from filer.fields.image import FilerImageField
 from multiselectfield import MultiSelectField

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 
 
 class Migration(migrations.Migration):
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ("heading", models.CharField(blank=True, default="", max_length=50, verbose_name="heading")),
                 (
                     "agreement",
-                    djangocms_text_ckeditor.fields.HTMLField(blank=True, default="", verbose_name="agreement"),
+                    djangocms_text.fields.HTMLField(blank=True, default="", verbose_name="agreement"),
                 ),
             ],
             options={
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50, verbose_name="name")),
                 ("order", models.IntegerField(blank=True, default=0, verbose_name="order")),
                 ("required", models.BooleanField(default=False, verbose_name="required")),
-                ("option", djangocms_text_ckeditor.fields.HTMLField(verbose_name="option")),
+                ("option", djangocms_text.fields.HTMLField(verbose_name="option")),
                 (
                     "agreement",
                     models.ForeignKey(
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="leprikonsite",
             name="old_registration_agreement",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True,
                 default="",
                 help_text="This agreement will be removed in future version. Please, use registration agreements below.",
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="subject",
             name="old_registration_agreement",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True,
                 default="",
                 help_text="This agreement will be removed in future version. Please, use registration agreements below.",
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="subjecttype",
             name="old_registration_agreement",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True,
                 default="",
                 help_text="This agreement will be removed in future version. Please, use registration agreements below.",

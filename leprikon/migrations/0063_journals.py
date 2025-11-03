@@ -5,7 +5,7 @@ from leprikon.models.activities import ActivityModel, ActivityType
 
 from django.db import migrations, models
 import django.db.models.deletion
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 import leprikon.models.fields
 import leprikon.models.startend
 import leprikon.models.times
@@ -56,9 +56,9 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(blank=True, default="", max_length=150, verbose_name="journal name")),
-                ("risks", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="risks")),
-                ("plan", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="plan")),
-                ("evaluation", djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="evaluation")),
+                ("risks", djangocms_text.fields.HTMLField(blank=True, verbose_name="risks")),
+                ("plan", djangocms_text.fields.HTMLField(blank=True, verbose_name="plan")),
+                ("evaluation", djangocms_text.fields.HTMLField(blank=True, verbose_name="evaluation")),
                 (
                     "participants",
                     models.ManyToManyField(

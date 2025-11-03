@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django_pays.models import Gateway
-from djangocms_text_ckeditor.fields import HTMLField
+from djangocms_text.fields import HTMLField
 
 from ..conf import settings
 from .account import AccountClosure

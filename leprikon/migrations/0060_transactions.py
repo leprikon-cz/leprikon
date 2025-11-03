@@ -8,7 +8,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 import leprikon.models.fields
 import leprikon.models.activities
 import multiselectfield.db.fields
@@ -183,14 +183,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="subject",
             name="text_payment_returned",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True, default="", verbose_name="text: payment returned"
             ),
         ),
         migrations.AddField(
             model_name="subjecttype",
             name="text_payment_returned",
-            field=djangocms_text_ckeditor.fields.HTMLField(
+            field=djangocms_text.fields.HTMLField(
                 blank=True,
                 default="",
                 help_text="<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe have just returned Your payment. Thank You.<br/>\nPlease see the recipe attached.</p>",

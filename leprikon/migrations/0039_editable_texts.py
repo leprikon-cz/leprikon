@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import djangocms_text_ckeditor.fields
+import djangocms_text.fields
 
 
 class Migration(migrations.Migration):
@@ -17,71 +17,71 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subject',
             name='text_discount_granted',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: discount granted'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: discount granted'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_payment_received',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: payment received'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: payment received'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_registration_approved',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: registration approved'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: registration approved'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_registration_canceled',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: registration canceled'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: registration canceled'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_registration_payment_request',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: registration payment request'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: registration payment request'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_registration_received',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: registration received'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: registration received'),
         ),
         migrations.AddField(
             model_name='subject',
             name='text_registration_refused',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text: registration refused'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', verbose_name='text: registration refused'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_discount_granted',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe have just grated a discount for Your registration.</p>', verbose_name='text: discount granted'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe have just grated a discount for Your registration.</p>', verbose_name='text: discount granted'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_payment_received',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe have just received Your payment. Thank You.<br/>\nPlease see the recipe attached.</p>', verbose_name='text: payment received'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe have just received Your payment. Thank You.<br/>\nPlease see the recipe attached.</p>', verbose_name='text: payment received'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_registration_approved',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe are pleased to inform You, that Your registration was approved.<br/>\nWe are looking forward to see You.</p>', verbose_name='text: registration approved'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe are pleased to inform You, that Your registration was approved.<br/>\nWe are looking forward to see You.</p>', verbose_name='text: registration approved'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_registration_canceled',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nYour registration was canceled.</p>', verbose_name='text: registration canceled'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nYour registration was canceled.</p>', verbose_name='text: registration canceled'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_registration_payment_request',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text="<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe'd like to ask You to pay for Your registration.<br/>\nIf You have already made the payment recently, please ignore this message.</p>", verbose_name='text: registration payment request'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text="<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe'd like to ask You to pay for Your registration.<br/>\nIf You have already made the payment recently, please ignore this message.</p>", verbose_name='text: registration payment request'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_registration_received',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nthank You for submitting the registration.<br/>\nWe will inform you about its further processing.</p>', verbose_name='text: registration received'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nthank You for submitting the registration.<br/>\nWe will inform you about its further processing.</p>', verbose_name='text: registration received'),
         ),
         migrations.AddField(
             model_name='subjecttype',
             name='text_registration_refused',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe are sorry to inform You, that Your registration was refused.</p>', verbose_name='text: registration refused'),
+            field=djangocms_text.fields.HTMLField(blank=True, default='', help_text='<p>Keep empty to use default value:</p><p>Hello,<br/>\nwe are sorry to inform You, that Your registration was refused.</p>', verbose_name='text: registration refused'),
         ),
     ]
