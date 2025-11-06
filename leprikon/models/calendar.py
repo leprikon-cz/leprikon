@@ -1,3 +1,4 @@
+import re
 import uuid
 from datetime import date, datetime, time, timedelta
 from functools import cached_property
@@ -234,7 +235,7 @@ class CalendarEvent(models.Model):
     @cached_property
     def description(self) -> str:
         template = get_template("leprikon/calendar-export.description.txt")
-        return template.render({"event": self})
+        return re.sub(r"\n\n\n+", "\n\n", template.render({"event": self}))
 
     @cached_property
     def event_time(self) -> str:

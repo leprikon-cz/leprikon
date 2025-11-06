@@ -254,12 +254,16 @@ class CalendarExportViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CalendarExportSerializer
     permission_classes = [DjangoModelPermissions]
 
+    def get_object(self) -> CalendarExport:
+        """Override get_object() type, which is guessed to be Never"""
+        return super().get_object()
+
     def get_queryset(self):
         return CalendarExport.objects.all()
 
     @extend_schema(operation_id="calendar_export_ical", responses={200: str})
     @action(detail=True, methods=["get"], permission_classes=[])
-    def ical(self, request: Request, pk: str):
+    def ical(self, request: Request, pk: str) -> HttpResponse:
         calendar_export: CalendarExport = self.get_object()
         return HttpResponse(
             calendar_export.get_ical(),

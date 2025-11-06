@@ -1612,6 +1612,10 @@ class PersonMixin:
 
 
 class SchoolMixin:
+    school: School | None
+    school_other: str
+    school_class: str
+
     @cached_property
     def school_name(self) -> str:
         return self.school and str(self.school) or self.school_other

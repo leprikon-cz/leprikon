@@ -1,4 +1,26 @@
 {% load i18n leprikon_tags %}
+{% if event.registration %}
+{% trans "Participants count" %}: {{ event.registration.participants_count }}
+{% if event.registration.group %}
+{% if event.registration.group.school_and_class %}{% trans "School" %}: {{ event.registration.group.school_and_class }}X{% endif %}
+{% trans "Contact" %}: {{ event.registration.group }}{% if event.registration.group.phone %}, {{ event.registration.group.phone }}{% endif %}{% if event.registration.group.email %}, {{ event.registration.group.email }}{% endif %}
+{% else %}
+{% for p in event.registration.all_participants %}
+{% trans "Participant" %}: {{ p.full_name }}{% if p.school_and_class %}, {{ p.school_and_class }}{% endif %}{% if p.phone %}, {{ p.phone }}{% endif %}{% if p.email %}, {{ p.email }}{% endif %}
+{% endfor %}
+{% endif %}
+{% if event.registration.note %}{% trans "Note" %}: {{ event.registration.note }}{% endif %}
+{% if event.registration.billing_info %}
+{% trans "Billing information" %}: {{ event.registration.billing_info.name }}
+{% if event.registration.billing_info.address %}{% trans "Address" %}: {{ event.registration.billing_info.address }}{% endif %}
+{% if event.registration.billing_info.company_num %}{% trans "Company number" %}: {{ event.registration.billing_info.company_num }}{% endif %}
+{% if event.registration.billing_info.vat_number %}{% trans "VAT number" %}: {{ event.registration.billing_info.vat_number }}{% endif %}
+{% if event.registration.billing_info.contact_person %}{% trans "Contact person" %}: {{ event.registration.billing_info.contact_person }}{% endif %}
+{% if event.registration.billing_info.phone %}{% trans "Phone" %}: {{ event.registration.billing_info.phone }}{% endif %}
+{% if event.registration.billing_info.email %}{% trans "Email" %}: {{ event.registration.billing_info.email }}{% endif %}
+{% if event.registration.billing_info.employee %}{% trans "Employee ID" %}: {{ event.registration.billing_info.employee }}{% endif %}
+{% endif %}
+{% endif %}
 {% if event.all_resources %}{% trans "Resources" %}: {{ event.all_resources|comma_separated }}
 {% endif %}{% if event.all_resource_groups %}{% trans "Resource groups" %}:{% for resource_group in event.all_resource_groups %}
  - {{ resource_group.name }}: {{ resource_group.all_resources|comma_separated }}{% endfor %}{% endif %}
