@@ -721,6 +721,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
     list_export = (
         "id",
         "variable_symbol",
+        "alt_variable_symbol",
         "slug",
         "user",
         "activity",
@@ -817,6 +818,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
     )
     search_fields = (
         "variable_symbol",
+        "alt_variable_symbol",
         "participants__birth_num",
         "participants__first_name",
         "participants__last_name",
@@ -1181,6 +1183,7 @@ class RegistrationAdmin(AdminExportMixin, SendMessageAdminMixin, ChangeformRedir
     ordering = ("-created",)
     search_fields = (
         "variable_symbol",
+        "alt_variable_symbol",
         "participants__birth_num",
         "participants__first_name",
         "participants__last_name",

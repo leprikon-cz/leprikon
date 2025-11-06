@@ -1082,6 +1082,7 @@ class Registration(PdfExportAndMailMixin, models.Model):
     agreement_options = models.ManyToManyField(AgreementOption, blank=True, verbose_name=_("legal agreements"))
 
     variable_symbol = models.BigIntegerField(_("variable symbol"), db_index=True, editable=False, null=True)
+    alt_variable_symbol = models.BigIntegerField(_("alternative variable symbol"), blank=True, null=True, unique=True)
 
     registration_link = models.ForeignKey(
         "leprikon.RegistrationLink",
@@ -2073,8 +2074,11 @@ def transaction_create_payment(instance, **kwargs):
     max_closure_date = LeprikonSite.objects.get_current().max_closure_date
     if max_closure_date and transaction.accounted_date <= max_closure_date:
         return
-    # check registration
-    registration = Registration.objects.filter(variable_symbol=transaction.variable_symbol).first()
+    # check registration by primary variable symbol, then by alternative variable symbol
+    registration = (
+        Registration.objects.filter(variable_symbol=transaction.variable_symbol).first()
+        or Registration.objects.filter(alt_variable_symbol=transaction.variable_symbol).first()
+    )
     if not registration:
         return
     # create payment

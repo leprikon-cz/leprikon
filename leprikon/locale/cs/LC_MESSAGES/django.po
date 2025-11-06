@@ -1505,6 +1505,7 @@ msgid "User with this email already exists."
 msgstr "Uživatel s touto e-mailovou adresou již existuje."
 
 #: forms/user.py:56 forms/user.py:74
+#: templates/leprikon/calendar-export.description.txt:20
 #: templates/leprikon/registration_pdf/activity.rml:143
 #: templates/leprikon/registration_pdf/activity.rml:254
 msgid "E-mail"
@@ -2099,13 +2100,17 @@ msgstr "odhlásil(a)"
 msgid "legal agreements"
 msgstr "právní ujednání"
 
-#: models/activities.py:1095
+#: models/activities.py:1085
+msgid "alternative variable symbol"
+msgstr "alternativní variabilní symbol"
+
+#: models/activities.py:1096
 msgid "payments balance"
 msgstr "stav plateb"
 
-#: models/activities.py:1099 models/activities.py:1632
-#: models/activities.py:1783 models/activities.py:1817
-#: models/activities.py:1845 models/courses.py:145 models/courses.py:219
+#: models/activities.py:1100 models/activities.py:1633
+#: models/activities.py:1784 models/activities.py:1818
+#: models/activities.py:1846 models/courses.py:145 models/courses.py:219
 #: models/events.py:160 models/orderables.py:142 models/refundrequest.py:27
 #: templates/leprikon/registration_links.html:4
 msgid "registration"

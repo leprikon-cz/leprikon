@@ -17,7 +17,7 @@
 {% if event.registration.billing_info.vat_number %}{% trans "VAT number" %}: {{ event.registration.billing_info.vat_number }}{% endif %}
 {% if event.registration.billing_info.contact_person %}{% trans "Contact person" %}: {{ event.registration.billing_info.contact_person }}{% endif %}
 {% if event.registration.billing_info.phone %}{% trans "Phone" %}: {{ event.registration.billing_info.phone }}{% endif %}
-{% if event.registration.billing_info.email %}{% trans "Email" %}: {{ event.registration.billing_info.email }}{% endif %}
+{% if event.registration.billing_info.email %}{% trans "E-mail" %}: {{ event.registration.billing_info.email }}{% endif %}
 {% if event.registration.billing_info.employee %}{% trans "Employee ID" %}: {{ event.registration.billing_info.employee }}{% endif %}
 {% endif %}
 {% endif %}
