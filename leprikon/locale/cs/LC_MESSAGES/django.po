@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: leprikon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-06 15:11+0100\n"
+"POT-Creation-Date: 2025-11-07 09:37+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@qbsoftware.cz>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -92,173 +92,173 @@ msgstr "počet neschválených přihlášek"
 msgid "photo"
 msgstr "fotka"
 
-#: admin/activities.py:902
+#: admin/activities.py:904
 msgid "Approve selected registrations"
 msgstr "Schválit vybrané přihlášky"
 
-#: admin/activities.py:912
+#: admin/activities.py:914
 #, python-brace-format
 msgid "The registration {r} has been approved and the user has been notified."
 msgstr "Přihláška {r} byla schválena a uživatel byl informován."
 
-#: admin/activities.py:915
+#: admin/activities.py:917
 msgid "Refuse selected registrations"
 msgstr "Odmítnout vybrané přihlášky"
 
-#: admin/activities.py:925
+#: admin/activities.py:927
 #, python-brace-format
 msgid "The registration {r} has been refused and the user has been notified."
 msgstr "Přihláška {r} byla odmítnuta a uživatel byl informován."
 
-#: admin/activities.py:928
+#: admin/activities.py:930
 msgid "Request payment for selected registrations"
 msgstr "Odeslat výzvu k platbě pro vybrané přihlášky"
 
-#: admin/activities.py:932
+#: admin/activities.py:934
 msgid "Payment was requested for selected registrations."
 msgstr "Výzva k platbě byla odeslána pro vybrané přihlášky."
 
-#: admin/activities.py:934
+#: admin/activities.py:936
 msgid "Offer refund for selected registrations"
 msgstr "Odeslat nabídku vrácení přeplatku pro vybrané přihlášky"
 
-#: admin/activities.py:938
+#: admin/activities.py:940
 msgid "Refund was offered for selected registrations."
 msgstr "Nabídka vrácení přeplatku byla odeslána pro vybrané přihlášky."
 
-#: admin/activities.py:940
+#: admin/activities.py:942
 msgid "Generate refund requests for selected registrations"
 msgstr "Vygenerovat žádosti o vrácení přeplatku pro vybrané přihlášky"
 
-#: admin/activities.py:944
+#: admin/activities.py:946
 msgid "Refund requests were generated for selected registrations."
 msgstr "Žádosti o vrácení přeplatku byly vygenerovány pro vybrané přihlášky."
 
-#: admin/activities.py:946
+#: admin/activities.py:948
 msgid "Export selected registrations as invoices in XML"
 msgstr ""
 "Exportovat vybrané záznamy ve formátu XML pro Money S3 (experimentální)"
 
-#: admin/activities.py:952
+#: admin/activities.py:954
 msgid "Cancel selected registrations"
 msgstr "Odhlásit vybrané přihlášky"
 
-#: admin/activities.py:962
+#: admin/activities.py:964
 #, python-brace-format
 msgid "The registration {r} has been canceled and the user has been notified."
 msgstr "Přihláška {r} byla odhlášena a uživatel byl informován."
 
-#: admin/activities.py:965
+#: admin/activities.py:967
 msgid "Cancel cancelation request for selected registrations"
 msgstr "Zrušit žádost o odhlášení pro vybrané přihlášky"
 
-#: admin/activities.py:968
+#: admin/activities.py:970
 msgid "The cancelation requests have been removed from selected registrations."
 msgstr "U vybraných přihlášek byla zrušena žádost o odhlášení."
 
-#: admin/activities.py:1077
+#: admin/activities.py:1079
 msgid "cancelation requested"
 msgstr "požádáno o odhlášení"
 
-#: admin/activities.py:1078
+#: admin/activities.py:1080
 msgid "new registration"
 msgstr "nová přihláška"
 
-#: admin/activities.py:1079
+#: admin/activities.py:1081
 msgid "new registration, capacity full"
 msgstr "nová přihláška, naplěná kapacita"
 
-#: admin/activities.py:1080
+#: admin/activities.py:1082
 msgid "new registration, resource conflict"
 msgstr "nová přihláška, konflikt zdrojů"
 
-#: admin/activities.py:1081
+#: admin/activities.py:1083
 msgid "approved registration"
 msgstr "schválená přihláška"
 
-#: admin/activities.py:1082
+#: admin/activities.py:1084
 msgid "approved registration, resource conflict"
 msgstr "schválená přihláška, konflikt zdrojů"
 
-#: admin/activities.py:1085 admin/activities.py:1234 models/activities.py:516
+#: admin/activities.py:1087 admin/activities.py:1237 models/activities.py:516
 #: models/activities.py:754 models/activities.py:993 models/activities.py:1007
 #: models/calendar.py:132 models/journals.py:86 models/journals.py:295
 #: models/roles.py:344 templates/leprikon/alternating.html:15
 msgid "activity"
 msgstr "aktivita"
 
-#: admin/activities.py:1089
+#: admin/activities.py:1091
 msgid "decision"
 msgstr "rozhodnutí"
 
-#: admin/activities.py:1098
+#: admin/activities.py:1100
 msgid "admission decision"
 msgstr "rozhodnutí o přijetí"
 
-#: admin/activities.py:1098
+#: admin/activities.py:1100
 msgid "refusal decision"
 msgstr "rozhodnutí o odmítnutí"
 
-#: admin/activities.py:1102 models/activities.py:1024
+#: admin/activities.py:1104 models/activities.py:1024
 msgid "time of registration"
 msgstr "čas přihlášení"
 
-#: admin/activities.py:1104 models/activities.py:1033
+#: admin/activities.py:1106 models/activities.py:1033
 msgid "time of approval"
 msgstr "čas schválení"
 
-#: admin/activities.py:1106 models/activities.py:1042 models/activities.py:1051
+#: admin/activities.py:1108 models/activities.py:1042 models/activities.py:1051
 msgid "payment request time"
 msgstr "odeslání výzvy k platbě"
 
-#: admin/activities.py:1108
+#: admin/activities.py:1110
 msgid "refund offer time"
 msgstr "čas nabídky vrácení přeplatku"
 
-#: admin/activities.py:1110 models/activities.py:1060
+#: admin/activities.py:1112 models/activities.py:1060
 msgid "time of cancellation request"
 msgstr "čas žádosti o odhlášení"
 
-#: admin/activities.py:1112 models/activities.py:1069
+#: admin/activities.py:1114 models/activities.py:1069
 msgid "time of cancellation"
 msgstr "čas odhlášení"
 
-#: admin/activities.py:1117
+#: admin/activities.py:1119
 msgid "random number"
 msgstr "náhodné číslo"
 
-#: admin/activities.py:1121 admin/courses.py:268 admin/courses.py:305
+#: admin/activities.py:1123 admin/courses.py:268 admin/courses.py:305
 #: admin/events.py:213 admin/orderables.py:203 admin/orderables.py:229
 #: models/activities.py:1965 templates/leprikon/admin/dashboard.html:53
 msgid "received payments"
 msgstr "přijaté platby"
 
-#: admin/activities.py:1134
+#: admin/activities.py:1136
 msgid "add received payment"
 msgstr "přidat přijatou platbu"
 
-#: admin/activities.py:1138 models/activities.py:1984
+#: admin/activities.py:1140 models/activities.py:1984
 #: templates/leprikon/admin/dashboard.html:58
 msgid "returned payments"
 msgstr "vrácené platby"
 
-#: admin/activities.py:1149
+#: admin/activities.py:1151
 msgid "add returned payment"
 msgstr "přidat vrácenou platbu"
 
-#: admin/activities.py:1153 admin/courses.py:255 admin/courses.py:298
+#: admin/activities.py:1155 admin/courses.py:255 admin/courses.py:298
 #: admin/events.py:209 admin/orderables.py:225
 msgid "total price"
 msgstr "výsledná cena"
 
-#: admin/activities.py:1279 models/activities.py:1084
+#: admin/activities.py:1282 models/activities.py:1084
 #: templates/leprikon/received_payment_pdf/recipe.rml:30
 #: templates/leprikon/registration_payment_request/activity.rml:193
 #: templates/leprikon/returned_payment_pdf/recipe.rml:30
 msgid "variable symbol"
 msgstr "variabilní symbol"
 
-#: admin/activities.py:1331 admin/refundrequest.py:70 admin/transaction.py:98
+#: admin/activities.py:1334 admin/refundrequest.py:70 admin/transaction.py:98
 #: models/refundrequest.py:45 models/transaction.py:116
 #: templates/leprikon/donation_pdf/recipe.rml:34
 #: templates/leprikon/received_payment_pdf/recipe.rml:38
@@ -286,44 +286,56 @@ msgstr "{} položek bylo upraveno."
 msgid "Bulk update"
 msgstr "Hromadné upravení"
 
-#: admin/calendar.py:25 models/calendar.py:88
+#: admin/calendar.py:27 models/calendar.py:88
 msgid "availabilities"
 msgstr "dostupnosti"
 
-#: admin/calendar.py:36 admin/calendar.py:67 admin/calendar.py:103
+#: admin/calendar.py:38 admin/calendar.py:104 admin/calendar.py:140
 #: models/calendar.py:51 models/calendar.py:109 models/calendar.py:156
 #: models/calendar.py:304
 msgid "resources"
 msgstr "zdroje"
 
-#: admin/calendar.py:71 models/calendar.py:114 models/calendar.py:159
+#: admin/calendar.py:45
+msgid "past events"
+msgstr "proběhlé události"
+
+#: admin/calendar.py:52 admin/calendar.py:62
+msgid "future only"
+msgstr "jen budoucí"
+
+#: admin/calendar.py:53 admin/calendar.py:67
+msgid "include past"
+msgstr "včetně proběhlých"
+
+#: admin/calendar.py:108 models/calendar.py:114 models/calendar.py:159
 msgid "resource groups"
 msgstr "skupiny zdrojů"
 
-#: admin/calendar.py:86 admin/filters.py:42 admin/filters.py:58
+#: admin/calendar.py:123 admin/filters.py:42 admin/filters.py:58
 #: admin/filters.py:107 admin/filters.py:139 models/agreements.py:12
 #: models/question.py:34 models/schoolyear.py:40
 msgid "active"
 msgstr "aktivní"
 
-#: admin/calendar.py:87 admin/filters.py:92 admin/filters.py:112
+#: admin/calendar.py:124 admin/filters.py:92 admin/filters.py:112
 #: admin/filters.py:124 admin/filters.py:144
 msgid "canceled"
 msgstr "odhlášeno"
 
-#: admin/calendar.py:88
+#: admin/calendar.py:125
 msgid "conflict"
 msgstr "konflikt"
 
-#: admin/calendar.py:106
+#: admin/calendar.py:143
 msgid "all resources"
 msgstr "všechny zdroje"
 
-#: admin/calendar.py:109
+#: admin/calendar.py:146
 msgid "relevant events count"
 msgstr "počet relevantních událostí"
 
-#: admin/calendar.py:113
+#: admin/calendar.py:150
 msgid "iCal URL"
 msgstr "iCal URL"
 
