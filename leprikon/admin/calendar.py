@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -38,8 +40,42 @@ class ResourceGroupAdmin(admin.ModelAdmin):
         return mark_safe("<br/>".join(str(resource) for resource in obj.resources.all()))
 
 
+class IsFutureListFilter(admin.SimpleListFilter):
+    parameter_name = "past"
+    title = _("past events")
+
+    def expected_parameters(self):
+        return [self.parameter_name]
+
+    def lookups(self, request, model_admin):
+        return (
+            (None, _("future only")),
+            ("yes", _("include past")),
+        )
+
+    def choices(self, cl):
+        value = self.value()
+        return [
+            {
+                "selected": value != "yes",
+                "query_string": cl.get_query_string({}, [self.parameter_name]),
+                "display": _("future only"),
+            },
+            {
+                "selected": value == "yes",
+                "query_string": cl.get_query_string({self.parameter_name: "yes"}),
+                "display": _("include past"),
+            },
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        return queryset if value == "yes" else queryset.filter(start_date__gte=date.today())
+
+
 @admin.register(CalendarEvent)
 class CalendarEventAdmin(admin.ModelAdmin):
+    date_hierarchy = "start_date"
     list_display = (
         "name",
         "activity",
@@ -49,6 +85,7 @@ class CalendarEventAdmin(admin.ModelAdmin):
         "resource_groups_list",
     )
     list_filter = (
+        IsFutureListFilter,
         IsCanceledListFilter,
         "activity__activity_type",
         "resources",
