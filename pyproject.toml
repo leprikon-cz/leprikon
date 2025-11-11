@@ -29,7 +29,7 @@ strict_settings = false
 
 [tool.poetry]
 name = "leprikon"
-version = "4.4.0"
+version = "4.4.1"
 description = "Django CMS based IS for education"
 authors = ["Jakub Dorňák <jakub.dornak@qbsoftware.cz>"]
 license = "BSD-3-Clause"
