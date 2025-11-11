@@ -4,6 +4,7 @@ from functools import partial
 from typing import Any, Callable, Self, Sequence
 
 import django_excel
+import pyexcel
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import F, QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -117,6 +118,6 @@ class AdminExportMixin:
     @attributes(short_description=_("Export selected records as XLSX"))
     def export_as_xlsx(self, request, queryset):
         data = self.get_export_data(request, queryset)
-        response = django_excel.make_response(django_excel.pe.Sheet(data), "xlsx")
+        response = django_excel.make_response(pyexcel.Sheet(data), "xlsx")
         response["Content-Disposition"] = 'attachment; filename="{}.xlsx"'.format(self.model._meta.model_name)
         return response
