@@ -119,9 +119,11 @@ CORS_ALLOWED_ORIGINS = [
 
 CRON_CLASSES = [
     "leprikon.cronjobs.SendPaymentRequest",
+    "leprikon.cronjobs.UpdateSchools",
 ]
 
 CRON_SEND_PAYMENT_REQUEST_TIME = os.environ.get("CRON_SEND_PAYMENT_REQUEST_TIME", "8:00")
+CRON_UPDATE_SCHOOLS_TIME = os.environ.get("CRON_UPDATE_SCHOOLS_TIME", "03:30")
 
 ROOT_URLCONF = os.environ.get("ROOT_URLCONF", "leprikon.site.urls")
 

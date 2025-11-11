@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils.translation import override
 from django_cron import CronJobBase, Schedule
 from sentry_sdk import capture_exception
+from django.core import management
 
 from .models.courses import CourseRegistrationPeriod
 from .models.events import EventRegistration
@@ -62,3 +63,11 @@ class SendPaymentRequest(SentryCronJobBase):
             except Exception:
                 print_exc()
                 capture_exception()
+
+
+class UpdateSchools(SentryCronJobBase):
+    schedule = Schedule(run_at_times=[getattr(settings, "CRON_UPDATE_SCHOOLS_TIME", "03:30")])
+    code = "leprikon.cronjobs.UpdateSchools"
+
+    def dojob(self):
+        management.call_command("update_schools")

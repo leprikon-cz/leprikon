@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from leprikon.models.activities import Activity, CalendarEvent, RegistrationParticipant
+from leprikon.models.school import School
 from leprikon.models.calendar import CalendarExport
 from leprikon.models.schoolyear import SchoolYear
 
@@ -78,3 +79,15 @@ class CalendarExportSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalendarExport
         fields = "__all__"
+
+
+class SchoolOptionSerializer(serializers.ModelSerializer):
+    address = serializers.SerializerMethodField()
+
+    class Meta:
+        model = School
+        fields = ["id", "name", "address"]
+
+    def get_address(self, obj: School) -> str:
+        parts = [p for p in [obj.street, obj.city, obj.region] if p]
+        return ", ".join(parts)

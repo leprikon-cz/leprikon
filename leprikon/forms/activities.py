@@ -46,7 +46,7 @@ from ..models.targetgroup import TargetGroup
 from ..utils import get_age, get_birth_date, get_gender
 from .fields import AgreementBooleanField
 from .form import FormMixin
-from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap
+from .widgets import CheckboxSelectMultipleBootstrap, RadioSelectBootstrap, SchoolAutocompleteWidget
 
 User = get_user_model()
 
@@ -385,19 +385,10 @@ class RegistrationParticipantFormMixin:
         else:
             self.instance.birth_num = None
 
-
 class RegistrationParticipantForm(FormMixin, RegistrationParticipantFormMixin, SchoolMixin, forms.ModelForm):
     x_group = "age_group"
 
-    school = forms.ChoiceField(
-        label=_("School"),
-        choices=lambda: (
-            [("", "---------")]
-            + [(school.id, school) for school in School.objects.all()]
-            + [("other", _("other school"))]
-        ),
-        required=False,
-    )
+    school = forms.CharField(label=_("School"), required=False, widget=SchoolAutocompleteWidget())
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

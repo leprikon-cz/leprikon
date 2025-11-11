@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from django.db import models
 from itertools import chain
 from typing import Iterator
 
@@ -20,6 +21,7 @@ from leprikon.utils.calendar import TimeSlot, end_time_format, start_time_format
 from ..models.activities import ActivityVariant, CalendarEvent
 from ..models.journals import Journal
 from ..models.schoolyear import SchoolYear
+from ..models.school import School
 from .serializers import (
     ActivitySerializer,
     BusinessHoursSerializer,
@@ -33,6 +35,7 @@ from .serializers import (
     SetSchoolYearSerializer,
     UnavailableDateSerializer,
     UserSerializer,
+    SchoolOptionSerializer,
 )
 
 
@@ -270,3 +273,21 @@ class CalendarExportViewSet(viewsets.ReadOnlyModelViewSet):
             content_type="text/calendar",
             headers={"Content-Disposition": f'inline; filename="calendar-{calendar_export.id}.ics"'},
         )
+
+class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SchoolOptionSerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        qs = School.objects.all()
+        q = (self.request.query_params.get("q") or "").strip()
+        if q:
+            for word in q.split():
+                qs = qs.filter(
+                    models.Q(name__icontains=word)
+                    | models.Q(city__icontains=word)
+                    | models.Q(zip_code__icontains=word)
+                    | models.Q(ico__icontains=word)
+                    | models.Q(red_izo__icontains=word)
+                )
+        return qs.order_by("city", "name")[:50]
