@@ -3,15 +3,15 @@
 <table class="table table-hover messages">
 <thead>
     <tr>
-        <th>{% trans 'Activity' %}</th>
+        <th>{% trans 'Subject' %}</th>
         <th>{% trans 'Date' %}</th>
     </tr>
 </thead>
 <tbody>
     {% for object in object_list %}
     <tr class="message {% if not object.viewed %}not{% endif %}read">
-        <td class="message-activity">
-            <a href="{% url_with_back 'leprikon:message_detail' object.slug %}">{{ object.message.activity }}</a>
+        <td class="message-subject">
+            <a href="{% url_with_back 'leprikon:message_detail' object.slug %}">{{ object.message.subject }}</a>
         </td>
         <td class="message-date">
             {{ object.sent }}

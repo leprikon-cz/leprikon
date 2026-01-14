@@ -5,7 +5,7 @@
 
 <a class="btn btn-sm btn-default" href="{{ back_url }}">{{ back_label }}</a>
 
-<h1>{% block title %}{{ messagerecipient.message.activity }}{% endblock %}</h1>
+<h1>{% block title %}{{ messagerecipient.message.subject }}{% endblock %}</h1>
 
 <div class="message-details">
     {% trans 'Sent' %}: {{ messagerecipient.sent }}<br />
