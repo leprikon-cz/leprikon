@@ -119,7 +119,7 @@ class Event(Activity):
 
 
 class EventRegistration(Registration):
-    activity_type = ActivityModel.EVENT
+    activity_type_model = ActivityModel.EVENT
 
     class Meta:
         app_label = "leprikon"
@@ -195,7 +195,7 @@ class EventListPlugin(CMSPlugin):
     event_types = models.ManyToManyField(
         ActivityType,
         blank=True,
-        limit_choices_to={"activity_type": ActivityModel.EVENT},
+        limit_choices_to={"model": ActivityModel.EVENT},
         related_name="+",
         verbose_name=_("event types"),
         help_text=_("Keep empty to skip searching by event types."),
@@ -313,7 +313,7 @@ class FilteredEventListPlugin(CMSPlugin):
     )
     event_types = models.ManyToManyField(
         ActivityType,
-        limit_choices_to={"activity_type": ActivityModel.EVENT},
+        limit_choices_to={"model": ActivityModel.EVENT},
         related_name="+",
         verbose_name=_("event types"),
     )

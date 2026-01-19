@@ -93,7 +93,7 @@ class Orderable(Activity):
 
 
 class OrderableRegistration(Registration):
-    activity_type = ActivityModel.ORDERABLE
+    activity_type_model = ActivityModel.ORDERABLE
 
     class Meta:
         app_label = "leprikon"
@@ -177,7 +177,7 @@ class OrderableListPlugin(CMSPlugin):
     event_types = models.ManyToManyField(
         ActivityType,
         blank=True,
-        limit_choices_to={"activity_type": ActivityModel.ORDERABLE},
+        limit_choices_to={"model": ActivityModel.ORDERABLE},
         related_name="+",
         verbose_name=_("event types"),
         help_text=_("Keep empty to skip searching by event types."),
@@ -295,7 +295,7 @@ class FilteredOrderableListPlugin(CMSPlugin):
     )
     event_types = models.ManyToManyField(
         ActivityType,
-        limit_choices_to={"activity_type": ActivityModel.ORDERABLE},
+        limit_choices_to={"model": ActivityModel.ORDERABLE},
         related_name="+",
         verbose_name=_("event types"),
     )

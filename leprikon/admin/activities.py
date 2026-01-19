@@ -47,6 +47,9 @@ from ..models.activities import (
     RegistrationParticipant,
     ReturnedPayment,
 )
+from ..models.courses import CourseRegistration
+from ..models.events import EventRegistration
+from ..models.orderables import OrderableRegistration
 from ..models.utils import lazy_help_text_with_html_default
 from ..utils import amount_color, attributes, currency
 from .bulkupdate import BulkUpdateMixin
@@ -680,6 +683,7 @@ class RegistrationBillingInfoInlineAdmin(admin.TabularInline):
 
 
 class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdminMixin, admin.ModelAdmin):
+    model: "type[CourseRegistration | EventRegistration | OrderableRegistration]"
     actions = (
         SendMessageAdminMixin.actions
         + SendMailAdminMixin.actions
@@ -972,7 +976,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         formfield = super().formfield_for_foreignkey(db_field, request, **kwargs)
         if db_field.name == "activity_variant":
-            limit_choices_to = {"activity__activity_type__model__exact": self.model.activity_type}
+            limit_choices_to = {"activity__activity_type__model__exact": self.model.activity_type_model}
             formfield.limit_choices_to = limit_choices_to
             formfield.widget.rel.limit_choices_to = limit_choices_to
         return formfield
@@ -1055,7 +1059,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
             form.instance.generate_variable_symbol_and_slug()
             form.instance.send_mail()
 
-    def get_css(self, obj):
+    def get_css(self, obj: "EventRegistration | OrderableRegistration | CourseRegistration"):
         classes = []
         if obj.cancelation_requested and not obj.canceled:
             classes.append("reg-cancel-request")
@@ -1063,13 +1067,13 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
             classes.append("reg-approved")
         else:
             classes.append("reg-new")
-            if obj.activity_type != ActivityModel.ORDERABLE and obj.activity.full:
+            if obj.activity_type_model != ActivityModel.ORDERABLE and obj.activity.full:
                 classes.append("reg-full")
         if obj.canceled:
             classes.append("reg-canceled")
         else:
             classes.append("reg-active")
-        if obj.activity_type == ActivityModel.ORDERABLE:
+        if obj.activity_type_model == ActivityModel.ORDERABLE:
             calendar_event: CalendarEvent = obj.calendar_event
             if calendar_event.has_conflicting_events:
                 classes.append("reg-conflict")

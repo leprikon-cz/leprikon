@@ -70,7 +70,7 @@ class Course(Activity):
 
 
 class CourseRegistration(Registration):
-    activity_type = ActivityModel.COURSE
+    activity_type_model = ActivityModel.COURSE
 
     class Meta:
         app_label = "leprikon"
@@ -264,7 +264,7 @@ class CourseListPlugin(CMSPlugin):
     course_types = models.ManyToManyField(
         ActivityType,
         blank=True,
-        limit_choices_to={"activity_type": ActivityModel.COURSE},
+        limit_choices_to={"model": ActivityModel.COURSE},
         related_name="+",
         verbose_name=_("course types"),
         help_text=_("Keep empty to skip searching by course types."),
@@ -382,7 +382,7 @@ class FilteredCourseListPlugin(CMSPlugin):
     )
     course_types = models.ManyToManyField(
         ActivityType,
-        limit_choices_to={"activity_type": ActivityModel.COURSE},
+        limit_choices_to={"model": ActivityModel.COURSE},
         related_name="+",
         verbose_name=_("course types"),
     )
