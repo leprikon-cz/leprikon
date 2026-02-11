@@ -440,6 +440,7 @@ class Activity(TimesMixin, models.Model):
     page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
     min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
+    require_birth_number = models.BooleanField(_("require birth number"), default=True, help_text=_("If checked, birth number is required for Czech citizens."))
     note = models.CharField(_("note"), max_length=300, blank=True, default="")
     questions = models.ManyToManyField(
         Question,

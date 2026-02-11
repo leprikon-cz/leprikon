@@ -311,7 +311,7 @@ function checkBirthDateAgeGroup(birthDateId, ageGroupId) {
 
 {% for participant_form in form.participants_formset %}{% if forloop.first %}
 var citizenship_requires_birth_num = {{% for citizenship in participant_form.all_citizenships %}
-    {{ citizenship.id }}: {% if citizenship.require_birth_num %}true{% else %}false{% endif %},{% endfor %}
+    {{ citizenship.id }}: {% if participant_form.activity.require_birth_number and citizenship.require_birth_number %}true{% else %}false{% endif %},{% endfor %}
 };
 {% endif %}{% endfor %}
 

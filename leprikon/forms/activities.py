@@ -335,7 +335,8 @@ class RegistrationParticipantFormMixin:
                 pass
 
         # set required field based on citizenship
-        if citizenship.require_birth_num:
+        require_birth_number = self.activity.require_birth_number and citizenship.require_birth_number
+        if require_birth_number:
             self.hide_birth_num = False
             self.fields["birth_num"].required = True
             self.fields["birth_date"].required = False
@@ -349,7 +350,7 @@ class RegistrationParticipantFormMixin:
         if data:
             # try to use age from request data (post)
             try:
-                if citizenship.require_birth_num:
+                if require_birth_number:
                     age = get_age(
                         get_birth_date(self.fields["birth_num"].clean(data.get("birth_num"))),
                         created_date,
@@ -379,7 +380,7 @@ class RegistrationParticipantFormMixin:
                     self.fields["parent{}_{}".format(n + 1, field)].required = True
 
     def _set_birth_date_gender(self):
-        if self.instance.citizenship.require_birth_num:
+        if self.activity.require_birth_number and self.instance.citizenship.require_birth_number:
             self.instance.birth_date = get_birth_date(self.instance.birth_num)
             self.instance.gender = get_gender(self.instance.birth_num)
         else:

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class Citizenship(models.Model):
     name = models.CharField(_("name"), max_length=50)
     order = models.IntegerField(_("order"), blank=True, default=0)
-    require_birth_num = models.BooleanField(_("require birth number"), default=True)
+    require_birth_number = models.BooleanField(_("require birth number"), default=True)
 
     class Meta:
         app_label = "leprikon"

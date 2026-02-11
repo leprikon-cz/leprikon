@@ -247,6 +247,7 @@ class ActivityBaseAdmin(AdminExportMixin, BulkUpdateMixin, SendMessageAdminMixin
                     "page",
                     "min_registrations_count",
                     "max_registrations_count",
+                    "require_birth_number",
                     "note",
                     "questions",
                     "registration_agreements",
