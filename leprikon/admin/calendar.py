@@ -93,7 +93,7 @@ class CalendarEventAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ("activity",)
     filter_horizontal = ("resources", "resource_groups")
-    search_fields = ("activity_variant__name",)
+    search_fields = ("activity__name",)
 
     class Media:
         css = {"all": ["leprikon/css/calendar.changelist.css"]}
