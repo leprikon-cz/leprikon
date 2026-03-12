@@ -55,27 +55,29 @@ class JournalAdminForm(forms.ModelForm):
         super().__init__(data, *args, **kwargs)
 
         # limit choices of leaders
-        leaders_choices = self.fields["leaders"].widget.choices
-        leaders_choices.queryset = leaders_choices.queryset.filter(subjects=self.subject)
+        if "leaders" in self.fields:
+            leaders_choices = self.fields["leaders"].widget.choices
+            leaders_choices.queryset = leaders_choices.queryset.filter(subjects=self.subject)
 
         # limit choices of participants
-        participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject=self.subject)
+        if "participants" in self.fields:
+            participants_qs = SubjectRegistrationParticipant.objects.filter(registration__subject=self.subject)
 
-        if self.subject.subject_type.subject_type == SubjectType.COURSE:
-            participants_qs = participants_qs.filter(
-                registration__subject_variant__school_year_division=self.instance.school_year_division
+            if self.subject.subject_type.subject_type == SubjectType.COURSE:
+                participants_qs = participants_qs.filter(
+                    registration__subject_variant__school_year_division=self.instance.school_year_division
+                )
+
+            participant_ids = set(participants_qs.values_list("id", flat=True))
+            participant_ids |= set(self.instance.participants.values_list("id", flat=True))
+            participant_ids |= set(
+                SubjectRegistrationParticipant.objects.filter(
+                    journal_entries__journal=self.instance,
+                ).values_list("id", flat=True),
             )
-
-        participant_ids = set(participants_qs.values_list("id", flat=True))
-        participant_ids |= set(self.instance.participants.values_list("id", flat=True))
-        participant_ids |= set(
-            SubjectRegistrationParticipant.objects.filter(
-                journal_entries__journal=self.instance,
-            ).values_list("id", flat=True),
-        )
-        self.fields["participants"].widget.choices.queryset = SubjectRegistrationParticipant.objects.filter(
-            id__in=participant_ids
-        )
+            self.fields["participants"].widget.choices.queryset = SubjectRegistrationParticipant.objects.filter(
+                id__in=participant_ids
+            )
 
 
 class JournalCreateForm(FormMixin, forms.ModelForm):
