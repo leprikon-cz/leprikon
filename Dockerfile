@@ -10,7 +10,7 @@ ENV BASE_DIR=/app
 ENV DEBIAN_FRONTEND=noninteractive
 ENV IPYTHONDIR=/app/data/ipython
 ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 ENV TZ=Europe/Prague
 
 # install requirements and generate czech locale
@@ -32,7 +32,7 @@ RUN apt-get update \
   && pip3 install --no-cache-dir --upgrade pip \
   && ln -s /usr/bin/python3 /usr/local/bin/python \
   && echo cs_CZ.UTF-8 UTF-8 > /etc/locale.gen && locale-gen
-ENV LC_ALL cs_CZ.UTF-8
+ENV LC_ALL=cs_CZ.UTF-8
 
 
 #########
