@@ -214,6 +214,10 @@ class EventRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
     def received_payments_export(self, obj: EventRegistration):
         return currency(obj.payment_status.received)
 
+    @attributes(short_description=_("returned payments"))
+    def returned_payments_export(self, obj: EventRegistration):
+        return currency(obj.payment_status.returned)
+
 
 @admin.register(EventDiscount)
 class EventDiscountAdmin(ActivityDiscountBaseAdmin):

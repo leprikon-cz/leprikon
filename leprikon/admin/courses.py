@@ -309,6 +309,13 @@ class CourseRegistrationAdmin(PdfExportAdminMixin, RegistrationBaseAdmin):
             for status in obj.period_payment_statuses
         )
 
+    @attributes(short_description=_("returned payments"))
+    def returned_payments_export(self, obj: CourseRegistration):
+        return "\n".join(
+            f"{status.registration_period.period.name}: {currency(status.status.returned)}"
+            for status in obj.period_payment_statuses
+        )
+
 
 @admin.register(CourseDiscount)
 class CourseDiscountAdmin(ActivityDiscountBaseAdmin):

@@ -735,6 +735,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
         "discounts_export",
         "total_price_export",
         "received_payments_export",
+        "returned_payments_export",
         "note",
         "created",
         "created_by",
