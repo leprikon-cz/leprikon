@@ -1,6 +1,6 @@
 services:
   leprikon:
-    image: leprikon/leprikon:latest
+    image: leprikon/leprikon:3.11
     build: .
     command: leprikon runserver 0:80
     depends_on:
