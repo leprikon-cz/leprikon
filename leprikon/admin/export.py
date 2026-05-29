@@ -6,12 +6,30 @@ from typing import Any, Callable, Self, Sequence
 import django_excel
 import pyexcel
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import F, QuerySet
+from django.db.models import F, ForeignKey, OneToOneField, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes
+
+
+def get_value_resolver(name, field):
+    def resolver(obj):
+        value = getattr(obj, name)
+        if value is None:
+            return ""
+        if isinstance(field, (ForeignKey, OneToOneField)):
+            related_model = field.remote_field.model
+            if isinstance(value, related_model):
+                return value
+            try:
+                return related_model.objects.get(pk=value)
+            except related_model.DoesNotExist:
+                return ""
+        print(f"{name}: {value!r}")
+        return value
+    return resolver
 
 
 def get_attr_value(obj, name):
@@ -54,7 +72,7 @@ class AdminExportMixin:
                     {
                         "annotate": name if len(names) > 1 else None,
                         "verbose_name": " / ".join(verbose_names),
-                        "get_value": partial(lambda name, obj: get_attr_value(obj, name), name),
+                        "get_value": get_value_resolver(name, field),
                     }
                 )
             except (AttributeError, FieldDoesNotExist):
