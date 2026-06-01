@@ -1,0 +1,268 @@
+{% load i18n leprikon_tags mathfilters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: {{ print_setup.top }}mm {{ print_setup.right }}mm {{ print_setup.bottom }}mm {{ print_setup.left }}mm;
+        }
+
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans.ttf' %}');
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}');
+            font-weight: bold;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}');
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        body {
+            font-family: 'DejaVuSans', sans-serif;
+            font-size: 10pt;
+            line-height: 1.2;
+        }
+
+        .title {
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 8pt;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .small-right {
+            font-size: 8pt;
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.with-borders td, table.with-borders th {
+            border: 1px solid silver;
+            padding: 2mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        table.without-borders td, table.without-borders th {
+            padding: 2mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .spacer {
+            height: 2mm;
+        }
+
+        .spacer-15mm {
+            height: 15mm;
+        }
+
+        .qr-code {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <table class="without-borders">
+        <tr>
+            <td><h3 class="title">{% trans 'Payment request' %}</h3></td>
+            <td class="right">{% trans 'registration number' %}: {{ object.variable_symbol }}</td>
+        </tr>
+        <tr>
+            <td>
+                <table class="with-borders">
+                    <tr>
+                        <td>
+                            <p class="left">{% trans 'provider' %}:</p>
+                            <h3 class="title">{{ object.organization.name }}</h3>
+                            <div class="spacer"></div>
+                            <p class="left">{% trans 'address' %}:</p>
+                            <p class="left">{{ object.organization.street }}</p>
+                            <p class="left">{{ object.organization.postal_code }}, {{ object.organization.city }}</p>
+                            <div class="spacer"></div>
+                            {% if object.organization.email %}<p class="left">{% trans 'email' %}: {{ object.organization.email }}</p>{% endif %}
+                            {% if object.organization.phone %}<p class="left">{% trans 'phone' %}: {{ object.organization.phone }}</p>{% endif %}
+                            {% if object.organization.email or object.organization.phone %}<div class="spacer"></div>{% endif %}
+                            <p class="left">{% trans 'company number' %}: {{ object.organization.company_num }}</p>
+                            {% if object.organization.vat_number %}<p class="left">{% trans 'VAT number' %}: {{ object.organization.vat_number }}</p>{% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table class="with-borders">
+                    <tr>
+                        <td>
+                            <p class="left">{% trans 'payer' %}:</p>
+                            {% if object.billing_info %}
+                            <h3 class="title">{{ object.billing_info.name }}</h3>
+                            <div class="spacer"></div>
+                            {% if object.billing_info.street or object.billing_info.postal_code or object.billing_info.city %}
+                            <p class="left">{% trans 'address' %}:</p>
+                            <p class="left">{{ object.billing_info.street }}</p>
+                            <p class="left">{{ object.billing_info.postal_code }}, {{ object.billing_info.city }}</p>
+                            <div class="spacer"></div>
+                            {% endif %}
+                            {% if object.billing_info.contact_person %}<p class="left">{% trans 'contact person' %}: {{ object.billing_info.contact_person }}</p>{% endif %}
+                            {% if object.billing_info.email %}<p class="left">{% trans 'email' %}: {{ object.billing_info.email }}</p>{% endif %}
+                            {% if object.billing_info.phone %}<p class="left">{% trans 'phone' %}: {{ object.billing_info.phone }}</p>{% endif %}
+                            {% if object.billing_info.contact_person or object.billing_info.email or object.billing_info.phone %}<div class="spacer"></div>{% endif %}
+                            {% if object.billing_info.company_num %}<p class="left">{% trans 'company number' %}: {{ object.billing_info.company_num }}</p>{% endif %}
+                            {% if object.billing_info.vat_number %}<p class="left">{% trans 'VAT number' %}: {{ object.billing_info.vat_number }}</p>{% endif %}
+                            {% if object.billing_info.employee %}
+                            <div class="spacer"></div>
+                            <h3 class="title">{% trans 'Employee ID' %}: {{ object.billing_info.employee }}</h3>
+                            {% endif %}
+                            {% else %}
+                            <h3 class="title">{% if object.user.get_full_name %}{{ object.user.get_full_name }}{% else %}{{ object.user.username }}{% endif %}</h3>
+                            <div class="spacer-15mm"></div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <div class="spacer"></div>
+
+    <table class="with-borders">
+        <tr>
+            <td>
+                <p class="small">{% trans 'description' %}</p>
+            </td>
+            <td>
+                <p class="small-right">{% trans 'amount due' %}</p>
+            </td>
+            <td>
+                <p class="small-right">{% trans 'due date' %}</p>
+            </td>
+        </tr>
+        {% if object.courseregistration %}
+        {% for pps in object.period_payment_statuses %}{% if pps.status.amount_due %}
+        <tr>
+            <td>
+                <p class="left">
+                    {{ object.activity.activity_type.name }}: {{ object.activity.name }}, {{ pps.period.name }}<br/>
+                    {% if object.activity.registration_type_participants %}
+                        {% if object.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                        {{ object.all_participants|comma_separated }}
+                    {% elif object.activity.registration_type_groups %}
+                        {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
+                        {% trans 'group name' %}: {{ object.group.name }}{% endif %}
+                    {% endif %}
+                </p>
+            </td>
+            <td>
+                <p class="right">{{ pps.status.amount_due | currency }}</p>
+            </td>
+            <td>
+                <p class="right">{{ pps.status.due_date }}</p>
+            </td>
+        </tr>
+        {% endif %}{% endfor %}
+        {% else %}
+        <tr>
+            <td>
+                <p class="left">
+                    {{ object.activity.activity_type.name }}: {{ object.activity.name }}<br/>
+                    {% if object.activity.registration_type_participants %}
+                        {% if object.all_participants|length > 1 %}{% trans 'participant' %}{% else %}{% trans 'participants' %}{% endif %}:
+                        {{ object.all_participants|comma_separated }}
+                    {% elif object.activity.registration_type_groups %}
+                        {% trans 'contact person' %}: {{ object.group.full_name }}{% if object.group.name %},
+                        {% trans 'group name' %}: {{ object.group.name }}{% endif %}
+                    {% endif %}
+                </p>
+            </td>
+            <td>
+                <p class="right">{{ object.payment_status.amount_due | currency }}</p>
+            </td>
+            <td>
+                <p class="right">{{ object.payment_status.due_date }}</p>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+
+    <div class="spacer"></div>
+
+    <table class="without-borders">
+        <tr>
+            <td>
+                {% if object.organization.iban %}
+                <div class="spacer"></div>
+                <p class="small">{% trans 'You may use following QR code to scan the payment details to your mobile banking application' %}:</p>
+                <img src="{{ object.qr_code_data_url }}" class="qr-code" alt="QR Code">
+                {% endif %}
+            </td>
+            <td>
+                <table class="with-borders">
+                    <tr>
+                        <td>
+                            <table class="without-borders">
+                                <tr>
+                                    <td>
+                                        <p class="right">{% trans 'total amount due' %}:</p>
+                                    </td>
+                                    <td>
+                                        <h3 class="title">{{ object.payment_status.amount_due|currency }}</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="right">{% trans 'variable symbol' %}:</p>
+                                    </td>
+                                    <td>
+                                        <h3 class="title">{{ object.variable_symbol }}</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="right">{% trans 'bank account' %}:</p>
+                                    </td>
+                                    <td>
+                                        <h3 class="title">{{ object.organization.bank_account }}</h3>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

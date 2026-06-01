@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     "djangocms_link",
     "djangocms_text",
     "ganalytics",
-    "html2rml",
     "qr_code",
     "social_django",
     "verified_email_field",

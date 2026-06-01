@@ -1,0 +1,29 @@
+{% load i18n leprikon_tags %}
+
+<p class="small">{% blocktrans with activity_type=registration.activity.activity_type.name_genitiv %}name of {{ activity_type }}{% endblocktrans %}:</p>
+<p class="left">
+    {{ registration.activity.name }}
+    {% if registration.activity.all_groups %}
+    - {{ registration.activity.all_groups|comma_separated }}
+    {% endif %}
+</p>
+
+<div class="spacer"></div>
+
+{% if registration.activity.registration_type_participants %}
+    {% if registration.all_participants|length > 1 %}
+    <p class="small">{% trans 'participants' %}:</p>
+    {% else %}
+    <p class="small">{% trans 'participant' %}:</p>
+    {% endif %}
+    {% for participant in registration.all_participants %}
+    <p class="left">{{ participant.full_name }}, {% trans 'born' %} {{ participant.birth_date }}</p>
+    {% endfor %}
+{% elif registration.activity.registration_type_groups %}
+    <p class="small">{% trans 'contact person' %}:</p>
+    <p class="left">{{ registration.group.full_name }}</p>
+    {% if registration.group.name %}
+    <p class="small">{% trans 'group name' %}:</p>
+    <p class="left">{{ registration.group.name }}</p>
+    {% endif %}
+{% endif %}

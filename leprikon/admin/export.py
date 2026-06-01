@@ -29,6 +29,7 @@ def get_value_resolver(name, field):
                 return ""
         print(f"{name}: {value!r}")
         return value
+
     return resolver
 
 

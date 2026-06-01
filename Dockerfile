@@ -21,6 +21,8 @@ RUN apt-get update \
   libicu74 \
   libcairo2 \
   libmysqlclient21 \
+  libpango-1.0-0 \
+  libpangoft2-1.0-0 \
   libpython3.12 \
   locales \
   mariadb-client \

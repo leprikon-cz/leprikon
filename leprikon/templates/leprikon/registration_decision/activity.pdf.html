@@ -1,0 +1,173 @@
+{% load i18n leprikon_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: {{ print_setup.top }}mm {{ print_setup.right }}mm {{ print_setup.bottom }}mm {{ print_setup.left }}mm;
+        }
+
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans.ttf' %}');
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}');
+            font-weight: bold;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}');
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        body {
+            font-family: 'DejaVuSans', sans-serif;
+            font-size: 10pt;
+            line-height: 1.2;
+        }
+
+        .title {
+            font-size: 16pt;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .para {
+            font-size: 10pt;
+        }
+
+        .ballot {
+            font-size: 10pt;
+        }
+
+        .p {
+            font-size: 10pt;
+            margin-bottom: 0.2cm;
+        }
+
+        .p_right {
+            font-size: 10pt;
+            margin-bottom: 0.2cm;
+            text-align: right;
+        }
+
+        .li {
+            font-size: 10pt;
+            margin-bottom: 0.2cm;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.blocktable td, table.blocktable th {
+            border: 1px solid silver;
+            padding: 2mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .spacer {
+            height: 2mm;
+        }
+
+        .spacer-1cm {
+            height: 1cm;
+        }
+    </style>
+</head>
+<body>
+    <p class="p_right">
+        {% blocktrans with reference_number=object.variable_symbol %}Reference number: {{ reference_number }}{% endblocktrans %}
+    </p>
+
+    <div class="spacer"></div>
+
+    <table class="blocktable">
+        <tr>
+            <td>{% trans "School year" %}</td>
+            <td class="para">{{ object.activity.school_year }}</td>
+        </tr>
+        <tr>
+            <td>{% blocktrans with activity_type=object.activity.activity_type.name_genitiv %}Name of {{ activity_type }}{% endblocktrans %}</td>
+            <td class="para">{{ object.activity.name }}</td>
+        </tr>
+        {% for p in object.all_participants %}
+            <tr>
+                <td>{% trans 'Participant' %}</td>
+                <td class="para">{{ p.full_name }}</td>
+            </tr>
+            {% if p.birth_num %}
+            <tr>
+                <td>{% trans 'Birth number' %}</td>
+                <td class="para">{{ p.birth_num }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td>{% trans 'Birth date' %}</td>
+                <td class="para">{{ p.birth_date }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% if object.activity.registration_type_groups %}
+            <tr>
+                <td>{% trans 'Group name' %}</td>
+                <td class="para">{{ object.group.name }}</td>
+            </tr>
+            <tr>
+                <td>{% trans 'Contact person' %}</td>
+                <td class="para">{{ object.group.full_name }}</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    <div class="spacer-1cm"></div>
+
+    <h1 class="title">{% trans "Decision" %}</h1>
+
+    <div class="spacer"></div>
+
+    {% if object.approved %}
+        {{ object.text_registration_approved|safe }}
+    {% else %}
+        {{ object.text_registration_refused|safe }}
+    {% endif %}
+
+    <div class="spacer-1cm"></div>
+
+    <p class="p_right">
+        {% if object.approved %}
+            {% if object.approved_by %}
+            {% blocktrans with user=object.approved_by.get_full_name|default:object.approved_by.username %}Decision issued by: {{ user }}{% endblocktrans %}<br/>
+            {% endif %}
+            {% blocktrans with date=object.approved|date %}Date: {{ date }}{% endblocktrans %}<br/>
+        {% else %}
+            {% if object.canceled_by %}
+            {% blocktrans with user=object.canceled_by.get_full_name|default:object.canceled_by.username %}Decision issued by: {{ user }}{% endblocktrans %}<br/>
+            {% endif %}
+            {% blocktrans with date=object.canceled|date %}Date: {{ date }}{% endblocktrans %}<br/>
+        {% endif %}
+    </p>
+
+    <div class="spacer-1cm"></div>
+
+    <table>
+        <tr>
+            <td class="para">{% trans 'Received personally on' %}</td>
+            <td class="para">{% trans 'Signature' %}</td>
+        </tr>
+    </table>
+
+</body>
+</html>

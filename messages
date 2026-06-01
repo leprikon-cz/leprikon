@@ -3,7 +3,7 @@
 lang=${1:-cs}
 
 pushd leprikon
-    django-admin makemessages -l $lang -e html,py,rml,txt
+    django-admin makemessages -l $lang
     vim locale/$lang/LC_MESSAGES/django.po
     django-admin compilemessages
 popd

@@ -1,0 +1,160 @@
+{% load i18n leprikon_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: {{ print_setup.top }}mm {{ print_setup.right }}mm {{ print_setup.bottom }}mm {{ print_setup.left }}mm;
+        }
+
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans.ttf' %}');
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}');
+            font-weight: bold;
+        }
+
+        body {
+            font-family: 'DejaVuSans', sans-serif;
+            font-size: 10pt;
+            line-height: 1.2;
+        }
+
+        .title {
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 8pt;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.with-borders td, table.with-borders th {
+            border: 1px solid silver;
+            padding: 2mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        table.without-borders td, table.without-borders th {
+            padding: 2mm;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .spacer {
+            height: 2mm;
+        }
+
+        .recipe-top {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: {{ print_setup.bill_height}}mm;
+        }
+
+        .recipe-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: {{ print_setup.bill_height}}mm;
+        }
+
+        .divider {
+            position: absolute;
+            top: 148.5mm;
+            left: 1cm;
+            right: 2cm;
+            height: 1px;
+            border-top: 1px dashed silver;
+        }
+    </style>
+</head>
+<body>
+    <div class="recipe-top">
+        <table class="without-borders">
+            <tr>
+                <td><h3 class="title">{% trans 'Receipt for payment' %}</h3></td>
+                <td class="right">{% trans 'recipe number' %}: {{ object.id }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="with-borders">
+                        <tr>
+                            <td>
+                                <h3 class="title">{{ object.activity_organization.name }}</h3>
+                                <div class="spacer"></div>
+                                <p class="left">{% trans 'address' %}:</p>
+                                <p class="left">{{ object.activity_organization.street }}</p>
+                                <p class="left">{{ object.activity_organization.postal_code }}, {{ object.activity_organization.city }}</p>
+                                <div class="spacer"></div>
+                                {% if object.activity_organization.email %}<p class="left">{% trans 'email' %}: {{ object.activity_organization.email }}</p>{% endif %}
+                                {% if object.activity_organization.phone %}<p class="left">{% trans 'phone' %}: {{ object.activity_organization.phone }}</p>{% endif %}
+                                {% if object.activity_organization.email or object.activity_organization.phone %}<div class="spacer"></div>{% endif %}
+                                <p class="left">{% trans 'company number' %}: {{ object.activity_organization.company_num }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="with-borders">
+                        <tr>
+                            <td class="left">{% trans 'variable symbol' %}</td>
+                            <td class="left">{{ object.registration.variable_symbol }}</td>
+                        </tr>
+                        <tr>
+                            <td class="left">{% trans 'payment date' %}</td>
+                            <td class="left">{{ object.accounted.date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="left">{% trans 'amount' %}</td>
+                            <td class="left">{{ object.real_amount | currency }}</td>
+                        </tr>
+                    </table>
+                    <div class="spacer"></div>
+                    <p class="small">{% trans 'payment type' %}:</p>
+                    <p class="left">{{ object.transaction_type_label }}</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="spacer"></div>
+
+        <table class="without-borders">
+            <tr>
+                <td>
+                    {% include 'leprikon/registration_recipe.html' with registration=object.registration %}
+                </td>
+                <td>
+                    {% if object.received_by %}
+                    <p class="small">{% trans 'payment received by' %}:</p>
+                    <p class="left">{{ object.received_by.get_full_name }}</p>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

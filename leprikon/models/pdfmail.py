@@ -1,13 +1,13 @@
 import re
 from io import BytesIO
 
-import trml2pdf
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import select_template
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from pypdf import PdfReader, PdfWriter
+from weasyprint import HTML
 
 from ..conf import settings
 from .leprikonsite import LeprikonSite
@@ -92,10 +92,12 @@ class PdfExportAndMailMixin(object):
         return output.read()
 
     def write_pdf(self, event, output):
-        # get plain pdf from rml
-        template = self.select_template(event, "rml")
-        rml_content = template.render(self.get_context(event))
-        pdf_content = trml2pdf.parseString(rml_content.encode("utf-8"))
+        # get plain pdf from html using weasyprint
+        template = self.select_template(event, "pdf.html")
+        html_content = template.render(self.get_context(event))
+        html_doc = HTML(string=html_content, base_url=settings.LEPRIKON_URL)
+        pdf_content = html_doc.write_pdf()
+
         print_setup = self.get_print_setup(event)
 
         # merge with background

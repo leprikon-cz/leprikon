@@ -1,0 +1,84 @@
+{% load i18n leprikon_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: {{ print_setup.top }}mm {{ print_setup.right }}mm {{ print_setup.bottom }}mm {{ print_setup.left }}mm;
+        }
+
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans.ttf' %}');
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Bold.ttf' %}');
+            font-weight: bold;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-Oblique.ttf' %}');
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{% font 'leprikon/fonts/DejaVuSans-BoldOblique.ttf' %}');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        body {
+            font-family: 'DejaVuSans', sans-serif;
+            font-size: 14pt;
+            line-height: 1.2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.blocktable td, table.blocktable th {
+            border: 1px solid black;
+            padding: 2mm;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .header-row {
+            height: 40pt;
+        }
+
+        .data-row {
+            height: 20pt;
+        }
+    </style>
+</head>
+<body>
+    {% for page in object.all_participants|paginator:28 %}
+    <table class="blocktable">
+        <colgroup>
+            <col style="width: 80pt;">
+            <col style="width: 200pt;">
+            <col style="width: 80pt;">
+        </colgroup>
+        <tr class="header-row">
+            <td></td>
+            <td>{% trans 'full name' %}</td>
+            <td>{% trans 'birh year' %}</td>
+        </tr>
+        {% for participant in page %}
+        <tr class="data-row">
+            <td>{{ participant.registration.variable_symbol }}</td>
+            <td>{{ participant.full_name }}</td>
+            <td>{{ participant.birth_date.year }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="page-break-after: always;"></div>
+    {% endfor %}
+</body>
+</html>

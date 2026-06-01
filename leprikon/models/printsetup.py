@@ -3,8 +3,8 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from filer.fields.file import FilerFileField
 from pypdf import PdfReader
-from reportlab.lib.pagesizes import A4, portrait
-from reportlab.lib.units import mm
+
+A4 = (210, 297)
 
 
 class PrintSetup(models.Model):
@@ -36,28 +36,16 @@ class PrintSetup(models.Model):
             mediabox = self.background_pdf.pages[0].mediabox
             return [int(mediabox[2]), int(mediabox[3])]
         else:
-            return portrait(A4)
-
-    @cached_property
-    def x1(self):
-        return int(self.left * mm)
-
-    @cached_property
-    def y1(self):
-        return int(self.bottom * mm)
+            return A4
 
     @cached_property
     def width(self):
-        return int(self.page_size[0] - self.left * mm - self.right * mm)
+        return int(self.page_size[0] - self.left - self.right)
 
     @cached_property
     def height(self):
-        return int(self.page_size[1] - self.top * mm - self.bottom * mm)
-
-    @cached_property
-    def bill_y1(self):
-        return int(self.page_size[1] / 2.0 + self.bottom * mm)
+        return int(self.page_size[1] - self.top - self.bottom)
 
     @cached_property
     def bill_height(self):
-        return int(self.page_size[1] / 2.0 - self.top * mm - self.bottom * mm)
+        return int(self.page_size[1] / 2.0 - self.top - self.bottom)

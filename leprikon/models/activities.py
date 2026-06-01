@@ -1,5 +1,6 @@
 import colorsys
 import logging
+from base64 import b64encode
 from collections import namedtuple
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -8,7 +9,6 @@ from io import BytesIO
 from itertools import chain
 from json import dumps, loads
 from os.path import basename
-from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, List, Set, Union
 from urllib.parse import urlencode
 
@@ -372,7 +372,7 @@ class ActivityGroup(models.Model):
 
     @cached_property
     def font_color(self):
-        (h, s, v) = colorsys.rgb_to_hsv(
+        h, s, v = colorsys.rgb_to_hsv(
             int(self.color[1:3], 16) / 255.0,
             int(self.color[3:5], 16) / 255.0,
             int(self.color[5:6], 16) / 255.0,
@@ -385,7 +385,7 @@ class ActivityGroup(models.Model):
             s = 0
         else:
             s = 1
-        (r, g, b) = colorsys.hsv_to_rgb(h, s, v)
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
         return "#{:02x}{:02x}{:02x}".format(
             int(r * 255),
             int(g * 255),
@@ -440,7 +440,9 @@ class Activity(TimesMixin, models.Model):
     page = PageField(blank=True, null=True, on_delete=models.SET_NULL, related_name="+", verbose_name=_("page"))
     min_registrations_count = models.PositiveIntegerField(_("minimal registrations count"), blank=True, null=True)
     max_registrations_count = models.PositiveIntegerField(_("maximal registrations count"), blank=True, null=True)
-    require_birth_number = models.BooleanField(_("require birth number"), default=True, help_text=_("If checked, birth number is required for Czech citizens."))
+    require_birth_number = models.BooleanField(
+        _("require birth number"), default=True, help_text=_("If checked, birth number is required for Czech citizens.")
+    )
     note = models.CharField(_("note"), max_length=300, blank=True, default="")
     questions = models.ManyToManyField(
         Question,
@@ -1400,21 +1402,14 @@ class Registration(PdfExportAndMailMixin, models.Model):
     def get_qr_code(self):
         output = BytesIO()
         self.write_qr_code(output)
-        output.seek(0)
-        return output.read()
+        return output.getvalue()
 
     def write_qr_code(self, output):
         segno.make(self.spayd).save(output, kind="PNG")
 
-    def write_pdf(self, event, output):
-        if event == "payment_request":
-            with NamedTemporaryFile(buffering=0, suffix=".png") as qr_code_file:
-                self.write_qr_code(qr_code_file)
-                qr_code_file.flush()
-                self.qr_code_filename = qr_code_file.name
-                return super().write_pdf(event, output)
-        else:
-            return super().write_pdf(event, output)
+    @cached_property
+    def qr_code_data_url(self):
+        return f"data:image/png;base64,{b64encode(self.get_qr_code()).decode('utf-8')}"
 
     @transaction.atomic
     def approve(self, approved_by):
