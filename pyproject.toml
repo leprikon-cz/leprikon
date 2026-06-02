@@ -99,6 +99,9 @@ PyICU = "*"
 pypdf = "*"
 python-dateutil = "*"
 python-memcached = "*"
+# Unix socket connection crash in 8.0.0 
+# Ref: https://github.com/redis/redis-py/issues/3613
+redis = "<8"
 requests = "*"
 sentry-sdk = "*"
 setuptools = "<81"
