@@ -1,5 +1,3 @@
-from djangocms_text.widgets import TextEditorWidget
-
 class FormMixin(object):
     required_css_class = "required"
     use_get = False
@@ -14,7 +12,3 @@ class FormMixin(object):
             # add data-type
             if "data-type" not in self.fields[f].widget.attrs:
                 self.fields[f].widget.attrs["data-type"] = self.fields[f].__class__.__name__
-            # prevent built-in HTML5 validation on hidden textarea field
-            field = self.fields[f]
-            if isinstance(field.widget, TextEditorWidget):
-                field.required = False
