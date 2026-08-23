@@ -5,6 +5,7 @@ from typing import List
 from cms.models import CMSPlugin
 from django.db import models, transaction
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
@@ -139,7 +140,7 @@ class CourseRegistration(Registration):
     @transaction.atomic
     def request_payment(self, payment_requested_by):
         self.course_registration_periods.filter(
-            period__due_from__lte=date.today(),
+            period__due_from__lte=now().date(),
         ).update(payment_requested=True)
         super().request_payment(payment_requested_by)
 
@@ -186,7 +187,7 @@ class CourseRegistrationPeriod(models.Model):
 
     def get_payment_status(self, received, returned, last_period, d=None) -> PeriodPaymentStatus:
         if d is None:
-            d = date.today()
+            d = now().date()
         period_price = self.registration.price * self.period.price_units_count
         discount = sum(discount.amount for discount in self.all_discounts if discount.accounted.date() <= d)
         explanation = ",\n".join(

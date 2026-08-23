@@ -4,6 +4,7 @@ from typing import Iterator
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
+from django.utils.timezone import now
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
@@ -53,7 +54,7 @@ class JournalViewSet(viewsets.GenericViewSet):
         try:
             d = date.fromisoformat(request.GET["date"])
         except (KeyError, ValueError):
-            d = date.today()
+            d = now().date()
 
         participants = journal.get_valid_participants(d)
 

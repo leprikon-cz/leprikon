@@ -1,4 +1,3 @@
-from datetime import date
 from random import randrange
 from typing import List
 
@@ -9,6 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..models.leprikonsite import LeprikonSite
@@ -147,7 +147,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
         batch_id = randrange(1, 1000)
 
         refund_requests: list[RefundRequest] = list(queryset)
-        today = f"{date.today():%d%m%y}"
+        today = f"{now().date():%d%m%y}"
         message = ascii(message)
         site_name = ascii(LeprikonSite.objects.get_current().name)
         sum_amount = sum(rr.amount for rr in refund_requests if rr.amount)
@@ -197,7 +197,7 @@ class RefundRequestAdmin(AdminExportMixin, admin.ModelAdmin):
     def _export_as_cfd(self, queryset, bank_account: BankAccount, constant_symbol: int, message: str):
         currency = localeconv["int_curr_symbol"].strip()
         refund_requests: list[RefundRequest] = list(queryset)
-        today = f"{date.today():%y%m%d}"
+        today = f"{now().date():%y%m%d}"
         site_name = ascii(LeprikonSite.objects.get_current().name)
 
         response = HttpResponse(content_type="text/cfd; charset=ascii")

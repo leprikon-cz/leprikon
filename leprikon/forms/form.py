@@ -1,5 +1,6 @@
 from djangocms_text.widgets import TextEditorWidget
 
+
 class FormMixin(object):
     required_css_class = "required"
     use_get = False

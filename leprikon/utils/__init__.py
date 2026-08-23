@@ -13,6 +13,7 @@ from django.urls import reverse_lazy as reverse
 from django.utils.encoding import iri_to_uri
 from django.utils.functional import lazy
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
@@ -183,8 +184,8 @@ def get_birth_date(birth_num):
         else:
             year = 1800 + y
     else:
-        year = int(date.today().year / 100) * 100 + y
-        if y > date.today().year % 100:
+        year = int(now().year / 100) * 100 + y
+        if y > now().year % 100:
             year -= 100
     month = int(birth_num[2:4]) % 50 % 20
     day = int(birth_num[4:6])
@@ -192,7 +193,7 @@ def get_birth_date(birth_num):
 
 
 def get_age(birth_date, today=None):
-    today = today or date.today()
+    today = today or now().date()
     try:
         birth_day_this_year = date(today.year, birth_date.month, birth_date.day)
     except ValueError:

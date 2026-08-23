@@ -3,10 +3,10 @@
 from __future__ import unicode_literals
 
 from collections import defaultdict
-from datetime import date
-from django.conf import settings
-from django.db import migrations, models
+
 import django.db.models.deletion
+from django.db import migrations, models
+from django.utils.timezone import now
 
 
 def create_courseregistration_periods(apps, schema_editor):
@@ -15,7 +15,7 @@ def create_courseregistration_periods(apps, schema_editor):
     CourseRegistrationPeriod = apps.get_model('leprikon', 'CourseRegistrationPeriod')
     SchoolYearPeriod = apps.get_model('leprikon', 'SchoolYearPeriod')
 
-    today = date.today()
+    today = now().date()
     periods = defaultdict(list)
     for period in SchoolYearPeriod.objects.all():
         period.first = period.school_year_division_id not in periods

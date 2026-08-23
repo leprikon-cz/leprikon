@@ -1,10 +1,11 @@
-from datetime import date
 from typing import List
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.models import inlineformset_factory
-from django.utils.translation import gettext_lazy as _, ngettext_lazy as ngettext
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext_lazy as ngettext
 
 from ..models.activities import ActivityModel, RegistrationParticipant
 from ..models.journals import Journal, JournalEntry, JournalLeaderEntry, JournalTime
@@ -247,7 +248,7 @@ class JournalEntryAdminForm(forms.ModelForm):
                 self.initial["start"] = next_time.start
                 self.initial["end"] = next_time.end
             else:
-                self.initial["date"] = date.today()
+                self.initial["date"] = now().date()
             try:
                 d = self.fields["date"].clean(kwargs["data"]["date"])
             except (KeyError, TypeError, ValidationError):

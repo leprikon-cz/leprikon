@@ -5,6 +5,7 @@ from cms.models import CMSPlugin
 from django.db import models
 from django.utils.formats import date_format, time_format
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
@@ -144,7 +145,7 @@ class EventRegistration(Registration):
             ),
             received=self.get_received(d),
             returned=self.get_returned(d),
-            current_date=d or date.today(),
+            current_date=d or now().date(),
             due_from=self.payment_requested
             and max(
                 self.activity.event.due_from,

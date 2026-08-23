@@ -1,13 +1,18 @@
-from datetime import date
-
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from leprikon.models.leprikonsite import LeprikonSite
 
-from ..models.calendar import CalendarEvent, CalendarExport, Resource, ResourceAvailability, ResourceGroup
+from ..models.calendar import (
+    CalendarEvent,
+    CalendarExport,
+    Resource,
+    ResourceAvailability,
+    ResourceGroup,
+)
 from .filters import IsCanceledListFilter, IsNullFieldListFilter
 
 
@@ -70,7 +75,7 @@ class IsFutureListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         value = self.value()
-        return queryset if value == "yes" else queryset.filter(start_date__gte=date.today())
+        return queryset if value == "yes" else queryset.filter(start_date__gte=now().date())
 
 
 @admin.register(CalendarEvent)

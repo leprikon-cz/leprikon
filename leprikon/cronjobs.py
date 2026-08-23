@@ -1,8 +1,8 @@
-from datetime import date
 from itertools import chain
 from traceback import print_exc
 
 from django.conf import settings
+from django.utils.timezone import now
 from django.utils.translation import override
 from django_cron import CronJobBase, Schedule
 from sentry_sdk import capture_exception
@@ -30,7 +30,7 @@ class SendPaymentRequest(SentryCronJobBase):
     code = "leprikon.cronjobs.SendPaymentRequest"
 
     def dojob(self):
-        today = date.today()
+        today = now().date()
         for registration in chain(
             set(
                 registration_period.registration

@@ -4,6 +4,7 @@ from cms.models import CMSPlugin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import comma_separated
@@ -16,11 +17,12 @@ class SchoolYearManager(models.Manager):
         # by default use last active year
         school_year = self.filter(active=True).order_by("-year").first()
         if school_year is None:
+            today = now().date()
             # Create or activate current year
-            if date.today().month < 7:
-                year = date.today().year - 1
+            if today.month < 7:
+                year = today.year - 1
             else:
-                year = date.today().year
+                year = today.year
             school_year = SchoolYear.objects.get_or_create(year=year)[0]
             school_year.active = True
             school_year.save()
@@ -108,7 +110,7 @@ class SchoolYearDivision(models.Model):
         return new
 
     def get_current_period(self):
-        return self.periods.filter(end__gte=date.today()).first() or self.periods.last()
+        return self.periods.filter(end__gte=now().date()).first() or self.periods.last()
 
 
 class SchoolYearPeriod(StartEndMixin, models.Model):

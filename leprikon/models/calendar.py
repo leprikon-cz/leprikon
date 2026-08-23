@@ -11,6 +11,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.formats import date_format, time_format
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from icalendar import Calendar, Event
 
@@ -326,7 +327,7 @@ class CalendarExport(models.Model):
     @property
     def relevant_events(self) -> models.QuerySet[CalendarEvent]:
         qs = CalendarEvent.objects.filter(
-            end_date__gte=date.today() - timedelta(days=self.export_past_days),
+            end_date__gte=now().date() - timedelta(days=self.export_past_days),
             is_canceled=False,
         )
         if self.resource_ids:

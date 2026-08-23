@@ -25,7 +25,9 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 from django_pays import payment_url as pays_payment_url
 from django_pays.models import Payment as PaysPayment
 from djangocms_text.fields import HTMLField
@@ -34,7 +36,16 @@ from filer.fields.image import FilerImageField
 from multiselectfield import MultiSelectField
 
 from ..conf import settings
-from ..utils import FEMALE, MALE, attributes, comma_separated, currency, lazy_paragraph as paragraph, localeconv, spayd
+from ..utils import (
+    FEMALE,
+    MALE,
+    attributes,
+    comma_separated,
+    currency,
+    localeconv,
+    spayd,
+)
+from ..utils import lazy_paragraph as paragraph
 from ..utils.calendar import (
     SimpleEvent,
     TimeSlot,
@@ -50,7 +61,14 @@ from .agreements import Agreement, AgreementOption
 from .calendar import CalendarEvent, Resource, ResourceGroup
 from .citizenship import Citizenship
 from .department import Department
-from .fields import BirthNumberField, ColorField, EmailField, PostalCodeField, PriceField, UniquePageField
+from .fields import (
+    BirthNumberField,
+    ColorField,
+    EmailField,
+    PostalCodeField,
+    PriceField,
+    UniquePageField,
+)
 from .leprikonsite import LeprikonSite
 from .organizations import Organization
 from .pdfmail import PdfExportAndMailMixin
@@ -743,7 +761,9 @@ class Activity(TimesMixin, models.Model):
 
 
 class ActivityTime(AbstractTime):
-    activity: Activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="times", verbose_name=_("activity"))
+    activity: Activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="times", verbose_name=_("activity")
+    )
 
     class Meta:
         app_label = "leprikon"
@@ -959,7 +979,7 @@ class ActivityVariant(models.Model):
     @cached_property
     def min_start_date(self) -> date:
         start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
-        tomorrow = date.today() + timedelta(days=1)
+        tomorrow = now().date() + timedelta(days=1)
         return max(min(start_dates) if start_dates else tomorrow, tomorrow)
 
     @cached_property

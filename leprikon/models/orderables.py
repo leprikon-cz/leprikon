@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from cms.models import CMSPlugin
 from django.db import models
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
@@ -107,7 +108,7 @@ class OrderableRegistration(Registration):
         verbose_name = _("orderable event registration")
         verbose_name_plural = _("orderable event registrations")
 
-    def get_payment_status(self, d=None):
+    def get_payment_status(self, d: date | None = None) -> PaymentStatus:
         payment_status = PaymentStatus(
             price=self.price,
             discount=self.get_discounted(d),
@@ -118,7 +119,7 @@ class OrderableRegistration(Registration):
             ),
             received=self.get_received(d),
             returned=self.get_returned(d),
-            current_date=d or date.today(),
+            current_date=d or now().date(),
             due_from=self.payment_requested
             and (
                 self.payment_requested.date()
@@ -264,7 +265,7 @@ class OrderableListPlugin(CMSPlugin):
 
     def render(self, context):
         school_year = (
-            self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
+            self.school_year or getattr(context.get("request"), "school_year", None) or SchoolYear.objects.get_current()
         )
         events = Orderable.objects.filter(school_year=school_year, public=True).distinct()
 
@@ -319,7 +320,7 @@ class FilteredOrderableListPlugin(CMSPlugin):
 
     def render(self, context):
         school_year = (
-            self.school_year or getattr(context.get("request"), "school_year") or SchoolYear.objects.get_current()
+            self.school_year or getattr(context.get("request"), "school_year", None) or SchoolYear.objects.get_current()
         )
 
         from ..forms.activities import ActivityFilterForm

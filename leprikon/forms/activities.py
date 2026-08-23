@@ -312,7 +312,7 @@ class RegistrationParticipantFormMixin:
         self.all_citizenships = list(Citizenship.objects.all())
 
         # set default values
-        created_date = date.today()
+        created_date = now().date()
         age = None
         citizenship = self.all_citizenships[0]
 
@@ -942,7 +942,7 @@ class CourseRegistrationForm(RegistrationForm):
         super().__init__(*args, **kwargs)
         if self.instance.activity_variant.school_year_division:
             self.available_periods = self.instance.activity_variant.school_year_division.periods.exclude(
-                end__lt=date.today(),
+                end__lt=now().date(),
             )
         else:
             self.available_periods = []

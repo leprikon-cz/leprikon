@@ -227,9 +227,7 @@ def generate_variable_symbol(registration):
 def help_text_with_html_default(help_text, html_default):
     keep_empty = paragraph(_("Keep empty to use default value:"))
     return mark_safe(
-        f"{paragraph(help_text)}{keep_empty}{html_default}"
-        if help_text
-        else f"{keep_empty}{html_default}"
+        f"{paragraph(help_text)}{keep_empty}{html_default}" if help_text else f"{keep_empty}{html_default}"
     )
 
 
