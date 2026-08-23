@@ -1,6 +1,8 @@
+from datetime import date, datetime, timezone
+
 import pytest
 
-from leprikon.models.utils import BankAccount
+from leprikon.models.utils import BankAccount, change_year
 
 
 @pytest.mark.parametrize(
@@ -16,3 +18,17 @@ def test_constructor(bank_account: str, iban: str, string: str):
     ba = BankAccount(bank_account)
     assert ba.iban.formatted == iban
     assert str(ba) == string
+
+
+# test of change_year that covers leap year handling
+@pytest.mark.parametrize("d,result", [
+    (None, None),
+    (date(2024, 1, 1), date(2025, 1, 1)),
+    (date(2024, 2, 28), date(2025, 2, 28)), 
+    (date(2024, 2, 29), date(2025, 2, 28)), 
+    (datetime(2024, 1, 1, 9, 30, 0, tzinfo=timezone.utc), datetime(2025, 1, 1, 9, 30, 0, tzinfo=timezone.utc)),
+    (datetime(2024, 2, 28, 9, 30, 0, tzinfo=timezone.utc), datetime(2025, 2, 28, 9, 30, 0, tzinfo=timezone.utc)), 
+    (datetime(2024, 2, 29, 9, 30, 0, tzinfo=timezone.utc), datetime(2025, 2, 28, 9, 30, 0, tzinfo=timezone.utc)), 
+])
+def test_change_year_leap_year(d, result):
+    assert change_year(d, 1) == result

@@ -2,7 +2,7 @@ import re
 from collections import namedtuple
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Union
+from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.db.models import Model, QuerySet
@@ -16,7 +16,7 @@ from schwifty.iban import IBAN
 from ..conf import settings
 from ..utils import currency, paragraph
 
-Price = Union[Decimal, int]
+Price = Decimal | int
 
 
 class PaymentStatusMixin:
@@ -84,18 +84,8 @@ class PaymentStatusMixin:
 
     def __repr__(self) -> str:
         return (
-            "{type_name}(price={price}, discount={discount}, received={received}, returned={returned}, "
-            "balance={balance}, amount_due={amount_due}, overdue={overdue}, overpaid={overpaid})".format(
-                type_name=type(self).__name__,
-                price=self.price,
-                discount=self.discount,
-                received=self.received,
-                returned=self.returned,
-                balance=self.balance,
-                amount_due=self.amount_due,
-                overdue=self.overdue,
-                overpaid=self.overpaid,
-            )
+            f"{type(self).__name__}(price={self.price}, discount={self.discount}, received={self.received}, returned={self.returned}, "
+            f"balance={self.balance}, amount_due={self.amount_due}, overdue={self.overdue}, overpaid={self.overpaid})"
         )
 
     def __add__(self, other):
@@ -192,7 +182,7 @@ class BankAccount:
 
     def __str__(self):
         if self.iban.country_code == "CZ":
-            return "%s%s%s/%s" % (
+            return "{}{}{}/{}".format(
                 self.account_prefix,
                 self.account_prefix and "-",
                 self.account_number,
@@ -237,16 +227,9 @@ def generate_variable_symbol(registration):
 def help_text_with_html_default(help_text, html_default):
     keep_empty = paragraph(_("Keep empty to use default value:"))
     return mark_safe(
-        "{}{}{}".format(
-            paragraph(help_text),
-            keep_empty,
-            html_default,
-        )
+        f"{paragraph(help_text)}{keep_empty}{html_default}"
         if help_text
-        else "{}{}".format(
-            keep_empty,
-            html_default,
-        )
+        else f"{keep_empty}{html_default}"
     )
 
 
@@ -254,28 +237,30 @@ lazy_help_text_with_html_default = lazy(help_text_with_html_default, str)
 
 
 def help_text_with_default(help_text, default):
-    keep_empty_default = _("Keep empty to use default value: {}").format(default)
-    return paragraph("{}\n\n{}".format(help_text, keep_empty_default) if help_text else keep_empty_default)
+    keep_empty_default = _("Keep empty to use default value: {default}").format(default=default)
+    return paragraph(f"{help_text}\n\n{keep_empty_default}" if help_text else keep_empty_default)
 
 
 lazy_help_text_with_default = lazy(help_text_with_default, str)
 
 
-def change_year(d, year_delta):
+def change_year(d: date | datetime | None, year_delta: int) -> date | datetime | None:
     if d is None:
         return None
-    if isinstance(d, date):
+    if isinstance(d, datetime):
+        try:
+            return datetime(d.year + year_delta, d.month, d.day, d.hour, d.minute, d.second, tzinfo=d.tzinfo)
+        except ValueError:
+            # handle leap-year
+            assert d.month == 2 and d.day == 29
+            return datetime(d.year + year_delta, d.month, d.day - 1, d.hour, d.minute, d.second, tzinfo=d.tzinfo)
+    else:
         try:
             return date(d.year + year_delta, d.month, d.day)
         except ValueError:
             # handle leap-year
+            assert d.month == 2 and d.day == 29
             return date(d.year + year_delta, d.month, d.day - 1)
-    else:
-        try:
-            return datetime(d.year + year_delta, d.month, d.day)
-        except ValueError:
-            # handle leap-year
-            return datetime(d.year + year_delta, d.month, d.day - 1, d.hour, d.minute, d.second)
 
 
 def shorten(string, length):

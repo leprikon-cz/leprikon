@@ -14,6 +14,7 @@ from .activities import (
     ActivityDiscount,
     ActivityGroup,
     ActivityModel,
+    ActivityTime,
     ActivityType,
     ActivityVariant,
     Registration,
@@ -110,10 +111,16 @@ class Event(Activity):
             new_variant.save()
             new_variant.age_groups.set(old_variant.age_groups.all())
             new_variant.target_groups.set(old_variant.target_groups.all())
+        times: list[ActivityTime] = list(old.times.all())
+        for time in times:
+            time.pk = None
+            time.activity = new
+            time.start_date = change_year(time.start_date, year_delta)
+            time.end_date = change_year(time.end_date, year_delta)
+        ActivityTime.objects.bulk_create(times)
         copy_related_objects(
             new,
             attachments=old.attachments,
-            times=old.times,
         )
         return new
 

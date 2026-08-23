@@ -743,7 +743,7 @@ class Activity(TimesMixin, models.Model):
 
 
 class ActivityTime(AbstractTime):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="times", verbose_name=_("course"))
+    activity: Activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="times", verbose_name=_("activity"))
 
     class Meta:
         app_label = "leprikon"
