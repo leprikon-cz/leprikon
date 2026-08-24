@@ -1077,7 +1077,7 @@ class RegistrationBaseAdmin(AdminExportMixin, SendMailAdminMixin, SendMessageAdm
             classes.append("reg-active")
         if obj.activity_type_model == ActivityModel.ORDERABLE:
             calendar_event: CalendarEvent = obj.calendar_event
-            if calendar_event.has_conflicting_events:
+            if calendar_event.has_conflicting_events():
                 classes.append("reg-conflict")
         return " ".join(classes)
 

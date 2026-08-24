@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from json import dumps
-from typing import Any
+from typing import Any, Iterable
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -70,6 +70,8 @@ class ActivityFilterForm(FormMixin, forms.Form):
     days_of_week = forms.MultipleChoiceField(label=_("Day of week"), choices=DayOfWeek.choices, required=False)
     past = forms.BooleanField(label=_("Show past"), required=False)
     reg_active = forms.BooleanField(label=_("Available for registration"), required=False)
+    available_from = forms.DateField(label=_("Available from"), required=False)
+    available_to = forms.DateField(label=_("Available to"), required=False)
     invisible = forms.BooleanField(label=_("Show invisible"), required=False)
 
     _models = {
@@ -148,6 +150,11 @@ class ActivityFilterForm(FormMixin, forms.Form):
             del self.fields["days_of_week"]
         if activity_type_model != ActivityModel.EVENT:
             del self.fields["past"]
+        if activity_type_model == ActivityModel.ORDERABLE:
+            del self.fields["reg_active"]
+        else:
+            del self.fields["available_from"]
+            del self.fields["available_to"]
         if not is_staff:
             del self.fields["invisible"]
 
@@ -187,12 +194,31 @@ class ActivityFilterForm(FormMixin, forms.Form):
                 qs = qs.filter(end_date__lte=now()).order_by("-start_date", "-start_time")
             else:
                 qs = qs.filter(end_date__gte=now())
-        if self.cleaned_data["reg_active"]:
+        if self.cleaned_data.get("reg_active"):
             qs = qs.filter(
                 (Q(variants__reg_from=None) | Q(variants__reg_from__lte=now()))
                 & (Q(variants__reg_to=None) | Q(variants__reg_to__gte=now()))
             )
-        return qs.distinct()
+        qs = qs.distinct()
+        if self.cleaned_data.get("available_from"):
+            available_from = self.cleaned_data["available_from"]
+            qs = [
+                activity for activity in qs
+                if any(
+                    d >= available_from
+                    for d in activity.available_dates
+                )
+            ]
+        if self.cleaned_data.get("available_to"):
+            available_to = self.cleaned_data["available_to"]
+            qs = [
+                activity for activity in qs
+                if any(
+                    d <= available_to
+                    for d in activity.available_dates
+                )
+            ]
+        return qs
 
 
 class ActivityForm(FormMixin, forms.ModelForm):

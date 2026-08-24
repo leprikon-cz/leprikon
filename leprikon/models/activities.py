@@ -1,4 +1,5 @@
 import colorsys
+from dataclasses import dataclass
 import logging
 from base64 import b64encode
 from collections import namedtuple
@@ -51,6 +52,7 @@ from ..utils.calendar import (
     TimeSlot,
     TimeSlots,
     WeeklyTimes,
+    date_range,
     extend_timeslots,
     get_conflicting_timeslots,
     get_reverse_time_slots,
@@ -411,6 +413,7 @@ class ActivityGroup(models.Model):
         )
 
 
+
 class Activity(TimesMixin, models.Model):
     PARTICIPANTS = "P"
     GROUPS = "G"
@@ -420,7 +423,7 @@ class Activity(TimesMixin, models.Model):
     ]
     REGISTRATION_TYPES = dict(REGISTRATION_TYPE_CHOICES)
 
-    school_year = models.ForeignKey(
+    school_year: SchoolYear = models.ForeignKey(
         SchoolYear, editable=False, on_delete=models.CASCADE, related_name="activities", verbose_name=_("school year")
     )
     activity_type = models.ForeignKey(
@@ -538,7 +541,7 @@ class Activity(TimesMixin, models.Model):
         verbose_name_plural = _("activities")
 
     def __str__(self):
-        return "{} {}".format(self.school_year, self.display_name)
+        return f"{self.school_year} {self.display_name}"
 
     def save(self, *args, **kwargs):
         # For some reason django doesn't set the default value for code,
@@ -548,7 +551,7 @@ class Activity(TimesMixin, models.Model):
 
     @cached_property
     def price_text(self) -> str:
-        return " | ".join(set(v.price_text for v in self.all_variants))
+        return " | ".join({v.price_text for v in self.all_variants})
 
     @cached_property
     def registration_type_participants(self):
@@ -594,6 +597,10 @@ class Activity(TimesMixin, models.Model):
     @cached_property
     def all_target_groups(self) -> List["TargetGroup"]:
         return list(self.target_groups.all())
+
+    @cached_property
+    def all_times(self) -> List["ActivityTime"]:
+        return list(self.times.all())
 
     @cached_property
     def all_leaders(self) -> List[Leader]:
@@ -759,6 +766,66 @@ class Activity(TimesMixin, models.Model):
             key=lambda agreement: agreement.order,
         )
 
+    @cached_property
+    def available_dates(self) -> set[date]:
+        return set(chain.from_iterable(variant.available_dates for variant in self.all_available_variants))
+
+
+    @dataclass
+    class Availability:
+        date: datetime
+        offered: bool
+        available: bool
+
+
+    @cached_property
+    def availabilities(self) -> list[Availability]:
+        if not self.all_available_variants:
+            return []
+        min_start_date = min(self.school_year.get_start_date(), self.min_start_date)
+        max_end_date = max(self.school_year.get_end_date(), self.max_end_date)
+
+        offered_time_slots = get_time_slots_by_weekly_times(self.weekly_times, min_start_date, max_end_date)
+
+        offered_dates = set(
+            chain.from_iterable(
+                date_range(time_slot.start.date(), time_slot.end.date()) for time_slot in offered_time_slots
+            )
+        )
+
+        assert all(d in offered_dates for d in self.available_dates)
+
+        start_monday = min_start_date - timedelta(min_start_date.weekday())
+        end_sunday = max_end_date + timedelta(6 - max_end_date.weekday())
+
+        if start_monday <= end_sunday:
+            return [
+                self.Availability(
+                    date=date,
+                    offered=date in offered_dates,
+                    available=date in self.available_dates
+                ) for date in date_range(start_monday, end_sunday)
+            ]
+        else:
+            return []
+
+    @cached_property
+    def weekly_times(self) -> WeeklyTimes:
+        return WeeklyTimes(activity_time.weekly_time for activity_time in self.all_times)
+
+    @cached_property
+    def min_start_date(self) -> date:
+        school_year_start_date = self.school_year.get_start_date()
+        start_dates = [wt.start_date or school_year_start_date for wt in self.weekly_times]
+        tomorrow = now().date() + timedelta(days=1)
+        return max(min(start_dates) if start_dates else tomorrow, tomorrow)
+
+    @cached_property
+    def max_end_date(self) -> date:
+        school_year_end_date = self.school_year.get_end_date()
+        end_dates = [wt.end_date or school_year_end_date for wt in self.weekly_times]
+        return max(end_dates) if end_dates else school_year_end_date
+
 
 class ActivityTime(AbstractTime):
     activity: Activity = models.ForeignKey(
@@ -886,17 +953,17 @@ class ActivityVariant(models.Model):
     def get_conflicting_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
         if start_date > end_date:
             return TimeSlots()
-        if self.min_start_date > end_date or (self.max_end_date is not None and self.max_end_date < start_date):
+        if self.activity.min_start_date > end_date or self.activity.max_end_date < start_date:
             return TimeSlots.from_date_range(start_date, end_date)
         all_day_conflicting_timeslots = TimeSlots()
-        if self.min_start_date > start_date:
+        if self.activity.min_start_date > start_date:
             all_day_conflicting_timeslots |= TimeSlots.from_date_range(
-                start_date, self.min_start_date - timedelta(days=1)
+                start_date, self.activity.min_start_date - timedelta(days=1)
             )
-            start_date = self.min_start_date
-        if self.max_end_date is not None and self.max_end_date < end_date:
-            all_day_conflicting_timeslots |= TimeSlots.from_date_range(self.max_end_date + timedelta(days=1), end_date)
-            end_date = self.max_end_date
+            start_date = self.activity.min_start_date
+        if self.activity.max_end_date < end_date:
+            all_day_conflicting_timeslots |= TimeSlots.from_date_range(self.activity.max_end_date + timedelta(days=1), end_date)
+            end_date = self.activity.max_end_date
         # if max_end_date is lower than min_start_date (today)
         if start_date > end_date:
             return all_day_conflicting_timeslots
@@ -904,7 +971,7 @@ class ActivityVariant(models.Model):
         required_resource_groups = list(
             chain(
                 ({r.id} for r in self.required_resources.all()),
-                (set(r.id for r in rg.resources.all()) for rg in self.required_resource_groups.all()),
+                ({r.id for r in rg.resources.all()} for rg in self.required_resource_groups.all()),
             )
         )
         relevant_resource_ids: set[int] = set(chain.from_iterable(required_resource_groups))
@@ -934,7 +1001,7 @@ class ActivityVariant(models.Model):
 
         # available times by activity weekly times
         available_timeslots = extend_timeslots(
-            get_time_slots_by_weekly_times(self.weekly_times, start_date, end_date),
+            get_time_slots_by_weekly_times(self.activity.weekly_times, start_date, end_date),
             self.activity.orderable.preparation_time,
             self.activity.orderable.recovery_time,
         )
@@ -970,30 +1037,49 @@ class ActivityVariant(models.Model):
         return conflicting_timeslots | all_day_conflicting_timeslots
 
     def get_available_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
-        return get_reverse_time_slots(self.get_conflicting_timeslots(start_date, end_date), start_date, end_date)
+        return TimeSlots(
+            time_slot for time_slot in get_reverse_time_slots(self.get_conflicting_timeslots(start_date, end_date), start_date, end_date)
+            if time_slot.duration >= self.activity.orderable.duration
+        )
+
+    def get_available_dates(self, start_date: date, end_date: date) -> set[date]:
+        available_timeslots = self.get_available_timeslots(start_date=start_date, end_date=end_date)
+
+        return set(
+            chain.from_iterable(
+                date_range(time_slot.start.date(), time_slot.end.date()) for time_slot in available_timeslots
+            )
+        )
+
+    @cached_property
+    def available_dates(self) -> set[date]:
+        if self.activity.min_start_date <= self.max_end_date:
+            return self.get_available_dates(self.activity.min_start_date, self.max_end_date)
+        else:
+            return set()
 
     @cached_property
     def weekly_times(self) -> WeeklyTimes:
-        return WeeklyTimes(at.weekly_time for at in self.activity.times.all())
+        # TODO: deprecated
+        return self.activity.weekly_times
 
     @cached_property
     def min_start_date(self) -> date:
-        start_dates = [wt.start_date for wt in self.weekly_times if wt.start_date]
-        tomorrow = now().date() + timedelta(days=1)
-        return max(min(start_dates) if start_dates else tomorrow, tomorrow)
+        # TODO: deprecated
+        return self.activity.min_start_date
 
     @cached_property
-    def max_end_date(self) -> date | None:
-        end_dates = [wt.end_date for wt in self.weekly_times if wt.end_date]
-        return max(end_dates) if end_dates else None
+    def max_end_date(self) -> date:
+        # TODO: deprecated
+        return self.activity.max_end_date
 
     @property
     def full_calendar_setup(self):
         return dumps(
             {
-                "minStartDate": self.min_start_date.strftime("%Y-%m-%d"),
+                "minStartDate": self.activity.min_start_date.strftime("%Y-%m-%d"),
                 "maxEndDate": (  # add one day to max_end_date to include the last day
-                    (self.max_end_date + timedelta(days=1)).strftime("%Y-%m-%d") if self.max_end_date else None
+                    (self.max_end_date + timedelta(days=1)).strftime("%Y-%m-%d")
                 ),
                 "duration": self.activity.orderable.duration.seconds,
                 "locale": settings.LANGUAGE_CODE,

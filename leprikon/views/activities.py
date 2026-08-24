@@ -51,7 +51,10 @@ class ActivityTypeMixin:
         return super().get_placeholder() + ":" + self.activity_type.slug
 
     def get_queryset(self):
-        return super().get_queryset().filter(activity_type=self.activity_type)
+        qs = super().get_queryset()
+        if isinstance(qs, list):
+            return qs
+        return qs.filter(activity_type=self.activity_type)
 
     def get_template_names(self):
         return [

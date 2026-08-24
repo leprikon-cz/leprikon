@@ -5,6 +5,7 @@ from typing import Optional
 from django.db import models
 from django.utils.formats import date_format
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import attributes, comma_separated
@@ -94,11 +95,12 @@ class AbstractTime(StartEndMixin, models.Model):
         else:
             return timedelta(0)
 
-    def get_next_time(self, now: date | datetime = None) -> Time | None:
-        now = now or datetime.now()
-        next_date = now.date() if isinstance(now, datetime) else now
+    def get_next_time(self, this_time: date | datetime | None = None) -> Time | None:
+        if this_time is None:
+            this_time = now()
+        next_date = this_time.date() if isinstance(this_time, datetime) else this_time
         # If the start time is None or less than now, we want to move to the next day
-        if isinstance(now, date) or self.start_time is None or self.start_time <= now.time():
+        if not isinstance(this_time, datetime) or self.start_time is None or self.start_time <= this_time.time():
             next_date += timedelta(1)
         days_of_week_bitmap = self.days_of_week.int()
         if days_of_week_bitmap:
@@ -120,8 +122,8 @@ class TimesMixin:
     def get_times_list(self) -> str:
         return comma_separated(self.all_times)
 
-    def get_next_time(self, now: date | datetime | None = None) -> Time | None:
+    def get_next_time(self, this_time: date | datetime | None = None) -> Time | None:
         try:
-            return min(t.get_next_time(now) for t in self.all_times)
+            return min(t.get_next_time(this_time) for t in self.all_times)
         except ValueError:
             return None

@@ -59,7 +59,13 @@ class SchoolYear(models.Model):
 
     @cached_property
     def name(self):
-        return "{}/{}".format(self.year, self.year + 1)
+        return f"{self.year}/{self.year + 1}"
+
+    def get_start_date(self) -> date:
+        return date(self.year, 9, 1)
+    
+    def get_end_date(self) -> date:
+        return date(self.year + 1, 6, 30)
 
 
 class SchoolYearDivision(models.Model):
@@ -71,7 +77,6 @@ class SchoolYearDivision(models.Model):
         _("price unit name"),
         max_length=150,
         help_text=_("Unit name the price applies to. For example semester, month, or 5 lessons."),
-        # "Název jednotky, za kterou je udávána cena, například pololetí, měsíc, 5 lekcí, apod."
     )
 
     class Meta:

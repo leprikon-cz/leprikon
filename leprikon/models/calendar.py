@@ -11,7 +11,7 @@ from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.formats import date_format, time_format
-from django.utils.timezone import now
+from django.utils.timezone import make_aware, now
 from django.utils.translation import gettext_lazy as _
 from icalendar import Calendar, Event
 
@@ -196,13 +196,13 @@ class CalendarEvent(models.Model):
 
     @property
     def start(self) -> datetime:
-        return datetime.combine(self.start_date, time(0) if self.start_time is None else self.start_time)
+        return make_aware(datetime.combine(self.start_date, time(0) if self.start_time is None else self.start_time))
 
     @property
     def end(self) -> datetime:
         if self.end_time:
-            return datetime.combine(self.end_date, self.end_time)
-        return datetime.combine(self.end_date + timedelta(days=1), time(0))
+            return make_aware(datetime.combine(self.end_date, self.end_time))
+        return make_aware(datetime.combine(self.end_date + timedelta(days=1), time(0)))
 
     @property
     def timeslot(self) -> TimeSlot:

@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 from leprikon.conf import settings
 from leprikon.models.calendar import CalendarExport
-from leprikon.utils.calendar import TimeSlot, end_time_format, start_time_format
+from leprikon.utils.calendar import TimeSlot, date_range, end_time_format, start_time_format
 
 from ..models.activities import ActivityVariant, CalendarEvent
 from ..models.journals import Journal
@@ -150,32 +150,19 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         input_serializer.is_valid(raise_exception=True)
         start_date: date = input_serializer.validated_data["start"].date()
         end_date: date = input_serializer.validated_data["end"].date() - timedelta(days=1)
-        available_timeslots = activity_variant.get_available_timeslots(
+        available_dates = activity_variant.get_available_dates(
             start_date=start_date,
             end_date=end_date,
         )
 
-        def date_range(start_date: date, end_date: date) -> Iterator[date]:
-            while start_date <= end_date:
-                yield start_date
-                start_date += timedelta(days=1)
-
-        available_dates = set(
-            chain.from_iterable(
-                date_range(time_slot.start.date(), time_slot.end.date())
-                for time_slot in available_timeslots
-                if time_slot.duration >= activity_variant.activity.orderable.duration
-            )
-        )
-
         unavailable_timeslots = [
-            dict(
-                id=str(d),
-                start=d,
-                allDay=True,
-                color=settings.LEPRIKON_API_UNAVAILABLE_DATE_COLOR,
-                display="background",
-            )
+            {
+                "id": str(d),
+                "start": d,
+                "allDay": True,
+                "color": settings.LEPRIKON_API_UNAVAILABLE_DATE_COLOR,
+                "display": "background",
+            }
             for d in date_range(start_date, end_date)
             if d not in available_dates
         ]

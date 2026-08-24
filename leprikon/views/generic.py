@@ -80,7 +80,7 @@ class FilteredListView(ListView):
         return self.form.get_queryset()
 
 
-class BackViewMixin(object):
+class BackViewMixin:
     back_url = reverse("leprikon:summary")
     back_label = _("Back")
 

@@ -26,9 +26,15 @@ function initializeCalendar(
     }
 
     function secondsToTimeString(seconds) {
-      var hours = Math.floor(seconds / 3600).toString().padStart(2, "0");
-      var minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
-      var seconds = Math.floor(seconds % 60).toString().padStart(2, "0");
+      var hours = Math.floor(seconds / 3600)
+        .toString()
+        .padStart(2, "0");
+      var minutes = Math.floor((seconds % 3600) / 60)
+        .toString()
+        .padStart(2, "0");
+      var seconds = Math.floor(seconds % 60)
+        .toString()
+        .padStart(2, "0");
       return `${hours}:${minutes}:${seconds}`;
     }
 
@@ -87,45 +93,51 @@ function initializeCalendar(
     }
 
     function isAvailableDate(dateStr) {
-      return ! calendar.getEvents().some(e => e.display === 'background' && e.startStr === dateStr);
+      return !calendar
+        .getEvents()
+        .some((e) => e.display === "background" && e.startStr === dateStr);
     }
 
     function isAvailableTime(start, end) {
       // find business hours that match the selection and duration
       var startSeconds = dateToSeconds(start);
       var endSeconds = dateToSeconds(end);
-      var overlapingBusinessHours = calendar.getOption('businessHours').find(
-        (bh) => {
-          if (! bh.daysOfWeek.includes(start.getDay())) return false;
+      var overlapingBusinessHours = calendar
+        .getOption("businessHours")
+        .find((bh) => {
+          if (!bh.daysOfWeek.includes(start.getDay())) return false;
           var bhStartSec = timeStringToSeconds(bh.startTime);
           var bhEndSec = timeStringToSeconds(bh.endTime);
           if (bhEndSec - bhStartSec < duration) return false;
           return bhStartSec < endSeconds && bhEndSec > startSeconds;
-        }
-      );
+        });
       if (!overlapingBusinessHours) return false;
 
       // update selection to match business hours and duration
-      var bhStartSeconds = timeStringToSeconds(overlapingBusinessHours.startTime);
+      var bhStartSeconds = timeStringToSeconds(
+        overlapingBusinessHours.startTime,
+      );
       var bhEndSeconds = timeStringToSeconds(overlapingBusinessHours.endTime);
 
       // truncate selection to business hours
       if (startSeconds < bhStartSeconds) startSeconds = bhStartSeconds;
       if (endSeconds > bhEndSeconds) endSeconds = bhEndSeconds;
-      
+
       // if the selection is longer than the duration, truncate it
-      if (endSeconds - startSeconds > duration) endSeconds = startSeconds + duration;
+      if (endSeconds - startSeconds > duration)
+        endSeconds = startSeconds + duration;
       // if the selection is shorter than the duration, extend it
       else if (endSeconds - startSeconds < duration) {
         endSeconds = Math.min(startSeconds + duration, bhEndSeconds);
-        if (endSeconds - startSeconds < duration) startSeconds = endSeconds - duration;
+        if (endSeconds - startSeconds < duration)
+          startSeconds = endSeconds - duration;
       }
 
       // convert seconds back to Date
       var startDelta = startSeconds - dateToSeconds(start);
       start = new Date(start.getTime() + startDelta * 1000);
       end = getEndTime(start);
-      return {start, end};
+      return { start, end };
     }
 
     var calendar = new FullCalendar.Calendar(calendarElement, {
@@ -146,24 +158,28 @@ function initializeCalendar(
       slotMaxTime: "16:00",
       themeSystem: "bootstrap",
       headerToolbar: {
-        left: 'title',
-        right: 'dayGridMonth,timeGridWeek prev,next'
+        left: "title",
+        right: "dayGridMonth,timeGridWeek prev,next",
       },
       events: unavailableDatesUrl,
-      datesSet: function(info) {
-        if (info.view.type === 'timeGridWeek') {
-          fetch(`${businessHoursUrl}?start=${info.startStr.substring(0, 10)}&end=${info.endStr.substring(0, 10)}`)
-            .then(res => res.json())
-            .then(data => {
-              var businessHours = data.map(({daysOfWeek, startTime, endTime}) => ({
-                daysOfWeek,
-                startTime,
-                endTime,
-              }));
-              calendar.setOption('businessHours', businessHours);
+      datesSet: function (info) {
+        if (info.view.type === "timeGridWeek") {
+          fetch(
+            `${businessHoursUrl}?start=${info.startStr.substring(0, 10)}&end=${info.endStr.substring(0, 10)}`,
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              var businessHours = data.map(
+                ({ daysOfWeek, startTime, endTime }) => ({
+                  daysOfWeek,
+                  startTime,
+                  endTime,
+                }),
+              );
+              calendar.setOption("businessHours", businessHours);
               if (businessHours.length === 0) {
-                calendar.setOption('slotMinTime', "8:00:00");
-                calendar.setOption('slotMaxTime', "16:00:00");
+                calendar.setOption("slotMinTime", "8:00:00");
+                calendar.setOption("slotMaxTime", "16:00:00");
               } else {
                 var minStartSeconds = businessHours.reduce((min, bh) => {
                   var bhStartSeconds = timeStringToSeconds(bh.startTime);
@@ -188,30 +204,36 @@ function initializeCalendar(
                 }
 
                 // set min and max time slot
-                calendar.setOption('slotMinTime', secondsToTimeString(minStartSeconds));
-                calendar.setOption('slotMaxTime', secondsToTimeString(maxEndSeconds));
+                calendar.setOption(
+                  "slotMinTime",
+                  secondsToTimeString(minStartSeconds),
+                );
+                calendar.setOption(
+                  "slotMaxTime",
+                  secondsToTimeString(maxEndSeconds),
+                );
               }
             });
         } else {
-          calendar.setOption('businessHours', []);
+          calendar.setOption("businessHours", []);
         }
       },
-      dateClick: function(info) {
+      dateClick: function (info) {
         if (isAvailableDate(info.dateStr)) {
-          calendar.changeView('timeGridWeek', info.date);
+          calendar.changeView("timeGridWeek", info.date);
         }
       },
       selectAllow: function (selectInfo) {
         if (selectInfo.allDay) {
-            return isAvailableDate(selectInfo.startStr);
+          return isAvailableDate(selectInfo.startStr);
         } else {
-            return !!isAvailableTime(selectInfo.start, selectInfo.end);
+          return !!isAvailableTime(selectInfo.start, selectInfo.end);
         }
       },
       select: function (info) {
         if (info.allDay) return;
         calendar.unselect();
-        var {start, end} = isAvailableTime(info.start, info.end);
+        var { start, end } = isAvailableTime(info.start, info.end);
         if (start && end) {
           setSelectedTime(start, end);
         }
@@ -219,9 +241,10 @@ function initializeCalendar(
       eventDrop: function (info) {
         var start = info.event.start;
         var end = getEndTime(start);
-
-        if (isAvailableTime(start, end)) {
-          setFormValues(start, end);
+        var { start, end } = isAvailableTime(start, end);
+        if (start && end) {
+          setSelectedTime(start, end);
+          //setFormValues(start, end);
         } else {
           info.revert();
         }
@@ -230,7 +253,7 @@ function initializeCalendar(
     calendar.render();
 
     if (selectedStart) {
-      calendar.changeView('timeGridWeek', selectedStart);
+      calendar.changeView("timeGridWeek", selectedStart);
       setSelectedTime(selectedStart, getEndTime(selectedStart));
     }
   });

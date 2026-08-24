@@ -7,10 +7,16 @@ from dateutil.rrule import DAILY, FR, MO, SA, SU, TH, TU, WE, rrule, weekday
 from django.db.models import IntegerChoices
 from django.utils import timezone
 from django.utils.formats import date_format, time_format
-from django.utils.timezone import is_naive, make_aware
+from django.utils.timezone import is_naive, localtime, make_aware
 from django.utils.translation import gettext_lazy as _
 
 from . import comma_separated
+
+
+def date_range(start_date: date, end_date: date) -> Iterator[date]:
+    while start_date <= end_date:
+        yield start_date
+        start_date += timedelta(days=1)
 
 
 def start_time_format(start: time) -> str:
@@ -113,8 +119,8 @@ class WeeklyTime:
     If end_time is 0:00, it actually means 24:00 (end of the day)
     """
 
-    start_date: Optional[date]
-    end_date: Optional[date]
+    start_date: date | None
+    end_date: date | None
     days_of_week: DaysOfWeek
     start_time: time
     end_time: time
@@ -135,9 +141,7 @@ class WeeklyTime:
             return False
         if self.start_time >= self.end_time and self.end_time != time(0):
             return False
-        if self.start_date and self.end_date and self.start_date > self.end_date:
-            return False
-        return True
+        return not (self.start_date and self.end_date and self.start_date > self.end_date)
 
     def __and__(self, other: "WeeklyTime") -> Optional["WeeklyTime"]:
         return (
@@ -212,10 +216,8 @@ class TimeSlot:
         )
 
     def __post_init__(self):
-        if is_naive(self.start):
-            self.start = make_aware(self.start)
-        if is_naive(self.end):
-            self.end = make_aware(self.end)
+        self.start = make_aware(self.start) if is_naive(self.start) else localtime(self.start)
+        self.end = make_aware(self.end) if is_naive(self.end) else localtime(self.end)
         assert self.start < self.end
 
     def __and__(self, other: "TimeSlot|TimeSlots") -> "TimeSlots":
