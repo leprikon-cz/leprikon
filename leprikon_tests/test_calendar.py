@@ -10,11 +10,24 @@ from leprikon.utils.calendar import (
     TimeSlots,
     WeeklyTime,
     WeeklyTimes,
+    date_batches,
     extend_timeslots,
     flatten_events,
     get_reverse_time_slots,
     get_time_slots_by_weekly_times,
 )
+
+
+@pytest.mark.parametrize(
+    "batch_size, expected_result",
+    [
+        (7, [(date(2026, 1, 1), date(2026, 1, 7)), (date(2026, 1, 8), date(2026, 1, 14)), (date(2026, 1, 15), date(2026, 1, 15))]),
+        (10, [(date(2026, 1, 1), date(2026, 1, 10)), (date(2026, 1, 11), date(2026, 1, 15))]),
+        (20, [(date(2026, 1, 1), date(2026, 1, 15))]),
+    ],
+)
+def test_date_batches(batch_size: int, expected_result: list[tuple[date, date]]) -> None:
+    assert list(date_batches(date(2026, 1, 1), date(2026, 1, 15), batch_size)) == expected_result
 
 
 @pytest.mark.parametrize(

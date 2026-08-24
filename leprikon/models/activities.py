@@ -52,6 +52,7 @@ from ..utils.calendar import (
     TimeSlot,
     TimeSlots,
     WeeklyTimes,
+    date_batches,
     date_range,
     extend_timeslots,
     get_conflicting_timeslots,
@@ -951,8 +952,14 @@ class ActivityVariant(models.Model):
         return self.active_registrations.filter(approved=None)
 
     def get_conflicting_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
-        if start_date > end_date:
-            return TimeSlots()
+        return TimeSlots(
+            chain.from_iterable(
+                self._get_conflicting_timeslots(batch_start_date, batch_end_date)
+                for batch_start_date, batch_end_date in date_batches(start_date, end_date)
+            )
+        )
+
+    def _get_conflicting_timeslots(self, start_date: date, end_date: date) -> TimeSlots:
         if self.activity.min_start_date > end_date or self.activity.max_end_date < start_date:
             return TimeSlots.from_date_range(start_date, end_date)
         all_day_conflicting_timeslots = TimeSlots()

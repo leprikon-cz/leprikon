@@ -1,7 +1,7 @@
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from itertools import chain, product
-from typing import Iterable, Iterator, Optional
 
 from dateutil.rrule import DAILY, FR, MO, SA, SU, TH, TU, WE, rrule, weekday
 from django.db.models import IntegerChoices
@@ -17,6 +17,16 @@ def date_range(start_date: date, end_date: date) -> Iterator[date]:
     while start_date <= end_date:
         yield start_date
         start_date += timedelta(days=1)
+
+
+def date_batches(start_date: date, end_date: date, batch_size: int = 7) -> Iterator[tuple[date, date]]:
+    """
+    Yield date batches of size batch_size.
+    """
+    while start_date <= end_date:
+        batch_end_date = min(start_date + timedelta(days=batch_size - 1), end_date)
+        yield start_date, batch_end_date
+        start_date = batch_end_date + timedelta(days=1)
 
 
 def start_time_format(start: time) -> str:
@@ -143,7 +153,7 @@ class WeeklyTime:
             return False
         return not (self.start_date and self.end_date and self.start_date > self.end_date)
 
-    def __and__(self, other: "WeeklyTime") -> Optional["WeeklyTime"]:
+    def __and__(self, other: "WeeklyTime") -> "WeeklyTime | None":
         return (
             WeeklyTime(
                 start_date=(
