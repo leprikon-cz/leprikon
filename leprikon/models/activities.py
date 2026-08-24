@@ -769,7 +769,7 @@ class Activity(TimesMixin, models.Model):
 
     @cached_property
     def available_dates(self) -> set[date]:
-        return set(chain.from_iterable(variant.available_dates for variant in self.all_available_variants))
+        return set(chain.from_iterable(variant.available_dates for variant in self.all_variants))
 
 
     @dataclass
@@ -781,8 +781,6 @@ class Activity(TimesMixin, models.Model):
 
     @cached_property
     def availabilities(self) -> list[Availability]:
-        if not self.all_available_variants:
-            return []
         min_start_date = min(self.school_year.get_start_date(), self.min_start_date)
         max_end_date = max(self.school_year.get_end_date(), self.max_end_date)
 
@@ -1060,8 +1058,8 @@ class ActivityVariant(models.Model):
 
     @cached_property
     def available_dates(self) -> set[date]:
-        if self.activity.min_start_date <= self.max_end_date:
-            return self.get_available_dates(self.activity.min_start_date, self.max_end_date)
+        if self.activity.min_start_date <= self.activity.max_end_date:
+            return self.get_available_dates(self.activity.min_start_date, self.activity.max_end_date)
         else:
             return set()
 
@@ -1086,7 +1084,7 @@ class ActivityVariant(models.Model):
             {
                 "minStartDate": self.activity.min_start_date.strftime("%Y-%m-%d"),
                 "maxEndDate": (  # add one day to max_end_date to include the last day
-                    (self.max_end_date + timedelta(days=1)).strftime("%Y-%m-%d")
+                    (self.activity.max_end_date + timedelta(days=1)).strftime("%Y-%m-%d")
                 ),
                 "duration": self.activity.orderable.duration.seconds,
                 "locale": settings.LANGUAGE_CODE,
