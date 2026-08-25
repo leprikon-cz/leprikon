@@ -319,8 +319,11 @@ class SimpleEvent:
     resource_groups: list[set[int]]
 
     def has_resolvable_resource_groups(self) -> bool:
-        number_of_resources = len(self.resource_groups)
-        return any(len(set(resources)) == number_of_resources for resources in product(*self.resource_groups))
+        number_of_required_resources = len(self.resource_groups)
+        number_of_unique_resources = len(set(chain.from_iterable(self.resource_groups)))
+        if number_of_required_resources > number_of_unique_resources:
+            return False
+        return any(len(set(resources)) == number_of_required_resources for resources in product(*self.resource_groups))
 
 
 def get_byweekdays_by_days_of_week(days_of_week: DaysOfWeek) -> list[weekday]:

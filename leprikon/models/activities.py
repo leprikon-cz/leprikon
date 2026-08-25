@@ -1,8 +1,8 @@
 import colorsys
-from dataclasses import dataclass
 import logging
 from base64 import b64encode
 from collections import namedtuple
+from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from email.mime.image import MIMEImage
@@ -18,6 +18,7 @@ from bankreader.models import Transaction as BankreaderTransaction
 from cms.models.fields import PageField
 from cms.models.pagemodel import Page
 from cms.signals.apphook import set_restart_trigger
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.dispatch import receiver
@@ -769,6 +770,10 @@ class Activity(TimesMixin, models.Model):
 
     @cached_property
     def available_dates(self) -> set[date]:
+        cache_key = f"activity_available_dates_{self.id}"
+        return cache.get_or_set(cache_key, lambda: self.get_available_dates(), timeout=60)
+
+    def get_available_dates(self) -> set[date]:
         return set(chain.from_iterable(variant.available_dates for variant in self.all_variants))
 
 

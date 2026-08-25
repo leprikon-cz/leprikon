@@ -1,8 +1,8 @@
+from collections.abc import Iterator
 from datetime import date, datetime, time, timedelta
-from itertools import chain
-from typing import Iterator
 
 from django.contrib.auth import authenticate, login, logout
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.utils.timezone import now
 from drf_spectacular.types import OpenApiTypes
@@ -16,7 +16,12 @@ from rest_framework.response import Response
 
 from leprikon.conf import settings
 from leprikon.models.calendar import CalendarExport
-from leprikon.utils.calendar import TimeSlot, date_range, end_time_format, start_time_format
+from leprikon.utils.calendar import (
+    TimeSlot,
+    date_range,
+    end_time_format,
+    start_time_format,
+)
 
 from ..models.activities import ActivityVariant, CalendarEvent
 from ..models.journals import Journal
@@ -150,9 +155,15 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         input_serializer.is_valid(raise_exception=True)
         start_date: date = input_serializer.validated_data["start"].date()
         end_date: date = input_serializer.validated_data["end"].date() - timedelta(days=1)
-        available_dates = activity_variant.get_available_dates(
-            start_date=start_date,
-            end_date=end_date,
+
+        cache_key = f"activity_variant_available_dates_{activity_variant.id}_{start_date}_{end_date}"
+        available_dates = cache.get_or_set(
+            cache_key,
+            lambda: activity_variant.get_available_dates(
+                start_date=start_date,
+                end_date=end_date,
+            ),
+            timeout=60,
         )
 
         unavailable_timeslots = [
@@ -202,28 +213,33 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             if timeslot.start < timeslot.end:
                 yield timeslot
 
-        business_hours = [
-            dict(
-                days_of_week=[timeslot.start.isoweekday() % 7],
-                start_time=start_time_format(timeslot.start.time()),
-                end_time=end_time_format(timeslot.end.time()),
-            )
-            for raw_timeslot in activity_variant.get_available_timeslots(
-                input_serializer.validated_data["start"],
-                input_serializer.validated_data["end"] - timedelta(days=1),
-            )
-            for timeslot in split_multidate_timeslot(raw_timeslot)
-        ]
+        cache_key = f"activity_variant_business_hours_{activity_variant.id}_{input_serializer.validated_data['start']}_{input_serializer.validated_data['end']}"
+        business_hours = cache.get_or_set(
+            cache_key,
+            lambda: [
+                {
+                    "days_of_week": [timeslot.start.isoweekday() % 7],
+                    "start_time": start_time_format(timeslot.start.time()),
+                    "end_time": end_time_format(timeslot.end.time()),
+                }
+                for raw_timeslot in activity_variant.get_available_timeslots(
+                    input_serializer.validated_data["start"],
+                    input_serializer.validated_data["end"] - timedelta(days=1),
+                )
+                for timeslot in split_multidate_timeslot(raw_timeslot)
+            ],
+            timeout=60,
+        )
 
         return Response(
             BusinessHoursSerializer(
                 business_hours
                 or [
-                    dict(
-                        days_of_week=[],
-                        start_time=time(0),
-                        end_time=time(0),
-                    )
+                    {
+                        "days_of_week": [],
+                        "start_time": time(0),
+                        "end_time": time(0),
+                    }
                 ],
                 many=True,
             ).data
