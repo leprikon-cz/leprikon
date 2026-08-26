@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from localflavor.cz.forms import CZPostalCodeField
 
 from ..conf import settings
+from ..forms.fields import DurationField as DurationFormField
 from ..utils import get_birth_date
 from ..utils.calendar import DayOfWeek, DaysOfWeek
 from .utils import BankAccount, parse_bank_account
@@ -24,7 +25,7 @@ class ColorInput(forms.TextInput):
 class ColorField(models.CharField):
     default_validators = [
         RegexValidator(
-            re.compile("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"),
+            re.compile(r"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"),
             _("Enter a valid hex color."),
             "invalid",
         )
@@ -200,6 +201,13 @@ class BankAccountField(models.CharField):
         if value is None:
             return value
         return parse_bank_account(value)
+
+
+class DurationField(models.DurationField):
+    def formfield(self, **kwargs):
+        defaults = {"form_class": DurationFormField}
+        defaults.update(kwargs)
+        return super().formfield(**defaults)
 
 
 class _PostalCodeField(CZPostalCodeField, forms.CharField):

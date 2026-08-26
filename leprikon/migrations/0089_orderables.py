@@ -337,17 +337,17 @@ class Migration(migrations.Migration):
                     ("end_time", models.TimeField(blank=True, null=True, verbose_name="end time")),
                     (
                         "preparation_time",
-                        models.DurationField(
+                        leprikon.models.fields.DurationField(
                             default=datetime.timedelta(0),
-                            help_text="Time to prepare before the event. (HH:MM:SS)",
+                            help_text="Time to prepare before the event. (HH:MM)",
                             verbose_name="preparation time",
                         ),
                     ),
                     (
                         "recovery_time",
-                        models.DurationField(
+                        leprikon.models.fields.DurationField(
                             default=datetime.timedelta(0),
-                            help_text="Time to recover after the event. (HH:MM:SS)",
+                            help_text="Time to recover after the event. (HH:MM)",
                             verbose_name="recovery time",
                         ),
                     ),
@@ -438,18 +438,18 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name="orderable",
                 name="preparation_time",
-                field=models.DurationField(
+                field=leprikon.models.fields.DurationField(
                     default=datetime.timedelta(0),
-                    help_text="Time to prepare before the event. (HH:MM:SS)",
+                    help_text="Time to prepare before the event. (HH:MM)",
                     verbose_name="preparation time",
                 ),
             ),
             migrations.AddField(
                 model_name="orderable",
                 name="recovery_time",
-                field=models.DurationField(
+                field=leprikon.models.fields.DurationField(
                     default=datetime.timedelta(0),
-                    help_text="Time to recover after the event. (HH:MM:SS)",
+                    help_text="Time to recover after the event. (HH:MM)",
                     verbose_name="recovery time",
                 ),
             ),

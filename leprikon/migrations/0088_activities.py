@@ -1,7 +1,5 @@
-from itertools import chain
 from django.db import migrations, models
 import django.db.models.deletion
-import leprikon.models.fields
 
 
 from leprikon import migrations as leprikon_migrations
@@ -76,7 +74,7 @@ class Migration(migrations.Migration):
                 field=models.ManyToManyField(
                     blank=True,
                     help_text="Keep empty to skip searching by course types.",
-                    limit_choices_to={"activity_type": "course"},
+                    limit_choices_to={"model": "course"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="course types",
@@ -88,7 +86,7 @@ class Migration(migrations.Migration):
                 field=models.ManyToManyField(
                     blank=True,
                     help_text="Keep empty to skip searching by event types.",
-                    limit_choices_to={"activity_type": "event"},
+                    limit_choices_to={"model": "event"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="event types",
@@ -98,7 +96,7 @@ class Migration(migrations.Migration):
                 model_name="filteredcourselistplugin",
                 name="course_types",
                 field=models.ManyToManyField(
-                    limit_choices_to={"activity_type": "course"},
+                    limit_choices_to={"model": "course"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="course types",
@@ -108,7 +106,7 @@ class Migration(migrations.Migration):
                 model_name="filteredeventlistplugin",
                 name="event_types",
                 field=models.ManyToManyField(
-                    limit_choices_to={"activity_type": "event"},
+                    limit_choices_to={"model": "event"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="event types",
@@ -118,7 +116,7 @@ class Migration(migrations.Migration):
                 model_name="filteredorderablelistplugin",
                 name="event_types",
                 field=models.ManyToManyField(
-                    limit_choices_to={"activity_type": "orderable"},
+                    limit_choices_to={"model": "orderable"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="event types",
@@ -130,7 +128,7 @@ class Migration(migrations.Migration):
                 field=models.ManyToManyField(
                     blank=True,
                     help_text="Keep empty to skip searching by event types.",
-                    limit_choices_to={"activity_type": "orderable"},
+                    limit_choices_to={"model": "orderable"},
                     related_name="+",
                     to="leprikon.ActivityType",
                     verbose_name="event types",
@@ -432,6 +430,16 @@ class Migration(migrations.Migration):
                 name="target_groups",
                 field=models.ManyToManyField(
                     related_name="activity_variants", to="leprikon.TargetGroup", verbose_name="target groups"
+                ),
+            ),
+            migrations.AlterField(
+                model_name="activitytime",
+                name="activity",
+                field=models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name="times",
+                    to="leprikon.activity",
+                    verbose_name="activity",
                 ),
             ),
             migrations.AlterField(

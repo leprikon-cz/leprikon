@@ -26,7 +26,7 @@ from leprikon.utils.calendar import (
     get_time_slots_by_weekly_times,
 )
 
-from .fields import DaysOfWeek, DaysOfWeekField
+from .fields import DaysOfWeek, DaysOfWeekField, DurationField
 from .roles import Leader
 from .startend import StartEndMixin
 from .times import WeeklyTime
@@ -138,15 +138,15 @@ class CalendarEvent(models.Model):
     end_time = models.TimeField(_("end time"), blank=True, null=True)
     effective_start = models.DateTimeField(_("effective start"), editable=False)
     effective_end = models.DateTimeField(_("effective end"), editable=False)
-    preparation_time = models.DurationField(
+    preparation_time = DurationField(
         _("preparation time"),
         default=timedelta(0),
-        help_text=_("Time to prepare before the event. (HH:MM:SS)"),
+        help_text=_("Time to prepare before the event. (HH:MM)"),
     )
-    recovery_time = models.DurationField(
+    recovery_time = DurationField(
         _("recovery time"),
         default=timedelta(0),
-        help_text=_("Time to recover after the event. (HH:MM:SS)"),
+        help_text=_("Time to recover after the event. (HH:MM)"),
     )
     blocks_all_resources = models.BooleanField(
         _("blocks all resources"),

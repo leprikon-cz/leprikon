@@ -21,6 +21,7 @@ from .activities import (
 )
 from .agegroup import AgeGroup
 from .department import Department
+from .fields import DurationField
 from .roles import Leader
 from .schoolyear import SchoolYear, SchoolYearDivision
 from .targetgroup import TargetGroup
@@ -28,16 +29,16 @@ from .utils import PaymentStatus, change_year, copy_related_objects
 
 
 class Orderable(Activity):
-    duration = models.DurationField(_("duration"), help_text=_("Format: HH:MM:SS"))
-    preparation_time = models.DurationField(
+    duration = DurationField(_("duration"), help_text=_("Format: HH:MM"))
+    preparation_time = DurationField(
         _("preparation time"),
         default=timedelta(0),
-        help_text=_("Time to prepare before the event. (HH:MM:SS)"),
+        help_text=_("Time to prepare before the event. (HH:MM)"),
     )
-    recovery_time = models.DurationField(
+    recovery_time = DurationField(
         _("recovery time"),
         default=timedelta(0),
-        help_text=_("Time to recover after the event. (HH:MM:SS)"),
+        help_text=_("Time to recover after the event. (HH:MM)"),
     )
     due_from_days = models.IntegerField(
         _("number of days to send the payment request before event date"),

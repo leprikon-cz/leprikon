@@ -6,7 +6,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 import leprikon.models.fields
-import leprikon.models.activities
 
 
 class Migration(migrations.Migration):
@@ -49,7 +48,7 @@ class Migration(migrations.Migration):
                         to="leprikon.Subject",
                     ),
                 ),
-                ("duration", models.DurationField(help_text="Format: HH:MM:SS", verbose_name="duration")),
+                ("duration", leprikon.models.fields.DurationField(help_text="Format: HH:MM", verbose_name="duration")),
                 (
                     "due_from_days",
                     models.IntegerField(
