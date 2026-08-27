@@ -797,8 +797,6 @@ class Activity(TimesMixin, models.Model):
             )
         )
 
-        assert all(d in offered_dates for d in self.available_dates)
-
         start_monday = min_start_date - timedelta(min_start_date.weekday())
         end_sunday = max_end_date + timedelta(6 - max_end_date.weekday())
 
@@ -807,7 +805,8 @@ class Activity(TimesMixin, models.Model):
                 self.Availability(
                     date=date,
                     offered=date in offered_dates,
-                    available=date in self.available_dates
+                    # available dates are cached, may contain days that are no longer offered
+                    available=date in self.available_dates and date in offered_dates,
                 ) for date in date_range(start_monday, end_sunday)
             ]
         else:
